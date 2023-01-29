@@ -176,6 +176,14 @@ public:
     const std::string& GetString() const { return mString; }
     size_t GetStringId() const { return mStringId; }
     
+    void fromAddress(const void* address)
+    {
+        std::stringstream ss;
+        ss << address;
+        mString = ss.str();
+        mStringId = GetStringHash(mString);
+    }
+    
 private:
     std::string mString;
     size_t      mStringId;

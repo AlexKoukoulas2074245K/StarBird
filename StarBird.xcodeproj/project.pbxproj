@@ -54,6 +54,7 @@
 		9254CC0C2969B79A00EFE0CC /* b2BroadPhase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CBDC2969B79A00EFE0CC /* b2BroadPhase.cpp */; };
 		9254CC0D2969B79A00EFE0CC /* b2CollideEdge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CBDF2969B79A00EFE0CC /* b2CollideEdge.cpp */; };
 		9254CC0E2969B79A00EFE0CC /* b2Collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CBE02969B79A00EFE0CC /* b2Collision.cpp */; };
+		92A8517B2985704800C99B61 /* SceneRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A8516E2985704800C99B61 /* SceneRenderer.cpp */; };
 		92C2198429842CF500B2D2C6 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198229842CF500B2D2C6 /* Scene.cpp */; };
 		92C2198A29842E6A00B2D2C6 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198829842E6A00B2D2C6 /* Game.cpp */; };
 		92C2198D2984395800B2D2C6 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198B2984395800B2D2C6 /* Camera.cpp */; };
@@ -281,6 +282,9 @@
 		9254CBDE2969B79A00EFE0CC /* b2Distance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2Distance.h; sourceTree = "<group>"; };
 		9254CBDF2969B79A00EFE0CC /* b2CollideEdge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2CollideEdge.cpp; sourceTree = "<group>"; };
 		9254CBE02969B79A00EFE0CC /* b2Collision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Collision.cpp; sourceTree = "<group>"; };
+		92A8516E2985704800C99B61 /* SceneRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneRenderer.cpp; sourceTree = "<group>"; };
+		92A8517A2985704800C99B61 /* SceneRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneRenderer.h; sourceTree = "<group>"; };
+		92A8517C298570D200C99B61 /* SceneObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneObject.h; sourceTree = "<group>"; };
 		92C2198229842CF500B2D2C6 /* Scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scene.cpp; sourceTree = "<group>"; };
 		92C2198329842CF500B2D2C6 /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
 		92C2198829842E6A00B2D2C6 /* Game.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Game.cpp; sourceTree = "<group>"; };
@@ -904,6 +908,9 @@
 				92C2198929842E6A00B2D2C6 /* Game.h */,
 				92C2198229842CF500B2D2C6 /* Scene.cpp */,
 				92C2198329842CF500B2D2C6 /* Scene.h */,
+				92A8517C298570D200C99B61 /* SceneObject.h */,
+				92A8516E2985704800C99B61 /* SceneRenderer.cpp */,
+				92A8517A2985704800C99B61 /* SceneRenderer.h */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -1673,6 +1680,7 @@
 				92DAA4C229829A4C0062A438 /* TextureLoader.cpp in Sources */,
 				9254CC0E2969B79A00EFE0CC /* b2Collision.cpp in Sources */,
 				9254CBE52969B79A00EFE0CC /* b2EdgeAndPolygonContact.cpp in Sources */,
+				92A8517B2985704800C99B61 /* SceneRenderer.cpp in Sources */,
 				9254CC022969B79A00EFE0CC /* b2Math.cpp in Sources */,
 				92C2198D2984395800B2D2C6 /* Camera.cpp in Sources */,
 				9254CC002969B79A00EFE0CC /* b2Timer.cpp in Sources */,

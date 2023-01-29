@@ -7,6 +7,7 @@
 
 #include "Camera.h"
 #include "Game.h"
+#include "Scene.h"
 
 #include "../utils/Logging.h"
 #include "../utils/MathUtils.h"
@@ -94,9 +95,9 @@ bool Game::InitSystems()
     GL_CALL(glEnable(GL_BLEND));
     GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-    Log(LogType::INFO, "Vendor     : %s\n", GL_NO_CHECK_CALL(glGetString(GL_VENDOR)));
-    Log(LogType::INFO, "Renderer   : %s\n", GL_NO_CHECK_CALL(glGetString(GL_RENDERER)));
-    Log(LogType::INFO, "Version    : %s\n", GL_NO_CHECK_CALL(glGetString(GL_VERSION)));
+    Log(LogType::INFO, "Vendor     : %s", GL_NO_CHECK_CALL(glGetString(GL_VENDOR)));
+    Log(LogType::INFO, "Renderer   : %s", GL_NO_CHECK_CALL(glGetString(GL_RENDERER)));
+    Log(LogType::INFO, "Version    : %s", GL_NO_CHECK_CALL(glGetString(GL_VERSION)));
     
     return true;
 }
@@ -141,8 +142,6 @@ bool Game::LoadAssets()
 }
 
 ///------------------------------------------------------------------------------------------------
-
-using namespace strutils;
 
 std::unordered_map<b2Body*, int> health;
 
@@ -191,167 +190,12 @@ private:
     bool isRunning_;
 };
 
-void renderSpaceBackground(float offset, Camera& c)
-{
-    auto& meshResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(gMesh);
-    
-    auto& shaderResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::ShaderResource>(gTexOffsetShader);
-    
-    GL_CALL(glUseProgram(shaderResource.GetProgramId()));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(gSpaceBackgroundTexture).GetGLTextureId()));
-    
-    glm::mat4 world(1.0f);
-    world = glm::scale(world, glm::vec3(28.0f, 28.0f, 1.0f));
-    
-    shaderResource.SetFloat(StringId("texoffset"), offset);
-    shaderResource.SetMatrix4fv(StringId("world"), world);
-    shaderResource.SetMatrix4fv(StringId("view"), c.GetViewMatrix());
-    shaderResource.SetMatrix4fv(StringId("proj"), c.GetProjMatrix());
-    
-    GL_CALL(glDrawElements(GL_TRIANGLES, meshResource.GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
-}
-
-void renderJoystick(b2Vec2 b2pos, b2Vec2 b2InitPos, Camera& c)
-{
-    auto& meshResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(gMesh);
-    
-    auto& shaderResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::ShaderResource>(gBasicShader);
-    
-    GL_CALL(glUseProgram(shaderResource.GetProgramId()));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(gJoystickTexture).GetGLTextureId()));
-    
-    glm::mat4 world(1.0f);
-    world = glm::translate(world, glm::vec3(b2pos.x, b2pos.y, 0.0f));
-    world = glm::scale(world, glm::vec3(2.0f, 2.0f, 1.0f));
-    
-    shaderResource.SetMatrix4fv(StringId("world"), world);
-    shaderResource.SetMatrix4fv(StringId("view"), c.GetViewMatrix());
-    shaderResource.SetMatrix4fv(StringId("proj"), c.GetProjMatrix());
-    
-    GL_CALL(glDrawElements(GL_TRIANGLES, meshResource.GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
-    
-    
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(gJoystickBoundsTexture).GetGLTextureId()));
-    
-    world = glm::mat4(1.0f);
-    world = glm::translate(world, glm::vec3(b2InitPos.x, b2InitPos.y, 0.0f));
-    world = glm::scale(world, glm::vec3(4.0f, 4.0f, 1.0f));
-    
-    shaderResource.SetMatrix4fv(StringId("world"), world);
-    shaderResource.SetMatrix4fv(StringId("view"), c.GetViewMatrix());
-    shaderResource.SetMatrix4fv(StringId("proj"), c.GetProjMatrix());
-    
-    GL_CALL(glDrawElements(GL_TRIANGLES, meshResource.GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
-}
-
-void renderPlayer(b2Body* body, Camera& c)
-{
-    auto& meshResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(gMesh);
-    
-    auto& shaderResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::ShaderResource>(gBasicShader);
-    
-    GL_CALL(glUseProgram(shaderResource.GetProgramId()));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(gPlayerTexture).GetGLTextureId()));
-    
-    glm::mat4 world(1.0f);
-    world = glm::translate(world, glm::vec3(body->GetWorldCenter().x, body->GetWorldCenter().y, 0.0f));
-    
-    const auto& shape = dynamic_cast<const b2PolygonShape&>(*body->GetFixtureList()->GetShape());
-    
-    const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
-    const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
-    world = glm::scale(world, glm::vec3(scaleX, scaleY, 1.0f));
-    
-    shaderResource.SetMatrix4fv(StringId("world"), world);
-    shaderResource.SetMatrix4fv(StringId("view"), c.GetViewMatrix());
-    shaderResource.SetMatrix4fv(StringId("proj"), c.GetProjMatrix());
-    
-    GL_CALL(glDrawElements(GL_TRIANGLES, meshResource.GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
-    
-}
-
-void renderB2DBullet(b2Body* body, Camera& c)
-{
-    auto& meshResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(gMesh);
-    
-    auto& shaderResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::ShaderResource>(gBasicShader);
-    
-    GL_CALL(glUseProgram(shaderResource.GetProgramId()));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(gBulletTexture).GetGLTextureId()));
-    
-    glm::mat4 world(1.0f);
-    world = glm::translate(world, glm::vec3(body->GetWorldCenter().x, body->GetWorldCenter().y, 0.0f));
-    
-    const auto& shape = dynamic_cast<const b2PolygonShape&>(*body->GetFixtureList()->GetShape());
-    
-    const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
-    const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
-    world = glm::scale(world, glm::vec3(scaleX, scaleY, 1.0f));
-    
-    shaderResource.SetMatrix4fv(StringId("world"), world);
-    shaderResource.SetMatrix4fv(StringId("view"), c.GetViewMatrix());
-    shaderResource.SetMatrix4fv(StringId("proj"), c.GetProjMatrix());
-    
-    GL_CALL(glDrawElements(GL_TRIANGLES, meshResource.GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
-}
-
-void renderB2DBox(b2Body* body, Camera& c)
-{
-    auto& meshResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(gMesh);
-    
-    auto& shaderResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::ShaderResource>(gBasicShader);
-    
-    GL_CALL(glUseProgram(shaderResource.GetProgramId()));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(gEnemyTexture).GetGLTextureId()));
-    
-    glm::mat4 world(1.0f);
-    world = glm::translate(world, glm::vec3(body->GetWorldCenter().x, body->GetWorldCenter().y, 0.0f));
-    
-    const auto& shape = dynamic_cast<const b2PolygonShape&>(*body->GetFixtureList()->GetShape());
-    
-    const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
-    const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
-    world = glm::scale(world, glm::vec3(scaleX, scaleY, 1.0f));
-    
-    shaderResource.SetMatrix4fv(StringId("world"), world);
-    shaderResource.SetMatrix4fv(StringId("view"), c.GetViewMatrix());
-    shaderResource.SetMatrix4fv(StringId("proj"), c.GetProjMatrix());
-    
-    GL_CALL(glDrawElements(GL_TRIANGLES, meshResource.GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
-}
-
-void renderInvisibleWall(b2Body* body, Camera& c)
-{
-    auto& meshResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(gMesh);
-    
-    auto& shaderResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::ShaderResource>(gBasicShader);
-    
-    GL_CALL(glUseProgram(shaderResource.GetProgramId()));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(gInvisWallTexture).GetGLTextureId()));
-    
-    glm::mat4 world(1.0f);
-    world = glm::translate(world, glm::vec3(body->GetWorldCenter().x, body->GetWorldCenter().y, 0.0f));
-    
-    const auto& shape = dynamic_cast<const b2PolygonShape&>(*body->GetFixtureList()->GetShape());
-    
-    const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
-    const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
-    world = glm::scale(world, glm::vec3(scaleX, scaleY, 1.0f));
-    
-    shaderResource.SetMatrix4fv(StringId("world"), world);
-    shaderResource.SetMatrix4fv(StringId("view"), c.GetViewMatrix());
-    shaderResource.SetMatrix4fv(StringId("proj"), c.GetProjMatrix());
-    
-    GL_CALL(glDrawElements(GL_TRIANGLES, meshResource.GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
-}
-
-
 static constexpr uint16 ENEMY_CATEGORY_BIT  = 0x1;
 static constexpr uint16 BULLET_CATEGORY_BIT = 0x2;
 static constexpr uint16 PLAYER_CATEGORY_BIT = 0x4;
 static constexpr uint16 WALL_CATEGORY_BIT = 0x8;
 
-b2Body* createPlayer(b2World* world, float x = 0.0f, float y = -10.0f)
+void createPlayer(b2World* world, SceneObject& so, float x = 0.0f, float y = -10.0f)
 {
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
@@ -374,10 +218,15 @@ b2Body* createPlayer(b2World* world, float x = 0.0f, float y = -10.0f)
     fixtureDef.filter.maskBits &= (~PLAYER_CATEGORY_BIT);
     body->CreateFixture(&fixtureDef);
     
-    return body;
+    so.mBody = body;
+    so.mShaderResourceId = gBasicShader;
+    so.mTextureResourceId = gPlayerTexture;
+    so.mMeshResourceId = gMesh;
+    so.mSceneObjectType = SceneObjectType::WorldGameObject;
+    so.mNameTag = strutils::StringId("PLAYER");
 }
 
-b2Body* createBullet(b2World* world, b2Body* player)
+void createBullet(b2World* world, b2Body* player, SceneObject& so)
 {
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
@@ -403,10 +252,15 @@ b2Body* createBullet(b2World* world, b2Body* player)
     
     body->CreateFixture(&fixtureDef);
     
-    return body;
+    so.mBody = body;
+    so.mShaderResourceId = gBasicShader;
+    so.mTextureResourceId = gBulletTexture;
+    so.mMeshResourceId = gMesh;
+    so.mSceneObjectType = SceneObjectType::WorldGameObject;
+    so.mNameTag.fromAddress(so.mBody);
 }
 
-b2Body* createBox(b2World* world)
+void createBox(b2World* world, SceneObject& so)
 {
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
@@ -431,7 +285,12 @@ b2Body* createBox(b2World* world)
     
     health[body] = 2;
     
-    return body;
+    so.mBody = body;
+    so.mShaderResourceId = gBasicShader;
+    so.mTextureResourceId = gEnemyTexture;
+    so.mMeshResourceId = gMesh;
+    so.mSceneObjectType = SceneObjectType::WorldGameObject;
+    so.mNameTag.fromAddress(so.mBody);
 }
 
 #define L_WALL
@@ -439,6 +298,7 @@ b2Body* createBox(b2World* world)
 #define B_WALL
 void Game::Run()
 {
+    Scene scene;
     b2World world(b2Vec2(0.0f, 0.0f));
     
     class ContactListener : public b2ContactListener
@@ -506,14 +366,33 @@ void Game::Run()
     
     std::unordered_set<b2Body*> boxes;
     std::unordered_set<b2Body*> bullets;
-    std::unordered_set<b2Body*> walls;
+    
+    {
+        SceneObject bgSO;
+        bgSO.mCustomScale = glm::vec3(28.0f, 28.0f, 1.0f);
+        bgSO.mMeshResourceId = gMesh;
+        bgSO.mShaderResourceId = gTexOffsetShader;
+        bgSO.mTextureResourceId = gSpaceBackgroundTexture;
+        bgSO.mSceneObjectType = SceneObjectType::GUIGameObject;
+        bgSO.mNameTag = strutils::StringId("BG");
+        scene.AddSceneObject(std::move(bgSO));
+    }
     
     
     for (int i = 0; i < 10; ++i)
-        boxes.insert(createBox(&world));
-    b2Body* player = createPlayer(&world);
+    {
+        SceneObject so;
+        createBox(&world, so);
+        boxes.insert(so.mBody);
+        scene.AddSceneObject(std::move(so));
+    }
     
-
+    {
+        SceneObject playerSO;
+        createPlayer(&world, playerSO);
+        scene.AddSceneObject(std::move(playerSO));
+    }
+    
 #ifdef L_WALL
     {
         b2BodyDef wallBodyDef;
@@ -533,7 +412,13 @@ void Game::Run()
      
         wallBody->CreateFixture(&fixtureDef);
         
-        walls.insert(wallBody);
+        SceneObject so;
+        so.mBody = wallBody;
+        so.mShaderResourceId = gBasicShader;
+        so.mTextureResourceId = gInvisWallTexture;
+        so.mMeshResourceId = gMesh;
+        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        scene.AddSceneObject(std::move(so));
     }
 #endif
     
@@ -556,7 +441,13 @@ void Game::Run()
      
         wallBody->CreateFixture(&fixtureDef);
         
-        walls.insert(wallBody);
+        SceneObject so;
+        so.mBody = wallBody;
+        so.mShaderResourceId = gBasicShader;
+        so.mTextureResourceId = gInvisWallTexture;
+        so.mMeshResourceId = gMesh;
+        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        scene.AddSceneObject(std::move(so));
     }
 #endif
     
@@ -579,9 +470,38 @@ void Game::Run()
      
         wallBody->CreateFixture(&fixtureDef);
         
-        walls.insert(wallBody);
+        SceneObject so;
+        so.mBody = wallBody;
+        so.mShaderResourceId = gBasicShader;
+        so.mTextureResourceId = gInvisWallTexture;
+        so.mMeshResourceId = gMesh;
+        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        scene.AddSceneObject(std::move(so));
     }
     
+    {
+        SceneObject joystickSO;
+        joystickSO.mShaderResourceId = gBasicShader;
+        joystickSO.mTextureResourceId = gJoystickTexture;
+        joystickSO.mMeshResourceId = gMesh;
+        joystickSO.mSceneObjectType = SceneObjectType::GUIGameObject;
+        joystickSO.mCustomScale = glm::vec3(2.0f, 2.0f, 1.0f);
+        joystickSO.mNameTag = strutils::StringId("JOYSTICK");
+        joystickSO.mInvisible = true;
+        scene.AddSceneObject(std::move(joystickSO));
+    }
+    
+    {
+        SceneObject joystickBoundsSO;
+        joystickBoundsSO.mShaderResourceId = gBasicShader;
+        joystickBoundsSO.mTextureResourceId = gJoystickBoundsTexture;
+        joystickBoundsSO.mMeshResourceId = gMesh;
+        joystickBoundsSO.mSceneObjectType = SceneObjectType::GUIGameObject;
+        joystickBoundsSO.mCustomScale = glm::vec3(4.0f, 4.0f, 1.0f);
+        joystickBoundsSO.mNameTag = strutils::StringId("JOYSTICK_BOUNDS");
+        joystickBoundsSO.mInvisible = true;
+        scene.AddSceneObject(std::move(joystickBoundsSO));
+    }
     
 #endif
     
@@ -589,12 +509,18 @@ void Game::Run()
     //int spawnCount = 0;
     flows.emplace_back([&]()
     {
-    bullets.insert(createBullet(&world, player));
+        SceneObject so;
+        createBullet(&world, scene.GetSceneObject(strutils::StringId("PLAYER"))->get().mBody, so);
+        bullets.insert(so.mBody);
+        scene.AddSceneObject(std::move(so));
     }, 300.0f, DelayedFlow::RepeatPolicy::REPEAT);
     
     flows.emplace_back([&]()
     {
-        boxes.insert(createBox(&world));
+        SceneObject so;
+        createBox(&world, so);
+        boxes.insert(so.mBody);
+        scene.AddSceneObject(std::move(so));
     }, 600.0f, DelayedFlow::RepeatPolicy::REPEAT);
     
     //float timeStep = 1.0f / 60.0f;
@@ -625,7 +551,12 @@ void Game::Run()
         secsAccumulator += dtMilis * 0.001f; // dt in seconds;
         
         static float msAccum = 0.0f;
-        msAccum -= dtMilis/40000.0f;
+        msAccum -= dtMilis/4000.0f;
+        
+        auto& playerSO = scene.GetSceneObject(strutils::StringId("PLAYER"))->get();
+        auto& bgSO = scene.GetSceneObject(strutils::StringId("BG"))->get();
+        auto& joystickSO = scene.GetSceneObject(strutils::StringId("JOYSTICK"))->get();
+        auto& joystickBoundsSO = scene.GetSceneObject(strutils::StringId("JOYSTICK_BOUNDS"))->get();
         
         //Handle events on queue
         while( SDL_PollEvent( &e ) != 0 )
@@ -647,8 +578,8 @@ void Game::Run()
                 case SDL_FINGERUP:
                 {
                     playerMotion = false;
-                    player->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
-                    player->SetAwake(false);
+                    playerSO.mBody->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+                    playerSO.mBody->SetAwake(false);
                 } break;
                 case SDL_FINGERMOTION:
                 {
@@ -665,7 +596,7 @@ void Game::Run()
                     //motionVec.Normalize();
                     motionVec.x *= 4.0f * dtMilis/10;
                     motionVec.y *= 4.0f * dtMilis/10;
-                    player->SetLinearVelocity(b2Vec2(motionVec.x, motionVec.y));
+                    playerSO.mBody->SetLinearVelocity(b2Vec2(motionVec.x, motionVec.y));
 
                 } break;
                 default: break;
@@ -681,7 +612,7 @@ void Game::Run()
         
         //scalingFactor -= 0.001 * interFrameMilis;
         
-        attractionPoint = std::make_unique<b2Vec2>(player->GetWorldCenter());
+        attractionPoint = std::make_unique<b2Vec2>(playerSO.mBody->GetWorldCenter());
         if (attractionPoint)
         {
             for (auto* body: boxes)
@@ -709,64 +640,29 @@ void Game::Run()
   
         for (auto* body: cl.bodiesToRemove)
         {
+            strutils::StringId bodyNameTag;
+            bodyNameTag.fromAddress(body);
+            
             bullets.erase(body);
             boxes.erase(body);
             health.erase(body);
+            scene.RemoveSceneObjectWithNameTag(bodyNameTag);
             world.DestroyBody(body);
-            
         }
         cl.bodiesToRemove.clear();
         
-        
-        // Set View Port
-        GL_CALL(glViewport(0, 0, windowWidth, windowHeight));
-           
-        // Set background color
-        GL_CALL(glClearColor
-        (
-            0x11/255.0f,
-            0x13/255.0f,
-            0x22/255.0f,
-            1.0f
-        ));
+        bgSO.mShaderFloatUniformValues[strutils::StringId("texoffset")] = msAccum;
+                
+        joystickSO.mInvisible = !playerMotion;
+        joystickBoundsSO.mInvisible = !playerMotion;
 
-        
-        // Clear buffers
-        GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
-        
-        
-        GL_CALL(glBindVertexArray(resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(gMesh).GetVertexArrayObject()));
-        
-        renderSpaceBackground(msAccum, guiCam);
-        
-        //renderB2DBox(groundBody);
-        bool log = false;
-        for (auto* body: boxes)
-        {
-            renderB2DBox(body, cam);
-            log = false;
-        }
-        
-        for (auto* body: bullets)
-        {
-            renderB2DBullet(body, cam);
-            log = false;
-        }
-        
-        renderPlayer(player, cam);
-        
-        for (auto* body: walls)
-        {
-            renderInvisibleWall(body, cam);
-        }
-        
         if (playerMotion)
         {
-            renderJoystick(b2Vec2(joyStickPos.x, joyStickPos.y), b2Vec2(playerMotionInitPos.x, playerMotionInitPos.y), guiCam);
+            joystickSO.mCustomPosition = glm::vec3(joyStickPos.x, joyStickPos.y, 0.0f);
+            joystickBoundsSO.mCustomPosition = glm::vec3(playerMotionInitPos.x, playerMotionInitPos.y, 0.0f);
         }
-        
-        // Swap window buffers
-        GL_CALL(SDL_GL_SwapWindow(window));
+
+        scene.RenderScene();
     }
 }
 

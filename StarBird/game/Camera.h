@@ -17,6 +17,7 @@
 class Camera final
 {
 public:
+    Camera() = default;
     Camera(float windowWidth, float windowHeight, float cameraLenseHeight);
     
     void RecalculateMatrices();
