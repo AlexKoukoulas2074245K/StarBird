@@ -52,7 +52,7 @@ std::optional<std::reference_wrapper<const SceneObject>> Scene::GetSceneObject(c
 
 void Scene::AddSceneObject(SceneObject&& sceneObject)
 {
-    mSceneObjects.emplace_back(sceneObject);
+    mSceneObjectsToAdd.emplace_back(sceneObject);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -77,6 +77,9 @@ void Scene::UpdateScene()
         assert(sizeBefore = sizeNow + 1);
     }
     mNameTagsOfSceneObjectsToRemove.clear();
+    
+    mSceneObjects.insert(mSceneObjects.end(), mSceneObjectsToAdd.begin(), mSceneObjectsToAdd.end());
+    mSceneObjectsToAdd.clear();
 }
 
 ///------------------------------------------------------------------------------------------------

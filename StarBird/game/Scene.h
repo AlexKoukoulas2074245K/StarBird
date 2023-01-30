@@ -34,6 +34,7 @@ public:
     
 private:
     std::vector<SceneObject> mSceneObjects;
+    std::vector<SceneObject> mSceneObjectsToAdd;
     std::vector<strutils::StringId> mNameTagsOfSceneObjectsToRemove;
     SceneRenderer mSceneRenderer;
 };

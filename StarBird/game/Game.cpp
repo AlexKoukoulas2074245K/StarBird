@@ -7,6 +7,7 @@
 
 #include "Camera.h"
 #include "Game.h"
+#include "RepeatableFlow.h"
 #include "Scene.h"
 
 #include "../utils/Logging.h"
@@ -148,51 +149,6 @@ bool Game::LoadAssets()
 ///------------------------------------------------------------------------------------------------
 
 std::unordered_map<b2Body*, int> health;
-
-class RepeatableFlow
-{
-public:
-    enum class RepeatPolicy
-    {
-        ONCE, REPEAT
-    };
-    
-    using CallbackT = std::function<void()>;
-    
-    RepeatableFlow(CallbackT callback, float afterMs, RepeatPolicy repeatPolicy):
-          callback_(callback)
-        , targetDuration_(afterMs)
-        , ticksLeft_(afterMs)
-        , repeatPolicy_(repeatPolicy)
-        , isRunning_(true)
-    {}
-    
-    void update(float dt)
-    {
-        if (!isRunning_) return;
-        
-        ticksLeft_ -= dt;
-        if (ticksLeft_ <= 0.0f)
-        {
-            callback_();
-            if (repeatPolicy_ == RepeatPolicy::REPEAT)
-            {
-                ticksLeft_ = targetDuration_;
-            }
-            else
-            {
-                isRunning_ = false;
-            }
-        }
-    }
-    
-private:
-    CallbackT callback_;
-    float targetDuration_;
-    float ticksLeft_;
-    RepeatPolicy repeatPolicy_;
-    bool isRunning_;
-};
 
 static constexpr uint16 ENEMY_CATEGORY_BIT  = 0x1;
 static constexpr uint16 BULLET_CATEGORY_BIT = 0x2;
@@ -525,10 +481,13 @@ void Game::Run()
     
     flows.emplace_back([&]()
     {
-        SceneObject so;
-        createBox(&world, so);
-        boxes.insert(so.mBody);
-        scene.AddSceneObject(std::move(so));
+        for (int i = 0; i < 20; ++i)
+        {
+            SceneObject so;
+            createBox(&world, so);
+            boxes.insert(so.mBody);
+            scene.AddSceneObject(std::move(so));
+        }
     }, 600.0f, RepeatableFlow::RepeatPolicy::REPEAT);
     
     //float timeStep = 1.0f / 60.0f;
@@ -561,10 +520,10 @@ void Game::Run()
         static float msAccum = 0.0f;
         msAccum -= dtMilis/4000.0f;
         
-        auto& playerSO = scene.GetSceneObject(strutils::StringId("PLAYER"))->get();
-        auto& bgSO = scene.GetSceneObject(strutils::StringId("BG"))->get();
-        auto& joystickSO = scene.GetSceneObject(strutils::StringId("JOYSTICK"))->get();
-        auto& joystickBoundsSO = scene.GetSceneObject(strutils::StringId("JOYSTICK_BOUNDS"))->get();
+        auto playerSO = scene.GetSceneObject(strutils::StringId("PLAYER"));
+        auto bgSO = scene.GetSceneObject(strutils::StringId("BG"));
+        auto joystickSO = scene.GetSceneObject(strutils::StringId("JOYSTICK"));
+        auto joystickBoundsSO = scene.GetSceneObject(strutils::StringId("JOYSTICK_BOUNDS"));
         
         //Handle events on queue
         while( SDL_PollEvent( &e ) != 0 )
@@ -586,8 +545,13 @@ void Game::Run()
                 case SDL_FINGERUP:
                 {
                     playerMotion = false;
-                    playerSO.mBody->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
-                    playerSO.mBody->SetAwake(false);
+                    
+                    if (playerSO)
+                    {
+                        playerSO->get().mBody->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+                        playerSO->get().mBody->SetAwake(false);
+                    }
+                    
                 } break;
                 case SDL_FINGERMOTION:
                 {
@@ -604,8 +568,11 @@ void Game::Run()
                     //motionVec.Normalize();
                     motionVec.x *= 4.0f * dtMilis/10;
                     motionVec.y *= 4.0f * dtMilis/10;
-                    playerSO.mBody->SetLinearVelocity(b2Vec2(motionVec.x, motionVec.y));
-
+                    
+                    if (playerSO)
+                    {
+                        playerSO->get().mBody->SetLinearVelocity(b2Vec2(motionVec.x, motionVec.y));
+                    }
                 } break;
                 default: break;
             }
@@ -613,14 +580,18 @@ void Game::Run()
         
         if (secsAccumulator > 1.0f)
         {
-            Log(LogType::INFO, "FPS: %d", framesAccumulator);
+            Log(LogType::INFO, "FPS: %d Body count %d", framesAccumulator, world.GetBodyCount());
             framesAccumulator = 0;
             secsAccumulator = 0.0f;
         }
         
         //scalingFactor -= 0.001 * interFrameMilis;
         
-        attractionPoint = std::make_unique<b2Vec2>(playerSO.mBody->GetWorldCenter());
+        if (playerSO)
+        {
+            attractionPoint = std::make_unique<b2Vec2>(playerSO->get().mBody->GetWorldCenter());
+        }
+        
         if (attractionPoint)
         {
             for (auto* body: boxes)
@@ -659,15 +630,24 @@ void Game::Run()
         }
         cl.bodiesToRemove.clear();
         
-        bgSO.mShaderFloatUniformValues[strutils::StringId("texoffset")] = msAccum;
-                
-        joystickSO.mInvisible = !playerMotion;
-        joystickBoundsSO.mInvisible = !playerMotion;
+        if (bgSO)
+        {
+            bgSO->get().mShaderFloatUniformValues[strutils::StringId("texoffset")] = msAccum;
+        }
+        
+        if (joystickSO)
+        {
+            joystickSO->get().mInvisible = !playerMotion;
+            joystickBoundsSO->get().mInvisible = !playerMotion;
+        }
 
         if (playerMotion)
         {
-            joystickSO.mCustomPosition = glm::vec3(joyStickPos.x, joyStickPos.y, 2.0f);
-            joystickBoundsSO.mCustomPosition = glm::vec3(playerMotionInitPos.x, playerMotionInitPos.y, 1.0f);
+            if (joystickSO)
+            {
+                joystickSO->get().mCustomPosition = glm::vec3(joyStickPos.x, joyStickPos.y, 2.0f);
+                joystickBoundsSO->get().mCustomPosition = glm::vec3(playerMotionInitPos.x, playerMotionInitPos.y, 1.0f);
+            }
         }
         
         scene.UpdateScene();
