@@ -9,6 +9,7 @@
 #include "../resloading/MeshResource.h"
 #include "../resloading/ShaderResource.h"
 #include "../resloading/TextureResource.h"
+#include "../utils/Logging.h"
 #include "../utils/OpenGL.h"
 
 #include <Box2D/Box2D.h>
@@ -47,8 +48,11 @@ void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects)
     // Set background color
     GL_CALL(glClearColor(1.0f, 1.0f, 1.0f, 1.0f));
     
+    GL_CALL(glEnable(GL_DEPTH_TEST));
+    GL_CALL(glEnable(GL_BLEND));
+    
     // Clear buffers
-    GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
+    GL_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     
     // Reusability optimisation
     resources::ResourceId currentMeshReourceId = resources::ResourceId();
@@ -86,7 +90,7 @@ void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects)
         // If a b2Body is active then take its transform
         if (so.mBody)
         {
-            world = glm::translate(world, glm::vec3(so.mBody->GetWorldCenter().x, so.mBody->GetWorldCenter().y, 0.0f));
+            world = glm::translate(world, glm::vec3(so.mBody->GetWorldCenter().x, so.mBody->GetWorldCenter().y, so.mCustomPosition.z));
             
             //world = glm::rotate(world, so.mCustomRotation);
             const auto& shape = dynamic_cast<const b2PolygonShape&>(*so.mBody->GetFixtureList()->GetShape());

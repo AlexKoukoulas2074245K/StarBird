@@ -59,24 +59,24 @@ void Scene::AddSceneObject(SceneObject&& sceneObject)
 
 void Scene::RemoveAllSceneObjectsWithNameTag(const strutils::StringId& nameTag)
 {
-    mSceneObjects.erase(std::remove_if(mSceneObjects.begin(), mSceneObjects.end(), [&](const SceneObject& so)
-    {
-        return so.mNameTag == nameTag;
-    }), mSceneObjects.end());
+    mNameTagsOfSceneObjectsToRemove.push_back(nameTag);
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void Scene::RemoveSceneObjectWithNameTag(const strutils::StringId& nameTag)
+void Scene::UpdateScene()
 {
-    auto sizeBefore = mSceneObjects.size();
-    mSceneObjects.erase(std::remove_if(mSceneObjects.begin(), mSceneObjects.end(), [&](const SceneObject& so)
+    for (const auto& nameTag: mNameTagsOfSceneObjectsToRemove)
     {
-        return so.mNameTag == nameTag;
-    }), mSceneObjects.end());
-    auto sizeNow = mSceneObjects.size();
-    
-    assert(sizeBefore = sizeNow + 1);
+        auto sizeBefore = mSceneObjects.size();
+        mSceneObjects.erase(std::remove_if(mSceneObjects.begin(), mSceneObjects.end(), [&](const SceneObject& so)
+        {
+            return so.mNameTag == nameTag;
+        }), mSceneObjects.end());
+        auto sizeNow = mSceneObjects.size();
+        assert(sizeBefore = sizeNow + 1);
+    }
+    mNameTagsOfSceneObjectsToRemove.clear();
 }
 
 ///------------------------------------------------------------------------------------------------

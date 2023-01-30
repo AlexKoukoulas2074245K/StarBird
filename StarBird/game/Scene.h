@@ -28,12 +28,13 @@ public:
     
     void AddSceneObject(SceneObject&& sceneObject);
     void RemoveAllSceneObjectsWithNameTag(const strutils::StringId& nameTag);
-    void RemoveSceneObjectWithNameTag(const strutils::StringId& nameTag);
     
+    void UpdateScene();
     void RenderScene();
     
 private:
     std::vector<SceneObject> mSceneObjects;
+    std::vector<strutils::StringId> mNameTagsOfSceneObjectsToRemove;
     SceneRenderer mSceneRenderer;
 };
 

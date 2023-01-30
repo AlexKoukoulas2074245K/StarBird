@@ -94,6 +94,10 @@ bool Game::InitSystems()
     // Enable texture blending
     GL_CALL(glEnable(GL_BLEND));
     GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    
+    // Enable depth test
+    GL_CALL(glEnable(GL_DEPTH_TEST));
+    GL_CALL(glDepthFunc(GL_LESS));
 
     Log(LogType::INFO, "Vendor     : %s", GL_NO_CHECK_CALL(glGetString(GL_VENDOR)));
     Log(LogType::INFO, "Renderer   : %s", GL_NO_CHECK_CALL(glGetString(GL_RENDERER)));
@@ -145,7 +149,7 @@ bool Game::LoadAssets()
 
 std::unordered_map<b2Body*, int> health;
 
-class DelayedFlow
+class RepeatableFlow
 {
 public:
     enum class RepeatPolicy
@@ -155,7 +159,7 @@ public:
     
     using CallbackT = std::function<void()>;
     
-    DelayedFlow(CallbackT callback, float afterMs, RepeatPolicy repeatPolicy):
+    RepeatableFlow(CallbackT callback, float afterMs, RepeatPolicy repeatPolicy):
           callback_(callback)
         , targetDuration_(afterMs)
         , ticksLeft_(afterMs)
@@ -223,6 +227,7 @@ void createPlayer(b2World* world, SceneObject& so, float x = 0.0f, float y = -10
     so.mTextureResourceId = gPlayerTexture;
     so.mMeshResourceId = gMesh;
     so.mSceneObjectType = SceneObjectType::WorldGameObject;
+    so.mCustomPosition.z = 0.0f;
     so.mNameTag = strutils::StringId("PLAYER");
 }
 
@@ -253,6 +258,7 @@ void createBullet(b2World* world, b2Body* player, SceneObject& so)
     body->CreateFixture(&fixtureDef);
     
     so.mBody = body;
+    so.mCustomPosition.z = -0.5f;
     so.mShaderResourceId = gBasicShader;
     so.mTextureResourceId = gBulletTexture;
     so.mMeshResourceId = gMesh;
@@ -290,6 +296,7 @@ void createBox(b2World* world, SceneObject& so)
     so.mTextureResourceId = gEnemyTexture;
     so.mMeshResourceId = gMesh;
     so.mSceneObjectType = SceneObjectType::WorldGameObject;
+    so.mCustomPosition.z = 0.0f;
     so.mNameTag.fromAddress(so.mBody);
 }
 
@@ -370,6 +377,7 @@ void Game::Run()
     {
         SceneObject bgSO;
         bgSO.mCustomScale = glm::vec3(28.0f, 28.0f, 1.0f);
+        bgSO.mCustomPosition.z = -1.0f;
         bgSO.mMeshResourceId = gMesh;
         bgSO.mShaderResourceId = gTexOffsetShader;
         bgSO.mTextureResourceId = gSpaceBackgroundTexture;
@@ -505,7 +513,7 @@ void Game::Run()
     
 #endif
     
-    std::vector<DelayedFlow> flows;
+    std::vector<RepeatableFlow> flows;
     //int spawnCount = 0;
     flows.emplace_back([&]()
     {
@@ -513,7 +521,7 @@ void Game::Run()
         createBullet(&world, scene.GetSceneObject(strutils::StringId("PLAYER"))->get().mBody, so);
         bullets.insert(so.mBody);
         scene.AddSceneObject(std::move(so));
-    }, 300.0f, DelayedFlow::RepeatPolicy::REPEAT);
+    }, 300.0f, RepeatableFlow::RepeatPolicy::REPEAT);
     
     flows.emplace_back([&]()
     {
@@ -521,7 +529,7 @@ void Game::Run()
         createBox(&world, so);
         boxes.insert(so.mBody);
         scene.AddSceneObject(std::move(so));
-    }, 600.0f, DelayedFlow::RepeatPolicy::REPEAT);
+    }, 600.0f, RepeatableFlow::RepeatPolicy::REPEAT);
     
     //float timeStep = 1.0f / 60.0f;
     int velocityIterations = 6;
@@ -573,7 +581,7 @@ void Game::Run()
                     playerMotion = true;
                     playerMotionInitPos = math::ComputeTouchCoordsInWorldSpace(glm::vec2(windowWidth, windowHeight), glm::vec2(e.tfinger.x, e.tfinger.y), guiCam.GetViewMatrix(), guiCam.GetProjMatrix());
                     joyStickPos = playerMotionInitPos;
-                    printf("SDL_FINGERDOWN: %.2f, %.2f\n", playerMotionInitPos.x, playerMotionInitPos.y);
+                    printf("SDL_FINGERDOWN: %.6f, %.6f\n", playerMotionInitPos.x, playerMotionInitPos.y);
                 } break;
                 case SDL_FINGERUP:
                 {
@@ -646,7 +654,7 @@ void Game::Run()
             bullets.erase(body);
             boxes.erase(body);
             health.erase(body);
-            scene.RemoveSceneObjectWithNameTag(bodyNameTag);
+            scene.RemoveAllSceneObjectsWithNameTag(bodyNameTag);
             world.DestroyBody(body);
         }
         cl.bodiesToRemove.clear();
@@ -658,10 +666,11 @@ void Game::Run()
 
         if (playerMotion)
         {
-            joystickSO.mCustomPosition = glm::vec3(joyStickPos.x, joyStickPos.y, 0.0f);
-            joystickBoundsSO.mCustomPosition = glm::vec3(playerMotionInitPos.x, playerMotionInitPos.y, 0.0f);
+            joystickSO.mCustomPosition = glm::vec3(joyStickPos.x, joyStickPos.y, 2.0f);
+            joystickBoundsSO.mCustomPosition = glm::vec3(playerMotionInitPos.x, playerMotionInitPos.y, 1.0f);
         }
-
+        
+        scene.UpdateScene();
         scene.RenderScene();
     }
 }

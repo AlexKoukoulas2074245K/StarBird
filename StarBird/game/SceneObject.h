@@ -32,15 +32,15 @@ struct SceneObject // 72b
 {
     std::unordered_map<strutils::StringId, float, strutils::StringIdHasher> mShaderFloatUniformValues;
     std::unordered_map<strutils::StringId, glm::mat4, strutils::StringIdHasher> mShaderMat4UniformValues;
-    strutils::StringId mNameTag;
-    b2Body* mBody;
-    glm::vec3 mCustomPosition;
-    glm::vec3 mCustomRotation;
-    glm::vec3 mCustomScale;
-    resources::ResourceId mTextureResourceId;
-    resources::ResourceId mShaderResourceId;
-    resources::ResourceId mMeshResourceId;
-    SceneObjectType mSceneObjectType;
+    strutils::StringId mNameTag = strutils::StringId();
+    b2Body* mBody = nullptr;
+    glm::vec3 mCustomPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 mCustomRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 mCustomScale = glm::vec3(1.0f, 1.0f, 1.0f);
+    resources::ResourceId mTextureResourceId = resources::ResourceId();
+    resources::ResourceId mShaderResourceId = resources::ResourceId();
+    resources::ResourceId mMeshResourceId = resources::ResourceId();
+    SceneObjectType mSceneObjectType = SceneObjectType::WorldGameObject;
     bool mInvisible = false;
 };
 
