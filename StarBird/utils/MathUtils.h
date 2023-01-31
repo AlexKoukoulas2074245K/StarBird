@@ -439,7 +439,7 @@ bool IsPointInsideRectangle(const glm::vec2& rectangleBottomLeft, const glm::vec
 /// @param[in] windowDimensions window dimensions (width, height) in pixels.
 /// @param[in] touchPosition touch position (x, y) in the [0..1] range where 0,0 is the top-left corner.
 /// @returns the touch position in world space.
-glm::vec2 ComputeTouchCoordsInWorldSpace(const glm::vec2& windowDimensions, const glm::vec2& touchPosition, const glm::mat4& viewMatrix, const glm::mat4& projMatrix);
+glm::vec3 ComputeTouchCoordsInWorldSpace(const glm::vec2& windowDimensions, const glm::vec2& touchPosition, const glm::mat4& viewMatrix, const glm::mat4& projMatrix);
 
 
 ///------------------------------------------------------------------------------------------------

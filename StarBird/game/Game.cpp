@@ -7,8 +7,11 @@
 
 #include "Camera.h"
 #include "Game.h"
+#include "InputContext.h"
+#include "PhysicsConstants.h"
 #include "RepeatableFlow.h"
 #include "Scene.h"
+#include "SceneObjectConstants.h"
 
 #include "../utils/Logging.h"
 #include "../utils/MathUtils.h"
@@ -141,19 +144,12 @@ bool Game::LoadAssets()
     
     gTexOffsetShader = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + "texoffset.vs");
     
-    gMesh = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + "cube.obj");
+    gMesh = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + "quad.obj");
     
     return true;
 }
 
 ///------------------------------------------------------------------------------------------------
-
-std::unordered_map<b2Body*, int> health;
-
-static constexpr uint16 ENEMY_CATEGORY_BIT  = 0x1;
-static constexpr uint16 BULLET_CATEGORY_BIT = 0x2;
-static constexpr uint16 PLAYER_CATEGORY_BIT = 0x4;
-static constexpr uint16 WALL_CATEGORY_BIT = 0x8;
 
 void createPlayer(b2World* world, SceneObject& so, float x = 0.0f, float y = -10.0f)
 {
@@ -172,19 +168,20 @@ void createPlayer(b2World* world, SceneObject& so, float x = 0.0f, float y = -10
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
     fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.9f;
+    fixtureDef.friction = 0.0f;
     fixtureDef.restitution = 0.0f;
     fixtureDef.filter.categoryBits = PLAYER_CATEGORY_BIT;
-    fixtureDef.filter.maskBits &= (~PLAYER_CATEGORY_BIT);
+    fixtureDef.filter.maskBits &= (~(PLAYER_CATEGORY_BIT) | ENEMY_CATEGORY_BIT);
     body->CreateFixture(&fixtureDef);
     
     so.mBody = body;
     so.mShaderResourceId = gBasicShader;
     so.mTextureResourceId = gPlayerTexture;
     so.mMeshResourceId = gMesh;
-    so.mSceneObjectType = SceneObjectType::WorldGameObject;
+    so.mSceneObjectType = SceneObjectType::GameObject;
     so.mCustomPosition.z = 0.0f;
-    so.mNameTag = strutils::StringId("PLAYER");
+    so.mNameTag = sceneobject_constants::PLAYER_SCENE_OBJECT_NAME;
+    so.mObjectFamilyTypeName = strutils::StringId("player");
 }
 
 void createBullet(b2World* world, b2Body* player, SceneObject& so)
@@ -205,11 +202,11 @@ void createBullet(b2World* world, b2Body* player, SceneObject& so)
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
     fixtureDef.density = 0.1f;
-    fixtureDef.friction = 0.9f;
+    fixtureDef.friction = 0.0f;
     fixtureDef.restitution = 0.0f;
-    fixtureDef.filter.categoryBits = BULLET_CATEGORY_BIT;
+    fixtureDef.filter.categoryBits = PLAYER_BULLET_CATEGORY_BIT;
     fixtureDef.filter.maskBits &= (~PLAYER_CATEGORY_BIT);
-    fixtureDef.filter.maskBits &= (~BULLET_CATEGORY_BIT);
+    fixtureDef.filter.maskBits &= (~PLAYER_BULLET_CATEGORY_BIT);
     
     body->CreateFixture(&fixtureDef);
     
@@ -218,41 +215,7 @@ void createBullet(b2World* world, b2Body* player, SceneObject& so)
     so.mShaderResourceId = gBasicShader;
     so.mTextureResourceId = gBulletTexture;
     so.mMeshResourceId = gMesh;
-    so.mSceneObjectType = SceneObjectType::WorldGameObject;
-    so.mNameTag.fromAddress(so.mBody);
-}
-
-void createBox(b2World* world, SceneObject& so)
-{
-    b2BodyDef bodyDef;
-    bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(math::RandomFloat(-5.0f, 5.0f), math::RandomFloat(12.0f, 16.0f));
-    b2Body* body = world->CreateBody(&bodyDef);
-    body->SetLinearDamping(10.0f);
-    
-    b2PolygonShape dynamicBox;
-    
-    auto& enemyTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(gEnemyTexture);
-    
-    float textureAspect = enemyTexture.GetDimensions().x/enemyTexture.GetDimensions().y;
-    dynamicBox.SetAsBox(1.0f, 1.0f/textureAspect);
-    
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &dynamicBox;
-    fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.9f;
-    fixtureDef.restitution = 0.0f;
-    fixtureDef.filter.categoryBits = ENEMY_CATEGORY_BIT;
-    body->CreateFixture(&fixtureDef);
-    
-    health[body] = 2;
-    
-    so.mBody = body;
-    so.mShaderResourceId = gBasicShader;
-    so.mTextureResourceId = gEnemyTexture;
-    so.mMeshResourceId = gMesh;
-    so.mSceneObjectType = SceneObjectType::WorldGameObject;
-    so.mCustomPosition.z = 0.0f;
+    so.mSceneObjectType = SceneObjectType::GameObject;
     so.mNameTag.fromAddress(so.mBody);
 }
 
@@ -261,51 +224,71 @@ void createBox(b2World* world, SceneObject& so)
 #define B_WALL
 void Game::Run()
 {
-    Scene scene;
     b2World world(b2Vec2(0.0f, 0.0f));
+    Scene scene(world);
+    scene.LoadLevel("test_level");
     
     class ContactListener : public b2ContactListener
     {
     public:
+        ContactListener(Scene& scene): mScene(scene) {}
+        
         void BeginContact(b2Contact* contact) override
         {
             const auto catA = contact->GetFixtureA()->GetFilterData().categoryBits;
             const auto catB = contact->GetFixtureB()->GetFilterData().categoryBits;
             
-            if (catA == ENEMY_CATEGORY_BIT && catB == BULLET_CATEGORY_BIT)
+            if (catA == ENEMY_CATEGORY_BIT && catB == PLAYER_BULLET_CATEGORY_BIT)
             {
+                strutils::StringId bodyAddressTag;
+                bodyAddressTag.fromAddress(contact->GetFixtureA()->GetBody());
+                auto sceneObject = mScene.GetSceneObject(bodyAddressTag);
                 
-                if (health[contact->GetFixtureA()->GetBody()] == 1)
+                if (sceneObject)
                 {
-                    bodiesToRemove.insert(contact->GetFixtureA()->GetBody());
-                }
-                else
-                {
-                    health[contact->GetFixtureA()->GetBody()]--;
+                    if (sceneObject->get().mHealth <= 1)
+                    {
+                        mScene.RemoveAllSceneObjectsWithNameTag(bodyAddressTag);
+                    }
+                    else
+                    {
+                        sceneObject->get().mHealth--;
+                    }
                 }
                 
-                bodiesToRemove.insert(contact->GetFixtureB()->GetBody());
+                strutils::StringId bulletAddressTag;
+                bulletAddressTag.fromAddress(contact->GetFixtureB()->GetBody());
+                mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
             }
-            else if (catA == BULLET_CATEGORY_BIT && catB == ENEMY_CATEGORY_BIT)
+            else if (catA == PLAYER_BULLET_CATEGORY_BIT && catB == ENEMY_CATEGORY_BIT)
             {
-                if (health[contact->GetFixtureB()->GetBody()] == 1)
+                strutils::StringId bodyAddressTag;
+                bodyAddressTag.fromAddress(contact->GetFixtureB()->GetBody());
+                auto sceneObject = mScene.GetSceneObject(bodyAddressTag);
+                
+                if (sceneObject)
                 {
-                    bodiesToRemove.insert(contact->GetFixtureB()->GetBody());
-                }
-                else
-                {
-                    health[contact->GetFixtureB()->GetBody()]--;
-
+                    if (sceneObject->get().mHealth <= 1)
+                    {
+                        mScene.RemoveAllSceneObjectsWithNameTag(bodyAddressTag);
+                    }
+                    else
+                    {
+                        sceneObject->get().mHealth--;
+                    }
                 }
                 
-                bodiesToRemove.insert(contact->GetFixtureA()->GetBody());
+                strutils::StringId bulletAddressTag;
+                bulletAddressTag.fromAddress(contact->GetFixtureA()->GetBody());
+                mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
             }
         }
-    
-        std::unordered_set<b2Body*> bodiesToRemove;
+        
+    private:
+        Scene& mScene;
     };
     
-    ContactListener cl;
+    ContactListener cl(scene);
     world.SetContactListener(&cl);
     
     
@@ -327,9 +310,6 @@ void Game::Run()
     groundBody->CreateFixture(&groundBox, 0.0f);
 #endif
     
-    std::unordered_set<b2Body*> boxes;
-    std::unordered_set<b2Body*> bullets;
-    
     {
         SceneObject bgSO;
         bgSO.mCustomScale = glm::vec3(28.0f, 28.0f, 1.0f);
@@ -337,18 +317,9 @@ void Game::Run()
         bgSO.mMeshResourceId = gMesh;
         bgSO.mShaderResourceId = gTexOffsetShader;
         bgSO.mTextureResourceId = gSpaceBackgroundTexture;
-        bgSO.mSceneObjectType = SceneObjectType::GUIGameObject;
-        bgSO.mNameTag = strutils::StringId("BG");
+        bgSO.mSceneObjectType = SceneObjectType::GUIObject;
+        bgSO.mNameTag = sceneobject_constants::BACKGROUND_SCENE_OBJECT_NAME;
         scene.AddSceneObject(std::move(bgSO));
-    }
-    
-    
-    for (int i = 0; i < 10; ++i)
-    {
-        SceneObject so;
-        createBox(&world, so);
-        boxes.insert(so.mBody);
-        scene.AddSceneObject(std::move(so));
     }
     
     {
@@ -370,9 +341,9 @@ void Game::Run()
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &wallShape;
         fixtureDef.density = 10.0f;
-        fixtureDef.friction = 0.9f;
+        fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0.0f;
-        fixtureDef.filter.categoryBits = WALL_CATEGORY_BIT;
+        fixtureDef.filter.categoryBits = LEVEL_BOUNDS_CATEGORY_BIT;
      
         wallBody->CreateFixture(&fixtureDef);
         
@@ -381,7 +352,7 @@ void Game::Run()
         so.mShaderResourceId = gBasicShader;
         so.mTextureResourceId = gInvisWallTexture;
         so.mMeshResourceId = gMesh;
-        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mSceneObjectType = SceneObjectType::GameObject;
         scene.AddSceneObject(std::move(so));
     }
 #endif
@@ -399,9 +370,9 @@ void Game::Run()
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &wallShape;
         fixtureDef.density = 10.0f;
-        fixtureDef.friction = 0.9f;
+        fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0.0f;
-        fixtureDef.filter.categoryBits = WALL_CATEGORY_BIT;
+        fixtureDef.filter.categoryBits = LEVEL_BOUNDS_CATEGORY_BIT;
      
         wallBody->CreateFixture(&fixtureDef);
         
@@ -410,7 +381,7 @@ void Game::Run()
         so.mShaderResourceId = gBasicShader;
         so.mTextureResourceId = gInvisWallTexture;
         so.mMeshResourceId = gMesh;
-        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mSceneObjectType = SceneObjectType::GameObject;
         scene.AddSceneObject(std::move(so));
     }
 #endif
@@ -428,9 +399,9 @@ void Game::Run()
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &wallShape;
         fixtureDef.density = 10.0f;
-        fixtureDef.friction = 0.9f;
+        fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0.0f;
-        fixtureDef.filter.categoryBits = WALL_CATEGORY_BIT;
+        fixtureDef.filter.categoryBits = LEVEL_BOUNDS_CATEGORY_BIT;
      
         wallBody->CreateFixture(&fixtureDef);
         
@@ -439,7 +410,7 @@ void Game::Run()
         so.mShaderResourceId = gBasicShader;
         so.mTextureResourceId = gInvisWallTexture;
         so.mMeshResourceId = gMesh;
-        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mSceneObjectType = SceneObjectType::GameObject;
         scene.AddSceneObject(std::move(so));
     }
     
@@ -448,9 +419,9 @@ void Game::Run()
         joystickSO.mShaderResourceId = gBasicShader;
         joystickSO.mTextureResourceId = gJoystickTexture;
         joystickSO.mMeshResourceId = gMesh;
-        joystickSO.mSceneObjectType = SceneObjectType::GUIGameObject;
+        joystickSO.mSceneObjectType = SceneObjectType::GUIObject;
         joystickSO.mCustomScale = glm::vec3(2.0f, 2.0f, 1.0f);
-        joystickSO.mNameTag = strutils::StringId("JOYSTICK");
+        joystickSO.mNameTag = sceneobject_constants::JOYSTICK_SCENE_OBJECT_NAME;
         joystickSO.mInvisible = true;
         scene.AddSceneObject(std::move(joystickSO));
     }
@@ -460,13 +431,12 @@ void Game::Run()
         joystickBoundsSO.mShaderResourceId = gBasicShader;
         joystickBoundsSO.mTextureResourceId = gJoystickBoundsTexture;
         joystickBoundsSO.mMeshResourceId = gMesh;
-        joystickBoundsSO.mSceneObjectType = SceneObjectType::GUIGameObject;
+        joystickBoundsSO.mSceneObjectType = SceneObjectType::GUIObject;
         joystickBoundsSO.mCustomScale = glm::vec3(4.0f, 4.0f, 1.0f);
-        joystickBoundsSO.mNameTag = strutils::StringId("JOYSTICK_BOUNDS");
+        joystickBoundsSO.mNameTag = sceneobject_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME;
         joystickBoundsSO.mInvisible = true;
         scene.AddSceneObject(std::move(joystickBoundsSO));
     }
-    
 #endif
     
     std::vector<RepeatableFlow> flows;
@@ -474,23 +444,10 @@ void Game::Run()
     flows.emplace_back([&]()
     {
         SceneObject so;
-        createBullet(&world, scene.GetSceneObject(strutils::StringId("PLAYER"))->get().mBody, so);
-        bullets.insert(so.mBody);
+        createBullet(&world, scene.GetSceneObject(sceneobject_constants::PLAYER_SCENE_OBJECT_NAME)->get().mBody, so);
         scene.AddSceneObject(std::move(so));
     }, 300.0f, RepeatableFlow::RepeatPolicy::REPEAT);
     
-    flows.emplace_back([&]()
-    {
-        for (int i = 0; i < 20; ++i)
-        {
-            SceneObject so;
-            createBox(&world, so);
-            boxes.insert(so.mBody);
-            scene.AddSceneObject(std::move(so));
-        }
-    }, 600.0f, RepeatableFlow::RepeatPolicy::REPEAT);
-    
-    //float timeStep = 1.0f / 60.0f;
     int velocityIterations = 6;
     int positionIterations = 2;
     float timeStep = 1.0f / 60.0f;
@@ -499,12 +456,10 @@ void Game::Run()
     auto lastFrameMilisSinceInit = 0.0f;
     auto secsAccumulator         = 0.0f;
     auto framesAccumulator       = 0LL;
-    bool playerMotion            = false;
-    glm::vec2 playerMotionInitPos;
-    glm::vec2 joyStickPos;
     
     std::unique_ptr<b2Vec2> attractionPoint = nullptr;
-    
+    InputContext inputContext = {};
+    inputContext.mLastEventType = SDL_FINGERUP;
     
     //While application is running
     while(!mIsFinished)
@@ -517,13 +472,6 @@ void Game::Run()
         framesAccumulator++;
         secsAccumulator += dtMilis * 0.001f; // dt in seconds;
         
-        static float msAccum = 0.0f;
-        msAccum -= dtMilis/4000.0f;
-        
-        auto playerSO = scene.GetSceneObject(strutils::StringId("PLAYER"));
-        auto bgSO = scene.GetSceneObject(strutils::StringId("BG"));
-        auto joystickSO = scene.GetSceneObject(strutils::StringId("JOYSTICK"));
-        auto joystickBoundsSO = scene.GetSceneObject(strutils::StringId("JOYSTICK_BOUNDS"));
         
         //Handle events on queue
         while( SDL_PollEvent( &e ) != 0 )
@@ -536,43 +484,11 @@ void Game::Run()
                     mIsFinished = true;
                 } break;
                 case SDL_FINGERDOWN:
-                {
-                    playerMotion = true;
-                    playerMotionInitPos = math::ComputeTouchCoordsInWorldSpace(glm::vec2(windowWidth, windowHeight), glm::vec2(e.tfinger.x, e.tfinger.y), guiCam.GetViewMatrix(), guiCam.GetProjMatrix());
-                    joyStickPos = playerMotionInitPos;
-                    printf("SDL_FINGERDOWN: %.6f, %.6f\n", playerMotionInitPos.x, playerMotionInitPos.y);
-                } break;
                 case SDL_FINGERUP:
-                {
-                    playerMotion = false;
-                    
-                    if (playerSO)
-                    {
-                        playerSO->get().mBody->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
-                        playerSO->get().mBody->SetAwake(false);
-                    }
-                    
-                } break;
                 case SDL_FINGERMOTION:
                 {
-                    auto motionVec = math::ComputeTouchCoordsInWorldSpace(glm::vec2(windowWidth, windowHeight), glm::vec2(e.tfinger.x, e.tfinger.y), guiCam.GetViewMatrix(), guiCam.GetProjMatrix()) - playerMotionInitPos;
-                    
-                    glm::vec2 norm = glm::normalize(motionVec);
-                    if (glm::length(motionVec) > glm::length(norm))
-                    {
-                        motionVec = norm;
-                    }
-                    
-                    joyStickPos = playerMotionInitPos + motionVec;
-
-                    //motionVec.Normalize();
-                    motionVec.x *= 4.0f * dtMilis/10;
-                    motionVec.y *= 4.0f * dtMilis/10;
-                    
-                    if (playerSO)
-                    {
-                        playerSO->get().mBody->SetLinearVelocity(b2Vec2(motionVec.x, motionVec.y));
-                    }
+                    inputContext.mLastEventType = e.type;
+                    inputContext.mTouchPos = glm::vec2(e.tfinger.x, e.tfinger.y);
                 } break;
                 default: break;
             }
@@ -584,73 +500,12 @@ void Game::Run()
             framesAccumulator = 0;
             secsAccumulator = 0.0f;
         }
-        
-        //scalingFactor -= 0.001 * interFrameMilis;
-        
-        if (playerSO)
-        {
-            attractionPoint = std::make_unique<b2Vec2>(playerSO->get().mBody->GetWorldCenter());
-        }
-        
-        if (attractionPoint)
-        {
-            for (auto* body: boxes)
-            {
-                b2Vec2 toAttractionPoint = *attractionPoint - body->GetWorldCenter();
 
-                if (toAttractionPoint.Length() < 0.5f)
-                {
-                    body->SetAwake(false);
-                }
-                else
-                {
-                    toAttractionPoint.Normalize();
-                    toAttractionPoint.x *= 30.0f * dtMilis/10;
-                    toAttractionPoint.y *= 30.0f * dtMilis/10;
-                    body->ApplyForceToCenter(toAttractionPoint, true);
-                }
-            }
-        }
-        
-    
         for (auto& flow: flows) flow.update(dtMilis);
         
         world.Step(timeStep, velocityIterations, positionIterations);
-  
-        for (auto* body: cl.bodiesToRemove)
-        {
-            strutils::StringId bodyNameTag;
-            bodyNameTag.fromAddress(body);
-            
-            bullets.erase(body);
-            boxes.erase(body);
-            health.erase(body);
-            scene.RemoveAllSceneObjectsWithNameTag(bodyNameTag);
-            world.DestroyBody(body);
-        }
-        cl.bodiesToRemove.clear();
         
-        if (bgSO)
-        {
-            bgSO->get().mShaderFloatUniformValues[strutils::StringId("texoffset")] = msAccum;
-        }
-        
-        if (joystickSO)
-        {
-            joystickSO->get().mInvisible = !playerMotion;
-            joystickBoundsSO->get().mInvisible = !playerMotion;
-        }
-
-        if (playerMotion)
-        {
-            if (joystickSO)
-            {
-                joystickSO->get().mCustomPosition = glm::vec3(joyStickPos.x, joyStickPos.y, 2.0f);
-                joystickBoundsSO->get().mCustomPosition = glm::vec3(playerMotionInitPos.x, playerMotionInitPos.y, 1.0f);
-            }
-        }
-        
-        scene.UpdateScene();
+        scene.UpdateScene(dtMilis, inputContext);
         scene.RenderScene();
     }
 }

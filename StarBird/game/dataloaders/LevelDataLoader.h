@@ -1,31 +1,32 @@
 ///------------------------------------------------------------------------------------------------
-///  SceneRenderer.h                                                                                          
+///  LevelDataLoader.h                                                                                          
 ///  StarBird                                                                                            
 ///                                                                                                
-///  Created by Alex Koukoulas on 28/01/2023                                                       
+///  Created by Alex Koukoulas on 31/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef SceneRenderer_h
-#define SceneRenderer_h
-
-///------------------------------------------------------------------------------------------------
-
-#include "Camera.h"
-#include "SceneObject.h"
-#include <vector>
-#include <unordered_map>
+#ifndef LevelDataLoader_h
+#define LevelDataLoader_h
 
 ///------------------------------------------------------------------------------------------------
 
-class SceneRenderer final
+#include "BaseGameDataLoader.h"
+#include "LevelDefinition.h"
+
+#include <string>
+
+///------------------------------------------------------------------------------------------------
+
+class LevelDataLoader: public BaseGameDataLoader
 {
 public:
-    SceneRenderer();
-    
-    void Render(const std::vector<SceneObject>& sceneObjects, const std::unordered_map<SceneObjectType, Camera>& sceneObjectTypeToCamera);
-    
+    LevelDataLoader();
+    LevelDefinition& LoadLevel(const std::string& levelName);
+
+private:
+    LevelDefinition mConstructedLevel;
 };
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* SceneRenderer_h */
+#endif /* LevelDataLoader_h */

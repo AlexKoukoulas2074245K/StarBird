@@ -1,31 +1,32 @@
 ///------------------------------------------------------------------------------------------------
-///  SceneRenderer.h                                                                                          
+///  GameObjectDefinitionLoader.h                                                                                          
 ///  StarBird                                                                                            
 ///                                                                                                
-///  Created by Alex Koukoulas on 28/01/2023                                                       
+///  Created by Alex Koukoulas on 31/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef SceneRenderer_h
-#define SceneRenderer_h
-
-///------------------------------------------------------------------------------------------------
-
-#include "Camera.h"
-#include "SceneObject.h"
-#include <vector>
-#include <unordered_map>
+#ifndef GameObjectDefinitionLoader_h
+#define GameObjectDefinitionLoader_h
 
 ///------------------------------------------------------------------------------------------------
 
-class SceneRenderer final
+#include "BaseGameDataLoader.h"
+#include "GameObjectDefinition.h"
+
+#include <string>
+
+///------------------------------------------------------------------------------------------------
+
+class GameObjectDefinitionLoader: public BaseGameDataLoader
 {
 public:
-    SceneRenderer();
-    
-    void Render(const std::vector<SceneObject>& sceneObjects, const std::unordered_map<SceneObjectType, Camera>& sceneObjectTypeToCamera);
-    
+    GameObjectDefinitionLoader();
+    GameObjectDefinition& LoadGameObjectDefinition(const std::string& gameObjectDefinitionFileName);
+
+private:
+    GameObjectDefinition mConstructedGODef;
 };
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* SceneRenderer_h */
+#endif /* GameObjectDefinitionLoader_h */

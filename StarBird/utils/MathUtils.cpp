@@ -146,7 +146,7 @@ bool IsPointInsideRectangle(const glm::vec2& rectangleBottomLeft, const glm::vec
 
 ///------------------------------------------------------------------------------------------------
 
-glm::vec2 ComputeTouchCoordsInWorldSpace(const glm::vec2& windowDimensions, const glm::vec2& touchPosition, const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
+glm::vec3 ComputeTouchCoordsInWorldSpace(const glm::vec2& windowDimensions, const glm::vec2& touchPosition, const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
 {
     const auto& normalizedTouchX =  (touchPosition.x/0.5f - 1.0f);
     const auto& normalizedTouchY = -(touchPosition.y/0.5f - 1.0f);
@@ -154,7 +154,7 @@ glm::vec2 ComputeTouchCoordsInWorldSpace(const glm::vec2& windowDimensions, cons
     const auto& invVP = glm::inverse(projMatrix * viewMatrix);
     const auto& screenPos = glm::vec4(normalizedTouchX, normalizedTouchY, 1.0f, 1.0f);
     const auto& worldPos = invVP * screenPos;
-    return glm::vec2(worldPos.x, worldPos.y);
+    return glm::vec3(worldPos.x, worldPos.y, 0.0f);
 }
 
 ///------------------------------------------------------------------------------------------------

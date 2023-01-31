@@ -1,31 +1,25 @@
 ///------------------------------------------------------------------------------------------------
-///  SceneRenderer.h                                                                                          
+///  PhysicsConstants.h                                                                                          
 ///  StarBird                                                                                            
 ///                                                                                                
-///  Created by Alex Koukoulas on 28/01/2023                                                       
+///  Created by Alex Koukoulas on 31/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef SceneRenderer_h
-#define SceneRenderer_h
-
-///------------------------------------------------------------------------------------------------
-
-#include "Camera.h"
-#include "SceneObject.h"
-#include <vector>
-#include <unordered_map>
+#ifndef PhysicsConstants_h
+#define PhysicsConstants_h
 
 ///------------------------------------------------------------------------------------------------
 
-class SceneRenderer final
-{
-public:
-    SceneRenderer();
-    
-    void Render(const std::vector<SceneObject>& sceneObjects, const std::unordered_map<SceneObjectType, Camera>& sceneObjectTypeToCamera);
-    
-};
+#include <Box2D/Common/b2Settings.h>
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* SceneRenderer_h */
+static constexpr uint16 ENEMY_CATEGORY_BIT  = 0x1;
+static constexpr uint16 ENEMY_BULLET_CATEGORY_BIT = 0x2;
+static constexpr uint16 PLAYER_CATEGORY_BIT = 0x4;
+static constexpr uint16 PLAYER_BULLET_CATEGORY_BIT = 0x8;
+static constexpr uint16 LEVEL_BOUNDS_CATEGORY_BIT = 0x10;
+
+///------------------------------------------------------------------------------------------------
+
+#endif /* PhysicsConstants_h */

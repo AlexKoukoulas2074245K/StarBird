@@ -25,16 +25,11 @@ static const strutils::StringId PROJ_MATRIX_STRING_ID  = strutils::StringId("pro
 
 SceneRenderer::SceneRenderer()
 {
-    auto* window = SDL_GL_GetCurrentWindow();
-    int windowWidth, windowHeight;
-    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
-    mSceneObjectTypeToCamera[SceneObjectType::WorldGameObject] = Camera(windowWidth, windowHeight, 30.0f);
-    mSceneObjectTypeToCamera[SceneObjectType::GUIGameObject] = Camera(windowWidth, windowHeight, 30.0f);
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects)
+void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects, const std::unordered_map<SceneObjectType, Camera>& sceneObjectTypeToCamera)
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
@@ -108,8 +103,8 @@ void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects)
         }
         
         currentShader->SetMatrix4fv(WORLD_MATRIX_STRING_ID, world);
-        currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, mSceneObjectTypeToCamera.at(so.mSceneObjectType).GetViewMatrix());
-        currentShader->SetMatrix4fv(PROJ_MATRIX_STRING_ID, mSceneObjectTypeToCamera.at(so.mSceneObjectType).GetProjMatrix());
+        currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, sceneObjectTypeToCamera.at(so.mSceneObjectType).GetViewMatrix());
+        currentShader->SetMatrix4fv(PROJ_MATRIX_STRING_ID, sceneObjectTypeToCamera.at(so.mSceneObjectType).GetProjMatrix());
         
         for (auto floatEntry: so.mShaderFloatUniformValues)
             currentShader->SetFloat(floatEntry.first, floatEntry.second);

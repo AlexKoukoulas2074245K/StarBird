@@ -1,31 +1,27 @@
 ///------------------------------------------------------------------------------------------------
-///  SceneRenderer.h                                                                                          
+///  InputContext.h                                                                                          
 ///  StarBird                                                                                            
 ///                                                                                                
-///  Created by Alex Koukoulas on 28/01/2023                                                       
+///  Created by Alex Koukoulas on 31/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef SceneRenderer_h
-#define SceneRenderer_h
-
-///------------------------------------------------------------------------------------------------
-
-#include "Camera.h"
-#include "SceneObject.h"
-#include <vector>
-#include <unordered_map>
+#ifndef InputContext_h
+#define InputContext_h
 
 ///------------------------------------------------------------------------------------------------
 
-class SceneRenderer final
+#include "../utils/MathUtils.h"
+
+#include <SDL_events.h>
+
+///------------------------------------------------------------------------------------------------
+
+struct InputContext
 {
-public:
-    SceneRenderer();
-    
-    void Render(const std::vector<SceneObject>& sceneObjects, const std::unordered_map<SceneObjectType, Camera>& sceneObjectTypeToCamera);
-    
+    glm::vec2 mTouchPos;
+    Uint32 mLastEventType;
 };
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* SceneRenderer_h */
+#endif /* InputContext_h */

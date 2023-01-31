@@ -54,6 +54,12 @@
 		9254CC0C2969B79A00EFE0CC /* b2BroadPhase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CBDC2969B79A00EFE0CC /* b2BroadPhase.cpp */; };
 		9254CC0D2969B79A00EFE0CC /* b2CollideEdge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CBDF2969B79A00EFE0CC /* b2CollideEdge.cpp */; };
 		9254CC0E2969B79A00EFE0CC /* b2Collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CBE02969B79A00EFE0CC /* b2Collision.cpp */; };
+		925FD84529883DD80058E747 /* SceneUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD83829883DD80058E747 /* SceneUpdater.cpp */; };
+		925FD85F298916F50058E747 /* license.txt in Resources */ = {isa = PBXBuildFile; fileRef = 925FD85D298916F50058E747 /* license.txt */; };
+		925FD860298916F50058E747 /* manual.html in Resources */ = {isa = PBXBuildFile; fileRef = 925FD85E298916F50058E747 /* manual.html */; };
+		925FD86E29892BE00058E747 /* BaseGameDataLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD86B29892BE00058E747 /* BaseGameDataLoader.cpp */; };
+		925FD86F29892BE00058E747 /* LevelDataLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD86C29892BE00058E747 /* LevelDataLoader.cpp */; };
+		925FD87229893CAF0058E747 /* GameObjectDefinitionLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87129893CAF0058E747 /* GameObjectDefinitionLoader.cpp */; };
 		92A8517B2985704800C99B61 /* SceneRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A8516E2985704800C99B61 /* SceneRenderer.cpp */; };
 		92C2198429842CF500B2D2C6 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198229842CF500B2D2C6 /* Scene.cpp */; };
 		92C2198A29842E6A00B2D2C6 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198829842E6A00B2D2C6 /* Game.cpp */; };
@@ -282,6 +288,26 @@
 		9254CBDE2969B79A00EFE0CC /* b2Distance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2Distance.h; sourceTree = "<group>"; };
 		9254CBDF2969B79A00EFE0CC /* b2CollideEdge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2CollideEdge.cpp; sourceTree = "<group>"; };
 		9254CBE02969B79A00EFE0CC /* b2Collision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Collision.cpp; sourceTree = "<group>"; };
+		925FD83829883DD80058E747 /* SceneUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUpdater.cpp; sourceTree = "<group>"; };
+		925FD84429883DD80058E747 /* SceneUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneUpdater.h; sourceTree = "<group>"; };
+		925FD859298916F50058E747 /* rapidxml_iterators.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_iterators.hpp; sourceTree = "<group>"; };
+		925FD85A298916F50058E747 /* rapidxml_print.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_print.hpp; sourceTree = "<group>"; };
+		925FD85B298916F50058E747 /* rapidxml_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_utils.hpp; sourceTree = "<group>"; };
+		925FD85C298916F50058E747 /* rapidxml.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml.hpp; sourceTree = "<group>"; };
+		925FD85D298916F50058E747 /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
+		925FD85E298916F50058E747 /* manual.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = manual.html; sourceTree = "<group>"; };
+		925FD86429891B370058E747 /* LevelDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LevelDefinition.h; sourceTree = "<group>"; };
+		925FD86729891C390058E747 /* PhysicsConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhysicsConstants.h; sourceTree = "<group>"; };
+		925FD8682989236E0058E747 /* GameObjectDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameObjectDefinition.h; sourceTree = "<group>"; };
+		925FD86A29892BE00058E747 /* BaseGameDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseGameDataLoader.h; sourceTree = "<group>"; };
+		925FD86B29892BE00058E747 /* BaseGameDataLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseGameDataLoader.cpp; sourceTree = "<group>"; };
+		925FD86C29892BE00058E747 /* LevelDataLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LevelDataLoader.cpp; sourceTree = "<group>"; };
+		925FD86D29892BE00058E747 /* LevelDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelDataLoader.h; sourceTree = "<group>"; };
+		925FD87029893CAF0058E747 /* GameObjectDefinitionLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameObjectDefinitionLoader.h; sourceTree = "<group>"; };
+		925FD87129893CAF0058E747 /* GameObjectDefinitionLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameObjectDefinitionLoader.cpp; sourceTree = "<group>"; };
+		925FD873298976B20058E747 /* InputContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputContext.h; sourceTree = "<group>"; };
+		925FD874298981750058E747 /* SceneObjectConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneObjectConstants.h; sourceTree = "<group>"; };
+		925FD8752989AE4F0058E747 /* GameObjectConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameObjectConstants.h; sourceTree = "<group>"; };
 		92A8516E2985704800C99B61 /* SceneRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneRenderer.cpp; sourceTree = "<group>"; };
 		92A8517A2985704800C99B61 /* SceneRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneRenderer.h; sourceTree = "<group>"; };
 		92A8517C298570D200C99B61 /* SceneObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneObject.h; sourceTree = "<group>"; };
@@ -900,19 +926,55 @@
 			path = Shapes;
 			sourceTree = "<group>";
 		};
+		925FD858298916F50058E747 /* rapidxml */ = {
+			isa = PBXGroup;
+			children = (
+				925FD859298916F50058E747 /* rapidxml_iterators.hpp */,
+				925FD85A298916F50058E747 /* rapidxml_print.hpp */,
+				925FD85B298916F50058E747 /* rapidxml_utils.hpp */,
+				925FD85C298916F50058E747 /* rapidxml.hpp */,
+				925FD85D298916F50058E747 /* license.txt */,
+				925FD85E298916F50058E747 /* manual.html */,
+			);
+			name = rapidxml;
+			path = ThirdParty/rapidxml;
+			sourceTree = "<group>";
+		};
+		925FD86929892BE00058E747 /* dataloaders */ = {
+			isa = PBXGroup;
+			children = (
+				925FD86A29892BE00058E747 /* BaseGameDataLoader.h */,
+				925FD86B29892BE00058E747 /* BaseGameDataLoader.cpp */,
+				925FD87129893CAF0058E747 /* GameObjectDefinitionLoader.cpp */,
+				925FD87029893CAF0058E747 /* GameObjectDefinitionLoader.h */,
+				925FD86C29892BE00058E747 /* LevelDataLoader.cpp */,
+				925FD86D29892BE00058E747 /* LevelDataLoader.h */,
+			);
+			path = dataloaders;
+			sourceTree = "<group>";
+		};
 		92C2198129842CF500B2D2C6 /* game */ = {
 			isa = PBXGroup;
 			children = (
+				925FD86929892BE00058E747 /* dataloaders */,
 				92C2198B2984395800B2D2C6 /* Camera.cpp */,
 				92C2198C2984395800B2D2C6 /* Camera.h */,
 				92C2198829842E6A00B2D2C6 /* Game.cpp */,
 				92C2198929842E6A00B2D2C6 /* Game.h */,
+				925FD8752989AE4F0058E747 /* GameObjectConstants.h */,
+				925FD8682989236E0058E747 /* GameObjectDefinition.h */,
+				925FD873298976B20058E747 /* InputContext.h */,
+				925FD86429891B370058E747 /* LevelDefinition.h */,
+				925FD86729891C390058E747 /* PhysicsConstants.h */,
 				92A8517E2988318E00C99B61 /* RepeatableFlow.h */,
 				92C2198229842CF500B2D2C6 /* Scene.cpp */,
 				92C2198329842CF500B2D2C6 /* Scene.h */,
 				92A8517C298570D200C99B61 /* SceneObject.h */,
+				925FD874298981750058E747 /* SceneObjectConstants.h */,
 				92A8516E2985704800C99B61 /* SceneRenderer.cpp */,
 				92A8517A2985704800C99B61 /* SceneRenderer.h */,
+				925FD83829883DD80058E747 /* SceneUpdater.cpp */,
+				925FD84429883DD80058E747 /* SceneUpdater.h */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -920,6 +982,7 @@
 		92C8514D2969A7CA0021923F = {
 			isa = PBXGroup;
 			children = (
+				925FD858298916F50058E747 /* rapidxml */,
 				92E96A6C29805C9D004A3120 /* glm */,
 				92C851902969A8D00021923F /* SDL.xcodeproj */,
 				9254CB7B2969B79A00EFE0CC /* Box2D */,
@@ -1652,6 +1715,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				925FD860298916F50058E747 /* manual.html in Resources */,
+				925FD85F298916F50058E747 /* license.txt in Resources */,
 				92C851C72969ACB20021923F /* res in Resources */,
 				92C8516C2969A7CB0021923F /* LaunchScreen.storyboard in Resources */,
 				92C851692969A7CB0021923F /* Assets.xcassets in Resources */,
@@ -1694,8 +1759,10 @@
 				9254CBE32969B79A00EFE0CC /* b2Fixture.cpp in Sources */,
 				9254CBFB2969B79A00EFE0CC /* b2ContactManager.cpp in Sources */,
 				9254CBF82969B79A00EFE0CC /* b2PulleyJoint.cpp in Sources */,
+				925FD86E29892BE00058E747 /* BaseGameDataLoader.cpp in Sources */,
 				92C2198429842CF500B2D2C6 /* Scene.cpp in Sources */,
 				92DAA4C629829A4C0062A438 /* ResourceLoadingService.cpp in Sources */,
+				925FD84529883DD80058E747 /* SceneUpdater.cpp in Sources */,
 				92DAA4DC29829B380062A438 /* MathUtils.cpp in Sources */,
 				9254CC0D2969B79A00EFE0CC /* b2CollideEdge.cpp in Sources */,
 				9254CC012969B79A00EFE0CC /* b2StackAllocator.cpp in Sources */,
@@ -1710,6 +1777,7 @@
 				9254CC0A2969B79A00EFE0CC /* b2PolygonShape.cpp in Sources */,
 				9254CBF92969B79A00EFE0CC /* b2RopeJoint.cpp in Sources */,
 				9254CBE92969B79A00EFE0CC /* b2ContactSolver.cpp in Sources */,
+				925FD86F29892BE00058E747 /* LevelDataLoader.cpp in Sources */,
 				92C851BA2969A9D70021923F /* main.cpp in Sources */,
 				9254CBEA2969B79A00EFE0CC /* b2CircleContact.cpp in Sources */,
 				92DAA4CE29829A4C0062A438 /* DataFileLoader.cpp in Sources */,
@@ -1724,6 +1792,7 @@
 				9254CBF32969B79A00EFE0CC /* b2MotorJoint.cpp in Sources */,
 				9254CC0C2969B79A00EFE0CC /* b2BroadPhase.cpp in Sources */,
 				9254CC082969B79A00EFE0CC /* b2EdgeShape.cpp in Sources */,
+				925FD87229893CAF0058E747 /* GameObjectDefinitionLoader.cpp in Sources */,
 				9254CBEC2969B79A00EFE0CC /* b2Contact.cpp in Sources */,
 				9254CC042969B79A00EFE0CC /* b2CollideCircle.cpp in Sources */,
 				9254CBEF2969B79A00EFE0CC /* b2MouseJoint.cpp in Sources */,
@@ -1911,6 +1980,7 @@
 					"\"$(SRCROOT)/ThirdParty/SDL-source/include\"",
 					"\"$(SRCROOT)/ThirdParty/Box2D\"",
 					"\"$(SRCROOT)/ThirdParty/glm\"",
+					"\"$(SRCROOT)/ThirdParty/rapidxml\"",
 				);
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -1944,6 +2014,7 @@
 					"\"$(SRCROOT)/ThirdParty/SDL-source/include\"",
 					"\"$(SRCROOT)/ThirdParty/Box2D\"",
 					"\"$(SRCROOT)/ThirdParty/glm\"",
+					"\"$(SRCROOT)/ThirdParty/rapidxml\"",
 				);
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;

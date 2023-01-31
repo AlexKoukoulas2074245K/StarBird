@@ -1,31 +1,27 @@
 ///------------------------------------------------------------------------------------------------
-///  SceneRenderer.h                                                                                          
+///  GameObjectConstants.h                                                                                          
 ///  StarBird                                                                                            
 ///                                                                                                
-///  Created by Alex Koukoulas on 28/01/2023                                                       
+///  Created by Alex Koukoulas on 31/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef SceneRenderer_h
-#define SceneRenderer_h
-
-///------------------------------------------------------------------------------------------------
-
-#include "Camera.h"
-#include "SceneObject.h"
-#include <vector>
-#include <unordered_map>
+#ifndef GameObjectConstants_h
+#define GameObjectConstants_h
 
 ///------------------------------------------------------------------------------------------------
 
-class SceneRenderer final
+namespace gameobject_constants
 {
-public:
-    SceneRenderer();
-    
-    void Render(const std::vector<SceneObject>& sceneObjects, const std::unordered_map<SceneObjectType, Camera>& sceneObjectTypeToCamera);
-    
-};
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* SceneRenderer_h */
+static const float JOYSTICK_Z = 1.0f;
+static const float JOYSTICK_BOUNDS_Z = 2.0f;
+
+///------------------------------------------------------------------------------------------------
+
+}
+
+///------------------------------------------------------------------------------------------------
+
+#endif /* GameObjectConstants_h */

@@ -23,16 +23,17 @@ class b2Body;
 
 enum class SceneObjectType
 {
-    WorldGameObject, GUIGameObject
+    GameObject, GUIObject
 };
 
 ///------------------------------------------------------------------------------------------------
 
-struct SceneObject // 72b
+struct SceneObject // 208b
 {
+    strutils::StringId mObjectFamilyTypeName = strutils::StringId();
+    strutils::StringId mNameTag = strutils::StringId();
     std::unordered_map<strutils::StringId, float, strutils::StringIdHasher> mShaderFloatUniformValues;
     std::unordered_map<strutils::StringId, glm::mat4, strutils::StringIdHasher> mShaderMat4UniformValues;
-    strutils::StringId mNameTag = strutils::StringId();
     b2Body* mBody = nullptr;
     glm::vec3 mCustomPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 mCustomRotation = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -40,7 +41,8 @@ struct SceneObject // 72b
     resources::ResourceId mTextureResourceId = resources::ResourceId();
     resources::ResourceId mShaderResourceId = resources::ResourceId();
     resources::ResourceId mMeshResourceId = resources::ResourceId();
-    SceneObjectType mSceneObjectType = SceneObjectType::WorldGameObject;
+    SceneObjectType mSceneObjectType = SceneObjectType::GameObject;
+    long mHealth = 0;
     bool mInvisible = false;
 };
 
