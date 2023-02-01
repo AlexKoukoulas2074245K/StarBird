@@ -131,6 +131,18 @@ void SceneUpdater::SetLevelProperties(LevelDefinition&& levelDef)
                 bulletAddressTag.fromAddress(contact->GetFixtureA()->GetBody());
                 mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
             }
+            else if (catA == physics_constants::PLAYER_BULLET_CATEGORY_BIT && catB == physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT)
+            {
+                strutils::StringId bulletAddressTag;
+                bulletAddressTag.fromAddress(contact->GetFixtureA()->GetBody());
+                mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
+            }
+            else if (catB == physics_constants::PLAYER_BULLET_CATEGORY_BIT && catA == physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT)
+            {
+                strutils::StringId bulletAddressTag;
+                bulletAddressTag.fromAddress(contact->GetFixtureB()->GetBody());
+                mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
+            }
         }
         
     private:

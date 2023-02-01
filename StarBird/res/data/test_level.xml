@@ -3,20 +3,28 @@
     <Camera type="world_cam" lenseHeight="30.0f"/>
     <Camera type="gui_cam" lenseHeight="30.0f"/>
     <Wave>
-        <Enemy position="-2.0f, 20.0f" type="test_enemy"/>
-        <Enemy position=" 2.0f, 20.0f" type="test_enemy"/>
+        <Enemy position="-2.0f, 20.0f" type="test_enemy_vertical"/>
+        <Enemy position=" 2.0f, 20.0f" type="test_enemy_vertical"/>
         
-        <Enemy position="-3.0f, 22.0f" type="test_enemy"/>
-        <Enemy position=" 0.0f, 22.0f" type="test_enemy"/>
-        <Enemy position=" 3.0f, 22.0f" type="test_enemy"/>
+        <Enemy position="-3.0f, 22.0f" type="test_enemy_vertical"/>
+        <Enemy position=" 0.0f, 22.0f" type="test_enemy_vertical"/>
+        <Enemy position=" 3.0f, 22.0f" type="test_enemy_vertical"/>
+        
+        <Enemy position="-5.0f, 24.0f" type="test_enemy_vertical"/>
+        <Enemy position="-3.0f, 24.0f" type="test_enemy_vertical"/>
+        <Enemy position="-1.0f, 24.0f" type="test_enemy_vertical"/>
+        <Enemy position=" 0.0f, 24.0f" type="test_enemy_vertical"/>
+        <Enemy position=" 1.0f, 24.0f" type="test_enemy_vertical"/>
+        <Enemy position=" 3.0f, 24.0f" type="test_enemy_vertical"/>
+        <Enemy position=" 5.0f, 24.0f" type="test_enemy_vertical"/>
     </Wave>
     
     <Wave>
-        <Enemy position="-5.0f, 20.0f" type="test_enemy"/>
-        <Enemy position=" 5.0f, 20.0f" type="test_enemy"/>
+        <Enemy position="-5.0f, 20.0f" type="test_enemy_vertical"/>
+        <Enemy position=" 5.0f, 20.0f" type="test_enemy_vertical"/>
         
-        <Enemy position="-5.0f, 22.0f" type="test_enemy"/>
-        <Enemy position=" 0.0f, 22.0f" type="test_enemy"/>
-        <Enemy position=" 5.0f, 22.0f" type="test_enemy"/>
+        <Enemy position="-5.0f, 22.0f" type="test_enemy_vertical"/>
+        <Enemy position=" 0.0f, 22.0f" type="test_enemy_vertical"/>
+        <Enemy position=" 5.0f, 22.0f" type="test_enemy_vertical"/>
     </Wave>
 </Level>

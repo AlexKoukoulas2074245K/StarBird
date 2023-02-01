@@ -139,6 +139,8 @@ void Scene::LoadLevel(const std::string& levelName)
         fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0.0f;
         fixtureDef.filter = enemyDef.mContactFilter;
+        fixtureDef.filter.maskBits &= (~physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
+        fixtureDef.filter.maskBits &= (~physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT);
         body->CreateFixture(&fixtureDef);
         
         SceneObject so;
@@ -246,7 +248,7 @@ void Scene::LoadLevelInvariantObjects()
         fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0.0f;
         fixtureDef.filter.categoryBits = physics_constants::PLAYER_CATEGORY_BIT;
-        fixtureDef.filter.maskBits &= (~(physics_constants::PLAYER_CATEGORY_BIT) | physics_constants::ENEMY_CATEGORY_BIT);
+        fixtureDef.filter.maskBits &= ~(physics_constants::PLAYER_BULLET_CATEGORY_BIT);
         body->CreateFixture(&fixtureDef);
         
         playerSO.mBody = body;
@@ -282,7 +284,7 @@ void Scene::LoadLevelInvariantObjects()
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0.0f;
-        fixtureDef.filter.categoryBits = physics_constants::WALLS_CATEGORY_BIT;
+        fixtureDef.filter.categoryBits = physics_constants::GLOBAL_WALL_CATEGORY_BIT;
      
         wallBody->CreateFixture(&fixtureDef);
         
@@ -310,7 +312,7 @@ void Scene::LoadLevelInvariantObjects()
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0.0f;
-        fixtureDef.filter.categoryBits = physics_constants::WALLS_CATEGORY_BIT;
+        fixtureDef.filter.categoryBits = physics_constants::GLOBAL_WALL_CATEGORY_BIT;
      
         wallBody->CreateFixture(&fixtureDef);
         
@@ -323,7 +325,7 @@ void Scene::LoadLevelInvariantObjects()
         AddSceneObject(std::move(so));
     }
 
-    // B_WALL
+    // PLAYER_ONLY_BOT_WALL
     {
         b2BodyDef wallBodyDef;
         wallBodyDef.position.Set(0.0f, -worldCam.GetCameraLenseHeight()/2 + 1.0f);
@@ -338,7 +340,35 @@ void Scene::LoadLevelInvariantObjects()
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0.0f;
-        fixtureDef.filter.categoryBits = physics_constants::WALLS_CATEGORY_BIT;
+        fixtureDef.filter.categoryBits = physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT;
+     
+        wallBody->CreateFixture(&fixtureDef);
+        
+        SceneObject so;
+        so.mBody = wallBody;
+        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
+        so.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::WALLS_TEXTURE_FILE_NAME);
+        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        AddSceneObject(std::move(so));
+    }
+    
+    // BULLET_TOP_WALL
+    {
+        b2BodyDef wallBodyDef;
+        wallBodyDef.position.Set(0.0f, worldCam.GetCameraLenseHeight()/2 + 1.0f);
+        
+        b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
+
+        b2PolygonShape wallShape;
+        wallShape.SetAsBox(worldCam.GetCameraLenseWidth()/2.0, 1.0f);
+        
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &wallShape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.0f;
+        fixtureDef.restitution = 0.0f;
+        fixtureDef.filter.categoryBits = physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT;
      
         wallBody->CreateFixture(&fixtureDef);
         

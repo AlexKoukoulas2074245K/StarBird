@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ObjectDefinition>
+    <Physics density="1.0f" bodySize="1.0f" linearDamping="0.0f" customLinearVelocity="0.0f, -1.0f" speed="3.0f" category="enemy" collidingWithPlayerBullets="true" collidingWithEnemies="true" collidingWithPlayer="true"/>
+    <Shader name="basic"/>
+    <Model name="quad"/>
+    <Texture name="enemy"/>
+    <GameAttributes movementControllerPattern="custom_velocity" health="20"/>
+</ObjectDefinition>
