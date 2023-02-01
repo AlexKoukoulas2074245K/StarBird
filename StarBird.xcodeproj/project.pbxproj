@@ -62,6 +62,8 @@
 		925FD87229893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87129893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp */; };
 		925FD878298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD877298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp */; };
 		925FD87B298AAF570058E747 /* GameSingletons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD879298AAF570058E747 /* GameSingletons.cpp */; };
+		925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */; };
+		925FD880298AD7D50058E747 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925FD87F298AD7D50058E747 /* AudioToolbox.framework */; };
 		92A8517B2985704800C99B61 /* SceneRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A8516E2985704800C99B61 /* SceneRenderer.cpp */; };
 		92C2198429842CF500B2D2C6 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198229842CF500B2D2C6 /* Scene.cpp */; };
 		92C2198A29842E6A00B2D2C6 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198829842E6A00B2D2C6 /* Game.cpp */; };
@@ -314,6 +316,9 @@
 		925FD877298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectTypeDefinitionRepository.cpp; sourceTree = "<group>"; };
 		925FD879298AAF570058E747 /* GameSingletons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameSingletons.cpp; sourceTree = "<group>"; };
 		925FD87A298AAF570058E747 /* GameSingletons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSingletons.h; sourceTree = "<group>"; };
+		925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ObjectiveCUtils.mm; sourceTree = "<group>"; };
+		925FD87D298AD7050058E747 /* ObjectiveCUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjectiveCUtils.h; sourceTree = "<group>"; };
+		925FD87F298AD7D50058E747 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		92A8516E2985704800C99B61 /* SceneRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneRenderer.cpp; sourceTree = "<group>"; };
 		92A8517A2985704800C99B61 /* SceneRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneRenderer.h; sourceTree = "<group>"; };
 		92A8517C298570D200C99B61 /* SceneObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneObject.h; sourceTree = "<group>"; };
@@ -745,6 +750,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				925FD880298AD7D50058E747 /* AudioToolbox.framework in Frameworks */,
 				9254CA512969B35800EFE0CC /* SDL2.framework in Frameworks */,
 				92E96A6B29803597004A3120 /* OpenGLES.framework in Frameworks */,
 			);
@@ -985,6 +991,8 @@
 				92A8517A2985704800C99B61 /* SceneRenderer.h */,
 				925FD83829883DD80058E747 /* SceneUpdater.cpp */,
 				925FD84429883DD80058E747 /* SceneUpdater.h */,
+				925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */,
+				925FD87D298AD7050058E747 /* ObjectiveCUtils.h */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -1067,6 +1075,7 @@
 		92C851B42969A95A0021923F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				925FD87F298AD7D50058E747 /* AudioToolbox.framework */,
 				92E96A5F29803597004A3120 /* OpenGLES.framework */,
 				92C852012969B2920021923F /* libbox2d.a */,
 			);
@@ -1811,6 +1820,7 @@
 				9254CBF12969B79A00EFE0CC /* b2DistanceJoint.cpp in Sources */,
 				9254CC092969B79A00EFE0CC /* b2CircleShape.cpp in Sources */,
 				9254CC052969B79A00EFE0CC /* b2CollidePolygon.cpp in Sources */,
+				925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */,
 				9254CBEB2969B79A00EFE0CC /* b2EdgeAndCircleContact.cpp in Sources */,
 				92DAA4CC29829A4C0062A438 /* DataFileResource.cpp in Sources */,
 				9254CC032969B79A00EFE0CC /* b2Distance.cpp in Sources */,
