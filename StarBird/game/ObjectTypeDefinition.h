@@ -1,12 +1,12 @@
 ///------------------------------------------------------------------------------------------------
-///  GameObjectDefinition.h                                                                                          
+///  ObjectTypeDefinition.h
 ///  StarBird                                                                                            
 ///                                                                                                
 ///  Created by Alex Koukoulas on 31/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef GameObjectDefinition_h
-#define GameObjectDefinition_h
+#ifndef ObjectTypeDefinition_h
+#define ObjectTypeDefinition_h
 
 ///------------------------------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ enum class MovementControllerPattern
 
 ///------------------------------------------------------------------------------------------------
 
-struct GameObjectDefinition
+struct ObjectTypeDefinition
 {
     strutils::StringId mName = strutils::StringId();
     long mHealth = 0;
@@ -38,9 +38,8 @@ struct GameObjectDefinition
     float mSize = 0.0f;
     float mLinearDamping = 0.0f;
     MovementControllerPattern mMovementControllerPattern = MovementControllerPattern::NONE;
-    
 };
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* GameObjectDefinition_h */
+#endif /* ObjectTypeDefinition_h */

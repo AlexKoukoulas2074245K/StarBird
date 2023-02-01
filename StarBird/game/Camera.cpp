@@ -6,6 +6,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "Camera.h"
+#include "GameSingletons.h"
 
 ///------------------------------------------------------------------------------------------------
 
@@ -19,11 +20,12 @@ const float Camera::DEFAULT_CAMERA_ZOOM_FACTOR = 16.0f/14.0f;
 
 ///------------------------------------------------------------------------------------------------
 
-Camera::Camera(float windowWidth, float windowHeight, float cameraLenseHeight)
+Camera::Camera(float cameraLenseHeight)
     : mPosition(DEFAULT_CAMERA_POSITION)
     , mZoomFactor(DEFAULT_CAMERA_ZOOM_FACTOR)
 {
-    float aspect = windowWidth/windowHeight;
+    const auto& windowDimensions = GameSingletons::GetWindowDimensions();
+    float aspect = windowDimensions.x/windowDimensions.y;
     mCameraLenseWidth = cameraLenseHeight * aspect;
     mCameraLenseHeight = cameraLenseHeight;
     RecalculateMatrices();

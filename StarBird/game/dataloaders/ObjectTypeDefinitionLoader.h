@@ -1,32 +1,32 @@
 ///------------------------------------------------------------------------------------------------
-///  GameObjectDefinitionLoader.h                                                                                          
+///  ObjectTypeDefinitionLoader.h
 ///  StarBird                                                                                            
 ///                                                                                                
 ///  Created by Alex Koukoulas on 31/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef GameObjectDefinitionLoader_h
-#define GameObjectDefinitionLoader_h
+#ifndef ObjectTypeDefinitionLoader_h
+#define ObjectTypeDefinitionLoader_h
 
 ///------------------------------------------------------------------------------------------------
 
 #include "BaseGameDataLoader.h"
-#include "GameObjectDefinition.h"
+#include "ObjectTypeDefinition.h"
 
 #include <string>
 
 ///------------------------------------------------------------------------------------------------
 
-class GameObjectDefinitionLoader: public BaseGameDataLoader
+class ObjectTypeDefinitionLoader: public BaseGameDataLoader
 {
 public:
-    GameObjectDefinitionLoader();
-    GameObjectDefinition& LoadGameObjectDefinition(const std::string& gameObjectDefinitionFileName);
+    ObjectTypeDefinitionLoader();
+    ObjectTypeDefinition& LoadObjectTypeDefinition(const std::string& objectTypeDefinitionFileName);
 
 private:
-    GameObjectDefinition mConstructedGODef;
+    ObjectTypeDefinition mConstructedObjectTypeDef;
 };
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* GameObjectDefinitionLoader_h */
+#endif /* ObjectTypeDefinitionLoader_h */

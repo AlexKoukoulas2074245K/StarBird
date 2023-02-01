@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Level>
+    <Camera type="world_cam" lenseHeight="30.0f"/>
+    <Camera type="gui_cam" lenseHeight="30.0f"/>
     <Wave>
         <Enemy position="-2.0f, 20.0f" type="test_enemy"/>
         <Enemy position=" 2.0f, 20.0f" type="test_enemy"/>

@@ -10,14 +10,14 @@
 
 ///------------------------------------------------------------------------------------------------
 
-#include "Camera.h"
-#include "InputContext.h"
 #include "SceneObject.h"
 #include "SceneUpdater.h"
 #include "SceneRenderer.h"
 #include "../utils/StringUtils.h"
 
+#include <optional>
 #include <vector>
+#include <Box2D/Box2D.h>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -25,7 +25,9 @@ class b2World;
 class Scene final
 {
 public:
-    Scene(b2World& world);
+    Scene();
+    
+    int GetBodyCount() const;
     
     std::optional<std::reference_wrapper<SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectNameTag);
     std::optional<std::reference_wrapper<const SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectNameTag) const;
@@ -35,15 +37,17 @@ public:
 
     void LoadLevel(const std::string& levelName);
     
-    void UpdateScene(const float dtMilis, const InputContext& inputContext);
+    void UpdateScene(const float dtMilis);
     void RenderScene();
     
 private:
-    b2World& mWorld;
+    void LoadLevelInvariantObjects();
+    
+private:
+    b2World mBox2dWorld;
     std::vector<SceneObject> mSceneObjects;
     std::vector<SceneObject> mSceneObjectsToAdd;
     std::vector<strutils::StringId> mNameTagsOfSceneObjectsToRemove;
-    std::unordered_map<SceneObjectType, Camera> mSceneObjectTypeToCamera;
     SceneUpdater mSceneUpdater;
     SceneRenderer mSceneRenderer;
     bool mPreFirstUpdate;

@@ -18,7 +18,6 @@ public:
     
 private:
     bool InitSystems();
-    bool LoadAssets();
     void Run();
     
 private:

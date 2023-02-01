@@ -59,7 +59,9 @@
 		925FD860298916F50058E747 /* manual.html in Resources */ = {isa = PBXBuildFile; fileRef = 925FD85E298916F50058E747 /* manual.html */; };
 		925FD86E29892BE00058E747 /* BaseGameDataLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD86B29892BE00058E747 /* BaseGameDataLoader.cpp */; };
 		925FD86F29892BE00058E747 /* LevelDataLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD86C29892BE00058E747 /* LevelDataLoader.cpp */; };
-		925FD87229893CAF0058E747 /* GameObjectDefinitionLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87129893CAF0058E747 /* GameObjectDefinitionLoader.cpp */; };
+		925FD87229893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87129893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp */; };
+		925FD878298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD877298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp */; };
+		925FD87B298AAF570058E747 /* GameSingletons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD879298AAF570058E747 /* GameSingletons.cpp */; };
 		92A8517B2985704800C99B61 /* SceneRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A8516E2985704800C99B61 /* SceneRenderer.cpp */; };
 		92C2198429842CF500B2D2C6 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198229842CF500B2D2C6 /* Scene.cpp */; };
 		92C2198A29842E6A00B2D2C6 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198829842E6A00B2D2C6 /* Game.cpp */; };
@@ -298,16 +300,20 @@
 		925FD85E298916F50058E747 /* manual.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = manual.html; sourceTree = "<group>"; };
 		925FD86429891B370058E747 /* LevelDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LevelDefinition.h; sourceTree = "<group>"; };
 		925FD86729891C390058E747 /* PhysicsConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhysicsConstants.h; sourceTree = "<group>"; };
-		925FD8682989236E0058E747 /* GameObjectDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameObjectDefinition.h; sourceTree = "<group>"; };
+		925FD8682989236E0058E747 /* ObjectTypeDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjectTypeDefinition.h; sourceTree = "<group>"; };
 		925FD86A29892BE00058E747 /* BaseGameDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseGameDataLoader.h; sourceTree = "<group>"; };
 		925FD86B29892BE00058E747 /* BaseGameDataLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseGameDataLoader.cpp; sourceTree = "<group>"; };
 		925FD86C29892BE00058E747 /* LevelDataLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LevelDataLoader.cpp; sourceTree = "<group>"; };
 		925FD86D29892BE00058E747 /* LevelDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelDataLoader.h; sourceTree = "<group>"; };
-		925FD87029893CAF0058E747 /* GameObjectDefinitionLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameObjectDefinitionLoader.h; sourceTree = "<group>"; };
-		925FD87129893CAF0058E747 /* GameObjectDefinitionLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameObjectDefinitionLoader.cpp; sourceTree = "<group>"; };
+		925FD87029893CAF0058E747 /* ObjectTypeDefinitionLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectTypeDefinitionLoader.h; sourceTree = "<group>"; };
+		925FD87129893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectTypeDefinitionLoader.cpp; sourceTree = "<group>"; };
 		925FD873298976B20058E747 /* InputContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputContext.h; sourceTree = "<group>"; };
 		925FD874298981750058E747 /* SceneObjectConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneObjectConstants.h; sourceTree = "<group>"; };
 		925FD8752989AE4F0058E747 /* GameObjectConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameObjectConstants.h; sourceTree = "<group>"; };
+		925FD876298AA8C80058E747 /* ObjectTypeDefinitionRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectTypeDefinitionRepository.h; sourceTree = "<group>"; };
+		925FD877298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectTypeDefinitionRepository.cpp; sourceTree = "<group>"; };
+		925FD879298AAF570058E747 /* GameSingletons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameSingletons.cpp; sourceTree = "<group>"; };
+		925FD87A298AAF570058E747 /* GameSingletons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSingletons.h; sourceTree = "<group>"; };
 		92A8516E2985704800C99B61 /* SceneRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneRenderer.cpp; sourceTree = "<group>"; };
 		92A8517A2985704800C99B61 /* SceneRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneRenderer.h; sourceTree = "<group>"; };
 		92A8517C298570D200C99B61 /* SceneObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneObject.h; sourceTree = "<group>"; };
@@ -945,8 +951,8 @@
 			children = (
 				925FD86A29892BE00058E747 /* BaseGameDataLoader.h */,
 				925FD86B29892BE00058E747 /* BaseGameDataLoader.cpp */,
-				925FD87129893CAF0058E747 /* GameObjectDefinitionLoader.cpp */,
-				925FD87029893CAF0058E747 /* GameObjectDefinitionLoader.h */,
+				925FD87129893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp */,
+				925FD87029893CAF0058E747 /* ObjectTypeDefinitionLoader.h */,
 				925FD86C29892BE00058E747 /* LevelDataLoader.cpp */,
 				925FD86D29892BE00058E747 /* LevelDataLoader.h */,
 			);
@@ -962,7 +968,11 @@
 				92C2198829842E6A00B2D2C6 /* Game.cpp */,
 				92C2198929842E6A00B2D2C6 /* Game.h */,
 				925FD8752989AE4F0058E747 /* GameObjectConstants.h */,
-				925FD8682989236E0058E747 /* GameObjectDefinition.h */,
+				925FD879298AAF570058E747 /* GameSingletons.cpp */,
+				925FD87A298AAF570058E747 /* GameSingletons.h */,
+				925FD8682989236E0058E747 /* ObjectTypeDefinition.h */,
+				925FD877298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp */,
+				925FD876298AA8C80058E747 /* ObjectTypeDefinitionRepository.h */,
 				925FD873298976B20058E747 /* InputContext.h */,
 				925FD86429891B370058E747 /* LevelDefinition.h */,
 				925FD86729891C390058E747 /* PhysicsConstants.h */,
@@ -1792,8 +1802,9 @@
 				9254CBF32969B79A00EFE0CC /* b2MotorJoint.cpp in Sources */,
 				9254CC0C2969B79A00EFE0CC /* b2BroadPhase.cpp in Sources */,
 				9254CC082969B79A00EFE0CC /* b2EdgeShape.cpp in Sources */,
-				925FD87229893CAF0058E747 /* GameObjectDefinitionLoader.cpp in Sources */,
+				925FD87229893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp in Sources */,
 				9254CBEC2969B79A00EFE0CC /* b2Contact.cpp in Sources */,
+				925FD878298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp in Sources */,
 				9254CC042969B79A00EFE0CC /* b2CollideCircle.cpp in Sources */,
 				9254CBEF2969B79A00EFE0CC /* b2MouseJoint.cpp in Sources */,
 				9254CBFA2969B79A00EFE0CC /* b2Island.cpp in Sources */,
@@ -1806,6 +1817,7 @@
 				9254CBE12969B79A00EFE0CC /* b2Body.cpp in Sources */,
 				9254CBFD2969B79A00EFE0CC /* b2Draw.cpp in Sources */,
 				9254CBF02969B79A00EFE0CC /* b2FrictionJoint.cpp in Sources */,
+				925FD87B298AAF570058E747 /* GameSingletons.cpp in Sources */,
 				9254CBF22969B79A00EFE0CC /* b2WheelJoint.cpp in Sources */,
 				9254CBE72969B79A00EFE0CC /* b2PolygonAndCircleContact.cpp in Sources */,
 				9254CBF52969B79A00EFE0CC /* b2GearJoint.cpp in Sources */,

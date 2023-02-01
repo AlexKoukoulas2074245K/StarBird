@@ -23,7 +23,7 @@ class b2Body;
 
 enum class SceneObjectType
 {
-    GameObject, GUIObject
+    WorldGameObject, GUIObject
 };
 
 ///------------------------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ struct SceneObject // 208b
     resources::ResourceId mTextureResourceId = resources::ResourceId();
     resources::ResourceId mShaderResourceId = resources::ResourceId();
     resources::ResourceId mMeshResourceId = resources::ResourceId();
-    SceneObjectType mSceneObjectType = SceneObjectType::GameObject;
+    SceneObjectType mSceneObjectType = SceneObjectType::WorldGameObject;
     long mHealth = 0;
     bool mInvisible = false;
 };

@@ -26,6 +26,14 @@ struct LevelEnemy
 
 ///------------------------------------------------------------------------------------------------
 
+struct LevelCamera
+{
+    strutils::StringId mType = strutils::StringId();
+    float mLenseHeight = 0.0f;
+};
+
+///------------------------------------------------------------------------------------------------
+
 struct LevelWave
 {
     std::vector<LevelEnemy> mEnemies;
@@ -38,6 +46,7 @@ struct LevelDefinition
     strutils::StringId mLevelName = strutils::StringId();
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> mEnemyTypes;
     std::vector<LevelWave> mWaves;
+    std::vector<LevelCamera> mCameras;
 };
 
 ///------------------------------------------------------------------------------------------------

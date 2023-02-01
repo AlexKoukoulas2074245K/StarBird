@@ -22,7 +22,7 @@ class SceneRenderer final
 public:
     SceneRenderer();
     
-    void Render(const std::vector<SceneObject>& sceneObjects, const std::unordered_map<SceneObjectType, Camera>& sceneObjectTypeToCamera);
+    void Render(const std::vector<SceneObject>& sceneObjects);
     
 };
 

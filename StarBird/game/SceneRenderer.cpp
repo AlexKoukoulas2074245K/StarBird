@@ -5,6 +5,7 @@
 ///  Created by Alex Koukoulas on 28/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
+#include "GameSingletons.h"
 #include "SceneRenderer.h"
 #include "../resloading/MeshResource.h"
 #include "../resloading/ShaderResource.h"
@@ -29,16 +30,14 @@ SceneRenderer::SceneRenderer()
 
 ///------------------------------------------------------------------------------------------------
 
-void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects, const std::unordered_map<SceneObjectType, Camera>& sceneObjectTypeToCamera)
+void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects)
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
-    auto* window = SDL_GL_GetCurrentWindow();
-    int windowWidth, windowHeight;
-    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+    const auto& windowDimensions = GameSingletons::GetWindowDimensions();
     
     // Set View Port
-    GL_CALL(glViewport(0, 0, windowWidth, windowHeight));
+    GL_CALL(glViewport(0, 0, windowDimensions.x, windowDimensions.y));
        
     // Set background color
     GL_CALL(glClearColor(1.0f, 1.0f, 1.0f, 1.0f));
@@ -102,9 +101,13 @@ void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects, const s
             world = glm::scale(world, so.mCustomScale);
         }
         
+        const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(so.mSceneObjectType);
+        assert(camOpt);
+        const auto& camera = camOpt->get();
+        
         currentShader->SetMatrix4fv(WORLD_MATRIX_STRING_ID, world);
-        currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, sceneObjectTypeToCamera.at(so.mSceneObjectType).GetViewMatrix());
-        currentShader->SetMatrix4fv(PROJ_MATRIX_STRING_ID, sceneObjectTypeToCamera.at(so.mSceneObjectType).GetProjMatrix());
+        currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, camera.GetViewMatrix());
+        currentShader->SetMatrix4fv(PROJ_MATRIX_STRING_ID, camera.GetProjMatrix());
         
         for (auto floatEntry: so.mShaderFloatUniformValues)
             currentShader->SetFloat(floatEntry.first, floatEntry.second);
@@ -115,7 +118,7 @@ void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects, const s
     }
     
     // Swap window buffers
-    GL_CALL(SDL_GL_SwapWindow(window));
+    GL_CALL(SDL_GL_SwapWindow(GameSingletons::GetWindow()));
 }
 
 ///------------------------------------------------------------------------------------------------
