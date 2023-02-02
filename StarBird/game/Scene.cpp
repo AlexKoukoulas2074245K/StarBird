@@ -14,6 +14,7 @@
 #include "dataloaders/LevelDataLoader.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../resloading/TextureResource.h"
+#include "../utils/Logging.h"
 
 #include <algorithm>
 #include <Box2D/Box2D.h>
@@ -128,7 +129,7 @@ void Scene::LoadLevel(const std::string& levelName)
         body->SetLinearDamping(enemyDef.mLinearDamping);
         
         b2PolygonShape dynamicBox;
-        auto& enemyTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(enemyDef.mTextureResourceId);
+        auto& enemyTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(enemyDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId);
         
         float textureAspect = enemyTexture.GetDimensions().x/enemyTexture.GetDimensions().y;
         dynamicBox.SetAsBox(enemyDef.mSize, enemyDef.mSize/textureAspect);
@@ -149,10 +150,11 @@ void Scene::LoadLevel(const std::string& levelName)
         so.mHealth = enemyDef.mHealth;
         
         so.mShaderResourceId = enemyDef.mShaderResourceId;
-        so.mTextureResourceId = enemyDef.mTextureResourceId;
+        so.mTextureResourceId = enemyDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId;
         so.mMeshResourceId = enemyDef.mMeshResourceId;
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mCustomPosition.z = 0.0f;
+        so.mUseBodyForRendering = true;
         
         strutils::StringId nameTag;
         nameTag.fromAddress(so.mBody);
@@ -171,6 +173,11 @@ void Scene::LoadLevel(const std::string& levelName)
 void Scene::UpdateScene(const float dtMilis)
 {
     mPreFirstUpdate = false;
+    
+    mSceneUpdater.Update(mSceneObjects, dtMilis);
+    
+    mBox2dWorld.Step(physics_constants::WORLD_STEP, physics_constants::WORLD_VELOCITY_ITERATIONS, physics_constants::WORLD_POSITION_ITERATIONS);
+    
     for (const auto& nameTag: mNameTagsOfSceneObjectsToRemove)
     {
         auto iter = std::find_if(mSceneObjects.begin(), mSceneObjects.end(), [&](const SceneObject& so)
@@ -191,10 +198,6 @@ void Scene::UpdateScene(const float dtMilis)
     
     mSceneObjects.insert(mSceneObjects.end(), mSceneObjectsToAdd.begin(), mSceneObjectsToAdd.end());
     mSceneObjectsToAdd.clear();
-    
-    mSceneUpdater.Update(mSceneObjects, dtMilis);
-    
-    mBox2dWorld.Step(physics_constants::WORLD_STEP, physics_constants::WORLD_VELOCITY_ITERATIONS, physics_constants::WORLD_POSITION_ITERATIONS);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -259,6 +262,7 @@ void Scene::LoadLevelInvariantObjects()
         playerSO.mCustomPosition.z = 0.0f;
         playerSO.mNameTag = sceneobject_constants::PLAYER_SCENE_OBJECT_NAME;
         playerSO.mObjectFamilyTypeName = strutils::StringId("player");
+        playerSO.mUseBodyForRendering = true;
         
         ObjectTypeDefinitionRepository::GetInstance().LoadObjectTypeDefinition(playerSO.mObjectFamilyTypeName);
         
@@ -291,9 +295,10 @@ void Scene::LoadLevelInvariantObjects()
         SceneObject so;
         so.mBody = wallBody;
         so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        so.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::WALLS_TEXTURE_FILE_NAME);
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mUseBodyForRendering = true;
+        
         AddSceneObject(std::move(so));
     }
     
@@ -319,9 +324,10 @@ void Scene::LoadLevelInvariantObjects()
         SceneObject so;
         so.mBody = wallBody;
         so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        so.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::WALLS_TEXTURE_FILE_NAME);
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mUseBodyForRendering = true;
+        
         AddSceneObject(std::move(so));
     }
 
@@ -347,9 +353,10 @@ void Scene::LoadLevelInvariantObjects()
         SceneObject so;
         so.mBody = wallBody;
         so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        so.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::WALLS_TEXTURE_FILE_NAME);
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mUseBodyForRendering = true;
+        
         AddSceneObject(std::move(so));
     }
     
@@ -375,9 +382,10 @@ void Scene::LoadLevelInvariantObjects()
         SceneObject so;
         so.mBody = wallBody;
         so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        so.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::WALLS_TEXTURE_FILE_NAME);
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mUseBodyForRendering = true;
+        
         AddSceneObject(std::move(so));
     }
     

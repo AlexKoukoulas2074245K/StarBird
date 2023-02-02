@@ -28,7 +28,9 @@ public:
         , mIsRunning(true)
     {}
     
-    void update(float dt)
+    bool IsRunning() const { return mIsRunning; }
+    
+    void Update(float dt)
     {
         if (!mIsRunning) return;
         

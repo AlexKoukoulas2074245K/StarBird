@@ -13,8 +13,9 @@
 #include "IResource.h"
 #include "../utils/MathUtils.h"
 
+#include <memory>
 #include <SDL_stdinc.h>
-#include <SDL_surface.h>
+#include <vector>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -24,6 +25,30 @@ namespace resources
 ///------------------------------------------------------------------------------------------------
 
 using GLuint = unsigned int;
+
+///------------------------------------------------------------------------------------------------
+
+struct SheetElementMetadata
+{
+    float minU;
+    float minV;
+    float maxU;
+    float maxV;
+};
+
+///------------------------------------------------------------------------------------------------
+
+struct SheetRowMetadata
+{
+    std::vector<SheetElementMetadata> mColMetadata;
+};
+
+///------------------------------------------------------------------------------------------------
+
+struct SheetMetadata
+{
+    std::vector<SheetRowMetadata> mRowMetadata;
+};
 
 ///------------------------------------------------------------------------------------------------
 
@@ -37,23 +62,25 @@ public:
     GLuint GetGLTextureId() const;
     const glm::vec2& GetDimensions() const;
     
+    SheetMetadata* GetSheetMetadata() const;
+    
 private:
     TextureResource
     (
-        SDL_Surface* const surface,
         const int width, 
         const int height,
         const int mode,
         const int format,
-        GLuint glTextureId
+        GLuint glTextureId,
+        std::unique_ptr<SheetMetadata> sheetMetadata
     );
     
 private:
-    SDL_Surface* mSurface;
     glm::vec2 mDimensions;
     int mMode;
     int mFormat;
     GLuint mGLTextureId;
+    std::unique_ptr<SheetMetadata> mSheetMetadata;
 };
 
 ///------------------------------------------------------------------------------------------------

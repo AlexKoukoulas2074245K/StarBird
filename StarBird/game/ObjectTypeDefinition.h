@@ -10,10 +10,13 @@
 
 ///------------------------------------------------------------------------------------------------
 
+#include "Animation.h"
 #include "../utils/MathUtils.h"
 #include "../utils/StringUtils.h"
 #include "../resloading/ResourceLoadingService.h"
+
 #include <Box2D/Dynamics/b2Fixture.h>
+#include <unordered_map>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -30,7 +33,7 @@ struct ObjectTypeDefinition
     long mHealth = 0;
     resources::ResourceId mShaderResourceId = resources::ResourceId();
     resources::ResourceId mMeshResourceId = resources::ResourceId();
-    resources::ResourceId mTextureResourceId = resources::ResourceId();
+    std::unordered_map<strutils::StringId, Animation, strutils::StringIdHasher> mAnimations;
     b2Filter mContactFilter;
     glm::vec2 mCustomLinearVelocity = glm::vec2(0.0f, 0.0f);
     float mSpeed = 0.0f;

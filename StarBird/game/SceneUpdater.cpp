@@ -15,6 +15,7 @@
 #include "ObjectTypeDefinitionRepository.h"
 #include "../utils/Logging.h"
 #include "../resloading/ResourceLoadingService.h"
+#include "../resloading/ShaderResource.h"
 #include "../resloading/TextureResource.h"
 
 #include <Box2D/Box2D.h>
@@ -24,6 +25,7 @@
 SceneUpdater::SceneUpdater(Scene& scene, b2World& box2dWorld)
     : mScene(scene)
     , mBox2dWorld(box2dWorld)
+    , mAllowInputControl(false)
 {
 }
 
@@ -44,7 +46,7 @@ void SceneUpdater::SetLevelProperties(LevelDefinition&& levelDef)
             bodyDef.position = playerOpt->get().mBody->GetWorldCenter();
             bodyDef.bullet =  true;
             b2Body* body = mBox2dWorld.CreateBody(&bodyDef);
-            body->SetLinearVelocity(b2Vec2(0.0f, 8.0f));
+            body->SetLinearVelocity(b2Vec2(0.0f, 16.0f));
             b2PolygonShape dynamicBox;
             
             auto& resService = resources::ResourceLoadingService::GetInstance();
@@ -72,7 +74,8 @@ void SceneUpdater::SetLevelProperties(LevelDefinition&& levelDef)
             so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
             so.mSceneObjectType = SceneObjectType::WorldGameObject;
             so.mNameTag.fromAddress(so.mBody);
-
+            so.mUseBodyForRendering = true;
+            
             mScene.AddSceneObject(std::move(so));
         }
     }, 300.0f, RepeatableFlow::RepeatPolicy::REPEAT);
@@ -80,7 +83,10 @@ void SceneUpdater::SetLevelProperties(LevelDefinition&& levelDef)
     class ContactListener : public b2ContactListener
     {
     public:
-        ContactListener(Scene& scene): mScene(scene) {}
+        ContactListener(Scene& scene, SceneUpdater& sceneUpdater, std::vector<RepeatableFlow>& flows)
+            : mScene(scene)
+            , mSceneUpdater(sceneUpdater)
+            , mFlows(flows) {}
         
         void BeginContact(b2Contact* contact) override
         {
@@ -97,7 +103,29 @@ void SceneUpdater::SetLevelProperties(LevelDefinition&& levelDef)
                 {
                     if (sceneObject->get().mHealth <= 1)
                     {
-                        mScene.RemoveAllSceneObjectsWithNameTag(bodyAddressTag);
+                        sceneObject->get().mStateName = strutils::StringId("dying");
+                        sceneObject->get().mUseBodyForRendering = false;
+                        sceneObject->get().mCustomPosition.x = contact->GetFixtureA()->GetBody()->GetWorldCenter().x;
+                        sceneObject->get().mCustomPosition.y = contact->GetFixtureA()->GetBody()->GetWorldCenter().y;
+                        
+                        auto filter = contact->GetFixtureA()->GetFilterData();
+                        filter.maskBits = 0;
+                        contact->GetFixtureA()->SetFilterData(filter);
+                        
+                        auto sceneObjectTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(sceneObject->get().mObjectFamilyTypeName);
+                        if (sceneObjectTypeDefOpt)
+                        {
+                            auto& sceneObjectTypeDef = sceneObjectTypeDefOpt->get();
+                            
+                            mSceneUpdater.UpdateAnimation(sceneObject->get(), sceneObjectTypeDef, 0.0f);
+                            
+                            const auto& currentAnim = sceneObjectTypeDef.mAnimations.at(sceneObject->get().mStateName);
+                            
+                            mFlows.emplace_back([=]()
+                            {
+                                mScene.RemoveAllSceneObjectsWithNameTag(bodyAddressTag);
+                            }, currentAnim.mDuration, RepeatableFlow::RepeatPolicy::ONCE);
+                        }
                     }
                     else
                     {
@@ -105,8 +133,14 @@ void SceneUpdater::SetLevelProperties(LevelDefinition&& levelDef)
                     }
                 }
                 
+                
+                auto filter = contact->GetFixtureB()->GetFilterData();
+                filter.maskBits = 0;
+                contact->GetFixtureB()->SetFilterData(filter);
+                
                 strutils::StringId bulletAddressTag;
                 bulletAddressTag.fromAddress(contact->GetFixtureB()->GetBody());
+                
                 mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
             }
             else if (catA == physics_constants::PLAYER_BULLET_CATEGORY_BIT && catB == physics_constants::ENEMY_CATEGORY_BIT)
@@ -119,7 +153,28 @@ void SceneUpdater::SetLevelProperties(LevelDefinition&& levelDef)
                 {
                     if (sceneObject->get().mHealth <= 1)
                     {
-                        mScene.RemoveAllSceneObjectsWithNameTag(bodyAddressTag);
+                        sceneObject->get().mStateName = strutils::StringId("dying");
+                        sceneObject->get().mUseBodyForRendering = false;
+                        sceneObject->get().mCustomPosition.x = contact->GetFixtureB()->GetBody()->GetWorldCenter().x;
+                        sceneObject->get().mCustomPosition.y = contact->GetFixtureB()->GetBody()->GetWorldCenter().y;
+                        
+                        auto filter = contact->GetFixtureB()->GetFilterData();
+                        filter.maskBits = 0;
+                        contact->GetFixtureB()->SetFilterData(filter);
+                        
+                        auto sceneObjectTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(sceneObject->get().mObjectFamilyTypeName);
+                        if (sceneObjectTypeDefOpt)
+                        {
+                            auto& sceneObjectTypeDef = sceneObjectTypeDefOpt->get();
+                            
+                            mSceneUpdater.UpdateAnimation(sceneObject->get(), sceneObjectTypeDef, 0.0f);
+                            
+                            const auto& currentAnim = sceneObjectTypeDef.mAnimations.at(sceneObject->get().mStateName);
+                            mFlows.emplace_back([=]()
+                            {
+                                mScene.RemoveAllSceneObjectsWithNameTag(bodyAddressTag);
+                            }, currentAnim.mDuration, RepeatableFlow::RepeatPolicy::ONCE);
+                        }
                     }
                     else
                     {
@@ -147,9 +202,11 @@ void SceneUpdater::SetLevelProperties(LevelDefinition&& levelDef)
         
     private:
         Scene& mScene;
+        SceneUpdater& mSceneUpdater;
+        std::vector<RepeatableFlow>& mFlows;
     };
     
-    static ContactListener cl(mScene);
+    static ContactListener cl(mScene, *this, mFlows);
     mBox2dWorld.SetContactListener(&cl);
 }
 
@@ -162,10 +219,13 @@ void SceneUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
     
     for (auto& sceneObject: sceneObjects)
     {
+        sceneObject.mShaderBoolUniformValues[sceneobject_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = false;
+        
         // Check if this scene object has a respective family object definition
         auto sceneObjectTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(sceneObject.mObjectFamilyTypeName);
         if (sceneObjectTypeDefOpt)
         {
+            // Update movement
             auto& sceneObjectTypeDef = sceneObjectTypeDefOpt->get();
             switch (sceneObjectTypeDef.mMovementControllerPattern)
             {
@@ -201,6 +261,9 @@ void SceneUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
                     
                 default: break;
             }
+            
+            // Update animation
+            UpdateAnimation(sceneObject, sceneObjectTypeDef, dtMilis);
         }
     }
     
@@ -209,13 +272,53 @@ void SceneUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
     
     if (bgSO)
     {
-       bgSO->get().mShaderFloatUniformValues[strutils::StringId("texoffset")] = msAccum;
+       bgSO->get().mShaderFloatUniformValues[sceneobject_constants::TEXTURE_OFFSET_UNIFORM_NAME] = msAccum;
     }
     
     for (auto& flow: mFlows)
     {
-        flow.update(dtMilis);
+        flow.Update(dtMilis);
     }
+    
+    mFlows.erase(std::remove_if(mFlows.begin(), mFlows.end(), [](const RepeatableFlow& flow)
+    {
+        return !flow.IsRunning();
+    }), mFlows.end());
+}
+
+///------------------------------------------------------------------------------------------------
+
+void SceneUpdater::UpdateAnimation(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis)
+{
+    const auto& currentAnim = sceneObjectTypeDef.mAnimations.at(sceneObject.mStateName);
+    const auto& currentTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(currentAnim.mTextureResourceId);
+
+    if (currentTexture.GetSheetMetadata())
+    {
+        const auto& sheetMetaDataCurrentRow = currentTexture.GetSheetMetadata()->mRowMetadata[currentAnim.mTextureSheetRow];
+        const auto animFrameTime = currentAnim.mDuration/sheetMetaDataCurrentRow.mColMetadata.size();
+        
+        if (currentAnim.mDuration > 0.0f)
+        {
+            sceneObject.mAnimationTime += dtMilis;
+            if (sceneObject.mAnimationTime >= animFrameTime)
+            {
+                sceneObject.mAnimationTime = 0.0f;
+                sceneObject.mAnimationIndex = (sceneObject.mAnimationIndex + 1) % sheetMetaDataCurrentRow.mColMetadata.size();
+            }
+        }
+        sceneObject.mShaderBoolUniformValues[sceneobject_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
+        sceneObject.mShaderFloatUniformValues[sceneobject_constants::MIN_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).minU;
+        sceneObject.mShaderFloatUniformValues[sceneobject_constants::MIN_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).minV;
+        sceneObject.mShaderFloatUniformValues[sceneobject_constants::MAX_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).maxU;
+        sceneObject.mShaderFloatUniformValues[sceneobject_constants::MAX_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).maxV;
+        
+        
+        
+        sceneObject.mCustomScale = glm::vec3(currentAnim.mScale, currentAnim.mScale, 1.0f);
+    }
+    
+    sceneObject.mTextureResourceId = currentAnim.mTextureResourceId;
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -230,7 +333,7 @@ void SceneUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
     auto joystickBoundsSO = mScene.GetSceneObject(sceneobject_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
     const auto& inputContext = GameSingletons::GetInputContext();
     
-    switch (inputContext.mLastEventType)
+    switch (inputContext.mEventType)
     {
         case SDL_FINGERDOWN:
         {
@@ -241,6 +344,8 @@ void SceneUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                  
                  joystickSO->get().mCustomPosition = joystickBoundsSO->get().mCustomPosition;
                  joystickSO->get().mCustomPosition.z = gameobject_constants::JOYSTICK_BOUNDS_Z;
+
+                 mAllowInputControl = true;
              }
         } break;
             
@@ -251,7 +356,7 @@ void SceneUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
             
         case SDL_FINGERMOTION:
         {
-            if (joystickBoundsSO && joystickSO)
+            if (joystickBoundsSO && joystickSO && mAllowInputControl)
             {
                 auto motionVec = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix()) - joystickBoundsSO->get().mCustomPosition;
 
@@ -275,11 +380,10 @@ void SceneUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
         default: break;
     }
     
-    
-    if (joystickSO && joystickBoundsSO)
+    if (joystickSO && joystickBoundsSO && mAllowInputControl)
     {
-       joystickSO->get().mInvisible = inputContext.mLastEventType == SDL_FINGERUP;
-       joystickBoundsSO->get().mInvisible = inputContext.mLastEventType == SDL_FINGERUP;
+       joystickSO->get().mInvisible = inputContext.mEventType == SDL_FINGERUP;
+       joystickBoundsSO->get().mInvisible = inputContext.mEventType == SDL_FINGERUP;
     }
 }
 

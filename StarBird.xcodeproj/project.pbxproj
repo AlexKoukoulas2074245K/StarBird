@@ -342,6 +342,7 @@
 		92C851BE2969AAA00021923F /* SDL_uikit_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SDL_uikit_main.c; sourceTree = "<group>"; };
 		92C851C62969ACB20021923F /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
 		92C852012969B2920021923F /* libbox2d.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbox2d.a; path = ThirdParty/box2d/lib/libbox2d.a; sourceTree = "<group>"; };
+		92CEB6EF298BD444002AAD2B /* Animation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Animation.h; sourceTree = "<group>"; };
 		92DAA49829829A4C0062A438 /* TextureResource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureResource.cpp; sourceTree = "<group>"; };
 		92DAA49929829A4C0062A438 /* ResourceLoadingService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourceLoadingService.h; sourceTree = "<group>"; };
 		92DAA49A29829A4C0062A438 /* TextureLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureLoader.cpp; sourceTree = "<group>"; };
@@ -969,6 +970,7 @@
 			isa = PBXGroup;
 			children = (
 				925FD86929892BE00058E747 /* dataloaders */,
+				92CEB6EF298BD444002AAD2B /* Animation.h */,
 				92C2198B2984395800B2D2C6 /* Camera.cpp */,
 				92C2198C2984395800B2D2C6 /* Camera.h */,
 				92C2198829842E6A00B2D2C6 /* Game.cpp */,

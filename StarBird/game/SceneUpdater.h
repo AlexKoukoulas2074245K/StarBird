@@ -31,6 +31,7 @@ public:
     void Update(std::vector<SceneObject>& sceneObjects, const float dtMilis);
     
 private:
+    void UpdateAnimation(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis);
     void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis);
     
 private:
@@ -38,6 +39,7 @@ private:
     b2World& mBox2dWorld;
     LevelDefinition mLevel;
     std::vector<RepeatableFlow> mFlows;
+    bool mAllowInputControl;
 };
 
 ///------------------------------------------------------------------------------------------------

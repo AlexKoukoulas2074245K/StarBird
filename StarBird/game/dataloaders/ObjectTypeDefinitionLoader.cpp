@@ -7,6 +7,7 @@
 
 #include "ObjectTypeDefinitionLoader.h"
 #include "../PhysicsConstants.h"
+#include "../SceneObjectConstants.h"
 #include "../../resloading/ResourceLoadingService.h"
 #include "../../utils/Logging.h"
 
@@ -112,6 +113,44 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         }
     });
     
+    BaseGameDataLoader::SetCallbackForNode(strutils::StringId("Animation"), [&](const void* n)
+    {
+        auto* node = static_cast<const rapidxml::xml_node<>*>(n);
+        
+        Animation animation;
+        
+        auto* texture = node->first_attribute("texture");
+        if (texture)
+        {
+            animation.mTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(texture->value()) + ".bmp");
+        }
+        
+        auto* duration = node->first_attribute("duration");
+        if (duration)
+        {
+            animation.mDuration = std::stof(duration->value());
+        }
+        
+        auto* scale = node->first_attribute("scale");
+        if (scale)
+        {
+            animation.mScale = std::stof(scale->value());
+        }
+        
+        auto* textureSheetRow = node->first_attribute("textureSheetRow");
+        if (textureSheetRow)
+        {
+            animation.mTextureSheetRow = std::stoi(textureSheetRow->value());
+        }
+        
+        auto* state = node->first_attribute("state");
+        if (state)
+        {
+            mConstructedObjectTypeDef.mAnimations[strutils::StringId(state->value())] = std::move(animation);
+        }
+    });
+    
+    
     BaseGameDataLoader::SetCallbackForNode(strutils::StringId("Texture"), [&](const void* n)
     {
         auto* node = static_cast<const rapidxml::xml_node<>*>(n);
@@ -119,7 +158,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         auto* name = node->first_attribute("name");
         if (name)
         {
-            mConstructedObjectTypeDef.mTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(name->value()) + ".bmp");
+            mConstructedObjectTypeDef.mAnimations[sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE].mTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(name->value()) + ".bmp");
         }
     });
     

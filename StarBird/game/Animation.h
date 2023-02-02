@@ -1,27 +1,27 @@
 ///------------------------------------------------------------------------------------------------
-///  InputContext.h                                                                                          
+///  Animation.h                                                                                          
 ///  StarBird                                                                                            
 ///                                                                                                
-///  Created by Alex Koukoulas on 31/01/2023                                                       
+///  Created by Alex Koukoulas on 02/02/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef InputContext_h
-#define InputContext_h
-
-///------------------------------------------------------------------------------------------------
-
-#include "../utils/MathUtils.h"
-
-#include <SDL_events.h>
+#ifndef Animation_h
+#define Animation_h
 
 ///------------------------------------------------------------------------------------------------
 
-struct InputContext
+#include "../resloading/ResourceLoadingService.h"
+
+///------------------------------------------------------------------------------------------------
+
+struct Animation
 {
-    glm::vec2 mTouchPos;
-    Uint32 mEventType;
+    resources::ResourceId mTextureResourceId;
+    float mDuration = 0.0f;
+    float mScale = 1.0f;
+    int mTextureSheetRow = 0;
 };
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* InputContext_h */
+#endif /* Animation_h */

@@ -10,6 +10,7 @@
 
 ///------------------------------------------------------------------------------------------------
 
+#include "SceneObjectConstants.h"
 #include "../utils/MathUtils.h"
 #include "../utils/StringUtils.h"
 #include "../resloading/ResourceLoadingService.h"
@@ -32,6 +33,8 @@ struct SceneObject // 208b
 {
     strutils::StringId mObjectFamilyTypeName = strutils::StringId();
     strutils::StringId mNameTag = strutils::StringId();
+    strutils::StringId mStateName = sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE;
+    std::unordered_map<strutils::StringId, bool, strutils::StringIdHasher> mShaderBoolUniformValues;
     std::unordered_map<strutils::StringId, float, strutils::StringIdHasher> mShaderFloatUniformValues;
     std::unordered_map<strutils::StringId, glm::mat4, strutils::StringIdHasher> mShaderMat4UniformValues;
     b2Body* mBody = nullptr;
@@ -42,8 +45,11 @@ struct SceneObject // 208b
     resources::ResourceId mShaderResourceId = resources::ResourceId();
     resources::ResourceId mMeshResourceId = resources::ResourceId();
     SceneObjectType mSceneObjectType = SceneObjectType::WorldGameObject;
+    float mAnimationTime = 0.0f;
+    int mAnimationIndex = 0;
     long mHealth = 0;
     bool mInvisible = false;
+    bool mUseBodyForRendering = false;
 };
 
 ///------------------------------------------------------------------------------------------------

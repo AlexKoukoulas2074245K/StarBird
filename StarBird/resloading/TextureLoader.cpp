@@ -49,17 +49,13 @@ std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::stri
         return nullptr;
     }
     
-    //Convert surface to display format
+    // Convert surface to display format
     auto* pixels = SDL_ConvertSurfaceFormat( loadedSurface, SDL_GetWindowPixelFormat(SDL_GL_GetCurrentWindow()), 0 );
-    if( pixels == NULL )
-    {
-        //printf( "Unable to convert loaded surface to display format! SDL Error: %s\n", SDL_GetError() );
-    }
     
-    //Color key image
+    // Color key image
     SDL_SetColorKey(pixels, SDL_TRUE, SDL_MapRGB(pixels->format, 0, 0xFF, 0xFF));
     
-    //Create texture from surface pixels
+    // Create texture from surface pixels
     GLuint glTextureId;
     GL_CALL(glGenTextures(1, &glTextureId));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, glTextureId));
@@ -73,7 +69,52 @@ std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::stri
     const auto surfaceWidth = loadedSurface->w;
     const auto surfaceHeight = loadedSurface->h;
     
-    return std::unique_ptr<IResource>(new TextureResource(loadedSurface, surfaceWidth, surfaceHeight, GL_RGBA, GL_RGBA, glTextureId));
+    SDL_FreeSurface(loadedSurface);
+    
+    // Check for spritesheet metadata
+    std::unique_ptr<SheetMetadata> sheetMetadata = nullptr;
+    auto metadataFilePath = resourcePath;
+    strutils::StringReplaceAllOccurences("bmp", "mtd", metadataFilePath);
+    std::ifstream metadataFile(metadataFilePath);
+    
+    if (metadataFile.good())
+    {
+        std::string line;
+        sheetMetadata = std::make_unique<SheetMetadata>();
+        
+        float uvCounterX = 0.0f;
+        float uvCounterY = 1.0f;
+        
+        while (std::getline(metadataFile, line))
+        {
+            sheetMetadata->mRowMetadata.emplace_back();
+            auto& currentRow = sheetMetadata->mRowMetadata.back();
+            
+            auto splitByComma = strutils::StringSplit(line, ',');
+            assert(splitByComma.size() == 3);
+            auto elementNormalizedWidth =  std::stoi(splitByComma[0])/(float)surfaceWidth;
+            auto elementNormalizedHeight = std::stoi(splitByComma[1])/(float)surfaceHeight;
+            auto elementCount = std::stoi(splitByComma[2]);
+            
+            for (auto i = 0; i < elementCount; ++i)
+            {
+                currentRow.mColMetadata.emplace_back();
+                auto& currentCol = currentRow.mColMetadata.back();
+                
+                currentCol.minU = uvCounterX;
+                currentCol.minV = uvCounterY - elementNormalizedHeight;
+                currentCol.maxU = uvCounterX + elementNormalizedWidth;
+                currentCol.maxV = uvCounterY;
+               
+                uvCounterX += elementNormalizedWidth;
+            }
+            
+            uvCounterX = 0.0f;
+            uvCounterY -= elementNormalizedHeight;
+        }
+    }
+    
+    return std::unique_ptr<IResource>(new TextureResource(surfaceWidth, surfaceHeight, GL_RGBA, GL_RGBA, glTextureId, std::move(sheetMetadata)));
 }
 
 ///------------------------------------------------------------------------------------------------

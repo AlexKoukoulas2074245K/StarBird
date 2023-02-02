@@ -73,7 +73,7 @@ void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects)
             GL_CALL(glUseProgram(currentShader->GetProgramId()));
         }
         
-        if (so.mTextureResourceId != currentTextureResourceId)
+        if (so.mTextureResourceId == 0 || so.mTextureResourceId != currentTextureResourceId)
         {
             currentTextureResourceId = so.mTextureResourceId;
             GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>(currentTextureResourceId).GetGLTextureId()));
@@ -82,7 +82,7 @@ void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects)
         glm::mat4 world(1.0f);
         
         // If a b2Body is active then take its transform
-        if (so.mBody)
+        if (so.mBody && so.mUseBodyForRendering)
         {
             world = glm::translate(world, glm::vec3(so.mBody->GetWorldCenter().x, so.mBody->GetWorldCenter().y, so.mCustomPosition.z));
             
@@ -92,6 +92,11 @@ void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects)
             const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
             const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
             world = glm::scale(world, glm::vec3(scaleX, scaleY, 1.0f));
+            
+            if (so.mBody->GetWorldCenter().x == 0.0f && so.mBody->GetWorldCenter().y == 0.0f)
+            {
+                Log(LogType::INFO, "NOW");
+            }
         }
         // Otherwise from its custom set one
         else
@@ -109,6 +114,8 @@ void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects)
         currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, camera.GetViewMatrix());
         currentShader->SetMatrix4fv(PROJ_MATRIX_STRING_ID, camera.GetProjMatrix());
         
+        for (auto boolEntry: so.mShaderBoolUniformValues)
+            currentShader->SetBool(boolEntry.first, boolEntry.second);
         for (auto floatEntry: so.mShaderFloatUniformValues)
             currentShader->SetFloat(floatEntry.first, floatEntry.second);
         for (auto mat4Entry: so.mShaderMat4UniformValues)

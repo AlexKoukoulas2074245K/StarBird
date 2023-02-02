@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ObjectDefinition>
+    <Animation state="idle" texture="asteroid" duration="-1"/>
+    <Animation state="dying" texture="explosion_sheet" scale="2.0f" textureSheetRow="0" duration="150"/>
+    <Physics density="1.0f" bodySize="1.0f" linearDamping="0.0f" customLinearVelocity="0.0f, -2.0f" speed="3.0f" category="enemy" collidingWithPlayerBullets="true" collidingWithEnemies="true" collidingWithPlayer="true"/>
+    <Shader name="basic"/>
+    <Model name="quad"/>
+    <GameAttributes movementControllerPattern="custom_velocity" health="10"/>
+</ObjectDefinition>

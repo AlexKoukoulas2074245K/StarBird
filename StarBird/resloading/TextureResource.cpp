@@ -21,7 +21,6 @@ namespace resources
 TextureResource::~TextureResource()
 {
     GL_CALL(glDeleteTextures(1, &mGLTextureId));
-    if (mSurface) SDL_FreeSurface(mSurface);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -40,20 +39,30 @@ const glm::vec2& TextureResource::GetDimensions() const
 
 ///------------------------------------------------------------------------------------------------
 
+SheetMetadata* TextureResource::GetSheetMetadata() const
+{
+    if (mSheetMetadata)
+        return mSheetMetadata.get();
+    else
+        return nullptr;
+}
+
+///------------------------------------------------------------------------------------------------
+
 TextureResource::TextureResource
 (
-    SDL_Surface* const surface,
     const int width,
     const int height,
     const int mode,
     const int format,
-    GLuint glTextureId
+    GLuint glTextureId,
+    std::unique_ptr<SheetMetadata> sheetMetadata
 )
-    : mSurface(surface)
-    , mDimensions(width, height)
+    : mDimensions(width, height)
     , mMode(mode)
     , mFormat(format)
     , mGLTextureId(glTextureId)
+    , mSheetMetadata(std::move(sheetMetadata))
 {
 }
 

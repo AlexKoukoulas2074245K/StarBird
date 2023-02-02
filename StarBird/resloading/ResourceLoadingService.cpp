@@ -156,6 +156,14 @@ void ResourceLoadingService::UnloadResource(const ResourceId resourceId)
 
 ///------------------------------------------------------------------------------------------------
 
+void ResourceLoadingService::SetFallbackTexture(const std::string& fallbackTexturePath)
+{
+    auto adjustedPath = AdjustResourcePath(fallbackTexturePath);
+    LoadResourceInternal(adjustedPath, 0);
+}
+
+///------------------------------------------------------------------------------------------------
+
 IResource& ResourceLoadingService::GetResource(const std::string& resourcePath)
 {
     const auto adjustedPath = AdjustResourcePath(resourcePath);

@@ -115,7 +115,7 @@ public:
     /// paths excluding the Resource Root are supported.
     /// @param[in] resourcePath the path of the resource file.        
     void UnloadResource(const std::string& resourcePath);
-
+    
     /// Unloads the specified resource loaded based on the given path.
     ///
     /// Any subsequent calls to get that
@@ -123,6 +123,11 @@ public:
     /// back to the map of resources held by this service.  
     /// @param[in] resourceId the id of the resource to unload.    
     void UnloadResource(const ResourceId resourceId);
+    
+    /// Sets the fallback  texture to be used when one is not provided/can't be found
+    ///
+    /// @param[in] fallbackTexturePath the path of the debug texture  file.
+    void SetFallbackTexture(const std::string& fallbackTexturePath);
     
     /// Gets the concrete type of the resource that was loaded based on the given path.
     ///    

@@ -10,6 +10,8 @@
 #include "InputContext.h"
 #include "Scene.h"
 
+#include "../resloading/ResourceLoadingService.h"
+
 #include "../utils/Logging.h"
 #include "../utils/OpenGL.h"
 #include "../utils/OSMessageBox.h"
@@ -94,7 +96,10 @@ bool Game::InitSystems()
     // Enable depth test
     GL_CALL(glEnable(GL_DEPTH_TEST));
     GL_CALL(glDepthFunc(GL_LESS));
-
+    
+    // Set fallback texture
+    resources::ResourceLoadingService::GetInstance().SetFallbackTexture(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "debug.bmp");
+    
     Log(LogType::INFO, "Vendor     : %s", GL_NO_CHECK_CALL(glGetString(GL_VENDOR)));
     Log(LogType::INFO, "Renderer   : %s", GL_NO_CHECK_CALL(glGetString(GL_RENDERER)));
     Log(LogType::INFO, "Version    : %s", GL_NO_CHECK_CALL(glGetString(GL_VERSION)));

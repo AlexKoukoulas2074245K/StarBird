@@ -25,7 +25,7 @@ const InputContext& GameSingletons::GetInputContext()
 
 void GameSingletons::SetInputContextEvent(Uint32 event)
 {
-    mInputContext.mLastEventType = event;
+    mInputContext.mEventType = event;
 }
 
 ///------------------------------------------------------------------------------------------------
