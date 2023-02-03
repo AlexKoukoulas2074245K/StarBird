@@ -54,7 +54,7 @@
 		9254CC0C2969B79A00EFE0CC /* b2BroadPhase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CBDC2969B79A00EFE0CC /* b2BroadPhase.cpp */; };
 		9254CC0D2969B79A00EFE0CC /* b2CollideEdge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CBDF2969B79A00EFE0CC /* b2CollideEdge.cpp */; };
 		9254CC0E2969B79A00EFE0CC /* b2Collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CBE02969B79A00EFE0CC /* b2Collision.cpp */; };
-		925FD84529883DD80058E747 /* SceneUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD83829883DD80058E747 /* SceneUpdater.cpp */; };
+		925FD84529883DD80058E747 /* LevelUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD83829883DD80058E747 /* LevelUpdater.cpp */; };
 		925FD85F298916F50058E747 /* license.txt in Resources */ = {isa = PBXBuildFile; fileRef = 925FD85D298916F50058E747 /* license.txt */; };
 		925FD860298916F50058E747 /* manual.html in Resources */ = {isa = PBXBuildFile; fileRef = 925FD85E298916F50058E747 /* manual.html */; };
 		925FD86E29892BE00058E747 /* BaseGameDataLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD86B29892BE00058E747 /* BaseGameDataLoader.cpp */; };
@@ -294,8 +294,8 @@
 		9254CBDE2969B79A00EFE0CC /* b2Distance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2Distance.h; sourceTree = "<group>"; };
 		9254CBDF2969B79A00EFE0CC /* b2CollideEdge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2CollideEdge.cpp; sourceTree = "<group>"; };
 		9254CBE02969B79A00EFE0CC /* b2Collision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Collision.cpp; sourceTree = "<group>"; };
-		925FD83829883DD80058E747 /* SceneUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUpdater.cpp; sourceTree = "<group>"; };
-		925FD84429883DD80058E747 /* SceneUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneUpdater.h; sourceTree = "<group>"; };
+		925FD83829883DD80058E747 /* LevelUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LevelUpdater.cpp; sourceTree = "<group>"; };
+		925FD84429883DD80058E747 /* LevelUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelUpdater.h; sourceTree = "<group>"; };
 		925FD859298916F50058E747 /* rapidxml_iterators.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_iterators.hpp; sourceTree = "<group>"; };
 		925FD85A298916F50058E747 /* rapidxml_print.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_print.hpp; sourceTree = "<group>"; };
 		925FD85B298916F50058E747 /* rapidxml_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_utils.hpp; sourceTree = "<group>"; };
@@ -1003,8 +1003,8 @@
 				925FD874298981750058E747 /* SceneObjectConstants.h */,
 				92A8516E2985704800C99B61 /* SceneRenderer.cpp */,
 				92A8517A2985704800C99B61 /* SceneRenderer.h */,
-				925FD83829883DD80058E747 /* SceneUpdater.cpp */,
-				925FD84429883DD80058E747 /* SceneUpdater.h */,
+				925FD83829883DD80058E747 /* LevelUpdater.cpp */,
+				925FD84429883DD80058E747 /* LevelUpdater.h */,
 				925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */,
 				925FD87D298AD7050058E747 /* ObjectiveCUtils.h */,
 			);
@@ -1795,7 +1795,7 @@
 				925FD86E29892BE00058E747 /* BaseGameDataLoader.cpp in Sources */,
 				92C2198429842CF500B2D2C6 /* Scene.cpp in Sources */,
 				92DAA4C629829A4C0062A438 /* ResourceLoadingService.cpp in Sources */,
-				925FD84529883DD80058E747 /* SceneUpdater.cpp in Sources */,
+				925FD84529883DD80058E747 /* LevelUpdater.cpp in Sources */,
 				92DAA4DC29829B380062A438 /* MathUtils.cpp in Sources */,
 				9254CC0D2969B79A00EFE0CC /* b2CollideEdge.cpp in Sources */,
 				9254CC012969B79A00EFE0CC /* b2StackAllocator.cpp in Sources */,

@@ -25,6 +25,7 @@ static const strutils::StringId PLAYER_SCENE_OBJECT_NAME = strutils::StringId("P
 static const strutils::StringId BACKGROUND_SCENE_OBJECT_NAME = strutils::StringId("BG");
 static const strutils::StringId JOYSTICK_SCENE_OBJECT_NAME = strutils::StringId("JOYSTICK");
 static const strutils::StringId JOYSTICK_BOUNDS_SCENE_OBJECT_NAME = strutils::StringId("JOYSTICK_BOUNDS");
+static const strutils::StringId WAVE_INTRO_TEXT_SCNE_OBJECT_NAME = strutils::StringId("WAVE_INTRO_TEXT");
 
 
 static const strutils::StringId TEXTURE_OFFSET_UNIFORM_NAME = strutils::StringId("tex_offset");

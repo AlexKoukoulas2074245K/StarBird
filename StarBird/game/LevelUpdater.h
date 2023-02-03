@@ -1,12 +1,12 @@
 ///------------------------------------------------------------------------------------------------
-///  SceneUpdater.h                                                                                          
+///  LevelUpdater.h                                                                                          
 ///  StarBird                                                                                            
 ///                                                                                                
 ///  Created by Alex Koukoulas on 30/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef SceneUpdater_h
-#define SceneUpdater_h
+#ifndef LevelUpdater_h
+#define LevelUpdater_h
 
 ///------------------------------------------------------------------------------------------------
 
@@ -15,6 +15,7 @@
 #include "RepeatableFlow.h"
 #include "../utils/StringUtils.h"
 
+#include <unordered_set>
 #include <vector>
 
 ///------------------------------------------------------------------------------------------------
@@ -22,26 +23,41 @@
 class ObjectTypeDefinition;
 class Scene;
 class b2World;
-class SceneUpdater final
+class LevelUpdater final
 {
 public:
-    SceneUpdater(Scene& scene, b2World& box2dWorld);
+    LevelUpdater(Scene& scene, b2World& box2dWorld);
     
-    void SetLevelProperties(LevelDefinition&& levelDef);
+    void InitLevel(LevelDefinition&& levelDef);
     void Update(std::vector<SceneObject>& sceneObjects, const float dtMilis);
+    
+    std::unordered_set<strutils::StringId, strutils::StringIdHasher>& GetWaveEnemies();
     
 private:
     void UpdateAnimation(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis);
     void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis);
     
+    void CreateWaveIntroText();
+    void CreateWave();
+    
 private:
+    enum class LevelState
+    {
+        WAVE_INTRO,
+        FIGHTING_WAVE,
+        FINISHED_LEVEL
+    };
+    
     Scene& mScene;
     b2World& mBox2dWorld;
     LevelDefinition mLevel;
     std::vector<RepeatableFlow> mFlows;
+    std::unordered_set<strutils::StringId, strutils::StringIdHasher> mWaveEnemies;
+    size_t mCurrentWaveNumber;
+    LevelState mState;
     bool mAllowInputControl;
 };
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* SceneUpdater_h */
+#endif /* LevelUpdater_h */

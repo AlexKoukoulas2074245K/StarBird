@@ -29,7 +29,7 @@ enum class SceneObjectType
 
 ///------------------------------------------------------------------------------------------------
 
-struct SceneObject // 208b
+struct SceneObject // 376b
 {
     strutils::StringId mObjectFamilyTypeName = strutils::StringId();
     strutils::StringId mNameTag = strutils::StringId();

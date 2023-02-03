@@ -11,7 +11,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "SceneObject.h"
-#include "SceneUpdater.h"
+#include "LevelUpdater.h"
 #include "SceneRenderer.h"
 #include "../utils/StringUtils.h"
 
@@ -48,7 +48,7 @@ private:
     std::vector<SceneObject> mSceneObjects;
     std::vector<SceneObject> mSceneObjectsToAdd;
     std::vector<strutils::StringId> mNameTagsOfSceneObjectsToRemove;
-    SceneUpdater mSceneUpdater;
+    LevelUpdater mLevelUpdater;
     SceneRenderer mSceneRenderer;
     bool mPreFirstUpdate;
 };

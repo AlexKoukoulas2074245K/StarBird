@@ -24,7 +24,7 @@
 
 Scene::Scene()
     : mBox2dWorld(b2Vec2(0.0f, 0.0f))
-    , mSceneUpdater(*this, mBox2dWorld)
+    , mLevelUpdater(*this, mBox2dWorld)
     , mPreFirstUpdate(true)
 {
 }
@@ -116,57 +116,8 @@ void Scene::LoadLevel(const std::string& levelName)
         }
     }
     
-    for (const auto& enemy: levelDef.mWaves[0].mEnemies)
-    {
-        const auto& enemyDefOpt = objectTypeDefRepo.GetObjectTypeDefinition(enemy.mGameObjectEnemyType);
-        if (!enemyDefOpt) continue;
-        
-        const auto& enemyDef = enemyDefOpt->get();
-        
-        b2BodyDef bodyDef;
-        bodyDef.type = b2_dynamicBody;
-        bodyDef.position.Set(enemy.mPosition.x, enemy.mPosition.y);
-        b2Body* body = mBox2dWorld.CreateBody(&bodyDef);
-        body->SetLinearDamping(enemyDef.mLinearDamping);
-        
-        b2PolygonShape dynamicBox;
-        auto& enemyTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(enemyDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId);
-        
-        float textureAspect = enemyTexture.GetDimensions().x/enemyTexture.GetDimensions().y;
-        dynamicBox.SetAsBox(enemyDef.mSize, enemyDef.mSize/textureAspect);
-        
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &dynamicBox;
-        fixtureDef.density = enemyDef.mDensity;
-        fixtureDef.friction = 0.0f;
-        fixtureDef.restitution = 0.0f;
-        fixtureDef.filter = enemyDef.mContactFilter;
-        fixtureDef.filter.maskBits &= (~physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
-        fixtureDef.filter.maskBits &= (~physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT);
-        body->CreateFixture(&fixtureDef);
-        
-        SceneObject so;
-        so.mObjectFamilyTypeName = enemy.mGameObjectEnemyType;
-        so.mBody = body;
-        so.mHealth = enemyDef.mHealth;
-        
-        so.mShaderResourceId = enemyDef.mShaderResourceId;
-        so.mTextureResourceId = enemyDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId;
-        so.mMeshResourceId = enemyDef.mMeshResourceId;
-        so.mSceneObjectType = SceneObjectType::WorldGameObject;
-        so.mCustomPosition.z = 0.0f;
-        so.mUseBodyForRendering = true;
-        
-        strutils::StringId nameTag;
-        nameTag.fromAddress(so.mBody);
-        
-        so.mNameTag = nameTag;
-        AddSceneObject(std::move(so));
-    }
-    
     LoadLevelInvariantObjects();
-    
-    mSceneUpdater.SetLevelProperties(std::move(levelDef));
+    mLevelUpdater.InitLevel(std::move(levelDef));
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -175,7 +126,7 @@ void Scene::UpdateScene(const float dtMilis)
 {
     mPreFirstUpdate = false;
     
-    mSceneUpdater.Update(mSceneObjects, dtMilis);
+    mLevelUpdater.Update(mSceneObjects, dtMilis);
     
     mBox2dWorld.Step(physics_constants::WORLD_STEP, physics_constants::WORLD_VELOCITY_ITERATIONS, physics_constants::WORLD_POSITION_ITERATIONS);
     
@@ -188,7 +139,10 @@ void Scene::UpdateScene(const float dtMilis)
             
         if (iter != mSceneObjects.end())
         {
-            mBox2dWorld.DestroyBody(iter->mBody);
+            if (iter->mBody)
+            {
+                mBox2dWorld.DestroyBody(iter->mBody);
+            }
             auto sizeBefore = mSceneObjects.size();
             mSceneObjects.erase(iter);
             auto sizeNow = mSceneObjects.size();
@@ -299,7 +253,7 @@ void Scene::LoadLevelInvariantObjects()
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        
+        so.mInvisible = true;
         AddSceneObject(std::move(so));
     }
     
@@ -328,7 +282,7 @@ void Scene::LoadLevelInvariantObjects()
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        
+        so.mInvisible = true;
         AddSceneObject(std::move(so));
     }
 
@@ -357,7 +311,7 @@ void Scene::LoadLevelInvariantObjects()
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        
+        so.mInvisible = true;
         AddSceneObject(std::move(so));
     }
     
@@ -386,7 +340,7 @@ void Scene::LoadLevelInvariantObjects()
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        
+        so.mInvisible = true;
         AddSceneObject(std::move(so));
     }
     
@@ -417,19 +371,6 @@ void Scene::LoadLevelInvariantObjects()
     }
     
     FontRepository::GetInstance().LoadFont(strutils::StringId("font"));
-    {
-        SceneObject testTextSO;
-        testTextSO.mCustomPosition.x = -5.0f;
-        testTextSO.mCustomPosition.y = -6.0f;
-        testTextSO.mCustomScale = glm::vec3(0.02f, 0.02f, 1.0f);
-        testTextSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
-        testTextSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        testTextSO.mTextureResourceId = FontRepository::GetInstance().GetFont(strutils::StringId("font"))->get().mFontTextureResourceId;
-        testTextSO.mFontName = strutils::StringId("font");
-        testTextSO.mSceneObjectType = SceneObjectType::GUIObject;
-        testTextSO.mText = "WAVE 1";
-        AddSceneObject(std::move(testTextSO));
-    }
 }
 
 ///------------------------------------------------------------------------------------------------
