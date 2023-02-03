@@ -34,6 +34,8 @@ struct SceneObject // 208b
     strutils::StringId mObjectFamilyTypeName = strutils::StringId();
     strutils::StringId mNameTag = strutils::StringId();
     strutils::StringId mStateName = sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE;
+    strutils::StringId mFontName = strutils::StringId();
+    std::string mText;
     std::unordered_map<strutils::StringId, bool, strutils::StringIdHasher> mShaderBoolUniformValues;
     std::unordered_map<strutils::StringId, float, strutils::StringIdHasher> mShaderFloatUniformValues;
     std::unordered_map<strutils::StringId, glm::mat4, strutils::StringIdHasher> mShaderMat4UniformValues;

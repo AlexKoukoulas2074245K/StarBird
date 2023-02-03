@@ -1,12 +1,12 @@
 <font xmlns="http://www.w3.org/1999/xhtml" name="Control Freak" size="128" bold="false" italic="false" width="1201" height="438">
-  <character text=" " x="484" y="381" width="3" height="3" origin-x="1" origin-y="1" advance="34"/>
+  <character text=" " x="484" y="381" width="35" height="3" origin-x="1" origin-y="1" advance="34"/>
   <character text="!" x="982" y="218" width="20" height="83" origin-x="-2" origin-y="80" advance="24"/>
-  <character text="&quot;" x="154" y="381" width="33" height="32" origin-x="-2" origin-y="82" advance="37"/>
+  <character text="&quot;" x="154" y="381" width="33" height="32" origin-x="-2" origin-y="120" advance="37"/>
   <character text="#" x="267" y="301" width="70" height="63" origin-x="-2" origin-y="65" advance="74"/>
   <character text="$" x="1115" y="0" width="68" height="85" origin-x="0" origin-y="82" advance="68"/>
   <character text="%" x="343" y="133" width="88" height="84" origin-x="-2" origin-y="80" advance="92"/>
   <character text="&amp;" x="530" y="218" width="63" height="83" origin-x="-2" origin-y="80" advance="67"/>
-  <character text="'" x="187" y="381" width="17" height="32" origin-x="-2" origin-y="82" advance="21"/>
+  <character text="'" x="187" y="381" width="17" height="32" origin-x="-2" origin-y="120" advance="21"/>
   <character text="(" x="52" y="0" width="25" height="133" origin-x="-2" origin-y="105" advance="29"/>
   <character text=")" x="77" y="0" width="25" height="133" origin-x="-2" origin-y="105" advance="29"/>
   <character text="*" x="44" y="381" width="46" height="45" origin-x="0" origin-y="82" advance="46"/>
@@ -63,24 +63,24 @@
   <character text="]" x="140" y="0" width="38" height="124" origin-x="6" origin-y="100" advance="34"/>
   <character text="^" x="204" y="381" width="44" height="31" origin-x="-1" origin-y="80" advance="47"/>
   <character text="_" x="421" y="381" width="63" height="12" origin-x="-2" origin-y="-5" advance="67"/>
-  <character text="`" x="327" y="381" width="29" height="25" origin-x="0" origin-y="83" advance="30"/>
+  <character text="`" x="327" y="381" width="29" height="25" origin-x="0" origin-y="120" advance="30"/>
   <character text="a" x="912" y="301" width="58" height="57" origin-x="-2" origin-y="54" advance="63"/>
   <character text="b" x="417" y="0" width="57" height="86" origin-x="-2" origin-y="83" advance="61"/>
   <character text="c" x="1144" y="301" width="57" height="57" origin-x="-2" origin-y="54" advance="54"/>
   <character text="d" x="474" y="0" width="57" height="86" origin-x="-2" origin-y="83" advance="61"/>
   <character text="e" x="794" y="301" width="59" height="57" origin-x="-2" origin-y="54" advance="63"/>
   <character text="f" x="894" y="218" width="46" height="83" origin-x="1" origin-y="80" advance="39"/>
-  <character text="g" x="0" y="301" width="58" height="80" origin-x="-1" origin-y="54" advance="61"/>
+  <character text="g" x="0" y="301" width="58" height="80" origin-x="-1" origin-y="30" advance="61"/>
   <character text="h" x="531" y="0" width="57" height="86" origin-x="-2" origin-y="83" advance="61"/>
   <character text="i" x="99" y="301" width="20" height="79" origin-x="-2" origin-y="76" advance="24"/>
-  <character text="j" x="246" y="0" width="38" height="100" origin-x="17" origin-y="76" advance="24"/>
+  <character text="j" x="246" y="0" width="38" height="100" origin-x="17" origin-y="54" advance="24"/>
   <character text="k" x="627" y="133" width="55" height="84" origin-x="-2" origin-y="81" advance="59"/>
   <character text="l" x="588" y="0" width="19" height="86" origin-x="-2" origin-y="83" advance="23"/>
   <character text="m" x="418" y="301" width="90" height="57" origin-x="-2" origin-y="54" advance="95"/>
   <character text="n" x="970" y="301" width="58" height="57" origin-x="-2" origin-y="54" advance="63"/>
   <character text="o" x="1028" y="301" width="58" height="57" origin-x="-2" origin-y="54" advance="63"/>
-  <character text="p" x="1022" y="218" width="57" height="82" origin-x="-2" origin-y="54" advance="61"/>
-  <character text="q" x="1079" y="218" width="57" height="82" origin-x="-2" origin-y="54" advance="61"/>
+  <character text="p" x="1022" y="218" width="57" height="82" origin-x="-2" origin-y="30" advance="61"/>
+  <character text="q" x="1079" y="218" width="57" height="82" origin-x="-2" origin-y="30" advance="61"/>
   <character text="r" x="0" y="381" width="44" height="57" origin-x="-2" origin-y="54" advance="39"/>
   <character text="s" x="853" y="301" width="59" height="57" origin-x="-1" origin-y="54" advance="61"/>
   <character text="t" x="58" y="301" width="41" height="80" origin-x="5" origin-y="77" advance="31"/>
@@ -88,7 +88,7 @@
   <character text="v" x="730" y="301" width="64" height="57" origin-x="5" origin-y="54" advance="54"/>
   <character text="w" x="508" y="301" width="90" height="57" origin-x="-2" origin-y="54" advance="95"/>
   <character text="x" x="665" y="301" width="65" height="57" origin-x="6" origin-y="54" advance="54"/>
-  <character text="y" x="1136" y="218" width="64" height="80" origin-x="5" origin-y="54" advance="54"/>
+  <character text="y" x="1136" y="218" width="64" height="80" origin-x="5" origin-y="30" advance="54"/>
   <character text="z" x="598" y="301" width="67" height="57" origin-x="7" origin-y="54" advance="53"/>
   <character text="{" x="0" y="0" width="26" height="133" origin-x="-2" origin-y="105" advance="30"/>
   <character text="|" x="325" y="133" width="18" height="85" origin-x="-2" origin-y="82" advance="22"/>

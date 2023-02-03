@@ -5,8 +5,11 @@
 ///  Created by Alex Koukoulas on 28/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
+#include "FontRepository.h"
 #include "GameSingletons.h"
+#include "SceneObjectConstants.h"
 #include "SceneRenderer.h"
+
 #include "../resloading/MeshResource.h"
 #include "../resloading/ShaderResource.h"
 #include "../resloading/TextureResource.h"
@@ -30,7 +33,7 @@ SceneRenderer::SceneRenderer()
 
 ///------------------------------------------------------------------------------------------------
 
-void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects)
+void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
@@ -81,8 +84,63 @@ void SceneRenderer::Render(const std::vector<SceneObject>& sceneObjects)
         
         glm::mat4 world(1.0f);
         
+        // If it's a text element
+        if (so.mText.size() > 0)
+        {
+            auto fontOpt = FontRepository::GetInstance().GetFont(so.mFontName);
+            if (fontOpt)
+            {
+                const auto& font = fontOpt->get();
+                
+                const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(so.mSceneObjectType);
+                assert(camOpt);
+                const auto& camera = camOpt->get();
+                
+                float xCursor = so.mCustomPosition.x;
+                float yCursor = so.mCustomPosition.y;
+                
+                for (size_t i = 0; i < so.mText.size(); ++i)
+                {
+                    const auto& glyph = font.mGlyphs.at(so.mText[i]);
+                    
+                    float targetX = xCursor;
+                    float targetY = yCursor + glyph.mYOffsetPixels * so.mCustomScale.y * 0.5f;
+                    
+                    world = glm::mat4(1.0f);
+                    world = glm::translate(world, glm::vec3(targetX, targetY, so.mCustomPosition.z));
+                    world = glm::scale(world, glm::vec3(glyph.mWidthPixels * so.mCustomScale.x, glyph.mHeightPixels * so.mCustomScale.y, 1.0f));
+                    
+                    so.mShaderBoolUniformValues[sceneobject_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
+                    so.mShaderFloatUniformValues[sceneobject_constants::MIN_U_UNIFORM_NAME] = glyph.minU;
+                    so.mShaderFloatUniformValues[sceneobject_constants::MIN_V_UNIFORM_NAME] = glyph.minV;
+                    so.mShaderFloatUniformValues[sceneobject_constants::MAX_U_UNIFORM_NAME] = glyph.maxU;
+                    so.mShaderFloatUniformValues[sceneobject_constants::MAX_V_UNIFORM_NAME] = glyph.maxV;
+                    
+                    currentShader->SetMatrix4fv(WORLD_MATRIX_STRING_ID, world);
+                    currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, camera.GetViewMatrix());
+                    currentShader->SetMatrix4fv(PROJ_MATRIX_STRING_ID, camera.GetProjMatrix());
+                    
+                    for (auto boolEntry: so.mShaderBoolUniformValues)
+                        currentShader->SetBool(boolEntry.first, boolEntry.second);
+                    for (auto floatEntry: so.mShaderFloatUniformValues)
+                        currentShader->SetFloat(floatEntry.first, floatEntry.second);
+                    for (auto mat4Entry: so.mShaderMat4UniformValues)
+                        currentShader->SetMatrix4fv(mat4Entry.first, mat4Entry.second);
+                    
+                    GL_CALL(glDrawElements(GL_TRIANGLES, currentMesh->GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
+                    
+                    if (i != so.mText.size() - 1)
+                    {
+                        // Since each glyph is rendered with its center as the origin, we advance
+                        // half this glyph's width + half the next glyph's width ahead
+                        const auto& nextGlyph = font.mGlyphs.at(so.mText[i + 1]);
+                        xCursor += (glyph.mWidthPixels * so.mCustomScale.x) * 0.5f + (nextGlyph.mWidthPixels * so.mCustomScale.x) * 0.5f;
+                    }
+                }
+            }
+        }
         // If a b2Body is active then take its transform
-        if (so.mBody && so.mUseBodyForRendering)
+        else if (so.mBody && so.mUseBodyForRendering)
         {
             world = glm::translate(world, glm::vec3(so.mBody->GetWorldCenter().x, so.mBody->GetWorldCenter().y, so.mCustomPosition.z));
             

@@ -5,6 +5,7 @@
 ///  Created by Alex Koukoulas on 27/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
+#include "FontRepository.h"
 #include "GameSingletons.h"
 #include "Scene.h"
 #include "GameObjectConstants.h"
@@ -413,6 +414,21 @@ void Scene::LoadLevelInvariantObjects()
         joystickBoundsSO.mNameTag = sceneobject_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME;
         joystickBoundsSO.mInvisible = true;
         AddSceneObject(std::move(joystickBoundsSO));
+    }
+    
+    FontRepository::GetInstance().LoadFont(strutils::StringId("font"));
+    {
+        SceneObject testTextSO;
+        testTextSO.mCustomPosition.x = -5.0f;
+        testTextSO.mCustomPosition.y = -6.0f;
+        testTextSO.mCustomScale = glm::vec3(0.02f, 0.02f, 1.0f);
+        testTextSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        testTextSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
+        testTextSO.mTextureResourceId = FontRepository::GetInstance().GetFont(strutils::StringId("font"))->get().mFontTextureResourceId;
+        testTextSO.mFontName = strutils::StringId("font");
+        testTextSO.mSceneObjectType = SceneObjectType::GUIObject;
+        testTextSO.mText = "WAVE 1";
+        AddSceneObject(std::move(testTextSO));
     }
 }
 

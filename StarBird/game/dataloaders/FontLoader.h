@@ -1,31 +1,32 @@
 ///------------------------------------------------------------------------------------------------
-///  SceneRenderer.h                                                                                          
+///  FontLoader.h
 ///  StarBird                                                                                            
 ///                                                                                                
-///  Created by Alex Koukoulas on 28/01/2023                                                       
+///  Created by Alex Koukoulas on 03/02/2023
 ///------------------------------------------------------------------------------------------------
 
-#ifndef SceneRenderer_h
-#define SceneRenderer_h
-
-///------------------------------------------------------------------------------------------------
-
-#include "Camera.h"
-#include "SceneObject.h"
-#include <vector>
-#include <unordered_map>
+#ifndef FontLoader_h
+#define FontLoader_h
 
 ///------------------------------------------------------------------------------------------------
 
-class SceneRenderer final
+#include "BaseGameDataLoader.h"
+#include "../Font.h"
+
+#include <string>
+
+///------------------------------------------------------------------------------------------------
+
+class FontLoader: public BaseGameDataLoader
 {
 public:
-    SceneRenderer();
-    
-    void Render(std::vector<SceneObject>& sceneObjects);
-    
+    FontLoader();
+    Font& LoadFont(const std::string& fontName);
+
+private:
+    Font mConstructedFont;
 };
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* SceneRenderer_h */
+#endif /* FontLoader_h */
