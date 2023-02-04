@@ -89,6 +89,7 @@
 		92DAA4CD29829A4C0062A438 /* ShaderLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92DAA4B429829A4C0062A438 /* ShaderLoader.cpp */; };
 		92DAA4CE29829A4C0062A438 /* DataFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92DAA4B529829A4C0062A438 /* DataFileLoader.cpp */; };
 		92DAA4DC29829B380062A438 /* MathUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92DAA4D829829B380062A438 /* MathUtils.cpp */; };
+		92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92E8DAE4298E940B00591968 /* PhysicsCollisionListener.cpp */; };
 		92E96A6B29803597004A3120 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92E96A5F29803597004A3120 /* OpenGLES.framework */; };
 /* End PBXBuildFile section */
 
@@ -377,6 +378,8 @@
 		92DAA4D829829B380062A438 /* MathUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathUtils.cpp; sourceTree = "<group>"; };
 		92DAA4DA29829B380062A438 /* MathUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathUtils.h; sourceTree = "<group>"; };
 		92DAA4DE29829CF90062A438 /* OpenGL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenGL.h; sourceTree = "<group>"; };
+		92E8DAD8298E940B00591968 /* PhysicsCollisionListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhysicsCollisionListener.h; sourceTree = "<group>"; };
+		92E8DAE4298E940B00591968 /* PhysicsCollisionListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhysicsCollisionListener.cpp; sourceTree = "<group>"; };
 		92E96A5F29803597004A3120 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		92E96A6D29805C9D004A3120 /* vec4.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = vec4.hpp; sourceTree = "<group>"; };
 		92E96A6E29805C9D004A3120 /* integer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = integer.hpp; sourceTree = "<group>"; };
@@ -995,7 +998,11 @@
 				925FD876298AA8C80058E747 /* ObjectTypeDefinitionRepository.h */,
 				925FD873298976B20058E747 /* InputContext.h */,
 				925FD86429891B370058E747 /* LevelDefinition.h */,
+				925FD83829883DD80058E747 /* LevelUpdater.cpp */,
+				925FD84429883DD80058E747 /* LevelUpdater.h */,
 				925FD86729891C390058E747 /* PhysicsConstants.h */,
+				92E8DAE4298E940B00591968 /* PhysicsCollisionListener.cpp */,
+				92E8DAD8298E940B00591968 /* PhysicsCollisionListener.h */,
 				92A8517E2988318E00C99B61 /* RepeatableFlow.h */,
 				92C2198229842CF500B2D2C6 /* Scene.cpp */,
 				92C2198329842CF500B2D2C6 /* Scene.h */,
@@ -1003,8 +1010,6 @@
 				925FD874298981750058E747 /* SceneObjectConstants.h */,
 				92A8516E2985704800C99B61 /* SceneRenderer.cpp */,
 				92A8517A2985704800C99B61 /* SceneRenderer.h */,
-				925FD83829883DD80058E747 /* LevelUpdater.cpp */,
-				925FD84429883DD80058E747 /* LevelUpdater.h */,
 				925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */,
 				925FD87D298AD7050058E747 /* ObjectiveCUtils.h */,
 			);
@@ -1811,6 +1816,7 @@
 				9254CBF92969B79A00EFE0CC /* b2RopeJoint.cpp in Sources */,
 				9254CBE92969B79A00EFE0CC /* b2ContactSolver.cpp in Sources */,
 				925FD86F29892BE00058E747 /* LevelDataLoader.cpp in Sources */,
+				92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */,
 				92C851BA2969A9D70021923F /* main.cpp in Sources */,
 				9254CBEA2969B79A00EFE0CC /* b2CircleContact.cpp in Sources */,
 				92DAA4CE29829A4C0062A438 /* DataFileLoader.cpp in Sources */,

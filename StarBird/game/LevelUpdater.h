@@ -31,7 +31,7 @@ public:
     void InitLevel(LevelDefinition&& levelDef);
     void Update(std::vector<SceneObject>& sceneObjects, const float dtMilis);
     
-    std::unordered_set<strutils::StringId, strutils::StringIdHasher>& GetWaveEnemies();
+    size_t GetWaveEnemyCount() const;
     
 private:
     void UpdateAnimation(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis);

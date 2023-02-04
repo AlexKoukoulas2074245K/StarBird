@@ -5,21 +5,24 @@
 ///  Created by Alex Koukoulas on 30/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#include "InputContext.h"
-#include "PhysicsConstants.h"
-#include "Scene.h"
-#include "LevelUpdater.h"
-#include "SceneObjectConstants.h"
+#include "FontRepository.h"
 #include "GameObjectConstants.h"
 #include "GameSingletons.h"
-#include "FontRepository.h"
+#include "InputContext.h"
+#include "LevelUpdater.h"
 #include "ObjectTypeDefinitionRepository.h"
+#include "PhysicsConstants.h"
+#include "PhysicsCollisionListener.h"
+#include "Scene.h"
+#include "SceneObjectConstants.h"
+
 #include "../utils/Logging.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../resloading/ShaderResource.h"
 #include "../resloading/TextureResource.h"
 
 #include <Box2D/Box2D.h>
+#include <map>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -83,136 +86,78 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         }
     }, 300.0f, RepeatableFlow::RepeatPolicy::REPEAT);
     
-    class ContactListener : public b2ContactListener
+    static PhysicsCollisionListener collisionListener;
+    collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::PLAYER_BULLET_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-    public:
-        ContactListener(Scene& scene, LevelUpdater& sceneUpdater, std::vector<RepeatableFlow>& flows)
-            : mScene(scene)
-            , mLevelUpdater(sceneUpdater)
-            , mFlows(flows) {}
+        strutils::StringId enemyBodyAddressTag;
+        enemyBodyAddressTag.fromAddress(firstBody);
+        auto enemySceneObjectOpt = mScene.GetSceneObject(enemyBodyAddressTag);
         
-        void BeginContact(b2Contact* contact) override
+        if (enemySceneObjectOpt)
         {
-            const auto catA = contact->GetFixtureA()->GetFilterData().categoryBits;
-            const auto catB = contact->GetFixtureB()->GetFilterData().categoryBits;
+            auto& enemySO = enemySceneObjectOpt->get();
             
-            if (catA == physics_constants::ENEMY_CATEGORY_BIT && catB == physics_constants::PLAYER_BULLET_CATEGORY_BIT)
+            if (enemySO.mHealth <= 1)
             {
-                strutils::StringId bodyAddressTag;
-                bodyAddressTag.fromAddress(contact->GetFixtureA()->GetBody());
-                auto sceneObject = mScene.GetSceneObject(bodyAddressTag);
+                enemySO.mStateName = strutils::StringId("dying");
+                enemySO.mUseBodyForRendering = false;
+                enemySO.mCustomPosition.x = firstBody->GetWorldCenter().x;
+                enemySO.mCustomPosition.y = firstBody->GetWorldCenter().y;
                 
-                if (sceneObject)
-                {
-                    if (sceneObject->get().mHealth <= 1)
-                    {
-                        sceneObject->get().mStateName = strutils::StringId("dying");
-                        sceneObject->get().mUseBodyForRendering = false;
-                        sceneObject->get().mCustomPosition.x = contact->GetFixtureA()->GetBody()->GetWorldCenter().x;
-                        sceneObject->get().mCustomPosition.y = contact->GetFixtureA()->GetBody()->GetWorldCenter().y;
-                        
-                        auto filter = contact->GetFixtureA()->GetFilterData();
-                        filter.maskBits = 0;
-                        contact->GetFixtureA()->SetFilterData(filter);
-                        
-                        auto sceneObjectTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(sceneObject->get().mObjectFamilyTypeName);
-                        if (sceneObjectTypeDefOpt)
-                        {
-                            auto& sceneObjectTypeDef = sceneObjectTypeDefOpt->get();
-                            
-                            mLevelUpdater.UpdateAnimation(sceneObject->get(), sceneObjectTypeDef, 0.0f);
-                            
-                            const auto& currentAnim = sceneObjectTypeDef.mAnimations.at(sceneObject->get().mStateName);
-                            
-                            mFlows.emplace_back([=]()
-                            {
-                                mLevelUpdater.GetWaveEnemies().erase(bodyAddressTag);
-                                mScene.RemoveAllSceneObjectsWithNameTag(bodyAddressTag);
-                            }, currentAnim.mDuration, RepeatableFlow::RepeatPolicy::ONCE);
-                        }
-                    }
-                    else
-                    {
-                        sceneObject->get().mHealth--;
-                    }
-                }
-                
-                
-                auto filter = contact->GetFixtureB()->GetFilterData();
+                auto filter = firstBody->GetFixtureList()[0].GetFilterData();
                 filter.maskBits = 0;
-                contact->GetFixtureB()->SetFilterData(filter);
+                firstBody->GetFixtureList()[0].SetFilterData(filter);
                 
-                strutils::StringId bulletAddressTag;
-                bulletAddressTag.fromAddress(contact->GetFixtureB()->GetBody());
-                
-                mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
-            }
-            else if (catA == physics_constants::PLAYER_BULLET_CATEGORY_BIT && catB == physics_constants::ENEMY_CATEGORY_BIT)
-            {
-                strutils::StringId bodyAddressTag;
-                bodyAddressTag.fromAddress(contact->GetFixtureB()->GetBody());
-                auto sceneObject = mScene.GetSceneObject(bodyAddressTag);
-                
-                if (sceneObject)
+                auto enemySceneObjectTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemySO.mObjectFamilyTypeName);
+                if (enemySceneObjectTypeDefOpt)
                 {
-                    if (sceneObject->get().mHealth <= 1)
+                    auto& enemySOTypeDef = enemySceneObjectTypeDefOpt->get();
+                    
+                    UpdateAnimation(enemySO, enemySOTypeDef, 0.0f);
+                    
+                    const auto& currentAnim = enemySOTypeDef.mAnimations.at(enemySO.mStateName);
+                    
+                    mFlows.emplace_back([=]()
                     {
-                        sceneObject->get().mStateName = strutils::StringId("dying");
-                        sceneObject->get().mUseBodyForRendering = false;
-                        sceneObject->get().mCustomPosition.x = contact->GetFixtureB()->GetBody()->GetWorldCenter().x;
-                        sceneObject->get().mCustomPosition.y = contact->GetFixtureB()->GetBody()->GetWorldCenter().y;
-                        
-                        auto filter = contact->GetFixtureB()->GetFilterData();
-                        filter.maskBits = 0;
-                        contact->GetFixtureB()->SetFilterData(filter);
-                        
-                        auto sceneObjectTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(sceneObject->get().mObjectFamilyTypeName);
-                        if (sceneObjectTypeDefOpt)
-                        {
-                            auto& sceneObjectTypeDef = sceneObjectTypeDefOpt->get();
-                            
-                            mLevelUpdater.UpdateAnimation(sceneObject->get(), sceneObjectTypeDef, 0.0f);
-                            
-                            const auto& currentAnim = sceneObjectTypeDef.mAnimations.at(sceneObject->get().mStateName);
-                            mFlows.emplace_back([=]()
-                            {
-                                mLevelUpdater.GetWaveEnemies().erase(bodyAddressTag);
-                                mScene.RemoveAllSceneObjectsWithNameTag(bodyAddressTag);
-                            }, currentAnim.mDuration, RepeatableFlow::RepeatPolicy::ONCE);
-                        }
-                    }
-                    else
-                    {
-                        sceneObject->get().mHealth--;
-                    }
+                        mWaveEnemies.erase(enemyBodyAddressTag);
+                        mScene.RemoveAllSceneObjectsWithNameTag(enemyBodyAddressTag);
+                    }, currentAnim.mDuration, RepeatableFlow::RepeatPolicy::ONCE);
                 }
-                
-                strutils::StringId bulletAddressTag;
-                bulletAddressTag.fromAddress(contact->GetFixtureA()->GetBody());
-                mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
             }
-            else if (catA == physics_constants::PLAYER_BULLET_CATEGORY_BIT && catB == physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT)
+            else
             {
-                strutils::StringId bulletAddressTag;
-                bulletAddressTag.fromAddress(contact->GetFixtureA()->GetBody());
-                mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
-            }
-            else if (catB == physics_constants::PLAYER_BULLET_CATEGORY_BIT && catA == physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT)
-            {
-                strutils::StringId bulletAddressTag;
-                bulletAddressTag.fromAddress(contact->GetFixtureB()->GetBody());
-                mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
+                enemySO.mHealth--;
             }
         }
         
-    private:
-        Scene& mScene;
-        LevelUpdater& mLevelUpdater;
-        std::vector<RepeatableFlow>& mFlows;
-    };
+        // Erase bullet collision mask so that it doesn't also contribute to other
+        // enemy damage until it is removed from b2World
+        auto bulletFilter = secondBody->GetFixtureList()[0].GetFilterData();
+        bulletFilter.maskBits = 0;
+        secondBody->GetFixtureList()[0].SetFilterData(bulletFilter);
+        
+        strutils::StringId bulletAddressTag;
+        bulletAddressTag.fromAddress(secondBody);
+        
+        mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
+    });
     
-    static ContactListener cl(mScene, *this, mFlows);
-    mBox2dWorld.SetContactListener(&cl);
+    collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::PLAYER_BULLET_CATEGORY_BIT, physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
+    {
+        strutils::StringId bulletAddressTag;
+        bulletAddressTag.fromAddress(firstBody);
+        mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
+    });
+
+    collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::ENEMY_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
+    {
+        strutils::StringId enemyAddressTag;
+        enemyAddressTag.fromAddress(firstBody);
+        mScene.RemoveAllSceneObjectsWithNameTag(enemyAddressTag);
+        mWaveEnemies.erase(enemyAddressTag);
+    });
+
+    mBox2dWorld.SetContactListener(&collisionListener);
     
     mState = LevelState::WAVE_INTRO;
     mCurrentWaveNumber = 0;
@@ -310,9 +255,9 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
 
 ///------------------------------------------------------------------------------------------------
 
-std::unordered_set<strutils::StringId, strutils::StringIdHasher>& LevelUpdater::GetWaveEnemies()
+size_t LevelUpdater::GetWaveEnemyCount() const
 {
-    return mWaveEnemies;
+    return mWaveEnemies.size();
 }
 
 ///------------------------------------------------------------------------------------------------

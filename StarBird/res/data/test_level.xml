@@ -2,6 +2,7 @@
 <Level>
     <Camera type="world_cam" lenseHeight="30.0f"/>
     <Camera type="gui_cam" lenseHeight="30.0f"/>
+    
     <Wave>
         <Enemy position="-5.0f, 20.0f" type="test_enemy_chasing"/>
         <Enemy position=" 0.0f, 20.0f" type="test_enemy_chasing"/>
@@ -35,6 +36,8 @@
         <Enemy position=" 5.0f, 100.0f" type="test_enemy_chasing"/>
     </Wave>
     
+    
+    
     <Wave>
         <Enemy position="-2.0f, 32.0f" type="enemy_asteroid"/>
         <Enemy position="-4.0f, 29.0f" type="enemy_asteroid"/>
@@ -42,4 +45,6 @@
         <Enemy position=" 4.0f, 29.0f" type="enemy_asteroid"/>
         <Enemy position=" 2.0f, 32.0f" type="enemy_asteroid"/>
     </Wave>
+    
+    
 </Level>

@@ -27,7 +27,7 @@ class Scene final
 public:
     Scene();
     
-    int GetBodyCount() const;
+    std::string GetSceneStateDescription() const;
     
     std::optional<std::reference_wrapper<SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectNameTag);
     std::optional<std::reference_wrapper<const SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectNameTag) const;

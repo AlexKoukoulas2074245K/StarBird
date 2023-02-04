@@ -31,9 +31,9 @@ Scene::Scene()
 
 ///------------------------------------------------------------------------------------------------
 
-int Scene::GetBodyCount() const
+std::string Scene::GetSceneStateDescription() const
 {
-    return mBox2dWorld.GetBodyCount();
+    return "bodies: " + std::to_string(mBox2dWorld.GetBodyCount()) + " enemies: " + std::to_string(mLevelUpdater.GetWaveEnemyCount());
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -302,6 +302,35 @@ void Scene::LoadLevelInvariantObjects()
         fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0.0f;
         fixtureDef.filter.categoryBits = physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT;
+     
+        wallBody->CreateFixture(&fixtureDef);
+        
+        SceneObject so;
+        so.mBody = wallBody;
+        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
+        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mUseBodyForRendering = true;
+        so.mInvisible = true;
+        AddSceneObject(std::move(so));
+    }
+    
+    // ENEMY_ONLY_BOT_WALL
+    {
+        b2BodyDef wallBodyDef;
+        wallBodyDef.position.Set(0.0f, -worldCam.GetCameraLenseHeight()/2 - 5.0f);
+        
+        b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
+
+        b2PolygonShape wallShape;
+        wallShape.SetAsBox(worldCam.GetCameraLenseWidth()/2.0, 1.0f);
+        
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &wallShape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.0f;
+        fixtureDef.restitution = 0.0f;
+        fixtureDef.filter.categoryBits = physics_constants::ENEMY_ONLY_WALL_CATEGORY_BIT;
      
         wallBody->CreateFixture(&fixtureDef);
         

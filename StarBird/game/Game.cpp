@@ -157,7 +157,7 @@ void Game::Run()
         
         if (secsAccumulator > 1.0f)
         {
-            Log(LogType::INFO, "FPS: %d Body count %d", framesAccumulator, scene.GetBodyCount());
+            Log(LogType::INFO, "FPS: %d | %s", framesAccumulator, scene.GetSceneStateDescription().c_str());
             framesAccumulator = 0;
             secsAccumulator = 0.0f;
         }

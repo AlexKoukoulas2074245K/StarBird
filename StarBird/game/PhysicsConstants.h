@@ -26,6 +26,7 @@ static constexpr uint16 PLAYER_BULLET_CATEGORY_BIT = 0x8;
 static constexpr uint16 GLOBAL_WALL_CATEGORY_BIT = 0x10;
 static constexpr uint16 PLAYER_ONLY_WALL_CATEGORY_BIT = 0x20;
 static constexpr uint16 BULLET_ONLY_WALL_CATEGORY_BIT = 0x40;
+static constexpr uint16 ENEMY_ONLY_WALL_CATEGORY_BIT = 0x80;
 
 static constexpr int WORLD_VELOCITY_ITERATIONS = 6;
 static constexpr int WORLD_POSITION_ITERATIONS = 2;
