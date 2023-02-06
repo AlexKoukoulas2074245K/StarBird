@@ -32,4 +32,3 @@ void main()
     
     gl_Position = proj * view * world * vec4(position, 1.0);
 }
-

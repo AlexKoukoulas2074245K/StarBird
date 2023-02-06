@@ -178,6 +178,10 @@ inline glm::vec3 Vec2ToVec3(const glm::vec2& vec)
 
 ///-----------------------------------------------------------------------------------------------
 /// Tweening Modes Supported
+///
+/// EASE_IN (slow at first then accelerate)
+/// EASE_OUT (fast at first then decelerate)
+/// EASE_IN_OUT (EASE_IN before mid point, EASE_OUT after mid point)
 enum class TweeningMode
 {
     EASE_IN, EASE_OUT, EASE_IN_OUT
@@ -262,21 +266,12 @@ inline float BounceFunction(const float t)
 }
 
 ///-----------------------------------------------------------------------------------------------
-/// Elastic Tweening function to be used by clients of the TweenValue function. \see TweenValue()
-/// @param[in] t the input value to the tween function.
-/// @returns the transformed t value elastically.
-inline float ElasticFunction(const float t)
-{
-    return std::sinf(13.0f * PI * 0.5f * t) * std::powf(2.0f, 10.0f * (t - 1));
-}
-
-///-----------------------------------------------------------------------------------------------
 /// Tweens the given value based on the tweening function and the tweening mode.
-/// @param[in] val the value to be tweened.
+/// @param[in] val the value to be tweened in [0..1] range.
 /// @param[in] tweeningFunc the tweening function to be used (defaults to linear).
 /// @param[in] tweeningMode the tweening mode (defaults to ease out).
 /// @returns the tweened value.
-inline float TweenValue(const float val, const std::function<float(const float)> tweeningFunc = LinearFunction , const TweeningMode tweeningMode = TweeningMode::EASE_OUT)
+inline float TweenValue(const float val, const std::function<float(const float)> tweeningFunc = LinearFunction , const TweeningMode tweeningMode = TweeningMode::EASE_IN)
 {
     switch (tweeningMode)
     {
@@ -440,7 +435,6 @@ bool IsPointInsideRectangle(const glm::vec2& rectangleBottomLeft, const glm::vec
 /// @param[in] touchPosition touch position (x, y) in the [0..1] range where 0,0 is the top-left corner.
 /// @returns the touch position in world space.
 glm::vec3 ComputeTouchCoordsInWorldSpace(const glm::vec2& windowDimensions, const glm::vec2& touchPosition, const glm::mat4& viewMatrix, const glm::mat4& projMatrix);
-
 
 ///------------------------------------------------------------------------------------------------
 

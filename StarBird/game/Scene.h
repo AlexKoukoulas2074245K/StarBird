@@ -35,6 +35,7 @@ public:
     void AddSceneObject(SceneObject&& sceneObject);
     void RemoveAllSceneObjectsWithNameTag(const strutils::StringId& nameTag);
 
+    void FreezeAllPhysicsBodies();
     void LoadLevel(const std::string& levelName);
     
     void UpdateScene(const float dtMilis);

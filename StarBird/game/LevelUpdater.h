@@ -15,6 +15,7 @@
 #include "RepeatableFlow.h"
 #include "../utils/StringUtils.h"
 
+#include <optional>
 #include <unordered_set>
 #include <vector>
 
@@ -32,22 +33,36 @@ public:
     void Update(std::vector<SceneObject>& sceneObjects, const float dtMilis);
     
     size_t GetWaveEnemyCount() const;
-    
-private:
-    void UpdateAnimation(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis);
-    void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis);
-    
-    void CreateWaveIntroText();
-    void CreateWave();
+    std::optional<std::reference_wrapper<RepeatableFlow>> GetFlow(const strutils::StringId& flowName);
     
 private:
     enum class LevelState
     {
         WAVE_INTRO,
         FIGHTING_WAVE,
+        UPGRADE_OVERLAY_IN,
+        UPGRADE,
+        UPGRADE_OVERLAY_OUT,
         FINISHED_LEVEL
     };
     
+    enum class StateMachineUpdateResult
+    {
+        CONTINUE,
+        BLOCK_UPDATE
+    };
+    
+private:
+    StateMachineUpdateResult UpdateStateMachine(const float dtMilis);
+    void UpdateAnimation(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis);
+    void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis);
+    
+    void OnBlockedUpdate();
+    void CreateWaveIntroText();
+    void CreateWave();
+    void CreateUpgradeSceneObjects();
+    
+private:
     Scene& mScene;
     b2World& mBox2dWorld;
     LevelDefinition mLevel;

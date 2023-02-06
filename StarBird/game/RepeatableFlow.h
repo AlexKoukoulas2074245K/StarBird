@@ -10,6 +10,10 @@
 
 ///------------------------------------------------------------------------------------------------
 
+#include "../utils/StringUtils.h"
+
+///------------------------------------------------------------------------------------------------
+
 class RepeatableFlow
 {
 public:
@@ -20,15 +24,19 @@ public:
     
     using CallbackT = std::function<void()>;
     
-    RepeatableFlow(CallbackT callback, float afterMs, RepeatPolicy repeatPolicy):
+    RepeatableFlow(CallbackT callback, float afterMs, RepeatPolicy repeatPolicy, strutils::StringId name = strutils::StringId()):
           mCallback(callback)
         , mTargetDuration(afterMs)
         , mTicksLeft(afterMs)
         , mRepeatPolicy(repeatPolicy)
         , mIsRunning(true)
+        , mName(name)
     {}
     
-    bool IsRunning() const { return mIsRunning; }
+    inline bool IsRunning() const { return mIsRunning; }
+    inline const strutils::StringId& GetName() const { return mName; }
+    inline float GetDuration() const { return mTargetDuration; }
+    inline float GetTicksLeft() const { return mTicksLeft; }
     
     void Update(float dt)
     {
@@ -55,6 +63,7 @@ private:
     float mTicksLeft;
     RepeatPolicy mRepeatPolicy;
     bool mIsRunning;
+    strutils::StringId mName;
 };
 
 ///------------------------------------------------------------------------------------------------

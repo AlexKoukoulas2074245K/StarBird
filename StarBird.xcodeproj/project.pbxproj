@@ -1046,12 +1046,12 @@
 			children = (
 				92C851682969A7CB0021923F /* Assets.xcassets */,
 				92C2198129842CF500B2D2C6 /* game */,
+				92DAA49729829A4C0062A438 /* resloading */,
+				92DAA4CF29829B380062A438 /* utils */,
 				92C8516A2969A7CB0021923F /* LaunchScreen.storyboard */,
 				92C851B92969A9D70021923F /* main.cpp */,
 				92C851C62969ACB20021923F /* res */,
-				92DAA49729829A4C0062A438 /* resloading */,
 				92C851BE2969AAA00021923F /* SDL_uikit_main.c */,
-				92DAA4CF29829B380062A438 /* utils */,
 			);
 			path = StarBird;
 			sourceTree = "<group>";

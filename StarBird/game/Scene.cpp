@@ -93,6 +93,27 @@ void Scene::RemoveAllSceneObjectsWithNameTag(const strutils::StringId& nameTag)
 
 ///------------------------------------------------------------------------------------------------
 
+void Scene::FreezeAllPhysicsBodies()
+{
+    for (auto& so: mSceneObjectsToAdd)
+    {
+        if (so.mBody)
+        {
+            so.mBody->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+        }
+    }
+    
+    for (auto& so: mSceneObjects)
+    {
+        if (so.mBody)
+        {
+            so.mBody->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+        }
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
 void Scene::LoadLevel(const std::string& levelName)
 {
     LevelDataLoader levelDataLoader;
