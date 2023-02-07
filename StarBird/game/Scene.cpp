@@ -348,12 +348,12 @@ void Scene::LoadLevelInvariantObjects()
     // ENEMY_ONLY_BOT_WALL
     {
         b2BodyDef wallBodyDef;
-        wallBodyDef.position.Set(0.0f, -worldCam.GetCameraLenseHeight()/2 - 5.0f);
+        wallBodyDef.position.Set(0.0f, -worldCam.GetCameraLenseHeight()/2 - 7.0f);
         
         b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
 
         b2PolygonShape wallShape;
-        wallShape.SetAsBox(worldCam.GetCameraLenseWidth()/2.0, 1.0f);
+        wallShape.SetAsBox(worldCam.GetCameraLenseWidth(), 2.0f);
         
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &wallShape;
