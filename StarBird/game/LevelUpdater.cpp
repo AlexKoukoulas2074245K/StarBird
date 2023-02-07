@@ -16,6 +16,8 @@
 #include "Scene.h"
 #include "SceneObjectConstants.h"
 
+#include "dataloaders/UpgradesLoader.h"
+
 #include "../utils/Logging.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../resloading/ShaderResource.h"
@@ -44,48 +46,31 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
     
     mFlows.emplace_back([&]()
     {
+        auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
+        bool hasBulletDamageUpgrade = equippedUpgrades.count(gameobject_constants::BULLET_DAMAGE_UGPRADE_NAME) != 0;
+        bool hasDoubleBulletUpgrade = equippedUpgrades.count(gameobject_constants::DOUBLE_BULLET_UGPRADE_NAME) != 0;
+        
         auto playerOpt = mScene.GetSceneObject(sceneobject_constants::PLAYER_SCENE_OBJECT_NAME);
         if (playerOpt)
         {
-            SceneObject so;
-            b2BodyDef bodyDef;
-            bodyDef.type = b2_dynamicBody;
-            bodyDef.position = playerOpt->get().mBody->GetWorldCenter();
-            bodyDef.bullet =  true;
-            b2Body* body = mBox2dWorld.CreateBody(&bodyDef);
-            body->SetLinearVelocity(b2Vec2(0.0f, 16.0f));
-            b2PolygonShape dynamicBox;
-            
-            auto& resService = resources::ResourceLoadingService::GetInstance();
-            auto bulletTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::BULLET_TEXTURE_FILE_NAME);
-            auto& bulletTexture = resService.GetResource<resources::TextureResource>(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::BULLET_TEXTURE_FILE_NAME);
-            
-            float textureAspect = bulletTexture.GetDimensions().x/bulletTexture.GetDimensions().y;
-            dynamicBox.SetAsBox(0.25f, 0.25f/textureAspect);
-            
-            b2FixtureDef fixtureDef;
-            fixtureDef.shape = &dynamicBox;
-            fixtureDef.density = 0.1f;
-            fixtureDef.friction = 0.0f;
-            fixtureDef.restitution = 0.0f;
-            fixtureDef.filter.categoryBits = physics_constants::PLAYER_BULLET_CATEGORY_BIT;
-            fixtureDef.filter.maskBits &= (~physics_constants::PLAYER_CATEGORY_BIT);
-            fixtureDef.filter.maskBits &= (~physics_constants::PLAYER_BULLET_CATEGORY_BIT);
-            
-            body->CreateFixture(&fixtureDef);
-            
-            so.mBody = body;
-            so.mCustomPosition.z = -0.5f;
-            so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-            so.mTextureResourceId = bulletTextureResourceId;
-            so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
-            so.mSceneObjectType = SceneObjectType::WorldGameObject;
-            so.mNameTag.fromAddress(so.mBody);
-            so.mUseBodyForRendering = true;
-            
-            mScene.AddSceneObject(std::move(so));
+            if (hasDoubleBulletUpgrade)
+            {
+                auto bulletPosition = math::Box2dVec2ToGlmVec3(playerOpt->get().mBody->GetWorldCenter());
+                
+                // Left Bullet
+                bulletPosition.x -= gameobject_constants::PLAYER_BULLET_X_OFFSET;
+                CreateBulletAtPosition(hasBulletDamageUpgrade ? gameobject_constants::BETTER_PLAYER_BULLET_TYPE : gameobject_constants::PLAYER_BULLET_TYPE, bulletPosition);
+                
+                // Right Bullet
+                bulletPosition.x += 2 * gameobject_constants::PLAYER_BULLET_X_OFFSET;
+                CreateBulletAtPosition(hasBulletDamageUpgrade ? gameobject_constants::BETTER_PLAYER_BULLET_TYPE : gameobject_constants::PLAYER_BULLET_TYPE, bulletPosition);
+            }
+            else
+            {
+                CreateBulletAtPosition(hasBulletDamageUpgrade ? gameobject_constants::BETTER_PLAYER_BULLET_TYPE : gameobject_constants::PLAYER_BULLET_TYPE, math::Box2dVec2ToGlmVec3( playerOpt->get().mBody->GetWorldCenter()));
+            }
         }
-    }, 300.0f, RepeatableFlow::RepeatPolicy::REPEAT, gameobject_constants::PLAYER_BULLET_FLOW_NAME);
+    }, gameobject_constants::PLAYER_BULLET_FLOW_DELAY_MILIS, RepeatableFlow::RepeatPolicy::REPEAT, gameobject_constants::PLAYER_BULLET_FLOW_NAME);
     
     static PhysicsCollisionListener collisionListener;
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::PLAYER_BULLET_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
@@ -98,7 +83,13 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         {
             auto& enemySO = enemySceneObjectOpt->get();
             
-            if (enemySO.mHealth <= 1)
+            auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
+            bool hasBulletDamageUpgrade = equippedUpgrades.count(gameobject_constants::BULLET_DAMAGE_UGPRADE_NAME) != 0;
+            
+            enemySO.mHealth -= (hasBulletDamageUpgrade ? 2 : 1);
+            
+            
+            if (enemySO.mHealth <= 0)
             {
                 enemySO.mStateName = strutils::StringId("dying");
                 enemySO.mUseBodyForRendering = false;
@@ -124,10 +115,6 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                         mScene.RemoveAllSceneObjectsWithNameTag(enemyBodyAddressTag);
                     }, currentAnim.mDuration, RepeatableFlow::RepeatPolicy::ONCE);
                 }
-            }
-            else
-            {
-                enemySO.mHealth--;
             }
         }
         
@@ -160,9 +147,12 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
 
     mBox2dWorld.SetContactListener(&collisionListener);
     
+    UpgradesLoader loader;
+    GameSingletons::SetAvailableUpgrades(loader.LoadAllUpgrades());
+    
     mState = LevelState::WAVE_INTRO;
     mCurrentWaveNumber = 0;
-    CreateWaveIntroText();
+    CreateWaveIntro();
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -230,11 +220,12 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
     }
     
     static float msAccum = 0.0f;
-    msAccum -= dtMilis * gameobject_constants::BACKGROUND_SPEED;
+    msAccum += dtMilis * gameobject_constants::BACKGROUND_SPEED;
+    msAccum = std::fmod(msAccum, 1.0f);
     
     if (bgSO)
     {
-       bgSO->get().mShaderFloatUniformValues[sceneobject_constants::TEXTURE_OFFSET_UNIFORM_NAME] = msAccum;
+       bgSO->get().mShaderFloatUniformValues[sceneobject_constants::TEXTURE_OFFSET_UNIFORM_NAME] = -msAccum;
     }
     
     for (auto& flow: mFlows)
@@ -306,9 +297,18 @@ LevelUpdater::StateMachineUpdateResult LevelUpdater::UpdateStateMachine(const fl
         {
             if (mWaveEnemies.size() == 0)
             {
-                mState = LevelState::UPGRADE_OVERLAY_IN;
-                CreateUpgradeSceneObjects();
-                tween = 0.0f;
+                if (GameSingletons::GetAvailableUpgrades().size() > 1)
+                {
+                    mState = LevelState::UPGRADE_OVERLAY_IN;
+                    CreateUpgradeSceneObjects();
+                    tween = 0.0f;
+                }
+                else
+                {
+                    mState = LevelState::WAVE_INTRO;
+                    mCurrentWaveNumber++;
+                    CreateWaveIntro();
+                }
             }
         } break;
         
@@ -331,11 +331,13 @@ LevelUpdater::StateMachineUpdateResult LevelUpdater::UpdateStateMachine(const fl
             
         case LevelState::UPGRADE:
         {
-            tween += dtMilis * gameobject_constants::UPGRADE_MOVEMENT_SPEED;
-            float perc = math::Min(1.0f, math::TweenValue(tween, math::QuartFunction, math::TweeningMode::EASE_IN));
+            tween = math::Min(1.0f, tween + dtMilis * gameobject_constants::UPGRADE_MOVEMENT_SPEED);
+            float perc = math::Min(1.0f, math::TweenValue(tween, math::BounceFunction, math::TweeningMode::EASE_IN));
             
             auto leftUpgradeContainerSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
             auto rightUpgradeContainerSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+            auto leftUpgradeSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
+            auto rightUpgradeSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
             
             if (leftUpgradeContainerSoOpt)
             {
@@ -347,14 +349,91 @@ LevelUpdater::StateMachineUpdateResult LevelUpdater::UpdateStateMachine(const fl
                 rightUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * gameobject_constants::RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
             }
             
-//            mCurrentWaveNumber++;
-//            CreateWaveIntroText();
+            if (leftUpgradeSoOpt)
+            {
+                leftUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::LEFT_UPGRADE_INIT_POS.x + perc * gameobject_constants::LEFT_UPGRADE_TARGET_POS.x;
+            }
+            
+            if (rightUpgradeSoOpt)
+            {
+                rightUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::RIGHT_UPGRADE_INIT_POS.x + perc * gameobject_constants::RIGHT_UPGRADE_TARGET_POS.x;
+            }
+            
+            auto selectedUpgradeName = TestForUpgradeSelected();
+            if (selectedUpgradeName != strutils::StringId())
+            {
+                auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
+                auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
+                
+                if (selectedUpgradeName == sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME)
+                {
+                    OnUpgradeEquipped(mUpgradeSelection.first.mUpgradeName);
+                    equippedUpgrades[mUpgradeSelection.first.mUpgradeName] = mUpgradeSelection.first;
+                    availableUpgrades[mUpgradeSelection.second.mUpgradeName] = mUpgradeSelection.second;
+                }
+                else
+                {
+                    OnUpgradeEquipped(mUpgradeSelection.second.mUpgradeName);
+                    equippedUpgrades[mUpgradeSelection.second.mUpgradeName] = mUpgradeSelection.second;
+                    availableUpgrades[mUpgradeSelection.first.mUpgradeName] = mUpgradeSelection.first;
+                }
+                
+                mState = LevelState::UPGRADE_OVERLAY_OUT;
+            }
             
             return StateMachineUpdateResult::BLOCK_UPDATE;
         } break;
             
         case LevelState::UPGRADE_OVERLAY_OUT:
         {
+            tween = math::Max(0.0f, tween - dtMilis * gameobject_constants::UPGRADE_MOVEMENT_SPEED);
+            float perc = math::Max(0.0f, math::TweenValue(tween, math::QuadFunction, math::TweeningMode::EASE_OUT));
+            
+            auto upgradeOverlaySoOpt = mScene.GetSceneObject(sceneobject_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME);
+            auto leftUpgradeContainerSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+            auto rightUpgradeContainerSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+            auto leftUpgradeSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
+            auto rightUpgradeSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
+            
+            if (leftUpgradeContainerSoOpt)
+            {
+                leftUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * gameobject_constants::LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
+            }
+            
+            if (rightUpgradeContainerSoOpt)
+            {
+                rightUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * gameobject_constants::RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
+            }
+            
+            if (leftUpgradeSoOpt)
+            {
+                leftUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::LEFT_UPGRADE_INIT_POS.x + perc * gameobject_constants::LEFT_UPGRADE_TARGET_POS.x;
+            }
+            
+            if (rightUpgradeSoOpt)
+            {
+                rightUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::RIGHT_UPGRADE_INIT_POS.x + perc * gameobject_constants::RIGHT_UPGRADE_TARGET_POS.x;
+            }
+            
+            if (upgradeOverlaySoOpt)
+            {
+                auto& upgradeOverlaySo = upgradeOverlaySoOpt->get();
+                auto& upgradeOverlayAlpha = upgradeOverlaySo.mShaderFloatUniformValues[sceneobject_constants::CUSTOM_ALPHA_UNIFORM_NAME];
+                upgradeOverlayAlpha -= dtMilis * gameobject_constants::OVERLAY_DARKENING_SPEED;
+                if (upgradeOverlayAlpha <= 0)
+                {
+                    mScene.RemoveAllSceneObjectsWithNameTag(sceneobject_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithNameTag(sceneobject_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithNameTag(sceneobject_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithNameTag(sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithNameTag(sceneobject_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
+                    upgradeOverlayAlpha = 0;
+                    mState = LevelState::WAVE_INTRO;
+                    mCurrentWaveNumber++;
+                    CreateWaveIntro();
+                }
+            }
+            
             return StateMachineUpdateResult::BLOCK_UPDATE;
         } break;
             
@@ -469,8 +548,12 @@ void LevelUpdater::OnBlockedUpdate()
 {
     auto joystickSoOpt = mScene.GetSceneObject(sceneobject_constants::JOYSTICK_SCENE_OBJECT_NAME);
     auto joystickBoundsSOopt = mScene.GetSceneObject(sceneobject_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
+    auto playerSoOpt = mScene.GetSceneObject(sceneobject_constants::PLAYER_SCENE_OBJECT_NAME);
     
-    mScene.FreezeAllPhysicsBodies();
+    if (playerSoOpt)
+    {
+        playerSoOpt->get().mBody->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+    }
     
     if (joystickSoOpt)
     {
@@ -485,7 +568,29 @@ void LevelUpdater::OnBlockedUpdate()
 
 ///------------------------------------------------------------------------------------------------
 
-void LevelUpdater::CreateWaveIntroText()
+void LevelUpdater::OnUpgradeEquipped(const strutils::StringId& upgradeId)
+{
+    if (upgradeId == gameobject_constants::MIRROR_IMAGE_UGPRADE_NAME)
+    {
+        CreateMirrorImageSceneObjects();
+    }
+    else if (upgradeId == gameobject_constants::BULLET_SPEED_UGPRADE_NAME)
+    {
+        auto flowIter = std::find_if(mFlows.begin(), mFlows.end(), [](const RepeatableFlow& flow)
+        {
+            return flow.GetName() == gameobject_constants::PLAYER_BULLET_FLOW_NAME;
+        });
+        
+        if (flowIter != mFlows.end())
+        {
+            flowIter->SetDuration(gameobject_constants::PLAYER_BULLET_FLOW_DELAY_MILIS/2);
+        }
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::CreateWaveIntro()
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
@@ -588,29 +693,169 @@ void LevelUpdater::CreateUpgradeSceneObjects()
     
     // Left Upgrade Container
     {
+        SceneObject leftUpgradeContainerSO;
+        leftUpgradeContainerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
+        leftUpgradeContainerSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME);
+        leftUpgradeContainerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        leftUpgradeContainerSO.mSceneObjectType = SceneObjectType::GUIObject;
+        leftUpgradeContainerSO.mCustomScale = gameobject_constants::LEFT_UPGRADE_CONTAINER_SCALE;
+        leftUpgradeContainerSO.mCustomPosition = gameobject_constants::LEFT_UPGRADE_CONTAINER_INIT_POS;
+        leftUpgradeContainerSO.mNameTag = sceneobject_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
+        mScene.AddSceneObject(std::move(leftUpgradeContainerSO));
+    }
+    
+    // Left Upgrade
+    {
+        auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
+        auto upgradesIter = availableUpgrades.begin();
+        std::advance(upgradesIter, math::RandomInt(0, static_cast<int>(availableUpgrades.size() - 1)));
+        auto& upgrade = upgradesIter->second;
+        
         SceneObject leftUpgradeSO;
         leftUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        leftUpgradeSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME);
+        leftUpgradeSO.mTextureResourceId = upgrade.mTextureResourceId;
         leftUpgradeSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
         leftUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
-        leftUpgradeSO.mCustomScale = gameobject_constants::LEFT_UPGRADE_CONTAINER_SCALE;
-        leftUpgradeSO.mCustomPosition = gameobject_constants::LEFT_UPGRADE_CONTAINER_INIT_POS;
-        leftUpgradeSO.mNameTag = sceneobject_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
+        leftUpgradeSO.mCustomScale = gameobject_constants::LEFT_UPGRADE_SCALE;
+        leftUpgradeSO.mCustomPosition = gameobject_constants::LEFT_UPGRADE_INIT_POS;
+        leftUpgradeSO.mNameTag = sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(leftUpgradeSO));
+        
+        mUpgradeSelection.first = upgrade;
+        availableUpgrades.erase(upgrade.mUpgradeName);
     }
     
     // Right Upgrade Container
     {
+        SceneObject rightUpgradeContainerSO;
+        rightUpgradeContainerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
+        rightUpgradeContainerSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME);
+        rightUpgradeContainerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        rightUpgradeContainerSO.mSceneObjectType = SceneObjectType::GUIObject;
+        rightUpgradeContainerSO.mCustomScale = gameobject_constants::RIGHT_UPGRADE_CONTAINER_SCALE;
+        rightUpgradeContainerSO.mCustomPosition = gameobject_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS;
+        rightUpgradeContainerSO.mNameTag = sceneobject_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
+        mScene.AddSceneObject(std::move(rightUpgradeContainerSO));
+    }
+    
+    // Right Upgrade
+    {
+        auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
+        auto upgradesIter = availableUpgrades.begin();
+        std::advance(upgradesIter, math::RandomInt(0, static_cast<int>(availableUpgrades.size() - 1)));
+        auto& upgrade = upgradesIter->second;
+        
         SceneObject rightUpgradeSO;
         rightUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        rightUpgradeSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME);
+        rightUpgradeSO.mTextureResourceId = upgrade.mTextureResourceId;
         rightUpgradeSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
         rightUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
-        rightUpgradeSO.mCustomScale = gameobject_constants::RIGHT_UPGRADE_CONTAINER_SCALE;
-        rightUpgradeSO.mCustomPosition = gameobject_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS;
-        rightUpgradeSO.mNameTag = sceneobject_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
+        rightUpgradeSO.mCustomScale = gameobject_constants::RIGHT_UPGRADE_SCALE;
+        rightUpgradeSO.mCustomPosition = gameobject_constants::RIGHT_UPGRADE_INIT_POS;
+        rightUpgradeSO.mNameTag = sceneobject_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(rightUpgradeSO));
+        
+        mUpgradeSelection.second = upgrade;
+        availableUpgrades.erase(upgrade.mUpgradeName);
     }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::CreateBulletAtPosition(const strutils::StringId& bulletType, const glm::vec3& position)
+{
+    auto bulletDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(bulletType);
+    if (bulletDefOpt)
+    {
+        auto& bulletDef = bulletDefOpt->get();
+        
+        SceneObject so;
+        b2BodyDef bodyDef;
+        bodyDef.type = b2_dynamicBody;
+        bodyDef.position.x = position.x;
+        bodyDef.position.y = position.y;
+        bodyDef.bullet =  true;
+        b2Body* body = mBox2dWorld.CreateBody(&bodyDef);
+        body->SetLinearVelocity(b2Vec2(bulletDef.mCustomLinearVelocity.x, bulletDef.mCustomLinearVelocity.y));
+        b2PolygonShape dynamicBox;
+        
+        auto& bulletTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(bulletDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId);
+        float textureAspect = bulletTexture.GetDimensions().x/bulletTexture.GetDimensions().y;
+        dynamicBox.SetAsBox(bulletDef.mSize, bulletDef.mSize/textureAspect);
+        
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &dynamicBox;
+        fixtureDef.density = bulletDef.mDensity;
+        fixtureDef.friction = 0.0f;
+        fixtureDef.restitution = 0.0f;
+        fixtureDef.filter = bulletDef.mContactFilter;
+        
+        body->CreateFixture(&fixtureDef);
+        
+        so.mBody = body;
+        so.mCustomPosition.z = gameobject_constants::BULLET_Z;
+        so.mShaderResourceId = bulletDef.mShaderResourceId;
+        so.mTextureResourceId = bulletDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId;
+        so.mMeshResourceId = bulletDef.mMeshResourceId;
+        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mNameTag.fromAddress(so.mBody);
+        so.mUseBodyForRendering = true;
+        
+        mScene.AddSceneObject(std::move(so));
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::CreateMirrorImageSceneObjects()
+{
+    
+}
+
+///------------------------------------------------------------------------------------------------
+
+strutils::StringId LevelUpdater::TestForUpgradeSelected() const
+{
+    const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
+    assert(camOpt);
+    const auto& guiCamera = camOpt->get();
+    const auto& inputContext = GameSingletons::GetInputContext();
+    
+    if (inputContext.mEventType == SDL_FINGERDOWN)
+    {
+        auto leftUpgradeSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
+        auto rightUpgradeSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
+        
+        auto touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
+        
+        // Left Upgrade test
+        if (leftUpgradeSoOpt)
+        {
+            auto& leftUpgrade = leftUpgradeSoOpt->get();
+            auto upgradeRectBottomLeft = glm::vec2(leftUpgrade.mCustomPosition.x - leftUpgrade.mCustomScale.x/2, leftUpgrade.mCustomPosition.y - leftUpgrade.mCustomScale.y/2);
+            auto upgradeRectTopRight = glm::vec2(leftUpgrade.mCustomPosition.x + leftUpgrade.mCustomScale.x/2, leftUpgrade.mCustomPosition.y + leftUpgrade.mCustomScale.y/2);
+            
+            if (math::IsPointInsideRectangle(upgradeRectBottomLeft, upgradeRectTopRight, touchPos))
+            {
+                return leftUpgrade.mNameTag;
+            }
+        }
+        
+        // Right Upgrade test
+        if (rightUpgradeSoOpt)
+        {
+            auto& rightUpgrade = rightUpgradeSoOpt->get();
+            auto upgradeRectBottomLeft = glm::vec2(rightUpgrade.mCustomPosition.x - rightUpgrade.mCustomScale.x/2, rightUpgrade.mCustomPosition.y - rightUpgrade.mCustomScale.y/2);
+            auto upgradeRectTopRight = glm::vec2(rightUpgrade.mCustomPosition.x + rightUpgrade.mCustomScale.x/2, rightUpgrade.mCustomPosition.y + rightUpgrade.mCustomScale.y/2);
+            
+            if (math::IsPointInsideRectangle(upgradeRectBottomLeft, upgradeRectTopRight, touchPos))
+            {
+                return rightUpgrade.mNameTag;
+            }
+        }
+    }
+    
+    return strutils::StringId();
 }
 
 ///------------------------------------------------------------------------------------------------

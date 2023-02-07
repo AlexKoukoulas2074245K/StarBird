@@ -13,9 +13,12 @@
 #include "Camera.h"
 #include "InputContext.h"
 #include "SceneObject.h"
+#include "UpgradeDefinition.h"
 #include "../utils/MathUtils.h"
+#include "../utils/StringUtils.h"
 
 #include <optional>
+#include <map>
 #include <unordered_map>
 
 ///------------------------------------------------------------------------------------------------
@@ -37,11 +40,19 @@ public:
     static std::optional<std::reference_wrapper<Camera>> GetCameraForSceneObjectType(const SceneObjectType sceneObjectType);
     static void SetCameraForSceneObjectType(const SceneObjectType sceneObjectType, Camera&& camera);
     
+    using UpgradeMap = std::map<strutils::StringId, UpgradeDefinition>;
+    static UpgradeMap& GetEquippedUpgrades();
+    static UpgradeMap& GetAvailableUpgrades();
+    static void SetEquippedUpgrades(UpgradeMap&& upgrades);
+    static void SetAvailableUpgrades(UpgradeMap&& upgrades);
+    
 private:
     static InputContext mInputContext;
     static SDL_Window* mWindow;
     static glm::vec2 mWindowDimensions;
     static std::unordered_map<SceneObjectType, Camera> mSceneObjectTypeToCameraMap;
+    static UpgradeMap mEquippedUpgrades;
+    static UpgradeMap mAvailableUpgrades;
 };
 
 ///------------------------------------------------------------------------------------------------

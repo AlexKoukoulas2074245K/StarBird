@@ -241,6 +241,8 @@ void Scene::LoadLevelInvariantObjects()
         playerSO.mUseBodyForRendering = true;
         
         ObjectTypeDefinitionRepository::GetInstance().LoadObjectTypeDefinition(playerSO.mObjectFamilyTypeName);
+        ObjectTypeDefinitionRepository::GetInstance().LoadObjectTypeDefinition(gameobject_constants::PLAYER_BULLET_TYPE);
+        ObjectTypeDefinitionRepository::GetInstance().LoadObjectTypeDefinition(gameobject_constants::BETTER_PLAYER_BULLET_TYPE);
         
         AddSceneObject(std::move(playerSO));
     }

@@ -65,6 +65,7 @@
 		925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */; };
 		925FD880298AD7D50058E747 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925FD87F298AD7D50058E747 /* AudioToolbox.framework */; };
 		92A8517B2985704800C99B61 /* SceneRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A8516E2985704800C99B61 /* SceneRenderer.cpp */; };
+		92AF7B2D29914F1500BCC894 /* UpgradesLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92AF7B2B29914F1500BCC894 /* UpgradesLoader.cpp */; };
 		92B44C07298D247E00191B22 /* FontLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B44C06298D247E00191B22 /* FontLoader.cpp */; };
 		92B44C0B298D2F7700191B22 /* FontRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B44C09298D2F7700191B22 /* FontRepository.cpp */; };
 		92C2198429842CF500B2D2C6 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198229842CF500B2D2C6 /* Scene.cpp */; };
@@ -326,6 +327,9 @@
 		92A8517A2985704800C99B61 /* SceneRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneRenderer.h; sourceTree = "<group>"; };
 		92A8517C298570D200C99B61 /* SceneObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneObject.h; sourceTree = "<group>"; };
 		92A8517E2988318E00C99B61 /* RepeatableFlow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RepeatableFlow.h; sourceTree = "<group>"; };
+		92AF7B2B29914F1500BCC894 /* UpgradesLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradesLoader.cpp; sourceTree = "<group>"; };
+		92AF7B2C29914F1500BCC894 /* UpgradesLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradesLoader.h; sourceTree = "<group>"; };
+		92AF7B2E29914F6100BCC894 /* UpgradeDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UpgradeDefinition.h; sourceTree = "<group>"; };
 		92B44BFA298D247E00191B22 /* FontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontLoader.h; sourceTree = "<group>"; };
 		92B44C06298D247E00191B22 /* FontLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontLoader.cpp; sourceTree = "<group>"; };
 		92B44C08298D251000191B22 /* Font.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Font.h; sourceTree = "<group>"; };
@@ -974,6 +978,8 @@
 				925FD87029893CAF0058E747 /* ObjectTypeDefinitionLoader.h */,
 				925FD86C29892BE00058E747 /* LevelDataLoader.cpp */,
 				925FD86D29892BE00058E747 /* LevelDataLoader.h */,
+				92AF7B2B29914F1500BCC894 /* UpgradesLoader.cpp */,
+				92AF7B2C29914F1500BCC894 /* UpgradesLoader.h */,
 			);
 			path = dataloaders;
 			sourceTree = "<group>";
@@ -1012,6 +1018,7 @@
 				92A8517A2985704800C99B61 /* SceneRenderer.h */,
 				925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */,
 				925FD87D298AD7050058E747 /* ObjectiveCUtils.h */,
+				92AF7B2E29914F6100BCC894 /* UpgradeDefinition.h */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -1822,6 +1829,7 @@
 				92DAA4CE29829A4C0062A438 /* DataFileLoader.cpp in Sources */,
 				9254CBE62969B79A00EFE0CC /* b2ChainAndCircleContact.cpp in Sources */,
 				9254CBFC2969B79A00EFE0CC /* b2Rope.cpp in Sources */,
+				92AF7B2D29914F1500BCC894 /* UpgradesLoader.cpp in Sources */,
 				9254CBF42969B79A00EFE0CC /* b2RevoluteJoint.cpp in Sources */,
 				92DAA4CA29829A4C0062A438 /* ShaderResource.cpp in Sources */,
 				9254CBE42969B79A00EFE0CC /* b2ChainAndPolygonContact.cpp in Sources */,

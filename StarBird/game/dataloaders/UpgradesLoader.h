@@ -1,32 +1,33 @@
 ///------------------------------------------------------------------------------------------------
-///  ObjectTypeDefinitionLoader.h
+///  UpgradesLoader.h                                                                                          
 ///  StarBird                                                                                            
 ///                                                                                                
-///  Created by Alex Koukoulas on 31/01/2023                                                       
+///  Created by Alex Koukoulas on 06/02/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef ObjectTypeDefinitionLoader_h
-#define ObjectTypeDefinitionLoader_h
+#ifndef UpgradesLoader_h
+#define UpgradesLoader_h
 
 ///------------------------------------------------------------------------------------------------
 
 #include "BaseGameDataLoader.h"
-#include "../ObjectTypeDefinition.h"
+#include "../UpgradeDefinition.h"
 
 #include <string>
+#include <map>
 
 ///------------------------------------------------------------------------------------------------
 
-class ObjectTypeDefinitionLoader: public BaseGameDataLoader
+class UpgradesLoader: public BaseGameDataLoader
 {
 public:
-    ObjectTypeDefinitionLoader();
-    ObjectTypeDefinition& LoadObjectTypeDefinition(const std::string& objectTypeDefinitionFileName);
-
+    UpgradesLoader();
+    std::map<strutils::StringId, UpgradeDefinition> LoadAllUpgrades();
+    
 private:
-    ObjectTypeDefinition mConstructedObjectTypeDef;
+    std::map<strutils::StringId, UpgradeDefinition> mConstructedUpgrades;
 };
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* ObjectTypeDefinitionLoader_h */
+#endif /* UpgradesLoader_h */

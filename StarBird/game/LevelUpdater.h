@@ -13,6 +13,7 @@
 #include "SceneObject.h"
 #include "LevelDefinition.h"
 #include "RepeatableFlow.h"
+#include "UpgradeDefinition.h"
 #include "../utils/StringUtils.h"
 
 #include <optional>
@@ -58,9 +59,15 @@ private:
     void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis);
     
     void OnBlockedUpdate();
-    void CreateWaveIntroText();
+    void OnUpgradeEquipped(const strutils::StringId& upgradeId);
+    
+    void CreateWaveIntro();
     void CreateWave();
     void CreateUpgradeSceneObjects();
+    void CreateBulletAtPosition(const strutils::StringId& bulletType, const glm::vec3& position);
+    void CreateMirrorImageSceneObjects();
+    
+    strutils::StringId TestForUpgradeSelected() const;
     
 private:
     Scene& mScene;
@@ -68,6 +75,8 @@ private:
     LevelDefinition mLevel;
     std::vector<RepeatableFlow> mFlows;
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> mWaveEnemies;
+    std::pair<UpgradeDefinition, UpgradeDefinition> mUpgradeSelection;
+    
     size_t mCurrentWaveNumber;
     LevelState mState;
     bool mAllowInputControl;

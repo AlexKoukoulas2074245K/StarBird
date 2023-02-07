@@ -13,6 +13,8 @@ InputContext GameSingletons::mInputContext = {};
 SDL_Window* GameSingletons::mWindow = nullptr;
 glm::vec2 GameSingletons::mWindowDimensions = glm::vec2();
 std::unordered_map<SceneObjectType, Camera> GameSingletons::mSceneObjectTypeToCameraMap = {};
+GameSingletons::UpgradeMap GameSingletons::mEquippedUpgrades = {};
+GameSingletons::UpgradeMap GameSingletons::mAvailableUpgrades = {};
 
 ///------------------------------------------------------------------------------------------------
 
@@ -81,6 +83,34 @@ std::optional<std::reference_wrapper<Camera>> GameSingletons::GetCameraForSceneO
 void GameSingletons::SetCameraForSceneObjectType(const SceneObjectType sceneObjectType, Camera&& camera)
 {
     mSceneObjectTypeToCameraMap[sceneObjectType] = camera;
+}
+
+///------------------------------------------------------------------------------------------------
+
+GameSingletons::UpgradeMap& GameSingletons::GetEquippedUpgrades()
+{
+    return mEquippedUpgrades;
+}
+
+///------------------------------------------------------------------------------------------------
+
+GameSingletons::UpgradeMap& GameSingletons::GetAvailableUpgrades()
+{
+    return mAvailableUpgrades;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetEquippedUpgrades(UpgradeMap&& upgrades)
+{
+    mEquippedUpgrades = upgrades;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetAvailableUpgrades(UpgradeMap&& upgrades)
+{
+    mAvailableUpgrades = upgrades;
 }
 
 ///------------------------------------------------------------------------------------------------

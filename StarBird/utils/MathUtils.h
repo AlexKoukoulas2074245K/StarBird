@@ -10,6 +10,7 @@
 
 ///-----------------------------------------------------------------------------------------------
 
+#include <Box2D/Common/b2Math.h>
 #include <cmath>                        // powf, sinf, cosf, atan2
 #include <ctime>                        // time
 #include <functional>                   // function
@@ -175,6 +176,23 @@ inline glm::vec3 Vec2ToVec3(const glm::vec2& vec)
     return glm::vec3(vec.x, vec.y, 0.0f);
 }
 
+///-----------------------------------------------------------------------------------------------
+/// Converts a box2d vec2 to glm::vec3
+/// @param[in] vec the vec2 to transform.
+/// @returns a glm::vec3 holding both values of the input vector vec and a zeroed third element.
+inline glm::vec3 Box2dVec2ToGlmVec3(const b2Vec2& vec)
+{
+    return glm::vec3(vec.x, vec.y, 0.0f);
+}
+
+///-----------------------------------------------------------------------------------------------
+/// Converts a glm::vec3 to a box2d vec2
+/// @param[in] vec the glm::vec3 to transform.
+/// @returns a box2d vec2  holding both values of the input vector vec.
+inline b2Vec2 GlmVec3ToBox2dVec2(const glm::vec3& vec)
+{
+    return b2Vec2(vec.x, vec.y);
+}
 
 ///-----------------------------------------------------------------------------------------------
 /// Tweening Modes Supported

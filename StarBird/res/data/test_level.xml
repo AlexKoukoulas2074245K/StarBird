@@ -14,6 +14,14 @@
         <Enemy position="-3.0f, 20.0f" type="test_enemy_chasing"/>
         <Enemy position=" 3.0f, 20.0f" type="test_enemy_chasing"/>
         <Enemy position=" 5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="test_enemy_chasing"/>
     </Wave>
     
     <Wave>
@@ -23,9 +31,33 @@
         <Enemy position=" 1.0f, 20.0f" type="test_enemy_chasing"/>
         <Enemy position=" 3.0f, 20.0f" type="test_enemy_chasing"/>
         <Enemy position=" 5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="test_enemy_chasing"/>
     </Wave>
     
     <Wave>
+        <Enemy position="-5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="test_enemy_chasing"/>
         <Enemy position="-5.0f, 20.0f" type="test_enemy_chasing"/>
         <Enemy position="-3.0f, 20.0f" type="test_enemy_chasing"/>
         <Enemy position="-1.0f, 20.0f" type="test_enemy_chasing"/>
@@ -41,14 +73,53 @@
         <Enemy position=" 1.0f, 20.0f" type="test_enemy_chasing"/>
         <Enemy position=" 3.0f, 20.0f" type="test_enemy_chasing"/>
         <Enemy position=" 5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="test_enemy_chasing"/>
     </Wave>
     
     <Wave>
+        <Enemy position="-2.0f, 22.0f" type="enemy_asteroid"/>
+        <Enemy position="-4.0f, 19.0f" type="enemy_asteroid"/>
+        <Enemy position=" 0.0f, 15.0f" type="enemy_asteroid"/>
+        <Enemy position=" 4.0f, 19.0f" type="enemy_asteroid"/>
+        <Enemy position=" 2.0f, 22.0f" type="enemy_asteroid"/>
+    </Wave>
+    
+    
+    <Wave>
+        <Enemy position="-2.0f, 22.0f" type="enemy_asteroid"/>
+        <Enemy position="-4.0f, 19.0f" type="enemy_asteroid"/>
+        <Enemy position=" 0.0f, 15.0f" type="enemy_asteroid"/>
+        <Enemy position=" 4.0f, 19.0f" type="enemy_asteroid"/>
+        <Enemy position=" 2.0f, 22.0f" type="enemy_asteroid"/>
+        
         <Enemy position="-2.0f, 32.0f" type="enemy_asteroid"/>
         <Enemy position="-4.0f, 29.0f" type="enemy_asteroid"/>
         <Enemy position=" 0.0f, 25.0f" type="enemy_asteroid"/>
         <Enemy position=" 4.0f, 29.0f" type="enemy_asteroid"/>
         <Enemy position=" 2.0f, 32.0f" type="enemy_asteroid"/>
+        <Enemy position="-2.0f, 32.0f" type="enemy_asteroid"/>
+        
+        <Enemy position="-4.0f, 49.0f" type="enemy_asteroid"/>
+        <Enemy position=" 0.0f, 45.0f" type="enemy_asteroid"/>
+        <Enemy position=" 4.0f, 49.0f" type="enemy_asteroid"/>
+        
+        <Enemy position=" 2.0f, 52.0f" type="enemy_asteroid"/>
+        <Enemy position="-2.0f, 52.0f" type="enemy_asteroid"/>
+        <Enemy position="-4.0f, 49.0f" type="enemy_asteroid"/>
+        <Enemy position=" 0.0f, 45.0f" type="enemy_asteroid"/>
+        <Enemy position=" 4.0f, 49.0f" type="enemy_asteroid"/>
+        <Enemy position=" 2.0f, 52.0f" type="enemy_asteroid"/>
     </Wave>
     
     

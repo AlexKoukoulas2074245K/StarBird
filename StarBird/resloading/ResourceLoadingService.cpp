@@ -192,11 +192,18 @@ void ResourceLoadingService::LoadResourceInternal(const std::string& resourcePat
     const auto resourceFileExtension = fileutils::GetFileExtension(resourcePath);
     
     // Pick appropriate loader
-    auto& selectedLoader = mResourceExtensionsToLoadersMap.at(strutils::StringId(fileutils::GetFileExtension(resourcePath)));
-    auto loadedResource = selectedLoader->VCreateAndLoadResource(RES_ROOT + resourcePath);
-    
-    assert(loadedResource != nullptr && "No loader was able to load resource");
-    mResourceMap[resourceId] = std::move(loadedResource);
+    strutils::StringId fileExtension(fileutils::GetFileExtension(resourcePath));
+    auto loadersIter = mResourceExtensionsToLoadersMap.find(fileExtension);
+    if (loadersIter != mResourceExtensionsToLoadersMap.end())
+    {
+        auto& selectedLoader = mResourceExtensionsToLoadersMap.at(strutils::StringId(fileutils::GetFileExtension(resourcePath)));
+        auto loadedResource = selectedLoader->VCreateAndLoadResource(RES_ROOT + resourcePath);
+        mResourceMap[resourceId] = std::move(loadedResource);
+    }
+    else
+    {
+        ospopups::ShowMessageBox(ospopups::MessageBoxType::ERROR, "Unable to find loader for given extension", "A loader could not be found for extension: " + fileExtension.GetString());
+    }
 }
 
 ///------------------------------------------------------------------------------------------------

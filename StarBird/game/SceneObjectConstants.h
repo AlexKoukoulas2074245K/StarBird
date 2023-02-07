@@ -26,7 +26,9 @@ static const strutils::StringId BACKGROUND_SCENE_OBJECT_NAME = strutils::StringI
 static const strutils::StringId JOYSTICK_SCENE_OBJECT_NAME = strutils::StringId("JOYSTICK");
 static const strutils::StringId JOYSTICK_BOUNDS_SCENE_OBJECT_NAME = strutils::StringId("JOYSTICK_BOUNDS");
 static const strutils::StringId WAVE_INTRO_TEXT_SCNE_OBJECT_NAME = strutils::StringId("WAVE_INTRO_TEXT");
+static const strutils::StringId LEFT_UPGRADE_SCENE_OBJECT_NAME = strutils::StringId("LEFT_UPGRADE");
 static const strutils::StringId LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME = strutils::StringId("LEFT_UPGRADE_CONTAINER");
+static const strutils::StringId RIGHT_UPGRADE_SCENE_OBJECT_NAME = strutils::StringId("RIGHT_UPGRADE");
 static const strutils::StringId RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME = strutils::StringId("RIGHT_UPGRADE_CONTAINER");
 static const strutils::StringId UPGRADE_OVERLAY_SCENE_OBJECT_NAME = strutils::StringId("UPGRADE_OVERLAY");
 
@@ -46,6 +48,7 @@ static const char* CUSTOM_ALPHA_SHADER_FILE_NAME = "custom_alpha.vs";
 static const char* BACKGROUND_TEXTURE_FILE_NAME = "space_bg.bmp";
 static const char* PLAYER_TEXTURE_FILE_NAME = "player.bmp";
 static const char* BULLET_TEXTURE_FILE_NAME = "bullet.bmp";
+static const char* BETTER_BULLET_TEXTURE_FILE_NAME = "better_bullet.bmp";
 static const char* JOYSTICK_TEXTURE_FILE_NAME = "joystick.bmp";
 static const char* JOYSTICK_BOUNDS_TEXTURE_FILE_NAME = "joystick_bounds.bmp";
 static const char* UPGRADE_CONTAINER_TEXTURE_FILE_NAME = "upgrade_container.bmp";

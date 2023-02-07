@@ -1,32 +1,27 @@
 ///------------------------------------------------------------------------------------------------
-///  ObjectTypeDefinitionLoader.h
+///  UpgradeDefinition.h
 ///  StarBird                                                                                            
 ///                                                                                                
 ///  Created by Alex Koukoulas on 31/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef ObjectTypeDefinitionLoader_h
-#define ObjectTypeDefinitionLoader_h
+#ifndef UpgradeDefinition_h
+#define UpgradeDefinition_h
 
 ///------------------------------------------------------------------------------------------------
 
-#include "BaseGameDataLoader.h"
-#include "../ObjectTypeDefinition.h"
-
-#include <string>
+#include "../utils/StringUtils.h"
+#include "../resloading/ResourceLoadingService.h"
 
 ///------------------------------------------------------------------------------------------------
 
-class ObjectTypeDefinitionLoader: public BaseGameDataLoader
+struct UpgradeDefinition
 {
-public:
-    ObjectTypeDefinitionLoader();
-    ObjectTypeDefinition& LoadObjectTypeDefinition(const std::string& objectTypeDefinitionFileName);
-
-private:
-    ObjectTypeDefinition mConstructedObjectTypeDef;
+    strutils::StringId mUpgradeName = strutils::StringId();
+    strutils::StringId mUpgradeDescription = strutils::StringId();
+    resources::ResourceId mTextureResourceId = resources::ResourceId();
 };
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* ObjectTypeDefinitionLoader_h */
+#endif /* UpgradeDefinition_h */

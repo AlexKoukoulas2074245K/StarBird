@@ -64,6 +64,10 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             {
                 mConstructedObjectTypeDef.mContactFilter.categoryBits = physics_constants::PLAYER_CATEGORY_BIT;
             }
+            else if (strcmp(category->value(), "player_bullet") == 0)
+            {
+                mConstructedObjectTypeDef.mContactFilter.categoryBits = physics_constants::PLAYER_BULLET_CATEGORY_BIT;
+            }
         }
         
         auto* shouldCollideWithPlayerBullets = node->first_attribute("collidingWithPlayerBullets");
