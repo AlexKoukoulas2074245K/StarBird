@@ -60,6 +60,7 @@ private:
     void UpdateHealthBars(const float dtMillis);
     void UpdateBackground(const float dtMillis);
     void UpdateFlows(const float dtMillis);
+    void UpdateFriendlies(const float dtMillis);
     
     void OnBlockedUpdate();
     void OnUpgradeEquipped(const strutils::StringId& upgradeId);

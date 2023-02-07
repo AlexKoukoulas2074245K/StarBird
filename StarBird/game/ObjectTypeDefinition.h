@@ -30,8 +30,8 @@ enum class MovementControllerPattern
 struct ObjectTypeDefinition
 {
     strutils::StringId mName = strutils::StringId();
-    long mHealth = 0;
-    long mDamage = 0;
+    float mHealth = 0;
+    float mDamage = 0;
     resources::ResourceId mShaderResourceId = resources::ResourceId();
     resources::ResourceId mMeshResourceId = resources::ResourceId();
     std::unordered_map<strutils::StringId, Animation, strutils::StringIdHasher> mAnimations;

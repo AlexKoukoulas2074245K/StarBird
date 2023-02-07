@@ -49,7 +49,7 @@ struct SceneObject // 376b
     SceneObjectType mSceneObjectType = SceneObjectType::WorldGameObject;
     float mAnimationTime = 0.0f;
     int mAnimationIndex = 0;
-    long mHealth = 0;
+    float mHealth = 0;
     bool mInvisible = false;
     bool mUseBodyForRendering = false;
 };

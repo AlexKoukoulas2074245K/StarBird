@@ -190,13 +190,13 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         auto* health = node->first_attribute("health");
         if (health)
         {
-            mConstructedObjectTypeDef.mHealth = std::stoi(health->value());
+            mConstructedObjectTypeDef.mHealth = std::stof(health->value());
         }
         
         auto* damage = node->first_attribute("damage");
         if (damage)
         {
-            mConstructedObjectTypeDef.mDamage = std::stoi(damage->value());
+            mConstructedObjectTypeDef.mDamage = std::stof(damage->value());
         }
     });
 }

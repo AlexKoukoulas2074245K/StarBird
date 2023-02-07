@@ -32,6 +32,9 @@ static const strutils::StringId BULLET_SPEED_UGPRADE_NAME = strutils::StringId("
 static const strutils::StringId PLAYER_BULLET_TYPE = strutils::StringId("player_bullet");
 static const strutils::StringId BETTER_PLAYER_BULLET_TYPE = strutils::StringId("player_better_bullet");
 
+static const strutils::StringId MIRROR_IMAGE_BULLET_TYPE = strutils::StringId("mirror_image_bullet");
+static const strutils::StringId BETTER_MIRROR_IMAGE_BULLET_TYPE = strutils::StringId("mirror_image_better_bullet");
+
 static const float BACKGROUND_SPEED = 1.0f/4000.0f;
 static const float WAVE_INTRO_TEXT_SPEED = 0.01f;
 static const float OVERLAY_DARKENING_SPEED = 1.0f/400.0f;
@@ -46,6 +49,7 @@ static const float BULLET_Z = -0.5f;
 static const float PLAYER_HEALTH_BAR_Z = 0.5f;
 static const float UPGRADE_OVERLAY_MAX_ALPHA = 0.8f;
 static const float PLAYER_BULLET_X_OFFSET = 0.48f;
+static const float MIRROR_IMAGE_BULLET_X_OFFSET = 0.38f;
 
 static const glm::vec3 PLAYER_INITIAL_POS = glm::vec3(0.0f, -10.0f, 0.0f);
 static const glm::vec3 BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
@@ -76,7 +80,13 @@ static const glm::vec3 UPGRADE_OVERLAY_POSITION = glm::vec3(0.0f, 0.0f, 1.0f);
 static const glm::vec3 UPGRADE_OVERLAY_SCALE = glm::vec3(80.0f, 80.0f, 1.0f);
 
 static const glm::vec3 HEALTH_BAR_POSITION_OFFSET = glm::vec3(0.0f, -1.5f, 0.5f);
-static const glm::vec3 HEALTH_BAR_SCALE = glm::vec3(4.0f, 0.5f, 1.0f);
+static const glm::vec3 HEALTH_BAR_SCALE = glm::vec3(2.0f, 0.5f, 1.0f);
+
+static const glm::vec3 LEFT_MIRROR_IMAGE_POSITION_OFFSET = glm::vec3(-2.0f, -0.5f, 0.0f);
+static const glm::vec3 LEFT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
+
+static const glm::vec3 RIGHT_MIRROR_IMAGE_POSITION_OFFSET = glm::vec3(2.0f, -0.5f, 0.0f);
+static const glm::vec3 RIGHT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
 
 
 ///------------------------------------------------------------------------------------------------

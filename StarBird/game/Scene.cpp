@@ -209,6 +209,8 @@ void Scene::LoadLevelInvariantObjects()
         typeDefRepo.LoadObjectTypeDefinition(strutils::StringId("player"));
         typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::PLAYER_BULLET_TYPE);
         typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::BETTER_PLAYER_BULLET_TYPE);
+        typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::MIRROR_IMAGE_BULLET_TYPE);
+        typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE);
         
         auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(strutils::StringId("player"))->get();
         

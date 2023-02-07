@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ObjectDefinition>
+    <Animation state="idle" texture="bullet" duration="-1"/>
+    <Physics density="0.1f" bodySize="0.15f" linearDamping="0.0f" customLinearVelocity="0.0f, 16.0f" category="player_bullet" collidingWithEnemies="true"/>
+    <Shader name="basic"/>
+    <Model name="quad"/>
+    <GameAttributes movementControllerPattern="custom_velocity" damage="0.15f"/>
+</ObjectDefinition>
