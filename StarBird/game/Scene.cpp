@@ -143,13 +143,13 @@ void Scene::LoadLevel(const std::string& levelName)
 
 ///------------------------------------------------------------------------------------------------
 
-void Scene::UpdateScene(const float dtMilis)
+void Scene::UpdateScene(const float dtMillis)
 {
     mPreFirstUpdate = false;
     
-    mLevelUpdater.Update(mSceneObjects, dtMilis);
-    
     mBox2dWorld.Step(physics_constants::WORLD_STEP, physics_constants::WORLD_VELOCITY_ITERATIONS, physics_constants::WORLD_POSITION_ITERATIONS);
+    
+    mLevelUpdater.Update(mSceneObjects, dtMillis);
     
     for (const auto& nameTag: mNameTagsOfSceneObjectsToRemove)
     {
@@ -204,6 +204,14 @@ void Scene::LoadLevelInvariantObjects()
     
     // Player
     {
+        auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
+        
+        typeDefRepo.LoadObjectTypeDefinition(strutils::StringId("player"));
+        typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::PLAYER_BULLET_TYPE);
+        typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::BETTER_PLAYER_BULLET_TYPE);
+        
+        auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(strutils::StringId("player"))->get();
+        
         SceneObject playerSO;
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
@@ -223,7 +231,7 @@ void Scene::LoadLevelInvariantObjects()
         
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &dynamicBox;
-        fixtureDef.density = 1.0f;
+        fixtureDef.density = playerObjectDef.mDensity;
         fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0.0f;
         fixtureDef.filter.categoryBits = physics_constants::PLAYER_CATEGORY_BIT;
@@ -231,6 +239,7 @@ void Scene::LoadLevelInvariantObjects()
         body->CreateFixture(&fixtureDef);
         
         playerSO.mBody = body;
+        playerSO.mHealth = playerObjectDef.mHealth;
         playerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
         playerSO.mTextureResourceId = playerTextureResourceId;
         playerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
@@ -239,10 +248,6 @@ void Scene::LoadLevelInvariantObjects()
         playerSO.mNameTag = sceneobject_constants::PLAYER_SCENE_OBJECT_NAME;
         playerSO.mObjectFamilyTypeName = strutils::StringId("player");
         playerSO.mUseBodyForRendering = true;
-        
-        ObjectTypeDefinitionRepository::GetInstance().LoadObjectTypeDefinition(playerSO.mObjectFamilyTypeName);
-        ObjectTypeDefinitionRepository::GetInstance().LoadObjectTypeDefinition(gameobject_constants::PLAYER_BULLET_TYPE);
-        ObjectTypeDefinitionRepository::GetInstance().LoadObjectTypeDefinition(gameobject_constants::BETTER_PLAYER_BULLET_TYPE);
         
         AddSceneObject(std::move(playerSO));
     }
@@ -420,6 +425,32 @@ void Scene::LoadLevelInvariantObjects()
         joystickBoundsSO.mNameTag = sceneobject_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME;
         joystickBoundsSO.mInvisible = true;
         AddSceneObject(std::move(joystickBoundsSO));
+    }
+    
+    // Player Health Bar
+    {
+        SceneObject healthBarSo;
+        healthBarSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
+        healthBarSo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME);
+        healthBarSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        healthBarSo.mSceneObjectType = SceneObjectType::GUIObject;
+        healthBarSo.mCustomPosition = gameobject_constants::HEALTH_BAR_POSITION_OFFSET;
+        healthBarSo.mCustomScale = gameobject_constants::HEALTH_BAR_SCALE;
+        healthBarSo.mNameTag = sceneobject_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME;
+        AddSceneObject(std::move(healthBarSo));
+    }
+    
+    // Player Health Bar Frame
+    {
+        SceneObject healthBarFrameSo;
+        healthBarFrameSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
+        healthBarFrameSo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME);
+        healthBarFrameSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        healthBarFrameSo.mSceneObjectType = SceneObjectType::GUIObject;
+        healthBarFrameSo.mCustomPosition = gameobject_constants::HEALTH_BAR_POSITION_OFFSET;
+        healthBarFrameSo.mCustomScale = gameobject_constants::HEALTH_BAR_SCALE;
+        healthBarFrameSo.mNameTag = sceneobject_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
+        AddSceneObject(std::move(healthBarFrameSo));
     }
     
     FontRepository::GetInstance().LoadFont(strutils::StringId("font"));

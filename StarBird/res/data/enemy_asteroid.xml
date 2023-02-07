@@ -5,5 +5,5 @@
     <Physics density="1.0f" bodySize="1.0f" linearDamping="0.0f" customLinearVelocity="0.0f, -2.0f" speed="3.0f" category="enemy" collidingWithPlayerBullets="true" collidingWithEnemies="true" collidingWithPlayer="true"/>
     <Shader name="basic"/>
     <Model name="quad"/>
-    <GameAttributes movementControllerPattern="custom_velocity" health="10"/>
+    <GameAttributes movementControllerPattern="custom_velocity" health="10" damage="2"/>
 </ObjectDefinition>

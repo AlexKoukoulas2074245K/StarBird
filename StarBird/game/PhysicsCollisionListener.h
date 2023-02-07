@@ -56,7 +56,7 @@ public:
     
     void RegisterCollisionCallback(UnorderedCollisionCategoryPair&& collisionCategoryPair, CollisionCallback callback);
     
-    void BeginContact(b2Contact* contact) override;
+    void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override;
     
 private:
     std::map<UnorderedCollisionCategoryPair, CollisionCallback, UnorderedCollisionCategoryPair::Comparator> mCollisionCallbacks;

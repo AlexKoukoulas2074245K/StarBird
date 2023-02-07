@@ -13,6 +13,7 @@
 #include "../resloading/ResourceLoadingService.h"
 
 #include "../utils/Logging.h"
+#include "../utils/MathUtils.h"
 #include "../utils/OpenGL.h"
 #include "../utils/OSMessageBox.h"
 
@@ -116,7 +117,7 @@ void Game::Run()
     
     SDL_Event e;
     
-    auto lastFrameMilisSinceInit = 0.0f;
+    auto lastFrameMillisSinceInit = 0.0f;
     auto secsAccumulator         = 0.0f;
     auto framesAccumulator       = 0LL;
     
@@ -126,12 +127,12 @@ void Game::Run()
     while(!mIsFinished)
     {
         // Calculate frame delta
-        const auto currentMilisSinceInit = static_cast<float>(SDL_GetTicks());        // the number of milliseconds since the SDL library
-        const auto dtMilis = currentMilisSinceInit - lastFrameMilisSinceInit; // milis diff between current and last frame
+        const auto currentMillisSinceInit = static_cast<float>(SDL_GetTicks());        // the number of milliseconds since the SDL library
+        const auto dtMillis = currentMillisSinceInit - lastFrameMillisSinceInit; // milis diff between current and last frame
         
-        lastFrameMilisSinceInit = currentMilisSinceInit;
+        lastFrameMillisSinceInit = currentMillisSinceInit;
         framesAccumulator++;
-        secsAccumulator += dtMilis * 0.001f; // dt in seconds;
+        secsAccumulator += dtMillis * 0.001f; // dt in seconds;
         
         
         //Handle events on queue
@@ -162,7 +163,7 @@ void Game::Run()
             secsAccumulator = 0.0f;
         }
         
-        scene.UpdateScene(dtMilis);
+        scene.UpdateScene(math::Min(20.0f, dtMillis));
         scene.RenderScene();
     }
 }

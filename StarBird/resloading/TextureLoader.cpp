@@ -7,6 +7,7 @@
 
 #include "TextureLoader.h"
 #include "TextureResource.h"
+#include "../utils/FileUtils.h"
 #include "../utils/Logging.h"
 #include "../utils/OSMessageBox.h"
 #include "../utils/StringUtils.h"
@@ -55,12 +56,24 @@ std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::stri
     // Color key image
     SDL_SetColorKey(pixels, SDL_TRUE, SDL_MapRGB(pixels->format, 0, 0xFF, 0xFF));
     
+    bool useMipMap = strutils::StringEndsWith(fileutils::GetFileNameWithoutExtension(resourcePath), "mm");
+    
     // Create texture from surface pixels
     GLuint glTextureId;
     GL_CALL(glGenTextures(1, &glTextureId));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, glTextureId));
     GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pixels->w, pixels->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels->pixels));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    
+    if (useMipMap)
+    {
+        GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+    }
+    else
+    {
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    }
+    
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));

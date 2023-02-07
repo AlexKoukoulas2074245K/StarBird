@@ -24,10 +24,10 @@ public:
     
     using CallbackT = std::function<void()>;
     
-    RepeatableFlow(CallbackT callback, float durationMilis, RepeatPolicy repeatPolicy, strutils::StringId name = strutils::StringId()):
+    RepeatableFlow(CallbackT callback, float durationMillis, RepeatPolicy repeatPolicy, strutils::StringId name = strutils::StringId()):
           mCallback(callback)
-        , mTargetDuration(durationMilis)
-        , mTicksLeft(durationMilis)
+        , mTargetDuration(durationMillis)
+        , mTicksLeft(durationMillis)
         , mRepeatPolicy(repeatPolicy)
         , mIsRunning(true)
         , mName(name)
@@ -38,7 +38,7 @@ public:
     inline float GetDuration() const { return mTargetDuration; }
     inline float GetTicksLeft() const { return mTicksLeft; }
     
-    inline void SetDuration(float durationMilis) { mTargetDuration = durationMilis; }
+    inline void SetDuration(float durationMillis) { mTargetDuration = durationMillis; }
     
     void Update(float dt)
     {

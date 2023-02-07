@@ -31,7 +31,7 @@ public:
     LevelUpdater(Scene& scene, b2World& box2dWorld);
     
     void InitLevel(LevelDefinition&& levelDef);
-    void Update(std::vector<SceneObject>& sceneObjects, const float dtMilis);
+    void Update(std::vector<SceneObject>& sceneObjects, const float dtMillis);
     
     size_t GetWaveEnemyCount() const;
     std::optional<std::reference_wrapper<RepeatableFlow>> GetFlow(const strutils::StringId& flowName);
@@ -54,9 +54,12 @@ private:
     };
     
 private:
-    StateMachineUpdateResult UpdateStateMachine(const float dtMilis);
-    void UpdateAnimation(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis);
-    void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis);
+    StateMachineUpdateResult UpdateStateMachine(const float dtMillis);
+    void UpdateAnimation(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMillis);
+    void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMillis);
+    void UpdateHealthBars(const float dtMillis);
+    void UpdateBackground(const float dtMillis);
+    void UpdateFlows(const float dtMillis);
     
     void OnBlockedUpdate();
     void OnUpgradeEquipped(const strutils::StringId& upgradeId);

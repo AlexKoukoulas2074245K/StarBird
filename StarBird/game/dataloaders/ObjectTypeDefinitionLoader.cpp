@@ -192,6 +192,12 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         {
             mConstructedObjectTypeDef.mHealth = std::stoi(health->value());
         }
+        
+        auto* damage = node->first_attribute("damage");
+        if (damage)
+        {
+            mConstructedObjectTypeDef.mDamage = std::stoi(damage->value());
+        }
     });
 }
 

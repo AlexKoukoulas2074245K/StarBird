@@ -24,11 +24,13 @@ void PhysicsCollisionListener::RegisterCollisionCallback(UnorderedCollisionCateg
 
 ///------------------------------------------------------------------------------------------------
 
-void PhysicsCollisionListener::BeginContact(b2Contact *contact)
+void PhysicsCollisionListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
 {
+    (void)oldManifold;
+    
     mCollisionPair.mFirstCollisionCategory  = contact->GetFixtureA()->GetFilterData().categoryBits;
     mCollisionPair.mSecondCollisionCategory = contact->GetFixtureB()->GetFilterData().categoryBits;
-    
+
     auto findIter = mCollisionCallbacks.find(mCollisionPair);
     if (findIter != mCollisionCallbacks.end())
     {

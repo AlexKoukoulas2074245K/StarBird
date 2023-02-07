@@ -38,7 +38,7 @@ public:
     void FreezeAllPhysicsBodies();
     void LoadLevel(const std::string& levelName);
     
-    void UpdateScene(const float dtMilis);
+    void UpdateScene(const float dtMillis);
     void RenderScene();
     
 private:

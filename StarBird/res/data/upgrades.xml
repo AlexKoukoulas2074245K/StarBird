@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Upgrades>
-    <Upgrade name="bullet_dmg" description="Ice Shots" texture="upgrades/bullet_dmg.bmp"/>
-    <Upgrade name="double_bullet" description="Bullet Flurry" texture="upgrades/double_bullet.bmp"/>
-    <Upgrade name="bullet_speed" description="Lightning Shots" texture="upgrades/bullet_speed.bmp"/>
-    <Upgrade name="mirror_image" description="Mirror Image" texture="upgrades/mirror_image.bmp"/>
+    <Upgrade name="bullet_dmg" description="Ice Shots" texture="upgrades/bullet_dmg"/>
+    <Upgrade name="double_bullet" description="Bullet Flurry" texture="upgrades/double_bullet"/>
+    <Upgrade name="bullet_speed" description="Lightning Shots" texture="upgrades/bullet_speed"/>
+    <Upgrade name="mirror_image" description="Mirror Image" texture="upgrades/mirror_image"/>
 </Upgrades>
