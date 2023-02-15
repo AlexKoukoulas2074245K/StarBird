@@ -12,10 +12,13 @@
 
 #include "../resloading/ResourceLoadingService.h"
 
+#include <vector>
+
 ///------------------------------------------------------------------------------------------------
 
 struct Animation
 {
+    std::vector<resources::ResourceId> mVariableTextureResourceIds;
     resources::ResourceId mTextureResourceId;
     float mDuration = 0.0f;
     float mScale = 1.0f;

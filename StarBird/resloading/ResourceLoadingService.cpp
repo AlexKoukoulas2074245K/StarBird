@@ -199,6 +199,7 @@ void ResourceLoadingService::LoadResourceInternal(const std::string& resourcePat
         auto& selectedLoader = mResourceExtensionsToLoadersMap.at(strutils::StringId(fileutils::GetFileExtension(resourcePath)));
         auto loadedResource = selectedLoader->VCreateAndLoadResource(RES_ROOT + resourcePath);
         mResourceMap[resourceId] = std::move(loadedResource);
+        Log(LogType::INFO, "Loading texture: %s in %s", resourcePath.c_str(), std::to_string(resourceId).c_str());
     }
     else
     {

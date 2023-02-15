@@ -1,18 +1,20 @@
 ///------------------------------------------------------------------------------------------------
-///  ObjectiveCUtils.mm
+///  ObjectiveCUtils.h
 ///  StarBird
 ///
 ///  Created by Alex Koukoulas on 01/02/2023
 ///------------------------------------------------------------------------------------------------
 
-#include "ObjectiveCUtils.h"
-#import <AudioToolbox/AudioServices.h>
+#ifndef ObjectiveCUtils_h
+#define ObjectiveCUtils_h
 
 ///------------------------------------------------------------------------------------------------
 
-void Vibrate()
+namespace objectiveC_utils
 {
-    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+    void Vibrate();
 }
 
 ///------------------------------------------------------------------------------------------------
+
+#endif /* ObjectiveCUtils_h */

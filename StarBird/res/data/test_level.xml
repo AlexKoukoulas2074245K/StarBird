@@ -4,6 +4,29 @@
     <Camera type="gui_cam" lenseHeight="30.0f"/>
     
     <Wave>
+        <Enemy position=" -3.0f, 20.0f" type="small_enemy_chasing"/>
+    </Wave>
+    
+    <Wave>
+        <Enemy position="-5.0f, 20.0f" type="small_enemy_chasing"/>
+        <Enemy position=" 0.0f, 20.0f" type="small_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="small_enemy_chasing"/>
+    </Wave>
+    
+    <Wave>
+        <Enemy position="-5.0f, 20.0f" type="small_enemy_chasing"/>
+        <Enemy position=" 0.0f, 20.0f" type="small_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="small_enemy_chasing"/>
+        
+        <Enemy position="-5.0f, 32.0f" type="small_enemy_chasing"/>
+        <Enemy position=" 3.0f, 31.0f" type="small_enemy_chasing"/>
+        <Enemy position=" 1.0f, 30.0f" type="small_enemy_chasing"/>
+        <Enemy position=" 0.0f, 30.0f" type="small_enemy_chasing"/>
+        <Enemy position=" 1.0f, 31.0f" type="small_enemy_chasing"/>
+        <Enemy position=" 5.0f, 32.0f" type="small_enemy_chasing"/>
+    </Wave>
+    
+    <Wave>
         <Enemy position="-5.0f, 20.0f" type="test_enemy_chasing"/>
         <Enemy position=" 0.0f, 20.0f" type="test_enemy_chasing"/>
         <Enemy position=" 5.0f, 20.0f" type="test_enemy_chasing"/>

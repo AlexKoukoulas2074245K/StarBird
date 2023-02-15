@@ -266,7 +266,7 @@ void Scene::LoadLevelInvariantObjects()
         b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
 
         b2PolygonShape wallShape;
-        wallShape.SetAsBox(1.0f, worldCam.GetCameraLenseHeight()/2.0f);
+        wallShape.SetAsBox(1.0f, worldCam.GetCameraLenseHeight() * 4);
         
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &wallShape;
@@ -295,7 +295,7 @@ void Scene::LoadLevelInvariantObjects()
         b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
 
         b2PolygonShape wallShape;
-        wallShape.SetAsBox(1.0f, worldCam.GetCameraLenseHeight()/2.0f);
+        wallShape.SetAsBox(1.0f, worldCam.GetCameraLenseHeight() * 4);
         
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &wallShape;
@@ -353,7 +353,7 @@ void Scene::LoadLevelInvariantObjects()
         b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
 
         b2PolygonShape wallShape;
-        wallShape.SetAsBox(worldCam.GetCameraLenseWidth(), 2.0f);
+        wallShape.SetAsBox(worldCam.GetCameraLenseWidth() * 4, 2.0f);
         
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &wallShape;

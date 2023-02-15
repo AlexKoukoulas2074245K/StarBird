@@ -19,9 +19,12 @@
 #include "dataloaders/UpgradesLoader.h"
 
 #include "../utils/Logging.h"
+#include "../utils/ObjectiveCUtils.h"
+#include "../utils/OSMessageBox.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../resloading/ShaderResource.h"
 #include "../resloading/TextureResource.h"
+
 
 #include <algorithm>
 #include <Box2D/Box2D.h>
@@ -189,6 +192,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             auto enemySceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemySO.mObjectFamilyTypeName)->get();
             
             playerSO.mHealth -= enemySceneObjectTypeDef.mDamage;
+            objectiveC_utils::Vibrate();
             
             mFlows.emplace_back([]()
             {
@@ -544,9 +548,8 @@ void LevelUpdater::UpdateAnimation(SceneObject& sceneObject, const ObjectTypeDef
         sceneObject.mShaderFloatUniformValues[sceneobject_constants::MAX_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).maxV;
         
         sceneObject.mCustomScale = glm::vec3(currentAnim.mScale, currentAnim.mScale, 1.0f);
+        sceneObject.mTextureResourceId = currentAnim.mTextureResourceId;
     }
-    
-    sceneObject.mTextureResourceId = currentAnim.mTextureResourceId;
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -797,8 +800,19 @@ void LevelUpdater::CreateWave()
     {
         const auto& enemyDefOpt = objectTypeDefRepo.GetObjectTypeDefinition(enemy.mGameObjectEnemyType);
         if (!enemyDefOpt) continue;
-        
         const auto& enemyDef = enemyDefOpt->get();
+        
+        SceneObject so;
+        
+        const auto& variableTextures = enemyDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mVariableTextureResourceIds;
+        if (variableTextures.size() > 0)
+        {
+            so.mTextureResourceId = variableTextures.at(math::RandomInt(0, static_cast<int>(variableTextures.size()) - 1));
+        }
+        else
+        {
+            so.mTextureResourceId = enemyDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId;
+        }
         
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
@@ -807,7 +821,7 @@ void LevelUpdater::CreateWave()
         body->SetLinearDamping(enemyDef.mLinearDamping);
         
         b2PolygonShape dynamicBox;
-        auto& enemyTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(enemyDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId);
+        auto& enemyTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(so.mTextureResourceId);
         
         float textureAspect = enemyTexture.GetDimensions().x/enemyTexture.GetDimensions().y;
         dynamicBox.SetAsBox(enemyDef.mSize, enemyDef.mSize/textureAspect);
@@ -821,14 +835,11 @@ void LevelUpdater::CreateWave()
         fixtureDef.filter.maskBits &= (~physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
         fixtureDef.filter.maskBits &= (~physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT);
         body->CreateFixture(&fixtureDef);
-        
-        SceneObject so;
+    
         so.mObjectFamilyTypeName = enemy.mGameObjectEnemyType;
         so.mBody = body;
         so.mHealth = enemyDef.mHealth;
-        
         so.mShaderResourceId = enemyDef.mShaderResourceId;
-        so.mTextureResourceId = enemyDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId;
         so.mMeshResourceId = enemyDef.mMeshResourceId;
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mCustomPosition.z = 0.0f;

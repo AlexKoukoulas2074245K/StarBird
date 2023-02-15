@@ -10,6 +10,7 @@
 #include "../SceneObjectConstants.h"
 #include "../../resloading/ResourceLoadingService.h"
 #include "../../utils/Logging.h"
+#include "../../utils/MathUtils.h"
 
 #include <rapidxml/rapidxml.hpp>
 
@@ -126,7 +127,26 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         auto* texture = node->first_attribute("texture");
         if (texture)
         {
-            animation.mTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(texture->value()) + ".bmp");
+            std::string textureName(texture->value());
+            if (textureName.back() == '}')
+            {
+                auto textureNameSplitByLBrace = strutils::StringSplit(textureName, '{');
+                auto textureRangeStr = textureNameSplitByLBrace[1];
+                textureRangeStr.pop_back();
+                
+                auto rangeComponents = strutils::StringSplit(textureRangeStr, ':');
+                auto minTextureNumber = std::stoi(rangeComponents[0]);
+                auto maxTextureNumber = std::stoi(rangeComponents[1]);
+                
+                for (int i = minTextureNumber; i <= maxTextureNumber; ++i)
+                {
+                    animation.mVariableTextureResourceIds.push_back(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + textureNameSplitByLBrace[0] + std::to_string(i) + ".bmp"));
+                }
+            }
+            else
+            {
+                animation.mTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(texture->value()) + ".bmp");
+            }
         }
         
         auto* duration = node->first_attribute("duration");

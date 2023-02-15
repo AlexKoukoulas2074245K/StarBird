@@ -1016,8 +1016,6 @@
 				925FD874298981750058E747 /* SceneObjectConstants.h */,
 				92A8516E2985704800C99B61 /* SceneRenderer.cpp */,
 				92A8517A2985704800C99B61 /* SceneRenderer.h */,
-				925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */,
-				925FD87D298AD7050058E747 /* ObjectiveCUtils.h */,
 				92AF7B2E29914F6100BCC894 /* UpgradeDefinition.h */,
 			);
 			path = game;
@@ -1141,6 +1139,8 @@
 				92DAA4D029829B380062A438 /* FileUtils.h */,
 				92DAA4D329829B380062A438 /* StringUtils.h */,
 				92DAA4D429829B380062A438 /* Logging.h */,
+				925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */,
+				925FD87D298AD7050058E747 /* ObjectiveCUtils.h */,
 				92DAA4D729829B380062A438 /* OSMessageBox.h */,
 				92DAA4D829829B380062A438 /* MathUtils.cpp */,
 				92DAA4DA29829B380062A438 /* MathUtils.h */,
