@@ -5,4 +5,6 @@
     <Upgrade name="bullet_speed" description="Lightning Shots" texture="upgrades/bullet_speed"/>
     <Upgrade name="mirror_image" description="Mirror Image" texture="upgrades/mirror_image"/>
     <Upgrade name="player_speed" description="Blazing Fuel" texture="upgrades/player_speed"/>
+    <Upgrade name="player_shield" description="Barrier" texture="upgrades/player_shield"/>
+    <Upgrade name="player_health_potion" description="Reconstruction" texture="upgrades/player_health_potion"/>
 </Upgrades>

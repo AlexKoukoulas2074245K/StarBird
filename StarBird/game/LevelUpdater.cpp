@@ -51,11 +51,11 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
     mFlows.emplace_back([&]()
     {
         auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
-        bool hasBulletDamageUpgrade = equippedUpgrades.count(gameobject_constants::BULLET_DAMAGE_UGPRADE_NAME) != 0;
-        bool hasDoubleBulletUpgrade = equippedUpgrades.count(gameobject_constants::DOUBLE_BULLET_UGPRADE_NAME) != 0;
-        bool hasMirrorImageUpgrade = equippedUpgrades.count(gameobject_constants::MIRROR_IMAGE_UGPRADE_NAME) != 0;
+        bool hasBulletDamageUpgrade = equippedUpgrades.count(game_object_constants::BULLET_DAMAGE_UGPRADE_NAME) != 0;
+        bool hasDoubleBulletUpgrade = equippedUpgrades.count(game_object_constants::DOUBLE_BULLET_UGPRADE_NAME) != 0;
+        bool hasMirrorImageUpgrade = equippedUpgrades.count(game_object_constants::MIRROR_IMAGE_UGPRADE_NAME) != 0;
         
-        auto playerOpt = mScene.GetSceneObject(sceneobject_constants::PLAYER_SCENE_OBJECT_NAME);
+        auto playerOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
         if (playerOpt)
         {
             if (hasDoubleBulletUpgrade)
@@ -63,61 +63,61 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 auto bulletPosition = math::Box2dVec2ToGlmVec3(playerOpt->get().mBody->GetWorldCenter());
                 
                 // Left Bullet
-                bulletPosition.x -= gameobject_constants::PLAYER_BULLET_X_OFFSET;
-                CreateBulletAtPosition(hasBulletDamageUpgrade ? gameobject_constants::BETTER_PLAYER_BULLET_TYPE : gameobject_constants::PLAYER_BULLET_TYPE, bulletPosition);
+                bulletPosition.x -= game_object_constants::PLAYER_BULLET_X_OFFSET;
+                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_PLAYER_BULLET_TYPE : game_object_constants::PLAYER_BULLET_TYPE, bulletPosition);
                 
                 // Right Bullet
-                bulletPosition.x += 2 * gameobject_constants::PLAYER_BULLET_X_OFFSET;
-                CreateBulletAtPosition(hasBulletDamageUpgrade ? gameobject_constants::BETTER_PLAYER_BULLET_TYPE : gameobject_constants::PLAYER_BULLET_TYPE, bulletPosition);
+                bulletPosition.x += 2 * game_object_constants::PLAYER_BULLET_X_OFFSET;
+                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_PLAYER_BULLET_TYPE : game_object_constants::PLAYER_BULLET_TYPE, bulletPosition);
                 
                 if (hasMirrorImageUpgrade)
                 {
-                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
                     
                     if (leftMirrorImageSoOpt)
                     {
                         auto bulletPosition = leftMirrorImageSoOpt->get().mCustomPosition;
-                        bulletPosition.x -= gameobject_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? gameobject_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : gameobject_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                        bulletPosition.x -= game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
                         
-                        bulletPosition.x += 2 * gameobject_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? gameobject_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : gameobject_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                        bulletPosition.x += 2 * game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
                     }
                     
                     if (rightMirrorImageSoOpt)
                     {
                         auto bulletPosition = rightMirrorImageSoOpt->get().mCustomPosition;
-                        bulletPosition.x -= gameobject_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? gameobject_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : gameobject_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                        bulletPosition.x -= game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
                         
-                        bulletPosition.x += 2 * gameobject_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? gameobject_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : gameobject_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                        bulletPosition.x += 2 * game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
                     }
                 }
             }
             else
             {
-                CreateBulletAtPosition(hasBulletDamageUpgrade ? gameobject_constants::BETTER_PLAYER_BULLET_TYPE : gameobject_constants::PLAYER_BULLET_TYPE, math::Box2dVec2ToGlmVec3( playerOpt->get().mBody->GetWorldCenter()));
+                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_PLAYER_BULLET_TYPE : game_object_constants::PLAYER_BULLET_TYPE, math::Box2dVec2ToGlmVec3( playerOpt->get().mBody->GetWorldCenter()));
                 
                 if (hasMirrorImageUpgrade)
                 {
-                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
                     
                     if (leftMirrorImageSoOpt)
                     {
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? gameobject_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : gameobject_constants::MIRROR_IMAGE_BULLET_TYPE, leftMirrorImageSoOpt->get().mCustomPosition);
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, leftMirrorImageSoOpt->get().mCustomPosition);
                     }
                     
                     if (rightMirrorImageSoOpt)
                     {
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? gameobject_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : gameobject_constants::MIRROR_IMAGE_BULLET_TYPE, rightMirrorImageSoOpt->get().mCustomPosition);
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, rightMirrorImageSoOpt->get().mCustomPosition);
                     }
                 }
             }
         }
-    }, gameobject_constants::PLAYER_BULLET_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::REPEAT, gameobject_constants::PLAYER_BULLET_FLOW_NAME);
+    }, game_object_constants::PLAYER_BULLET_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::REPEAT, game_object_constants::PLAYER_BULLET_FLOW_NAME);
     
     static PhysicsCollisionListener collisionListener;
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::PLAYER_BULLET_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
@@ -176,11 +176,11 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
     {
         auto iter = std::find_if(mFlows.begin(), mFlows.end(), [](const RepeatableFlow& flow)
         {
-            return flow.GetName() == gameobject_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME;
+            return flow.GetName() == game_object_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME;
         });
         if (iter != mFlows.end()) return;
         
-        auto playerSceneObjectOpt = mScene.GetSceneObject(sceneobject_constants::PLAYER_SCENE_OBJECT_NAME);
+        auto playerSceneObjectOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
         strutils::StringId enemyBodyAddressTag;
         enemyBodyAddressTag.fromAddress(secondBody);
         auto enemySceneObjectOpt = mScene.GetSceneObject(enemyBodyAddressTag);
@@ -192,12 +192,19 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             
             auto enemySceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemySO.mObjectFamilyTypeName)->get();
             
-            playerSO.mHealth -= enemySceneObjectTypeDef.mDamage;
-            objectiveC_utils::Vibrate();
+            if (mScene.GetSceneObject(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
+            {
+                mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+            }
+            else
+            {
+                playerSO.mHealth -= enemySceneObjectTypeDef.mDamage;
+                objectiveC_utils::Vibrate();
+            }
             
             mFlows.emplace_back([]()
             {
-            }, gameobject_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, gameobject_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
+            }, game_object_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_object_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
             
             if (playerSO.mHealth <= 0)
             {
@@ -216,7 +223,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 
                 mFlows.emplace_back([=]()
                 {
-                    mScene.RemoveAllSceneObjectsWithNameTag(sceneobject_constants::PLAYER_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
                 }, currentAnim.mDuration, RepeatableFlow::RepeatPolicy::ONCE);
             }
         }
@@ -258,9 +265,9 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
         return;
     }
     
-    auto joystickSO = mScene.GetSceneObject(sceneobject_constants::JOYSTICK_SCENE_OBJECT_NAME);
-    auto joystickBoundsSO = mScene.GetSceneObject(sceneobject_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
-    auto playerSO = mScene.GetSceneObject(sceneobject_constants::PLAYER_SCENE_OBJECT_NAME);
+    auto joystickSO = mScene.GetSceneObject(scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME);
+    auto joystickBoundsSO = mScene.GetSceneObject(scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
+    auto playerSO = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
     
     if (joystickSO && joystickBoundsSO)
     {
@@ -270,7 +277,7 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
     
     for (auto& sceneObject: sceneObjects)
     {
-        sceneObject.mShaderBoolUniformValues[sceneobject_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = false;
+        sceneObject.mShaderBoolUniformValues[scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = false;
         
         // Check if this scene object has a respective family object definition
         auto sceneObjectTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(sceneObject.mObjectFamilyTypeName);
@@ -350,8 +357,8 @@ LevelUpdater::StateMachineUpdateResult LevelUpdater::UpdateStateMachine(const fl
     {
         case LevelState::WAVE_INTRO:
         {
-            auto waveTextIntroSoOpt = mScene.GetSceneObject(sceneobject_constants::WAVE_INTRO_TEXT_SCNE_OBJECT_NAME);
-            auto waveTextIntroFlowOpt = GetFlow(gameobject_constants::WAVE_INTRO_FLOW_NAME);
+            auto waveTextIntroSoOpt = mScene.GetSceneObject(scene_object_constants::WAVE_INTRO_TEXT_SCNE_OBJECT_NAME);
+            auto waveTextIntroFlowOpt = GetFlow(game_object_constants::WAVE_INTRO_FLOW_NAME);
             
             if (waveTextIntroSoOpt && waveTextIntroFlowOpt)
             {
@@ -362,11 +369,11 @@ LevelUpdater::StateMachineUpdateResult LevelUpdater::UpdateStateMachine(const fl
                 const auto halfDuration = waveTextIntroFlow.GetDuration()/2;
                 if (ticksLeft > halfDuration)
                 {
-                    waveTextIntroSo.mShaderFloatUniformValues[sceneobject_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f - (ticksLeft - halfDuration)/halfDuration;
+                    waveTextIntroSo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f - (ticksLeft - halfDuration)/halfDuration;
                 }
                 else
                 {
-                    waveTextIntroSo.mShaderFloatUniformValues[sceneobject_constants::CUSTOM_ALPHA_UNIFORM_NAME] = ticksLeft/halfDuration;
+                    waveTextIntroSo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = ticksLeft/halfDuration;
                 }
             }
         } break;
@@ -392,15 +399,15 @@ LevelUpdater::StateMachineUpdateResult LevelUpdater::UpdateStateMachine(const fl
         
         case LevelState::UPGRADE_OVERLAY_IN:
         {
-            auto upgradeOverlaySoOpt = mScene.GetSceneObject(sceneobject_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME);
+            auto upgradeOverlaySoOpt = mScene.GetSceneObject(scene_object_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME);
             if (upgradeOverlaySoOpt)
             {
                 auto& upgradeOverlaySo = upgradeOverlaySoOpt->get();
-                auto& upgradeOverlayAlpha = upgradeOverlaySo.mShaderFloatUniformValues[sceneobject_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-                upgradeOverlayAlpha += dtMillis * gameobject_constants::OVERLAY_DARKENING_SPEED;
-                if (upgradeOverlayAlpha >= gameobject_constants::UPGRADE_OVERLAY_MAX_ALPHA)
+                auto& upgradeOverlayAlpha = upgradeOverlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME];
+                upgradeOverlayAlpha += dtMillis * game_object_constants::OVERLAY_DARKENING_SPEED;
+                if (upgradeOverlayAlpha >= game_object_constants::UPGRADE_OVERLAY_MAX_ALPHA)
                 {
-                    upgradeOverlayAlpha = gameobject_constants::UPGRADE_OVERLAY_MAX_ALPHA;
+                    upgradeOverlayAlpha = game_object_constants::UPGRADE_OVERLAY_MAX_ALPHA;
                     mState = LevelState::UPGRADE;
                 }
             }
@@ -409,32 +416,32 @@ LevelUpdater::StateMachineUpdateResult LevelUpdater::UpdateStateMachine(const fl
             
         case LevelState::UPGRADE:
         {
-            tween = math::Min(1.0f, tween + dtMillis * gameobject_constants::UPGRADE_MOVEMENT_SPEED);
+            tween = math::Min(1.0f, tween + dtMillis * game_object_constants::UPGRADE_MOVEMENT_SPEED);
             float perc = math::Min(1.0f, math::TweenValue(tween, math::BounceFunction, math::TweeningMode::EASE_IN));
             
-            auto leftUpgradeContainerSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-            auto rightUpgradeContainerSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-            auto leftUpgradeSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
-            auto rightUpgradeSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
+            auto leftUpgradeContainerSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+            auto rightUpgradeContainerSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+            auto leftUpgradeSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
+            auto rightUpgradeSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
             
             if (leftUpgradeContainerSoOpt)
             {
-                leftUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * gameobject_constants::LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
+                leftUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_object_constants::LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
             }
             
             if (rightUpgradeContainerSoOpt)
             {
-                rightUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * gameobject_constants::RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
+                rightUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_object_constants::RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
             }
             
             if (leftUpgradeSoOpt)
             {
-                leftUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::LEFT_UPGRADE_INIT_POS.x + perc * gameobject_constants::LEFT_UPGRADE_TARGET_POS.x;
+                leftUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::LEFT_UPGRADE_INIT_POS.x + perc * game_object_constants::LEFT_UPGRADE_TARGET_POS.x;
             }
             
             if (rightUpgradeSoOpt)
             {
-                rightUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::RIGHT_UPGRADE_INIT_POS.x + perc * gameobject_constants::RIGHT_UPGRADE_TARGET_POS.x;
+                rightUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::RIGHT_UPGRADE_INIT_POS.x + perc * game_object_constants::RIGHT_UPGRADE_TARGET_POS.x;
             }
             
             auto selectedUpgradeName = TestForUpgradeSelected();
@@ -443,7 +450,7 @@ LevelUpdater::StateMachineUpdateResult LevelUpdater::UpdateStateMachine(const fl
                 auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
                 auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
                 
-                if (selectedUpgradeName == sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME)
+                if (selectedUpgradeName == scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME)
                 {
                     mUpgradesLogicHandler.OnUpgradeEquipped(mUpgradeSelection.first.mUpgradeName);
                     equippedUpgrades[mUpgradeSelection.first.mUpgradeName] = mUpgradeSelection.first;
@@ -464,47 +471,47 @@ LevelUpdater::StateMachineUpdateResult LevelUpdater::UpdateStateMachine(const fl
             
         case LevelState::UPGRADE_OVERLAY_OUT:
         {
-            tween = math::Max(0.0f, tween - dtMillis * gameobject_constants::UPGRADE_MOVEMENT_SPEED);
+            tween = math::Max(0.0f, tween - dtMillis * game_object_constants::UPGRADE_MOVEMENT_SPEED);
             float perc = math::Max(0.0f, math::TweenValue(tween, math::QuadFunction, math::TweeningMode::EASE_OUT));
             
-            auto upgradeOverlaySoOpt = mScene.GetSceneObject(sceneobject_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME);
-            auto leftUpgradeContainerSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-            auto rightUpgradeContainerSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-            auto leftUpgradeSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
-            auto rightUpgradeSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
+            auto upgradeOverlaySoOpt = mScene.GetSceneObject(scene_object_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME);
+            auto leftUpgradeContainerSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+            auto rightUpgradeContainerSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+            auto leftUpgradeSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
+            auto rightUpgradeSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
             
             if (leftUpgradeContainerSoOpt)
             {
-                leftUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * gameobject_constants::LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
+                leftUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_object_constants::LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
             }
             
             if (rightUpgradeContainerSoOpt)
             {
-                rightUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * gameobject_constants::RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
+                rightUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_object_constants::RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
             }
             
             if (leftUpgradeSoOpt)
             {
-                leftUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::LEFT_UPGRADE_INIT_POS.x + perc * gameobject_constants::LEFT_UPGRADE_TARGET_POS.x;
+                leftUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::LEFT_UPGRADE_INIT_POS.x + perc * game_object_constants::LEFT_UPGRADE_TARGET_POS.x;
             }
             
             if (rightUpgradeSoOpt)
             {
-                rightUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * gameobject_constants::RIGHT_UPGRADE_INIT_POS.x + perc * gameobject_constants::RIGHT_UPGRADE_TARGET_POS.x;
+                rightUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::RIGHT_UPGRADE_INIT_POS.x + perc * game_object_constants::RIGHT_UPGRADE_TARGET_POS.x;
             }
             
             if (upgradeOverlaySoOpt)
             {
                 auto& upgradeOverlaySo = upgradeOverlaySoOpt->get();
-                auto& upgradeOverlayAlpha = upgradeOverlaySo.mShaderFloatUniformValues[sceneobject_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-                upgradeOverlayAlpha -= dtMillis * gameobject_constants::OVERLAY_DARKENING_SPEED;
+                auto& upgradeOverlayAlpha = upgradeOverlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME];
+                upgradeOverlayAlpha -= dtMillis * game_object_constants::OVERLAY_DARKENING_SPEED;
                 if (upgradeOverlayAlpha <= 0)
                 {
-                    mScene.RemoveAllSceneObjectsWithNameTag(sceneobject_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME);
-                    mScene.RemoveAllSceneObjectsWithNameTag(sceneobject_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-                    mScene.RemoveAllSceneObjectsWithNameTag(sceneobject_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-                    mScene.RemoveAllSceneObjectsWithNameTag(sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
-                    mScene.RemoveAllSceneObjectsWithNameTag(sceneobject_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
                     upgradeOverlayAlpha = 0;
                     mState = LevelState::WAVE_INTRO;
                     mCurrentWaveNumber++;
@@ -542,11 +549,11 @@ void LevelUpdater::UpdateAnimation(SceneObject& sceneObject, const ObjectTypeDef
                 sceneObject.mAnimationIndex = (sceneObject.mAnimationIndex + 1) % sheetMetaDataCurrentRow.mColMetadata.size();
             }
         }
-        sceneObject.mShaderBoolUniformValues[sceneobject_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
-        sceneObject.mShaderFloatUniformValues[sceneobject_constants::MIN_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).minU;
-        sceneObject.mShaderFloatUniformValues[sceneobject_constants::MIN_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).minV;
-        sceneObject.mShaderFloatUniformValues[sceneobject_constants::MAX_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).maxU;
-        sceneObject.mShaderFloatUniformValues[sceneobject_constants::MAX_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).maxV;
+        sceneObject.mShaderBoolUniformValues[scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
+        sceneObject.mShaderFloatUniformValues[scene_object_constants::MIN_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).minU;
+        sceneObject.mShaderFloatUniformValues[scene_object_constants::MIN_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).minV;
+        sceneObject.mShaderFloatUniformValues[scene_object_constants::MAX_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).maxU;
+        sceneObject.mShaderFloatUniformValues[scene_object_constants::MAX_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).maxV;
         
         sceneObject.mCustomScale = glm::vec3(currentAnim.mScale, currentAnim.mScale, 1.0f);
         sceneObject.mTextureResourceId = currentAnim.mTextureResourceId;
@@ -561,8 +568,8 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
     assert(camOpt);
     const auto& guiCamera = camOpt->get();
     
-    auto joystickSO = mScene.GetSceneObject(sceneobject_constants::JOYSTICK_SCENE_OBJECT_NAME);
-    auto joystickBoundsSO = mScene.GetSceneObject(sceneobject_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
+    auto joystickSO = mScene.GetSceneObject(scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME);
+    auto joystickBoundsSO = mScene.GetSceneObject(scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
     const auto& inputContext = GameSingletons::GetInputContext();
     
     switch (inputContext.mEventType)
@@ -572,10 +579,10 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
              if (joystickBoundsSO && joystickSO)
              {
                  joystickBoundsSO->get().mCustomPosition = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
-                 joystickBoundsSO->get().mCustomPosition.z = gameobject_constants::JOYSTICK_Z;
+                 joystickBoundsSO->get().mCustomPosition.z = game_object_constants::JOYSTICK_Z;
                  
                  joystickSO->get().mCustomPosition = joystickBoundsSO->get().mCustomPosition;
-                 joystickSO->get().mCustomPosition.z = gameobject_constants::JOYSTICK_BOUNDS_Z;
+                 joystickSO->get().mCustomPosition.z = game_object_constants::JOYSTICK_BOUNDS_Z;
 
                  mAllowInputControl = true;
              }
@@ -599,7 +606,7 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                 }
                 
                 joystickSO->get().mCustomPosition = joystickBoundsSO->get().mCustomPosition + motionVec;
-                joystickSO->get().mCustomPosition.z = gameobject_constants::JOYSTICK_Z;
+                joystickSO->get().mCustomPosition.z = game_object_constants::JOYSTICK_Z;
                 
                 motionVec.x *= sceneObjectTypeDef.mSpeed * dtMilis;
                 motionVec.y *= sceneObjectTypeDef.mSpeed * dtMilis;
@@ -623,9 +630,9 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
 
 void LevelUpdater::UpdateHealthBars(const float dtMillis)
 {
-    auto playerSoOpt = mScene.GetSceneObject(sceneobject_constants::PLAYER_SCENE_OBJECT_NAME);
-    auto playerHealthBarFrameSoOpt = mScene.GetSceneObject(sceneobject_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
-    auto playerHealthBarSoOpt = mScene.GetSceneObject(sceneobject_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME);
+    auto playerSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+    auto playerHealthBarFrameSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
+    auto playerHealthBarSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME);
     
     if (!playerHealthBarFrameSoOpt || !playerHealthBarSoOpt)
     {
@@ -640,16 +647,16 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
         
         auto& playerObjectDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSo.mObjectFamilyTypeName)->get();
         
-        healthBarSo.mCustomPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + gameobject_constants::HEALTH_BAR_POSITION_OFFSET;
-        healthBarSo.mCustomPosition.z = gameobject_constants::PLAYER_HEALTH_BAR_Z;
+        healthBarSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
+        healthBarSo.mCustomPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
         
-        healthBarFrameSo.mCustomPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + gameobject_constants::HEALTH_BAR_POSITION_OFFSET;
-        healthBarFrameSo.mCustomPosition.z = gameobject_constants::PLAYER_HEALTH_BAR_Z;
+        healthBarFrameSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
+        healthBarFrameSo.mCustomPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
         
         float healthPerc = playerSo.mHealth/static_cast<float>(playerObjectDef.mHealth);
         
-        healthBarSo.mCustomScale.x = gameobject_constants::HEALTH_BAR_SCALE.x * healthPerc;
-        healthBarSo.mCustomPosition.x -= (1.0f - healthPerc)/2.0f * gameobject_constants::HEALTH_BAR_SCALE.x;
+        healthBarSo.mCustomScale.x = game_object_constants::HEALTH_BAR_SCALE.x * healthPerc;
+        healthBarSo.mCustomPosition.x -= (1.0f - healthPerc)/2.0f * game_object_constants::HEALTH_BAR_SCALE.x;
     }
     else
     {
@@ -663,13 +670,13 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
 void LevelUpdater::UpdateBackground(const float dtMillis)
 {
     static float msAccum = 0.0f;
-    msAccum += dtMillis * gameobject_constants::BACKGROUND_SPEED;
+    msAccum += dtMillis * game_object_constants::BACKGROUND_SPEED;
     msAccum = std::fmod(msAccum, 1.0f);
     
-    auto bgSO = mScene.GetSceneObject(sceneobject_constants::BACKGROUND_SCENE_OBJECT_NAME);
+    auto bgSO = mScene.GetSceneObject(scene_object_constants::BACKGROUND_SCENE_OBJECT_NAME);
     if (bgSO)
     {
-       bgSO->get().mShaderFloatUniformValues[sceneobject_constants::TEXTURE_OFFSET_UNIFORM_NAME] = -msAccum;
+       bgSO->get().mShaderFloatUniformValues[scene_object_constants::TEXTURE_OFFSET_UNIFORM_NAME] = -msAccum;
     }
     
 }
@@ -693,9 +700,9 @@ void LevelUpdater::UpdateFlows(const float dtMillis)
 
 void LevelUpdater::OnBlockedUpdate()
 {
-    auto joystickSoOpt = mScene.GetSceneObject(sceneobject_constants::JOYSTICK_SCENE_OBJECT_NAME);
-    auto joystickBoundsSOopt = mScene.GetSceneObject(sceneobject_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
-    auto playerSoOpt = mScene.GetSceneObject(sceneobject_constants::PLAYER_SCENE_OBJECT_NAME);
+    auto joystickSoOpt = mScene.GetSceneObject(scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME);
+    auto joystickBoundsSOopt = mScene.GetSceneObject(scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
+    auto playerSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
     
     if (playerSoOpt)
     {
@@ -720,24 +727,24 @@ void LevelUpdater::CreateWaveIntro()
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
     SceneObject waveTextSO;
-    waveTextSO.mCustomPosition = gameobject_constants::WAVE_INTRO_TEXT_INIT_POS;
-    waveTextSO.mCustomScale = gameobject_constants::WAVE_INTRO_TEXT_SCALE;
-    waveTextSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
-    waveTextSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
+    waveTextSO.mCustomPosition = game_object_constants::WAVE_INTRO_TEXT_INIT_POS;
+    waveTextSO.mCustomScale = game_object_constants::WAVE_INTRO_TEXT_SCALE;
+    waveTextSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+    waveTextSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
     waveTextSO.mTextureResourceId = FontRepository::GetInstance().GetFont(strutils::StringId("font"))->get().mFontTextureResourceId;
     waveTextSO.mFontName = strutils::StringId("font");
     waveTextSO.mSceneObjectType = SceneObjectType::GUIObject;
-    waveTextSO.mNameTag = sceneobject_constants::WAVE_INTRO_TEXT_SCNE_OBJECT_NAME;
+    waveTextSO.mNameTag = scene_object_constants::WAVE_INTRO_TEXT_SCNE_OBJECT_NAME;
     waveTextSO.mText = "WAVE " + std::to_string(mCurrentWaveNumber + 1);
-    waveTextSO.mShaderFloatUniformValues[sceneobject_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+    waveTextSO.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
     mScene.AddSceneObject(std::move(waveTextSO));
     
     mFlows.emplace_back([&]()
     {
-        mScene.RemoveAllSceneObjectsWithNameTag(sceneobject_constants::WAVE_INTRO_TEXT_SCNE_OBJECT_NAME);
+        mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::WAVE_INTRO_TEXT_SCNE_OBJECT_NAME);
         mState = LevelState::FIGHTING_WAVE;
         CreateWave();
-    }, gameobject_constants::WAVE_INTRO_DURATION_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, gameobject_constants::WAVE_INTRO_FLOW_NAME);
+    }, game_object_constants::WAVE_INTRO_DURATION_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_object_constants::WAVE_INTRO_FLOW_NAME);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -753,14 +760,14 @@ void LevelUpdater::CreateWave()
         
         SceneObject so;
         
-        const auto& variableTextures = enemyDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mVariableTextureResourceIds;
+        const auto& variableTextures = enemyDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE).mVariableTextureResourceIds;
         if (variableTextures.size() > 0)
         {
             so.mTextureResourceId = variableTextures.at(math::RandomInt(0, static_cast<int>(variableTextures.size()) - 1));
         }
         else
         {
-            so.mTextureResourceId = enemyDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId;
+            so.mTextureResourceId = enemyDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId;
         }
         
         b2BodyDef bodyDef;
@@ -813,27 +820,27 @@ void LevelUpdater::CreateUpgradeSceneObjects()
     // Overlay
     {
         SceneObject overlaySo;
-        overlaySo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-        overlaySo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::UPGRADE_OVERLAY_TEXTURE_FILE_NAME);
-        overlaySo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        overlaySo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
+        overlaySo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_OVERLAY_TEXTURE_FILE_NAME);
+        overlaySo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
-        overlaySo.mCustomScale = gameobject_constants::UPGRADE_OVERLAY_SCALE;
-        overlaySo.mCustomPosition = gameobject_constants::UPGRADE_OVERLAY_POSITION;
-        overlaySo.mNameTag = sceneobject_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME;
-        overlaySo.mShaderFloatUniformValues[sceneobject_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+        overlaySo.mCustomScale = game_object_constants::UPGRADE_OVERLAY_SCALE;
+        overlaySo.mCustomPosition = game_object_constants::UPGRADE_OVERLAY_POSITION;
+        overlaySo.mNameTag = scene_object_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME;
+        overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
         mScene.AddSceneObject(std::move(overlaySo));
     }
     
     // Left Upgrade Container
     {
         SceneObject leftUpgradeContainerSO;
-        leftUpgradeContainerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        leftUpgradeContainerSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME);
-        leftUpgradeContainerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        leftUpgradeContainerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        leftUpgradeContainerSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME);
+        leftUpgradeContainerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         leftUpgradeContainerSO.mSceneObjectType = SceneObjectType::GUIObject;
-        leftUpgradeContainerSO.mCustomScale = gameobject_constants::LEFT_UPGRADE_CONTAINER_SCALE;
-        leftUpgradeContainerSO.mCustomPosition = gameobject_constants::LEFT_UPGRADE_CONTAINER_INIT_POS;
-        leftUpgradeContainerSO.mNameTag = sceneobject_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
+        leftUpgradeContainerSO.mCustomScale = game_object_constants::LEFT_UPGRADE_CONTAINER_SCALE;
+        leftUpgradeContainerSO.mCustomPosition = game_object_constants::LEFT_UPGRADE_CONTAINER_INIT_POS;
+        leftUpgradeContainerSO.mNameTag = scene_object_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(leftUpgradeContainerSO));
     }
     
@@ -845,13 +852,13 @@ void LevelUpdater::CreateUpgradeSceneObjects()
         auto& upgrade = upgradesIter->second;
         
         SceneObject leftUpgradeSO;
-        leftUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
+        leftUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
         leftUpgradeSO.mTextureResourceId = upgrade.mTextureResourceId;
-        leftUpgradeSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        leftUpgradeSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         leftUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
-        leftUpgradeSO.mCustomScale = gameobject_constants::LEFT_UPGRADE_SCALE;
-        leftUpgradeSO.mCustomPosition = gameobject_constants::LEFT_UPGRADE_INIT_POS;
-        leftUpgradeSO.mNameTag = sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME;
+        leftUpgradeSO.mCustomScale = game_object_constants::LEFT_UPGRADE_SCALE;
+        leftUpgradeSO.mCustomPosition = game_object_constants::LEFT_UPGRADE_INIT_POS;
+        leftUpgradeSO.mNameTag = scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(leftUpgradeSO));
         
         mUpgradeSelection.first = upgrade;
@@ -861,13 +868,13 @@ void LevelUpdater::CreateUpgradeSceneObjects()
     // Right Upgrade Container
     {
         SceneObject rightUpgradeContainerSO;
-        rightUpgradeContainerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        rightUpgradeContainerSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME);
-        rightUpgradeContainerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        rightUpgradeContainerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        rightUpgradeContainerSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME);
+        rightUpgradeContainerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         rightUpgradeContainerSO.mSceneObjectType = SceneObjectType::GUIObject;
-        rightUpgradeContainerSO.mCustomScale = gameobject_constants::RIGHT_UPGRADE_CONTAINER_SCALE;
-        rightUpgradeContainerSO.mCustomPosition = gameobject_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS;
-        rightUpgradeContainerSO.mNameTag = sceneobject_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
+        rightUpgradeContainerSO.mCustomScale = game_object_constants::RIGHT_UPGRADE_CONTAINER_SCALE;
+        rightUpgradeContainerSO.mCustomPosition = game_object_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS;
+        rightUpgradeContainerSO.mNameTag = scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(rightUpgradeContainerSO));
     }
     
@@ -879,13 +886,13 @@ void LevelUpdater::CreateUpgradeSceneObjects()
         auto& upgrade = upgradesIter->second;
         
         SceneObject rightUpgradeSO;
-        rightUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
+        rightUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
         rightUpgradeSO.mTextureResourceId = upgrade.mTextureResourceId;
-        rightUpgradeSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        rightUpgradeSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         rightUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
-        rightUpgradeSO.mCustomScale = gameobject_constants::RIGHT_UPGRADE_SCALE;
-        rightUpgradeSO.mCustomPosition = gameobject_constants::RIGHT_UPGRADE_INIT_POS;
-        rightUpgradeSO.mNameTag = sceneobject_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME;
+        rightUpgradeSO.mCustomScale = game_object_constants::RIGHT_UPGRADE_SCALE;
+        rightUpgradeSO.mCustomPosition = game_object_constants::RIGHT_UPGRADE_INIT_POS;
+        rightUpgradeSO.mNameTag = scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(rightUpgradeSO));
         
         mUpgradeSelection.second = upgrade;
@@ -912,7 +919,7 @@ void LevelUpdater::CreateBulletAtPosition(const strutils::StringId& bulletType, 
         body->SetLinearVelocity(b2Vec2(bulletDef.mCustomLinearVelocity.x, bulletDef.mCustomLinearVelocity.y));
         b2PolygonShape dynamicBox;
         
-        auto& bulletTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(bulletDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId);
+        auto& bulletTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(bulletDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId);
         float textureAspect = bulletTexture.GetDimensions().x/bulletTexture.GetDimensions().y;
         dynamicBox.SetAsBox(bulletDef.mSize, bulletDef.mSize/textureAspect);
         
@@ -926,9 +933,9 @@ void LevelUpdater::CreateBulletAtPosition(const strutils::StringId& bulletType, 
         body->CreateFixture(&fixtureDef);
         
         so.mBody = body;
-        so.mCustomPosition.z = gameobject_constants::BULLET_Z;
+        so.mCustomPosition.z = game_object_constants::BULLET_Z;
         so.mShaderResourceId = bulletDef.mShaderResourceId;
-        so.mTextureResourceId = bulletDef.mAnimations.at(sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId;
+        so.mTextureResourceId = bulletDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId;
         so.mMeshResourceId = bulletDef.mMeshResourceId;
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mNameTag.fromAddress(so.mBody);
@@ -950,8 +957,8 @@ strutils::StringId LevelUpdater::TestForUpgradeSelected() const
     
     if (inputContext.mEventType == SDL_FINGERDOWN)
     {
-        auto leftUpgradeSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
-        auto rightUpgradeSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
+        auto leftUpgradeSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
+        auto rightUpgradeSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
         
         auto touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
         

@@ -192,13 +192,13 @@ void Scene::LoadLevelInvariantObjects()
     // Background
     {
         SceneObject bgSO;
-        bgSO.mCustomScale = gameobject_constants::BACKGROUND_SCALE;
-        bgSO.mCustomPosition.z = gameobject_constants::BACKGROUND_Z;
-        bgSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
-        bgSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::TEXTURE_OFFSET_SHADER_FILE_NAME);
-        bgSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::BACKGROUND_TEXTURE_FILE_NAME);
+        bgSO.mCustomScale = game_object_constants::BACKGROUND_SCALE;
+        bgSO.mCustomPosition.z = game_object_constants::BACKGROUND_Z;
+        bgSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        bgSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::TEXTURE_OFFSET_SHADER_FILE_NAME);
+        bgSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::BACKGROUND_TEXTURE_FILE_NAME);
         bgSO.mSceneObjectType = SceneObjectType::GUIObject;
-        bgSO.mNameTag = sceneobject_constants::BACKGROUND_SCENE_OBJECT_NAME;
+        bgSO.mNameTag = scene_object_constants::BACKGROUND_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(bgSO));
     }
     
@@ -206,26 +206,26 @@ void Scene::LoadLevelInvariantObjects()
     {
         auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
         
-        typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
-        typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::PLAYER_BULLET_TYPE);
-        typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::BETTER_PLAYER_BULLET_TYPE);
-        typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::MIRROR_IMAGE_BULLET_TYPE);
-        typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE);
+        typeDefRepo.LoadObjectTypeDefinition(game_object_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
+        typeDefRepo.LoadObjectTypeDefinition(game_object_constants::PLAYER_BULLET_TYPE);
+        typeDefRepo.LoadObjectTypeDefinition(game_object_constants::BETTER_PLAYER_BULLET_TYPE);
+        typeDefRepo.LoadObjectTypeDefinition(game_object_constants::MIRROR_IMAGE_BULLET_TYPE);
+        typeDefRepo.LoadObjectTypeDefinition(game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE);
         
-        auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(gameobject_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
+        auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(game_object_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
         
         SceneObject playerSO;
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
-        bodyDef.position.Set(gameobject_constants::PLAYER_INITIAL_POS.x, gameobject_constants::PLAYER_INITIAL_POS.y);
+        bodyDef.position.Set(game_object_constants::PLAYER_INITIAL_POS.x, game_object_constants::PLAYER_INITIAL_POS.y);
         b2Body* body = mBox2dWorld.CreateBody(&bodyDef);
         
         b2PolygonShape dynamicBox;
         
         // Load projectiles
-        resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::BULLET_TEXTURE_FILE_NAME);
+        resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::BULLET_TEXTURE_FILE_NAME);
         
-        auto playerTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::PLAYER_TEXTURE_FILE_NAME);
+        auto playerTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_TEXTURE_FILE_NAME);
         auto& playerTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(playerTextureResourceId);
         
         float textureAspect = playerTexture.GetDimensions().x/playerTexture.GetDimensions().y;
@@ -242,13 +242,13 @@ void Scene::LoadLevelInvariantObjects()
         
         playerSO.mBody = body;
         playerSO.mHealth = playerObjectDef.mHealth;
-        playerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
+        playerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
         playerSO.mTextureResourceId = playerTextureResourceId;
-        playerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        playerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         playerSO.mSceneObjectType = SceneObjectType::WorldGameObject;
         playerSO.mCustomPosition.z = 0.0f;
-        playerSO.mNameTag = sceneobject_constants::PLAYER_SCENE_OBJECT_NAME;
-        playerSO.mObjectFamilyTypeName = gameobject_constants::PLAYER_OBJECT_TYPE_DEF_NAME;
+        playerSO.mNameTag = scene_object_constants::PLAYER_SCENE_OBJECT_NAME;
+        playerSO.mObjectFamilyTypeName = game_object_constants::PLAYER_OBJECT_TYPE_DEF_NAME;
         playerSO.mUseBodyForRendering = true;
         
         AddSceneObject(std::move(playerSO));
@@ -279,8 +279,8 @@ void Scene::LoadLevelInvariantObjects()
         
         SceneObject so;
         so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
         so.mInvisible = true;
@@ -308,8 +308,8 @@ void Scene::LoadLevelInvariantObjects()
         
         SceneObject so;
         so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
         so.mInvisible = true;
@@ -337,8 +337,8 @@ void Scene::LoadLevelInvariantObjects()
         
         SceneObject so;
         so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
         so.mInvisible = true;
@@ -366,8 +366,8 @@ void Scene::LoadLevelInvariantObjects()
         
         SceneObject so;
         so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
         so.mInvisible = true;
@@ -395,8 +395,8 @@ void Scene::LoadLevelInvariantObjects()
         
         SceneObject so;
         so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
         so.mInvisible = true;
@@ -406,12 +406,12 @@ void Scene::LoadLevelInvariantObjects()
     // Joystick
     {
         SceneObject joystickSO;
-        joystickSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        joystickSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::JOYSTICK_TEXTURE_FILE_NAME);
-        joystickSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        joystickSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        joystickSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::JOYSTICK_TEXTURE_FILE_NAME);
+        joystickSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         joystickSO.mSceneObjectType = SceneObjectType::GUIObject;
-        joystickSO.mCustomScale = gameobject_constants::JOYSTICK_SCALE;
-        joystickSO.mNameTag = sceneobject_constants::JOYSTICK_SCENE_OBJECT_NAME;
+        joystickSO.mCustomScale = game_object_constants::JOYSTICK_SCALE;
+        joystickSO.mNameTag = scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME;
         joystickSO.mInvisible = true;
         AddSceneObject(std::move(joystickSO));
     }
@@ -419,12 +419,12 @@ void Scene::LoadLevelInvariantObjects()
     // Joystick Bounds
     {
         SceneObject joystickBoundsSO;
-        joystickBoundsSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        joystickBoundsSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::JOYSTICK_BOUNDS_TEXTURE_FILE_NAME);
-        joystickBoundsSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        joystickBoundsSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        joystickBoundsSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::JOYSTICK_BOUNDS_TEXTURE_FILE_NAME);
+        joystickBoundsSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         joystickBoundsSO.mSceneObjectType = SceneObjectType::GUIObject;
-        joystickBoundsSO.mCustomScale = gameobject_constants::JOYSTICK_BOUNDS_SCALE;
-        joystickBoundsSO.mNameTag = sceneobject_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME;
+        joystickBoundsSO.mCustomScale = game_object_constants::JOYSTICK_BOUNDS_SCALE;
+        joystickBoundsSO.mNameTag = scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME;
         joystickBoundsSO.mInvisible = true;
         AddSceneObject(std::move(joystickBoundsSO));
     }
@@ -432,26 +432,26 @@ void Scene::LoadLevelInvariantObjects()
     // Player Health Bar
     {
         SceneObject healthBarSo;
-        healthBarSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        healthBarSo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME);
-        healthBarSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        healthBarSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        healthBarSo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME);
+        healthBarSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         healthBarSo.mSceneObjectType = SceneObjectType::GUIObject;
-        healthBarSo.mCustomPosition = gameobject_constants::HEALTH_BAR_POSITION_OFFSET;
-        healthBarSo.mCustomScale = gameobject_constants::HEALTH_BAR_SCALE;
-        healthBarSo.mNameTag = sceneobject_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME;
+        healthBarSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
+        healthBarSo.mCustomScale = game_object_constants::HEALTH_BAR_SCALE;
+        healthBarSo.mNameTag = scene_object_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(healthBarSo));
     }
     
     // Player Health Bar Frame
     {
         SceneObject healthBarFrameSo;
-        healthBarFrameSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::BASIC_SHADER_FILE_NAME);
-        healthBarFrameSo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME);
-        healthBarFrameSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
+        healthBarFrameSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        healthBarFrameSo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME);
+        healthBarFrameSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         healthBarFrameSo.mSceneObjectType = SceneObjectType::GUIObject;
-        healthBarFrameSo.mCustomPosition = gameobject_constants::HEALTH_BAR_POSITION_OFFSET;
-        healthBarFrameSo.mCustomScale = gameobject_constants::HEALTH_BAR_SCALE;
-        healthBarFrameSo.mNameTag = sceneobject_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
+        healthBarFrameSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
+        healthBarFrameSo.mCustomScale = game_object_constants::HEALTH_BAR_SCALE;
+        healthBarFrameSo.mNameTag = scene_object_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(healthBarFrameSo));
     }
     

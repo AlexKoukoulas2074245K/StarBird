@@ -30,6 +30,10 @@ public:
 
 private:
     void CreateMirrorImageSceneObjects();
+    void CreatePlayerShieldSceneObject();
+    
+    void UpdateMirrorImages(const float dtMillis);
+    void UpdatePlayerShield(const float dtMillis);
     
 private:
     Scene& mScene;

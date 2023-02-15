@@ -110,11 +110,11 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
                     world = glm::translate(world, glm::vec3(targetX, targetY, so.mCustomPosition.z));
                     world = glm::scale(world, glm::vec3(glyph.mWidthPixels * so.mCustomScale.x, glyph.mHeightPixels * so.mCustomScale.y, 1.0f));
                     
-                    so.mShaderBoolUniformValues[sceneobject_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
-                    so.mShaderFloatUniformValues[sceneobject_constants::MIN_U_UNIFORM_NAME] = glyph.minU;
-                    so.mShaderFloatUniformValues[sceneobject_constants::MIN_V_UNIFORM_NAME] = glyph.minV;
-                    so.mShaderFloatUniformValues[sceneobject_constants::MAX_U_UNIFORM_NAME] = glyph.maxU;
-                    so.mShaderFloatUniformValues[sceneobject_constants::MAX_V_UNIFORM_NAME] = glyph.maxV;
+                    so.mShaderBoolUniformValues[scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
+                    so.mShaderFloatUniformValues[scene_object_constants::MIN_U_UNIFORM_NAME] = glyph.minU;
+                    so.mShaderFloatUniformValues[scene_object_constants::MIN_V_UNIFORM_NAME] = glyph.minV;
+                    so.mShaderFloatUniformValues[scene_object_constants::MAX_U_UNIFORM_NAME] = glyph.maxU;
+                    so.mShaderFloatUniformValues[scene_object_constants::MAX_V_UNIFORM_NAME] = glyph.maxV;
                     
                     currentShader->SetMatrix4fv(WORLD_MATRIX_STRING_ID, world);
                     currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, camera.GetViewMatrix());

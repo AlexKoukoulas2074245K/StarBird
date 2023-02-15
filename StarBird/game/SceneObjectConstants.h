@@ -14,7 +14,7 @@
 
 ///------------------------------------------------------------------------------------------------
 
-namespace sceneobject_constants
+namespace scene_object_constants
 {
 
 ///------------------------------------------------------------------------------------------------
@@ -22,6 +22,7 @@ namespace sceneobject_constants
 static const strutils::StringId DEFAULT_SCENE_OBJECT_STATE = strutils::StringId("idle");
 
 static const strutils::StringId PLAYER_SCENE_OBJECT_NAME = strutils::StringId("PLAYER");
+static const strutils::StringId PLAYER_SHIELD_SCENE_OBJECT_NAME = strutils::StringId("PLAYER_SHIELD");
 static const strutils::StringId BACKGROUND_SCENE_OBJECT_NAME = strutils::StringId("BG");
 static const strutils::StringId JOYSTICK_SCENE_OBJECT_NAME = strutils::StringId("JOYSTICK");
 static const strutils::StringId JOYSTICK_BOUNDS_SCENE_OBJECT_NAME = strutils::StringId("JOYSTICK_BOUNDS");
@@ -58,6 +59,7 @@ static const char* UPGRADE_CONTAINER_TEXTURE_FILE_NAME = "upgrade_container.bmp"
 static const char* UPGRADE_OVERLAY_TEXTURE_FILE_NAME = "overlay.bmp";
 static const char* PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_frame_mm.bmp";
 static const char* PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME = "player_health_bar.bmp";
+static const char* PLAYER_SHIELD_TEXTURE_FILE_NAME = "player_shield.bmp";
 
 ///------------------------------------------------------------------------------------------------
 

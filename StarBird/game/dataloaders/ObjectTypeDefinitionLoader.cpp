@@ -182,7 +182,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         auto* name = node->first_attribute("name");
         if (name)
         {
-            mConstructedObjectTypeDef.mAnimations[sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE].mTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(name->value()) + ".bmp");
+            mConstructedObjectTypeDef.mAnimations[scene_object_constants::DEFAULT_SCENE_OBJECT_STATE].mTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(name->value()) + ".bmp");
         }
     });
     

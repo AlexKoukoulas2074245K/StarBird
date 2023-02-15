@@ -33,7 +33,7 @@ struct SceneObject // 376b
 {
     strutils::StringId mObjectFamilyTypeName = strutils::StringId();
     strutils::StringId mNameTag = strutils::StringId();
-    strutils::StringId mStateName = sceneobject_constants::DEFAULT_SCENE_OBJECT_STATE;
+    strutils::StringId mStateName = scene_object_constants::DEFAULT_SCENE_OBJECT_STATE;
     strutils::StringId mFontName = strutils::StringId();
     std::string mText;
     std::unordered_map<strutils::StringId, bool, strutils::StringIdHasher> mShaderBoolUniformValues;
