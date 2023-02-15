@@ -24,10 +24,13 @@ static const strutils::StringId PLAYER_BULLET_FLOW_NAME = strutils::StringId("PL
 static const strutils::StringId PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME = strutils::StringId("PLAYER_INVINCIBILITY_FLOW");
 static const strutils::StringId WAVE_INTRO_FLOW_NAME = strutils::StringId("WAVE_INTRO_FLOW");
 
+static const strutils::StringId PLAYER_OBJECT_TYPE_DEF_NAME = strutils::StringId("player");
+
 static const strutils::StringId BULLET_DAMAGE_UGPRADE_NAME = strutils::StringId("bullet_dmg");
 static const strutils::StringId DOUBLE_BULLET_UGPRADE_NAME = strutils::StringId("double_bullet");
 static const strutils::StringId MIRROR_IMAGE_UGPRADE_NAME = strutils::StringId("mirror_image");
 static const strutils::StringId BULLET_SPEED_UGPRADE_NAME = strutils::StringId("bullet_speed");
+static const strutils::StringId PLAYER_SPEED_UGPRADE_NAME = strutils::StringId("player_speed");
 
 static const strutils::StringId PLAYER_BULLET_TYPE = strutils::StringId("player_bullet");
 static const strutils::StringId BETTER_PLAYER_BULLET_TYPE = strutils::StringId("player_better_bullet");

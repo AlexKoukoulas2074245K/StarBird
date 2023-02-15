@@ -35,6 +35,7 @@
 LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld)
     : mScene(scene)
     , mBox2dWorld(box2dWorld)
+    , mUpgradesLogicHandler(scene, *this)
     , mCurrentWaveNumber(0)
     , mState(LevelState::WAVE_INTRO)
     , mAllowInputControl(false)
@@ -310,7 +311,7 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
         }
     }
     
-    UpdateFriendlies(dtMillis);
+    mUpgradesLogicHandler.OnUpdate(dtMillis);
     UpdateHealthBars(dtMillis);
     UpdateBackground(dtMillis);
     UpdateFlows(dtMillis);
@@ -444,13 +445,13 @@ LevelUpdater::StateMachineUpdateResult LevelUpdater::UpdateStateMachine(const fl
                 
                 if (selectedUpgradeName == sceneobject_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME)
                 {
-                    OnUpgradeEquipped(mUpgradeSelection.first.mUpgradeName);
+                    mUpgradesLogicHandler.OnUpgradeEquipped(mUpgradeSelection.first.mUpgradeName);
                     equippedUpgrades[mUpgradeSelection.first.mUpgradeName] = mUpgradeSelection.first;
                     availableUpgrades[mUpgradeSelection.second.mUpgradeName] = mUpgradeSelection.second;
                 }
                 else
                 {
-                    OnUpgradeEquipped(mUpgradeSelection.second.mUpgradeName);
+                    mUpgradesLogicHandler.OnUpgradeEquipped(mUpgradeSelection.second.mUpgradeName);
                     equippedUpgrades[mUpgradeSelection.second.mUpgradeName] = mUpgradeSelection.second;
                     availableUpgrades[mUpgradeSelection.first.mUpgradeName] = mUpgradeSelection.first;
                 }
@@ -690,36 +691,6 @@ void LevelUpdater::UpdateFlows(const float dtMillis)
 
 ///------------------------------------------------------------------------------------------------
 
-void LevelUpdater::UpdateFriendlies(const float dtMillis)
-{
-    auto playerSoOpt = mScene.GetSceneObject(sceneobject_constants::PLAYER_SCENE_OBJECT_NAME);
-    auto leftMirrorImageSoOpt = mScene.GetSceneObject(sceneobject_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-    auto rightMirrorImageSoOpt = mScene.GetSceneObject(sceneobject_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-    
-    if (!playerSoOpt)
-    {
-        if (leftMirrorImageSoOpt)
-        {
-            leftMirrorImageSoOpt->get().mInvisible = true;
-        }
-        if (rightMirrorImageSoOpt)
-        {
-            rightMirrorImageSoOpt->get().mInvisible = true;
-        }
-    }
-    else if (leftMirrorImageSoOpt && rightMirrorImageSoOpt)
-    {
-        auto& playerSo = playerSoOpt->get();
-        auto& leftMirrorImageSo = leftMirrorImageSoOpt->get();
-        auto& rightMirrorImageSo = rightMirrorImageSoOpt->get();
-        
-        leftMirrorImageSo.mCustomPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + gameobject_constants::LEFT_MIRROR_IMAGE_POSITION_OFFSET;
-        rightMirrorImageSo.mCustomPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + gameobject_constants::RIGHT_MIRROR_IMAGE_POSITION_OFFSET;
-    }
-}
-
-///------------------------------------------------------------------------------------------------
-
 void LevelUpdater::OnBlockedUpdate()
 {
     auto joystickSoOpt = mScene.GetSceneObject(sceneobject_constants::JOYSTICK_SCENE_OBJECT_NAME);
@@ -739,28 +710,6 @@ void LevelUpdater::OnBlockedUpdate()
     if (joystickBoundsSOopt)
     {
         joystickBoundsSOopt->get().mInvisible = true;
-    }
-}
-
-///------------------------------------------------------------------------------------------------
-
-void LevelUpdater::OnUpgradeEquipped(const strutils::StringId& upgradeId)
-{
-    if (upgradeId == gameobject_constants::MIRROR_IMAGE_UGPRADE_NAME)
-    {
-        CreateMirrorImageSceneObjects();
-    }
-    else if (upgradeId == gameobject_constants::BULLET_SPEED_UGPRADE_NAME)
-    {
-        auto flowIter = std::find_if(mFlows.begin(), mFlows.end(), [](const RepeatableFlow& flow)
-        {
-            return flow.GetName() == gameobject_constants::PLAYER_BULLET_FLOW_NAME;
-        });
-        
-        if (flowIter != mFlows.end())
-        {
-            flowIter->SetDuration(gameobject_constants::PLAYER_BULLET_FLOW_DELAY_MILLIS/2);
-        }
     }
 }
 
@@ -987,39 +936,6 @@ void LevelUpdater::CreateBulletAtPosition(const strutils::StringId& bulletType, 
         so.mObjectFamilyTypeName = bulletType;
         
         mScene.AddSceneObject(std::move(so));
-    }
-}
-
-///------------------------------------------------------------------------------------------------
-
-void LevelUpdater::CreateMirrorImageSceneObjects()
-{
-    auto& resService = resources::ResourceLoadingService::GetInstance();
-    
-    {
-        SceneObject leftMirrorImageSo;
-        leftMirrorImageSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-        leftMirrorImageSo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::PLAYER_TEXTURE_FILE_NAME);
-        leftMirrorImageSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
-        leftMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-        leftMirrorImageSo.mCustomPosition = gameobject_constants::LEFT_MIRROR_IMAGE_POSITION_OFFSET;
-        leftMirrorImageSo.mCustomScale = gameobject_constants::LEFT_MIRROR_IMAGE_SCALE;
-        leftMirrorImageSo.mNameTag = sceneobject_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
-        leftMirrorImageSo.mShaderFloatUniformValues[sceneobject_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.5f;
-        mScene.AddSceneObject(std::move(leftMirrorImageSo));
-    }
-    
-    {
-        SceneObject rightMirrorImageSo;
-        rightMirrorImageSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + sceneobject_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-        rightMirrorImageSo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + sceneobject_constants::PLAYER_TEXTURE_FILE_NAME);
-        rightMirrorImageSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + sceneobject_constants::QUAD_MESH_FILE_NAME);
-        rightMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-        rightMirrorImageSo.mCustomPosition = gameobject_constants::RIGHT_MIRROR_IMAGE_POSITION_OFFSET;
-        rightMirrorImageSo.mCustomScale = gameobject_constants::RIGHT_MIRROR_IMAGE_SCALE;
-        rightMirrorImageSo.mNameTag = sceneobject_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
-        rightMirrorImageSo.mShaderFloatUniformValues[sceneobject_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.5f;
-        mScene.AddSceneObject(std::move(rightMirrorImageSo));
     }
 }
 

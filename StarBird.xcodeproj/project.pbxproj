@@ -60,14 +60,15 @@
 		925FD86E29892BE00058E747 /* BaseGameDataLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD86B29892BE00058E747 /* BaseGameDataLoader.cpp */; };
 		925FD86F29892BE00058E747 /* LevelDataLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD86C29892BE00058E747 /* LevelDataLoader.cpp */; };
 		925FD87229893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87129893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp */; };
-		925FD878298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD877298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp */; };
 		925FD87B298AAF570058E747 /* GameSingletons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD879298AAF570058E747 /* GameSingletons.cpp */; };
 		925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */; };
 		925FD880298AD7D50058E747 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925FD87F298AD7D50058E747 /* AudioToolbox.framework */; };
+		92894E16299D331200605302 /* FontRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92894E12299D331200605302 /* FontRepository.cpp */; };
+		92894E17299D331200605302 /* ObjectTypeDefinitionRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92894E15299D331200605302 /* ObjectTypeDefinitionRepository.cpp */; };
+		92894E1A299D36C500605302 /* UpgradesLogicHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92894E19299D36C500605302 /* UpgradesLogicHandler.cpp */; };
 		92A8517B2985704800C99B61 /* SceneRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A8516E2985704800C99B61 /* SceneRenderer.cpp */; };
 		92AF7B2D29914F1500BCC894 /* UpgradesLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92AF7B2B29914F1500BCC894 /* UpgradesLoader.cpp */; };
 		92B44C07298D247E00191B22 /* FontLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B44C06298D247E00191B22 /* FontLoader.cpp */; };
-		92B44C0B298D2F7700191B22 /* FontRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B44C09298D2F7700191B22 /* FontRepository.cpp */; };
 		92C2198429842CF500B2D2C6 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198229842CF500B2D2C6 /* Scene.cpp */; };
 		92C2198A29842E6A00B2D2C6 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198829842E6A00B2D2C6 /* Game.cpp */; };
 		92C2198D2984395800B2D2C6 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198B2984395800B2D2C6 /* Camera.cpp */; };
@@ -304,9 +305,7 @@
 		925FD85C298916F50058E747 /* rapidxml.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml.hpp; sourceTree = "<group>"; };
 		925FD85D298916F50058E747 /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
 		925FD85E298916F50058E747 /* manual.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = manual.html; sourceTree = "<group>"; };
-		925FD86429891B370058E747 /* LevelDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LevelDefinition.h; sourceTree = "<group>"; };
 		925FD86729891C390058E747 /* PhysicsConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhysicsConstants.h; sourceTree = "<group>"; };
-		925FD8682989236E0058E747 /* ObjectTypeDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjectTypeDefinition.h; sourceTree = "<group>"; };
 		925FD86A29892BE00058E747 /* BaseGameDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseGameDataLoader.h; sourceTree = "<group>"; };
 		925FD86B29892BE00058E747 /* BaseGameDataLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseGameDataLoader.cpp; sourceTree = "<group>"; };
 		925FD86C29892BE00058E747 /* LevelDataLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LevelDataLoader.cpp; sourceTree = "<group>"; };
@@ -316,25 +315,29 @@
 		925FD873298976B20058E747 /* InputContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputContext.h; sourceTree = "<group>"; };
 		925FD874298981750058E747 /* SceneObjectConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneObjectConstants.h; sourceTree = "<group>"; };
 		925FD8752989AE4F0058E747 /* GameObjectConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameObjectConstants.h; sourceTree = "<group>"; };
-		925FD876298AA8C80058E747 /* ObjectTypeDefinitionRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectTypeDefinitionRepository.h; sourceTree = "<group>"; };
-		925FD877298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectTypeDefinitionRepository.cpp; sourceTree = "<group>"; };
 		925FD879298AAF570058E747 /* GameSingletons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameSingletons.cpp; sourceTree = "<group>"; };
 		925FD87A298AAF570058E747 /* GameSingletons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSingletons.h; sourceTree = "<group>"; };
 		925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ObjectiveCUtils.mm; sourceTree = "<group>"; };
 		925FD87D298AD7050058E747 /* ObjectiveCUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjectiveCUtils.h; sourceTree = "<group>"; };
 		925FD87F298AD7D50058E747 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		92894E0D299D330A00605302 /* ObjectTypeDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectTypeDefinition.h; sourceTree = "<group>"; };
+		92894E0E299D330A00605302 /* LevelDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelDefinition.h; sourceTree = "<group>"; };
+		92894E0F299D330A00605302 /* FontDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontDefinition.h; sourceTree = "<group>"; };
+		92894E10299D330A00605302 /* UpgradeDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradeDefinition.h; sourceTree = "<group>"; };
+		92894E12299D331200605302 /* FontRepository.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontRepository.cpp; sourceTree = "<group>"; };
+		92894E13299D331200605302 /* FontRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontRepository.h; sourceTree = "<group>"; };
+		92894E14299D331200605302 /* ObjectTypeDefinitionRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectTypeDefinitionRepository.h; sourceTree = "<group>"; };
+		92894E15299D331200605302 /* ObjectTypeDefinitionRepository.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectTypeDefinitionRepository.cpp; sourceTree = "<group>"; };
+		92894E18299D36C500605302 /* UpgradesLogicHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradesLogicHandler.h; sourceTree = "<group>"; };
+		92894E19299D36C500605302 /* UpgradesLogicHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradesLogicHandler.cpp; sourceTree = "<group>"; };
 		92A8516E2985704800C99B61 /* SceneRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneRenderer.cpp; sourceTree = "<group>"; };
 		92A8517A2985704800C99B61 /* SceneRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneRenderer.h; sourceTree = "<group>"; };
 		92A8517C298570D200C99B61 /* SceneObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneObject.h; sourceTree = "<group>"; };
 		92A8517E2988318E00C99B61 /* RepeatableFlow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RepeatableFlow.h; sourceTree = "<group>"; };
 		92AF7B2B29914F1500BCC894 /* UpgradesLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradesLoader.cpp; sourceTree = "<group>"; };
 		92AF7B2C29914F1500BCC894 /* UpgradesLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradesLoader.h; sourceTree = "<group>"; };
-		92AF7B2E29914F6100BCC894 /* UpgradeDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UpgradeDefinition.h; sourceTree = "<group>"; };
 		92B44BFA298D247E00191B22 /* FontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontLoader.h; sourceTree = "<group>"; };
 		92B44C06298D247E00191B22 /* FontLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontLoader.cpp; sourceTree = "<group>"; };
-		92B44C08298D251000191B22 /* Font.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Font.h; sourceTree = "<group>"; };
-		92B44C09298D2F7700191B22 /* FontRepository.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontRepository.cpp; sourceTree = "<group>"; };
-		92B44C0A298D2F7700191B22 /* FontRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontRepository.h; sourceTree = "<group>"; };
 		92C2198229842CF500B2D2C6 /* Scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scene.cpp; sourceTree = "<group>"; };
 		92C2198329842CF500B2D2C6 /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
 		92C2198829842E6A00B2D2C6 /* Game.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Game.cpp; sourceTree = "<group>"; };
@@ -984,26 +987,40 @@
 			path = dataloaders;
 			sourceTree = "<group>";
 		};
+		92894E0C299D330A00605302 /* definitions */ = {
+			isa = PBXGroup;
+			children = (
+				92894E0D299D330A00605302 /* ObjectTypeDefinition.h */,
+				92894E0E299D330A00605302 /* LevelDefinition.h */,
+				92894E0F299D330A00605302 /* FontDefinition.h */,
+				92894E10299D330A00605302 /* UpgradeDefinition.h */,
+			);
+			path = definitions;
+			sourceTree = "<group>";
+		};
+		92894E11299D331200605302 /* datarepos */ = {
+			isa = PBXGroup;
+			children = (
+				92894E12299D331200605302 /* FontRepository.cpp */,
+				92894E13299D331200605302 /* FontRepository.h */,
+				92894E14299D331200605302 /* ObjectTypeDefinitionRepository.h */,
+				92894E15299D331200605302 /* ObjectTypeDefinitionRepository.cpp */,
+			);
+			path = datarepos;
+			sourceTree = "<group>";
+		};
 		92C2198129842CF500B2D2C6 /* game */ = {
 			isa = PBXGroup;
 			children = (
-				925FD86929892BE00058E747 /* dataloaders */,
 				92CEB6EF298BD444002AAD2B /* Animation.h */,
 				92C2198B2984395800B2D2C6 /* Camera.cpp */,
 				92C2198C2984395800B2D2C6 /* Camera.h */,
-				92B44C08298D251000191B22 /* Font.h */,
-				92B44C09298D2F7700191B22 /* FontRepository.cpp */,
-				92B44C0A298D2F7700191B22 /* FontRepository.h */,
 				92C2198829842E6A00B2D2C6 /* Game.cpp */,
 				92C2198929842E6A00B2D2C6 /* Game.h */,
 				925FD8752989AE4F0058E747 /* GameObjectConstants.h */,
 				925FD879298AAF570058E747 /* GameSingletons.cpp */,
 				925FD87A298AAF570058E747 /* GameSingletons.h */,
-				925FD8682989236E0058E747 /* ObjectTypeDefinition.h */,
-				925FD877298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp */,
-				925FD876298AA8C80058E747 /* ObjectTypeDefinitionRepository.h */,
 				925FD873298976B20058E747 /* InputContext.h */,
-				925FD86429891B370058E747 /* LevelDefinition.h */,
 				925FD83829883DD80058E747 /* LevelUpdater.cpp */,
 				925FD84429883DD80058E747 /* LevelUpdater.h */,
 				925FD86729891C390058E747 /* PhysicsConstants.h */,
@@ -1016,7 +1033,11 @@
 				925FD874298981750058E747 /* SceneObjectConstants.h */,
 				92A8516E2985704800C99B61 /* SceneRenderer.cpp */,
 				92A8517A2985704800C99B61 /* SceneRenderer.h */,
-				92AF7B2E29914F6100BCC894 /* UpgradeDefinition.h */,
+				92894E19299D36C500605302 /* UpgradesLogicHandler.cpp */,
+				92894E18299D36C500605302 /* UpgradesLogicHandler.h */,
+				925FD86929892BE00058E747 /* dataloaders */,
+				92894E11299D331200605302 /* datarepos */,
+				92894E0C299D330A00605302 /* definitions */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -1799,6 +1820,7 @@
 				92DAA4C729829A4C0062A438 /* MeshResource.cpp in Sources */,
 				9254CC062969B79A00EFE0CC /* b2DynamicTree.cpp in Sources */,
 				9254CBE82969B79A00EFE0CC /* b2PolygonContact.cpp in Sources */,
+				92894E16299D331200605302 /* FontRepository.cpp in Sources */,
 				92DAA4C129829A4C0062A438 /* TextureResource.cpp in Sources */,
 				9254CBFF2969B79A00EFE0CC /* b2Settings.cpp in Sources */,
 				9254CBE32969B79A00EFE0CC /* b2Fixture.cpp in Sources */,
@@ -1808,6 +1830,7 @@
 				92C2198429842CF500B2D2C6 /* Scene.cpp in Sources */,
 				92DAA4C629829A4C0062A438 /* ResourceLoadingService.cpp in Sources */,
 				925FD84529883DD80058E747 /* LevelUpdater.cpp in Sources */,
+				92894E17299D331200605302 /* ObjectTypeDefinitionRepository.cpp in Sources */,
 				92DAA4DC29829B380062A438 /* MathUtils.cpp in Sources */,
 				9254CC0D2969B79A00EFE0CC /* b2CollideEdge.cpp in Sources */,
 				9254CC012969B79A00EFE0CC /* b2StackAllocator.cpp in Sources */,
@@ -1835,13 +1858,13 @@
 				9254CBE42969B79A00EFE0CC /* b2ChainAndPolygonContact.cpp in Sources */,
 				92DAA4CD29829A4C0062A438 /* ShaderLoader.cpp in Sources */,
 				92C851BF2969AAA10021923F /* SDL_uikit_main.c in Sources */,
+				92894E1A299D36C500605302 /* UpgradesLogicHandler.cpp in Sources */,
 				92C2198A29842E6A00B2D2C6 /* Game.cpp in Sources */,
 				9254CBF32969B79A00EFE0CC /* b2MotorJoint.cpp in Sources */,
 				9254CC0C2969B79A00EFE0CC /* b2BroadPhase.cpp in Sources */,
 				9254CC082969B79A00EFE0CC /* b2EdgeShape.cpp in Sources */,
 				925FD87229893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp in Sources */,
 				9254CBEC2969B79A00EFE0CC /* b2Contact.cpp in Sources */,
-				925FD878298AA8C80058E747 /* ObjectTypeDefinitionRepository.cpp in Sources */,
 				92B44C07298D247E00191B22 /* FontLoader.cpp in Sources */,
 				9254CC042969B79A00EFE0CC /* b2CollideCircle.cpp in Sources */,
 				9254CBEF2969B79A00EFE0CC /* b2MouseJoint.cpp in Sources */,
@@ -1860,7 +1883,6 @@
 				9254CBF22969B79A00EFE0CC /* b2WheelJoint.cpp in Sources */,
 				9254CBE72969B79A00EFE0CC /* b2PolygonAndCircleContact.cpp in Sources */,
 				9254CBF52969B79A00EFE0CC /* b2GearJoint.cpp in Sources */,
-				92B44C0B298D2F7700191B22 /* FontRepository.cpp in Sources */,
 				9254CC072969B79A00EFE0CC /* b2ChainShape.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

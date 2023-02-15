@@ -14,6 +14,7 @@
 #include "LevelDefinition.h"
 #include "RepeatableFlow.h"
 #include "UpgradeDefinition.h"
+#include "UpgradesLogicHandler.h"
 #include "../utils/StringUtils.h"
 
 #include <optional>
@@ -60,16 +61,13 @@ private:
     void UpdateHealthBars(const float dtMillis);
     void UpdateBackground(const float dtMillis);
     void UpdateFlows(const float dtMillis);
-    void UpdateFriendlies(const float dtMillis);
     
     void OnBlockedUpdate();
-    void OnUpgradeEquipped(const strutils::StringId& upgradeId);
     
     void CreateWaveIntro();
     void CreateWave();
     void CreateUpgradeSceneObjects();
     void CreateBulletAtPosition(const strutils::StringId& bulletType, const glm::vec3& position);
-    void CreateMirrorImageSceneObjects();
     
     strutils::StringId TestForUpgradeSelected() const;
     
@@ -77,6 +75,8 @@ private:
     Scene& mScene;
     b2World& mBox2dWorld;
     LevelDefinition mLevel;
+    UpgradesLogicHandler mUpgradesLogicHandler;
+    
     std::vector<RepeatableFlow> mFlows;
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> mWaveEnemies;
     std::pair<UpgradeDefinition, UpgradeDefinition> mUpgradeSelection;

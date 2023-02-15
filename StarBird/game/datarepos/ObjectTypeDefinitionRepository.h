@@ -30,6 +30,7 @@ public:
     const ObjectTypeDefinitionRepository& operator = (const ObjectTypeDefinitionRepository&) = delete;
     ObjectTypeDefinitionRepository& operator = (ObjectTypeDefinitionRepository&&) = delete;
     
+    std::optional<std::reference_wrapper<ObjectTypeDefinition>> GetMutableObjectTypeDefinition(const strutils::StringId& objectTypeDefName);
     std::optional<std::reference_wrapper<const ObjectTypeDefinition>> GetObjectTypeDefinition(const strutils::StringId& objectTypeDefName) const;
     void LoadObjectTypeDefinition(const strutils::StringId& objectTypeDefName);
     

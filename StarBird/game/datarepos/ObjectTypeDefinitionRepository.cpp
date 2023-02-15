@@ -17,6 +17,18 @@ ObjectTypeDefinitionRepository& ObjectTypeDefinitionRepository::GetInstance()
 
 ///------------------------------------------------------------------------------------------------
 
+std::optional<std::reference_wrapper<ObjectTypeDefinition>> ObjectTypeDefinitionRepository::GetMutableObjectTypeDefinition(const strutils::StringId& objectTypeDefName)
+{
+    auto findIter = mObjectTypeDefinitionsMap.find(objectTypeDefName);
+    if (findIter != mObjectTypeDefinitionsMap.end())
+    {
+        return std::optional<std::reference_wrapper<ObjectTypeDefinition>>{findIter->second};
+    }
+    return std::nullopt;
+}
+
+///------------------------------------------------------------------------------------------------
+
 std::optional<std::reference_wrapper<const ObjectTypeDefinition>> ObjectTypeDefinitionRepository::GetObjectTypeDefinition(const strutils::StringId& objectTypeDefName) const
 {
     auto findIter = mObjectTypeDefinitionsMap.find(objectTypeDefName);

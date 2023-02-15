@@ -206,13 +206,13 @@ void Scene::LoadLevelInvariantObjects()
     {
         auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
         
-        typeDefRepo.LoadObjectTypeDefinition(strutils::StringId("player"));
+        typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
         typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::PLAYER_BULLET_TYPE);
         typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::BETTER_PLAYER_BULLET_TYPE);
         typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::MIRROR_IMAGE_BULLET_TYPE);
         typeDefRepo.LoadObjectTypeDefinition(gameobject_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE);
         
-        auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(strutils::StringId("player"))->get();
+        auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(gameobject_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
         
         SceneObject playerSO;
         b2BodyDef bodyDef;
@@ -248,7 +248,7 @@ void Scene::LoadLevelInvariantObjects()
         playerSO.mSceneObjectType = SceneObjectType::WorldGameObject;
         playerSO.mCustomPosition.z = 0.0f;
         playerSO.mNameTag = sceneobject_constants::PLAYER_SCENE_OBJECT_NAME;
-        playerSO.mObjectFamilyTypeName = strutils::StringId("player");
+        playerSO.mObjectFamilyTypeName = gameobject_constants::PLAYER_OBJECT_TYPE_DEF_NAME;
         playerSO.mUseBodyForRendering = true;
         
         AddSceneObject(std::move(playerSO));
