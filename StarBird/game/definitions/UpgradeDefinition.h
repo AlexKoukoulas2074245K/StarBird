@@ -10,8 +10,8 @@
 
 ///------------------------------------------------------------------------------------------------
 
-#include "../utils/StringUtils.h"
-#include "../resloading/ResourceLoadingService.h"
+#include "../../utils/StringUtils.h"
+#include "../../resloading/ResourceLoadingService.h"
 
 ///------------------------------------------------------------------------------------------------
 

@@ -11,7 +11,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "BaseGameDataLoader.h"
-#include "../Font.h"
+#include "../definitions/FontDefinition.h"
 
 #include <string>
 
@@ -21,10 +21,10 @@ class FontLoader: public BaseGameDataLoader
 {
 public:
     FontLoader();
-    Font& LoadFont(const std::string& fontName);
+    FontDefinition& LoadFont(const std::string& fontName);
 
 private:
-    Font mConstructedFont;
+    FontDefinition mConstructedFont;
 };
 
 ///------------------------------------------------------------------------------------------------

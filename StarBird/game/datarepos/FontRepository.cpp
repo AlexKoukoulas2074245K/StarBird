@@ -1,46 +1,41 @@
 ///------------------------------------------------------------------------------------------------
-///  Font.h
+///  FontRepository.cpp                                                                                        
 ///  StarBird                                                                                            
 ///                                                                                                
 ///  Created by Alex Koukoulas on 03/02/2023
 ///------------------------------------------------------------------------------------------------
 
-#ifndef Font_h
-#define Font_h
+#include "FontRepository.h"
 
 ///------------------------------------------------------------------------------------------------
 
-#include "../utils/MathUtils.h"
-#include "../resloading/ResourceLoadingService.h"
-#include "../utils/StringUtils.h"
-
-#include <unordered_map>
-
-
-///------------------------------------------------------------------------------------------------
-
-struct Glyph
+FontRepository& FontRepository::GetInstance()
 {
-    float minU = 0.0f;
-    float minV = 0.0f;
-    float maxU = 0.0f;
-    float maxV = 0.0f;
-    float mYOffsetPixels = 0.0f;
-    float mWidthPixels = 0.0f;
-    float mHeightPixels = 0.0f;
-    float mAdvancePixels = 0.0f;
-};
+    static FontRepository instance;
+    return instance;
+}
 
 ///------------------------------------------------------------------------------------------------
 
-struct Font
+std::optional<std::reference_wrapper<const FontDefinition>> FontRepository::GetFont(const strutils::StringId& fontName) const
 {
-    strutils::StringId mFontName = strutils::StringId();
-    resources::ResourceId mFontTextureResourceId;
-    std::unordered_map<char, Glyph> mGlyphs;
-    glm::vec2 mFontTextureDimensions = glm::vec2(0.0f, 0.0f);
-};
+    auto findIter = mFontMap.find(fontName);
+    if (findIter != mFontMap.end())
+    {
+        return std::optional<std::reference_wrapper<const FontDefinition>>{findIter->second};
+    }
+    return std::nullopt;
+}
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* Font_h */
+void FontRepository::LoadFont(const strutils::StringId& fontName)
+{
+    auto findIter = mFontMap.find(fontName);
+    if (findIter == mFontMap.end())
+    {
+        mFontMap[fontName] = mLoader.LoadFont(fontName.GetString());
+    }
+}
+
+///------------------------------------------------------------------------------------------------

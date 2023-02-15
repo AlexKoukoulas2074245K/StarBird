@@ -10,9 +10,9 @@
 
 ///------------------------------------------------------------------------------------------------
 
-#include "Font.h"
-#include "dataloaders/FontLoader.h"
-#include "../utils/StringUtils.h"
+#include "../definitions/FontDefinition.h"
+#include "../dataloaders/FontLoader.h"
+#include "../../utils/StringUtils.h"
 
 #include <optional>
 #include <unordered_map>
@@ -30,7 +30,7 @@ public:
     const FontRepository& operator = (const FontRepository&) = delete;
     FontRepository& operator = (FontRepository&&) = delete;
     
-    std::optional<std::reference_wrapper<const Font>> GetFont(const strutils::StringId& fontName) const;
+    std::optional<std::reference_wrapper<const FontDefinition>> GetFont(const strutils::StringId& fontName) const;
     void LoadFont(const strutils::StringId& fontName);
     
 private:
@@ -38,7 +38,7 @@ private:
     
 private:
     FontLoader mLoader;
-    std::unordered_map<strutils::StringId, Font, strutils::StringIdHasher> mFontMap;
+    std::unordered_map<strutils::StringId, FontDefinition, strutils::StringIdHasher> mFontMap;
 };
 
 ///------------------------------------------------------------------------------------------------

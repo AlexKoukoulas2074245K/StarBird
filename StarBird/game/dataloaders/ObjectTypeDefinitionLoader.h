@@ -11,7 +11,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "BaseGameDataLoader.h"
-#include "../ObjectTypeDefinition.h"
+#include "../definitions/ObjectTypeDefinition.h"
 
 #include <string>
 

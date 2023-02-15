@@ -10,8 +10,8 @@
 
 ///------------------------------------------------------------------------------------------------
 
-#include "../utils/MathUtils.h"
-#include "../utils/StringUtils.h"
+#include "../../utils/MathUtils.h"
+#include "../../utils/StringUtils.h"
 
 #include <vector>
 #include <unordered_set>

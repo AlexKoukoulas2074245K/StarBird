@@ -10,9 +10,9 @@
 
 ///------------------------------------------------------------------------------------------------
 
-#include "ObjectTypeDefinition.h"
-#include "dataloaders/ObjectTypeDefinitionLoader.h"
-#include "../utils/StringUtils.h"
+#include "../dataloaders/ObjectTypeDefinitionLoader.h"
+#include "../definitions/ObjectTypeDefinition.h"
+#include "../../utils/StringUtils.h"
 
 #include <optional>
 #include <unordered_map>

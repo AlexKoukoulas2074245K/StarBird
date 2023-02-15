@@ -21,9 +21,6 @@ FontLoader::FontLoader()
         
         Glyph glyph;
         
-        int glyphNormalizedWidth = 0.0f;
-        int glyphNormalizedHeight = 0.0f;
-        
         auto* width = node->first_attribute("width");
         if (width)
         {
@@ -98,9 +95,9 @@ FontLoader::FontLoader()
 
 ///------------------------------------------------------------------------------------------------
 
-Font& FontLoader::LoadFont(const std::string &fontName)
+FontDefinition& FontLoader::LoadFont(const std::string &fontName)
 {
-    mConstructedFont = Font();
+    mConstructedFont = FontDefinition();
     mConstructedFont.mFontName = strutils::StringId(fontName);
     mConstructedFont.mFontTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + fontName + ".bmp");
     

@@ -10,10 +10,10 @@
 
 ///------------------------------------------------------------------------------------------------
 
-#include "Animation.h"
-#include "../utils/MathUtils.h"
-#include "../utils/StringUtils.h"
-#include "../resloading/ResourceLoadingService.h"
+#include "../Animation.h"
+#include "../../utils/MathUtils.h"
+#include "../../utils/StringUtils.h"
+#include "../../resloading/ResourceLoadingService.h"
 
 #include <Box2D/Dynamics/b2Fixture.h>
 #include <unordered_map>

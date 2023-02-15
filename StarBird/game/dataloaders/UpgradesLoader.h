@@ -11,7 +11,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "BaseGameDataLoader.h"
-#include "../UpgradeDefinition.h"
+#include "../definitions/UpgradeDefinition.h"
 
 #include <string>
 #include <map>
