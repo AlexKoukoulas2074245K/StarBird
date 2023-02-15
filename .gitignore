@@ -1,4 +1,3 @@
 *.DS_Store
-*.xcuserstate
-StarBird.xcodeproj/*
-StarBird.xcodeproj*
+/**/*.xcodeproj/**/xcuserdata/
+/**/*.xcodeproj/**/xcshareddata/
