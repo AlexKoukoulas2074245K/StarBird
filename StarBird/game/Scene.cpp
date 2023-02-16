@@ -143,6 +143,13 @@ void Scene::LoadLevel(const std::string& levelName)
 
 ///------------------------------------------------------------------------------------------------
 
+void Scene::OnAppStateChange(Uint32 event)
+{
+    mLevelUpdater.OnAppStateChange(event);
+}
+
+///------------------------------------------------------------------------------------------------
+
 void Scene::UpdateScene(const float dtMillis)
 {
     mPreFirstUpdate = false;

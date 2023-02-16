@@ -34,9 +34,9 @@ struct ObjectTypeDefinition
     float mDamage = 0;
     resources::ResourceId mShaderResourceId = resources::ResourceId();
     resources::ResourceId mMeshResourceId = resources::ResourceId();
-    std::unordered_map<strutils::StringId, Animation, strutils::StringIdHasher> mAnimations;
+    mutable std::unordered_map<strutils::StringId, Animation, strutils::StringIdHasher> mAnimations;
     b2Filter mContactFilter;
-    glm::vec2 mCustomLinearVelocity = glm::vec2(0.0f, 0.0f);
+    glm::vec2 mConstantLinearVelocity = glm::vec2(0.0f, 0.0f);
     float mSpeed = 0.0f;
     float mDensity = 0.0f;
     float mSize = 0.0f;

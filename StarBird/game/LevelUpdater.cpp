@@ -17,6 +17,11 @@
 #include "SceneObjectConstants.h"
 
 #include "dataloaders/UpgradesLoader.h"
+#include "states/FightingWaveGameState.h"
+#include "states/WaveIntroGameState.h"
+#include "states/UpgradeSelectionGameState.h"
+#include "states/UpgradeOverlayInGameState.h"
+#include "states/UpgradeOverlayOutGameState.h"
 
 #include "../utils/Logging.h"
 #include "../utils/ObjectiveCUtils.h"
@@ -36,8 +41,8 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld)
     : mScene(scene)
     , mBox2dWorld(box2dWorld)
     , mUpgradesLogicHandler(scene, *this)
+    , mStateMachine(scene, *this, mUpgradesLogicHandler, mBox2dWorld)
     , mCurrentWaveNumber(0)
-    , mState(LevelState::WAVE_INTRO)
     , mAllowInputControl(false)
 {
 }
@@ -249,17 +254,41 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
     UpgradesLoader loader;
     GameSingletons::SetAvailableUpgrades(loader.LoadAllUpgrades());
     
-    mState = LevelState::WAVE_INTRO;
+    mStateMachine.RegisterState<FightingWaveGameState>();
+    mStateMachine.RegisterState<WaveIntroGameState>();
+    mStateMachine.RegisterState<UpgradeOverlayInGameState>();
+    mStateMachine.RegisterState<UpgradeSelectionGameState>();
+    mStateMachine.RegisterState<UpgradeOverlayOutGameState>();
+
     mCurrentWaveNumber = 0;
-    CreateWaveIntro();
+    mStateMachine.InitStateMachine(WaveIntroGameState::STATE_NAME);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::OnAppStateChange(Uint32 event)
+{
+    switch (event)
+    {
+        case SDL_APP_WILLENTERBACKGROUND:
+        case SDL_APP_DIDENTERBACKGROUND:
+        {
+            
+        } break;
+            
+        case SDL_APP_WILLENTERFOREGROUND:
+        case SDL_APP_DIDENTERFOREGROUND:
+        {
+            
+        } break;
+    }
 }
 
 ///------------------------------------------------------------------------------------------------
 
 void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMillis)
 {
-    auto stateMachineUpdateResult = UpdateStateMachine(dtMillis);
-    if (stateMachineUpdateResult == StateMachineUpdateResult::BLOCK_UPDATE)
+    if (mStateMachine.Update(dtMillis) == PostStateUpdateDirective::BLOCK_UPDATE)
     {
         OnBlockedUpdate();
         return;
@@ -289,7 +318,7 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
             {
                 case MovementControllerPattern::CUSTOM_VELOCITY:
                 {
-                    sceneObject.mBody->SetLinearVelocity(b2Vec2(sceneObjectTypeDef.mCustomLinearVelocity.x, sceneObjectTypeDef.mCustomLinearVelocity.y));
+                    sceneObject.mBody->SetLinearVelocity(b2Vec2(sceneObjectTypeDef.mConstantLinearVelocity.x, sceneObjectTypeDef.mConstantLinearVelocity.y));
                 } break;
                     
                 case MovementControllerPattern::CHASING_PLAYER:
@@ -312,9 +341,11 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
                     
                 default: break;
             }
-            
-            // Update animation
-            UpdateAnimation(sceneObject, sceneObjectTypeDef, dtMillis);
+        }
+        
+        if (sceneObjectTypeDefOpt || sceneObject.mCustomAnimation)
+        {
+            UpdateAnimation(sceneObject, sceneObjectTypeDefOpt, dtMillis);
         }
     }
     
@@ -326,6 +357,85 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
 
 ///------------------------------------------------------------------------------------------------
 
+void LevelUpdater::UpdateAnimation(SceneObject& sceneObject, std::optional<std::reference_wrapper<const ObjectTypeDefinition>> sceneObjectTypeDefOpt, const float dtMillis)
+{
+    if (!sceneObjectTypeDefOpt && !sceneObject.mCustomAnimation) return;
+    
+    auto& currentAnim = sceneObject.mCustomAnimation ? sceneObject.mCustomAnimation.value() : sceneObjectTypeDefOpt->get().mAnimations.at(sceneObject.mStateName);
+
+    switch(currentAnim.mAnimationType)
+    {
+        case AnimationType::MULTI_FRAME:
+        {
+            const auto& currentTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(currentAnim.mTextureResourceId);
+            const auto& sheetMetaDataCurrentRow = currentTexture.GetSheetMetadata()->mRowMetadata[currentAnim.mTextureSheetRow];
+            const auto animFrameTime = currentAnim.mDuration/sheetMetaDataCurrentRow.mColMetadata.size();
+            
+            if (currentAnim.mDuration > 0.0f)
+            {
+                sceneObject.mAnimationTime += dtMillis;
+                if (sceneObject.mAnimationTime >= animFrameTime)
+                {
+                    sceneObject.mAnimationTime = 0.0f;
+                    sceneObject.mAnimationIndex = (sceneObject.mAnimationIndex + 1) % sheetMetaDataCurrentRow.mColMetadata.size();
+                }
+            }
+            sceneObject.mShaderBoolUniformValues[scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
+            sceneObject.mShaderFloatUniformValues[scene_object_constants::MIN_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).minU;
+            sceneObject.mShaderFloatUniformValues[scene_object_constants::MIN_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).minV;
+            sceneObject.mShaderFloatUniformValues[scene_object_constants::MAX_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).maxU;
+            sceneObject.mShaderFloatUniformValues[scene_object_constants::MAX_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).maxV;
+            
+            sceneObject.mCustomScale = glm::vec3(currentAnim.mScale, currentAnim.mScale, 1.0f);
+            sceneObject.mTextureResourceId = currentAnim.mTextureResourceId;
+        } break;
+        
+        case AnimationType::PULSING:
+        {
+            currentAnim.mAnimDtAccum += dtMillis * currentAnim.mAnimDtAccumSpeed;
+            sceneObject.mCustomScale += math::Sinf(currentAnim.mAnimDtAccum) * currentAnim.mPulsingEnlargementFactor;
+        } break;
+            
+        default: break;
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::AdvanceWave()
+{
+    mCurrentWaveNumber++;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::AddFlow(RepeatableFlow&& flow)
+{
+    mFlows.emplace_back(std::move(flow));
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::AddWaveEnemy(const strutils::StringId& enemyTag)
+{
+    mWaveEnemies.insert(enemyTag);
+}
+
+///------------------------------------------------------------------------------------------------
+
+const LevelDefinition& LevelUpdater::GetCurrentLevelDefinition() const
+{
+    return mLevel;
+}
+
+///------------------------------------------------------------------------------------------------
+
+size_t LevelUpdater::GetCurrentWaveNumber() const
+{
+    return mCurrentWaveNumber;
+}
+
+///------------------------------------------------------------------------------------------------
 size_t LevelUpdater::GetWaveEnemyCount() const
 {
     return mWaveEnemies.size();
@@ -345,219 +455,6 @@ std::optional<std::reference_wrapper<RepeatableFlow>> LevelUpdater::GetFlow(cons
         return std::optional<std::reference_wrapper<RepeatableFlow>>{*findIter};
     }
     return std::nullopt;
-}
-
-///------------------------------------------------------------------------------------------------
-
-LevelUpdater::StateMachineUpdateResult LevelUpdater::UpdateStateMachine(const float dtMillis)
-{
-    static float tween = 0.0f;
-    
-    switch (mState)
-    {
-        case LevelState::WAVE_INTRO:
-        {
-            auto waveTextIntroSoOpt = mScene.GetSceneObject(scene_object_constants::WAVE_INTRO_TEXT_SCNE_OBJECT_NAME);
-            auto waveTextIntroFlowOpt = GetFlow(game_object_constants::WAVE_INTRO_FLOW_NAME);
-            
-            if (waveTextIntroSoOpt && waveTextIntroFlowOpt)
-            {
-                auto& waveTextIntroSo = waveTextIntroSoOpt->get();
-                auto& waveTextIntroFlow = waveTextIntroFlowOpt->get();
-                
-                const auto ticksLeft = waveTextIntroFlow.GetTicksLeft();
-                const auto halfDuration = waveTextIntroFlow.GetDuration()/2;
-                if (ticksLeft > halfDuration)
-                {
-                    waveTextIntroSo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f - (ticksLeft - halfDuration)/halfDuration;
-                }
-                else
-                {
-                    waveTextIntroSo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = ticksLeft/halfDuration;
-                }
-            }
-        } break;
-            
-        case LevelState::FIGHTING_WAVE:
-        {
-            if (mWaveEnemies.size() == 0)
-            {
-                if (GameSingletons::GetAvailableUpgrades().size() > 1)
-                {
-                    mState = LevelState::UPGRADE_OVERLAY_IN;
-                    CreateUpgradeSceneObjects();
-                    tween = 0.0f;
-                }
-                else
-                {
-                    mState = LevelState::WAVE_INTRO;
-                    mCurrentWaveNumber++;
-                    CreateWaveIntro();
-                }
-            }
-        } break;
-        
-        case LevelState::UPGRADE_OVERLAY_IN:
-        {
-            auto upgradeOverlaySoOpt = mScene.GetSceneObject(scene_object_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME);
-            if (upgradeOverlaySoOpt)
-            {
-                auto& upgradeOverlaySo = upgradeOverlaySoOpt->get();
-                auto& upgradeOverlayAlpha = upgradeOverlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-                upgradeOverlayAlpha += dtMillis * game_object_constants::OVERLAY_DARKENING_SPEED;
-                if (upgradeOverlayAlpha >= game_object_constants::UPGRADE_OVERLAY_MAX_ALPHA)
-                {
-                    upgradeOverlayAlpha = game_object_constants::UPGRADE_OVERLAY_MAX_ALPHA;
-                    mState = LevelState::UPGRADE;
-                }
-            }
-            return StateMachineUpdateResult::BLOCK_UPDATE;
-        } break;
-            
-        case LevelState::UPGRADE:
-        {
-            tween = math::Min(1.0f, tween + dtMillis * game_object_constants::UPGRADE_MOVEMENT_SPEED);
-            float perc = math::Min(1.0f, math::TweenValue(tween, math::BounceFunction, math::TweeningMode::EASE_IN));
-            
-            auto leftUpgradeContainerSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-            auto rightUpgradeContainerSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-            auto leftUpgradeSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
-            auto rightUpgradeSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
-            
-            if (leftUpgradeContainerSoOpt)
-            {
-                leftUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_object_constants::LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
-            }
-            
-            if (rightUpgradeContainerSoOpt)
-            {
-                rightUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_object_constants::RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
-            }
-            
-            if (leftUpgradeSoOpt)
-            {
-                leftUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::LEFT_UPGRADE_INIT_POS.x + perc * game_object_constants::LEFT_UPGRADE_TARGET_POS.x;
-            }
-            
-            if (rightUpgradeSoOpt)
-            {
-                rightUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::RIGHT_UPGRADE_INIT_POS.x + perc * game_object_constants::RIGHT_UPGRADE_TARGET_POS.x;
-            }
-            
-            auto selectedUpgradeName = TestForUpgradeSelected();
-            if (selectedUpgradeName != strutils::StringId())
-            {
-                auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
-                auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
-                
-                if (selectedUpgradeName == scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME)
-                {
-                    mUpgradesLogicHandler.OnUpgradeEquipped(mUpgradeSelection.first.mUpgradeName);
-                    equippedUpgrades[mUpgradeSelection.first.mUpgradeName] = mUpgradeSelection.first;
-                    availableUpgrades[mUpgradeSelection.second.mUpgradeName] = mUpgradeSelection.second;
-                }
-                else
-                {
-                    mUpgradesLogicHandler.OnUpgradeEquipped(mUpgradeSelection.second.mUpgradeName);
-                    equippedUpgrades[mUpgradeSelection.second.mUpgradeName] = mUpgradeSelection.second;
-                    availableUpgrades[mUpgradeSelection.first.mUpgradeName] = mUpgradeSelection.first;
-                }
-                
-                mState = LevelState::UPGRADE_OVERLAY_OUT;
-            }
-            
-            return StateMachineUpdateResult::BLOCK_UPDATE;
-        } break;
-            
-        case LevelState::UPGRADE_OVERLAY_OUT:
-        {
-            tween = math::Max(0.0f, tween - dtMillis * game_object_constants::UPGRADE_MOVEMENT_SPEED);
-            float perc = math::Max(0.0f, math::TweenValue(tween, math::QuadFunction, math::TweeningMode::EASE_OUT));
-            
-            auto upgradeOverlaySoOpt = mScene.GetSceneObject(scene_object_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME);
-            auto leftUpgradeContainerSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-            auto rightUpgradeContainerSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-            auto leftUpgradeSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
-            auto rightUpgradeSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
-            
-            if (leftUpgradeContainerSoOpt)
-            {
-                leftUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_object_constants::LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
-            }
-            
-            if (rightUpgradeContainerSoOpt)
-            {
-                rightUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_object_constants::RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
-            }
-            
-            if (leftUpgradeSoOpt)
-            {
-                leftUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::LEFT_UPGRADE_INIT_POS.x + perc * game_object_constants::LEFT_UPGRADE_TARGET_POS.x;
-            }
-            
-            if (rightUpgradeSoOpt)
-            {
-                rightUpgradeSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::RIGHT_UPGRADE_INIT_POS.x + perc * game_object_constants::RIGHT_UPGRADE_TARGET_POS.x;
-            }
-            
-            if (upgradeOverlaySoOpt)
-            {
-                auto& upgradeOverlaySo = upgradeOverlaySoOpt->get();
-                auto& upgradeOverlayAlpha = upgradeOverlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-                upgradeOverlayAlpha -= dtMillis * game_object_constants::OVERLAY_DARKENING_SPEED;
-                if (upgradeOverlayAlpha <= 0)
-                {
-                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME);
-                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
-                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
-                    upgradeOverlayAlpha = 0;
-                    mState = LevelState::WAVE_INTRO;
-                    mCurrentWaveNumber++;
-                    CreateWaveIntro();
-                }
-            }
-            
-            return StateMachineUpdateResult::BLOCK_UPDATE;
-        } break;
-            
-        default: break;
-    }
-    
-    return StateMachineUpdateResult::CONTINUE;
-}
-
-///------------------------------------------------------------------------------------------------
-
-void LevelUpdater::UpdateAnimation(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis)
-{
-    const auto& currentAnim = sceneObjectTypeDef.mAnimations.at(sceneObject.mStateName);
-    const auto& currentTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(currentAnim.mTextureResourceId);
-
-    if (currentTexture.GetSheetMetadata())
-    {
-        const auto& sheetMetaDataCurrentRow = currentTexture.GetSheetMetadata()->mRowMetadata[currentAnim.mTextureSheetRow];
-        const auto animFrameTime = currentAnim.mDuration/sheetMetaDataCurrentRow.mColMetadata.size();
-        
-        if (currentAnim.mDuration > 0.0f)
-        {
-            sceneObject.mAnimationTime += dtMilis;
-            if (sceneObject.mAnimationTime >= animFrameTime)
-            {
-                sceneObject.mAnimationTime = 0.0f;
-                sceneObject.mAnimationIndex = (sceneObject.mAnimationIndex + 1) % sheetMetaDataCurrentRow.mColMetadata.size();
-            }
-        }
-        sceneObject.mShaderBoolUniformValues[scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
-        sceneObject.mShaderFloatUniformValues[scene_object_constants::MIN_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).minU;
-        sceneObject.mShaderFloatUniformValues[scene_object_constants::MIN_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).minV;
-        sceneObject.mShaderFloatUniformValues[scene_object_constants::MAX_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).maxU;
-        sceneObject.mShaderFloatUniformValues[scene_object_constants::MAX_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(sceneObject.mAnimationIndex).maxV;
-        
-        sceneObject.mCustomScale = glm::vec3(currentAnim.mScale, currentAnim.mScale, 1.0f);
-        sceneObject.mTextureResourceId = currentAnim.mTextureResourceId;
-    }
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -722,186 +619,6 @@ void LevelUpdater::OnBlockedUpdate()
 
 ///------------------------------------------------------------------------------------------------
 
-void LevelUpdater::CreateWaveIntro()
-{
-    auto& resService = resources::ResourceLoadingService::GetInstance();
-    
-    SceneObject waveTextSO;
-    waveTextSO.mCustomPosition = game_object_constants::WAVE_INTRO_TEXT_INIT_POS;
-    waveTextSO.mCustomScale = game_object_constants::WAVE_INTRO_TEXT_SCALE;
-    waveTextSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-    waveTextSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-    waveTextSO.mTextureResourceId = FontRepository::GetInstance().GetFont(strutils::StringId("font"))->get().mFontTextureResourceId;
-    waveTextSO.mFontName = strutils::StringId("font");
-    waveTextSO.mSceneObjectType = SceneObjectType::GUIObject;
-    waveTextSO.mNameTag = scene_object_constants::WAVE_INTRO_TEXT_SCNE_OBJECT_NAME;
-    waveTextSO.mText = "WAVE " + std::to_string(mCurrentWaveNumber + 1);
-    waveTextSO.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-    mScene.AddSceneObject(std::move(waveTextSO));
-    
-    mFlows.emplace_back([&]()
-    {
-        mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::WAVE_INTRO_TEXT_SCNE_OBJECT_NAME);
-        mState = LevelState::FIGHTING_WAVE;
-        CreateWave();
-    }, game_object_constants::WAVE_INTRO_DURATION_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_object_constants::WAVE_INTRO_FLOW_NAME);
-}
-
-///------------------------------------------------------------------------------------------------
-
-void LevelUpdater::CreateWave()
-{
-    auto& objectTypeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
-    for (const auto& enemy: mLevel.mWaves[mCurrentWaveNumber].mEnemies)
-    {
-        const auto& enemyDefOpt = objectTypeDefRepo.GetObjectTypeDefinition(enemy.mGameObjectEnemyType);
-        if (!enemyDefOpt) continue;
-        const auto& enemyDef = enemyDefOpt->get();
-        
-        SceneObject so;
-        
-        const auto& variableTextures = enemyDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE).mVariableTextureResourceIds;
-        if (variableTextures.size() > 0)
-        {
-            so.mTextureResourceId = variableTextures.at(math::RandomInt(0, static_cast<int>(variableTextures.size()) - 1));
-        }
-        else
-        {
-            so.mTextureResourceId = enemyDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId;
-        }
-        
-        b2BodyDef bodyDef;
-        bodyDef.type = b2_dynamicBody;
-        bodyDef.position.Set(enemy.mPosition.x, enemy.mPosition.y);
-        b2Body* body = mBox2dWorld.CreateBody(&bodyDef);
-        body->SetLinearDamping(enemyDef.mLinearDamping);
-        
-        b2PolygonShape dynamicBox;
-        auto& enemyTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(so.mTextureResourceId);
-        
-        float textureAspect = enemyTexture.GetDimensions().x/enemyTexture.GetDimensions().y;
-        dynamicBox.SetAsBox(enemyDef.mSize, enemyDef.mSize/textureAspect);
-        
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &dynamicBox;
-        fixtureDef.density = enemyDef.mDensity;
-        fixtureDef.friction = 0.0f;
-        fixtureDef.restitution = 0.0f;
-        fixtureDef.filter = enemyDef.mContactFilter;
-        fixtureDef.filter.maskBits &= (~physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
-        fixtureDef.filter.maskBits &= (~physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT);
-        body->CreateFixture(&fixtureDef);
-    
-        so.mObjectFamilyTypeName = enemy.mGameObjectEnemyType;
-        so.mBody = body;
-        so.mHealth = enemyDef.mHealth;
-        so.mShaderResourceId = enemyDef.mShaderResourceId;
-        so.mMeshResourceId = enemyDef.mMeshResourceId;
-        so.mSceneObjectType = SceneObjectType::WorldGameObject;
-        so.mCustomPosition.z = 0.0f;
-        so.mUseBodyForRendering = true;
-        
-        strutils::StringId nameTag;
-        nameTag.fromAddress(so.mBody);
-        
-        mWaveEnemies.insert(nameTag);
-        
-        so.mNameTag = nameTag;
-        mScene.AddSceneObject(std::move(so));
-    }
-}
-
-///------------------------------------------------------------------------------------------------
-
-void LevelUpdater::CreateUpgradeSceneObjects()
-{
-    auto& resService = resources::ResourceLoadingService::GetInstance();
-    
-    // Overlay
-    {
-        SceneObject overlaySo;
-        overlaySo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-        overlaySo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_OVERLAY_TEXTURE_FILE_NAME);
-        overlaySo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-        overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
-        overlaySo.mCustomScale = game_object_constants::UPGRADE_OVERLAY_SCALE;
-        overlaySo.mCustomPosition = game_object_constants::UPGRADE_OVERLAY_POSITION;
-        overlaySo.mNameTag = scene_object_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME;
-        overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-        mScene.AddSceneObject(std::move(overlaySo));
-    }
-    
-    // Left Upgrade Container
-    {
-        SceneObject leftUpgradeContainerSO;
-        leftUpgradeContainerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        leftUpgradeContainerSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME);
-        leftUpgradeContainerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-        leftUpgradeContainerSO.mSceneObjectType = SceneObjectType::GUIObject;
-        leftUpgradeContainerSO.mCustomScale = game_object_constants::LEFT_UPGRADE_CONTAINER_SCALE;
-        leftUpgradeContainerSO.mCustomPosition = game_object_constants::LEFT_UPGRADE_CONTAINER_INIT_POS;
-        leftUpgradeContainerSO.mNameTag = scene_object_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
-        mScene.AddSceneObject(std::move(leftUpgradeContainerSO));
-    }
-    
-    // Left Upgrade
-    {
-        auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
-        auto upgradesIter = availableUpgrades.begin();
-        std::advance(upgradesIter, math::RandomInt(0, static_cast<int>(availableUpgrades.size() - 1)));
-        auto& upgrade = upgradesIter->second;
-        
-        SceneObject leftUpgradeSO;
-        leftUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        leftUpgradeSO.mTextureResourceId = upgrade.mTextureResourceId;
-        leftUpgradeSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-        leftUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
-        leftUpgradeSO.mCustomScale = game_object_constants::LEFT_UPGRADE_SCALE;
-        leftUpgradeSO.mCustomPosition = game_object_constants::LEFT_UPGRADE_INIT_POS;
-        leftUpgradeSO.mNameTag = scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME;
-        mScene.AddSceneObject(std::move(leftUpgradeSO));
-        
-        mUpgradeSelection.first = upgrade;
-        availableUpgrades.erase(upgrade.mUpgradeName);
-    }
-    
-    // Right Upgrade Container
-    {
-        SceneObject rightUpgradeContainerSO;
-        rightUpgradeContainerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        rightUpgradeContainerSO.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME);
-        rightUpgradeContainerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-        rightUpgradeContainerSO.mSceneObjectType = SceneObjectType::GUIObject;
-        rightUpgradeContainerSO.mCustomScale = game_object_constants::RIGHT_UPGRADE_CONTAINER_SCALE;
-        rightUpgradeContainerSO.mCustomPosition = game_object_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS;
-        rightUpgradeContainerSO.mNameTag = scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
-        mScene.AddSceneObject(std::move(rightUpgradeContainerSO));
-    }
-    
-    // Right Upgrade
-    {
-        auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
-        auto upgradesIter = availableUpgrades.begin();
-        std::advance(upgradesIter, math::RandomInt(0, static_cast<int>(availableUpgrades.size() - 1)));
-        auto& upgrade = upgradesIter->second;
-        
-        SceneObject rightUpgradeSO;
-        rightUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        rightUpgradeSO.mTextureResourceId = upgrade.mTextureResourceId;
-        rightUpgradeSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-        rightUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
-        rightUpgradeSO.mCustomScale = game_object_constants::RIGHT_UPGRADE_SCALE;
-        rightUpgradeSO.mCustomPosition = game_object_constants::RIGHT_UPGRADE_INIT_POS;
-        rightUpgradeSO.mNameTag = scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME;
-        mScene.AddSceneObject(std::move(rightUpgradeSO));
-        
-        mUpgradeSelection.second = upgrade;
-        availableUpgrades.erase(upgrade.mUpgradeName);
-    }
-}
-
-///------------------------------------------------------------------------------------------------
-
 void LevelUpdater::CreateBulletAtPosition(const strutils::StringId& bulletType, const glm::vec3& position)
 {
     auto bulletDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(bulletType);
@@ -916,7 +633,7 @@ void LevelUpdater::CreateBulletAtPosition(const strutils::StringId& bulletType, 
         bodyDef.position.y = position.y;
         bodyDef.bullet =  true;
         b2Body* body = mBox2dWorld.CreateBody(&bodyDef);
-        body->SetLinearVelocity(b2Vec2(bulletDef.mCustomLinearVelocity.x, bulletDef.mCustomLinearVelocity.y));
+        body->SetLinearVelocity(b2Vec2(bulletDef.mConstantLinearVelocity.x, bulletDef.mConstantLinearVelocity.y));
         b2PolygonShape dynamicBox;
         
         auto& bulletTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(bulletDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId);
@@ -944,52 +661,6 @@ void LevelUpdater::CreateBulletAtPosition(const strutils::StringId& bulletType, 
         
         mScene.AddSceneObject(std::move(so));
     }
-}
-
-///------------------------------------------------------------------------------------------------
-
-strutils::StringId LevelUpdater::TestForUpgradeSelected() const
-{
-    const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
-    assert(camOpt);
-    const auto& guiCamera = camOpt->get();
-    const auto& inputContext = GameSingletons::GetInputContext();
-    
-    if (inputContext.mEventType == SDL_FINGERDOWN)
-    {
-        auto leftUpgradeSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
-        auto rightUpgradeSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
-        
-        auto touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
-        
-        // Left Upgrade test
-        if (leftUpgradeSoOpt)
-        {
-            auto& leftUpgrade = leftUpgradeSoOpt->get();
-            auto upgradeRectBottomLeft = glm::vec2(leftUpgrade.mCustomPosition.x - leftUpgrade.mCustomScale.x/2, leftUpgrade.mCustomPosition.y - leftUpgrade.mCustomScale.y/2);
-            auto upgradeRectTopRight = glm::vec2(leftUpgrade.mCustomPosition.x + leftUpgrade.mCustomScale.x/2, leftUpgrade.mCustomPosition.y + leftUpgrade.mCustomScale.y/2);
-            
-            if (math::IsPointInsideRectangle(upgradeRectBottomLeft, upgradeRectTopRight, touchPos))
-            {
-                return leftUpgrade.mNameTag;
-            }
-        }
-        
-        // Right Upgrade test
-        if (rightUpgradeSoOpt)
-        {
-            auto& rightUpgrade = rightUpgradeSoOpt->get();
-            auto upgradeRectBottomLeft = glm::vec2(rightUpgrade.mCustomPosition.x - rightUpgrade.mCustomScale.x/2, rightUpgrade.mCustomPosition.y - rightUpgrade.mCustomScale.y/2);
-            auto upgradeRectTopRight = glm::vec2(rightUpgrade.mCustomPosition.x + rightUpgrade.mCustomScale.x/2, rightUpgrade.mCustomPosition.y + rightUpgrade.mCustomScale.y/2);
-            
-            if (math::IsPointInsideRectangle(upgradeRectBottomLeft, upgradeRectTopRight, touchPos))
-            {
-                return rightUpgrade.mNameTag;
-            }
-        }
-    }
-    
-    return strutils::StringId();
 }
 
 ///------------------------------------------------------------------------------------------------

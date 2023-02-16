@@ -10,10 +10,13 @@
 
 ///------------------------------------------------------------------------------------------------
 
+#include "Animation.h"
 #include "SceneObjectConstants.h"
 #include "../utils/MathUtils.h"
 #include "../utils/StringUtils.h"
 #include "../resloading/ResourceLoadingService.h"
+
+#include <optional>
 #include <unordered_map>
 
 ///------------------------------------------------------------------------------------------------
@@ -43,6 +46,7 @@ struct SceneObject // 376b
     glm::vec3 mCustomPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 mCustomRotation = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 mCustomScale = glm::vec3(1.0f, 1.0f, 1.0f);
+    std::optional<Animation> mCustomAnimation;
     resources::ResourceId mTextureResourceId = resources::ResourceId();
     resources::ResourceId mShaderResourceId = resources::ResourceId();
     resources::ResourceId mMeshResourceId = resources::ResourceId();

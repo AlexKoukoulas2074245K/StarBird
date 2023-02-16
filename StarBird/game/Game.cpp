@@ -142,6 +142,7 @@ void Game::Run()
             switch (e.type)
             {
                 case SDL_QUIT:
+                case SDL_APP_TERMINATING:
                 {
                     mIsFinished = true;
                 } break;
@@ -153,6 +154,14 @@ void Game::Run()
                     GameSingletons::SetInputContextTouchPos(glm::vec2(e.tfinger.x, e.tfinger.y));
                 } break;
                 default: break;
+                    
+                case SDL_APP_WILLENTERBACKGROUND:
+                case SDL_APP_DIDENTERBACKGROUND:
+                case SDL_APP_WILLENTERFOREGROUND:
+                case SDL_APP_DIDENTERFOREGROUND:
+                {
+                    scene.OnAppStateChange(e.type);
+                } break;
             }
         }
         

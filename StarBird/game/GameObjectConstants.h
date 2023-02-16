@@ -58,6 +58,10 @@ static const float UPGRADE_OVERLAY_MAX_ALPHA = 0.8f;
 static const float PLAYER_BULLET_X_OFFSET = 0.48f;
 static const float MIRROR_IMAGE_BULLET_X_OFFSET = 0.38f;
 static const float HEALTH_POTION_HEALTH_GAIN = 5.0f;
+static const float PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR = 1.0/50.0f;
+static const float PLAYER_PULSE_SHIELD_ANIM_SPEED = 0.01f;
+static const float SELECTED_UPGRADE_PULSE_ENLARGEMENT_FACTOR = 1.0/5.0f;
+static const float SELECTED_UPGRADE_PULSE_ANIM_SPEED = 0.03f;
 
 static const glm::vec3 PLAYER_INITIAL_POS = glm::vec3(0.0f, -10.0f, 0.0f);
 static const glm::vec3 BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
@@ -96,7 +100,7 @@ static const glm::vec3 LEFT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
 static const glm::vec3 RIGHT_MIRROR_IMAGE_POSITION_OFFSET = glm::vec3(2.0f, -0.5f, 0.0f);
 static const glm::vec3 RIGHT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
 
-static const glm::vec3 PLAYER_SHIELD_POSITION_OFFSET = glm::vec3(0.0f, 0.0f, 0.0f);
+static const glm::vec3 PLAYER_SHIELD_POSITION_OFFSET = glm::vec3(0.0f, 0.0f, 0.5f);
 static const glm::vec3 PLAYER_SHIELD_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
 
 ///------------------------------------------------------------------------------------------------

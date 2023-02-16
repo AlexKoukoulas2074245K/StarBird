@@ -119,16 +119,25 @@ void UpgradesLogicHandler::CreateMirrorImageSceneObjects()
 void UpgradesLogicHandler::CreatePlayerShieldSceneObject()
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
+    auto playerSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
     
+    if (playerSoOpt)
     {
         SceneObject playerShieldSo;
         playerShieldSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
         playerShieldSo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_SHIELD_TEXTURE_FILE_NAME);
         playerShieldSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         playerShieldSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-        playerShieldSo.mCustomPosition = game_object_constants::PLAYER_SHIELD_POSITION_OFFSET;
+        playerShieldSo.mCustomPosition = math::Box2dVec2ToGlmVec3(playerSoOpt->get().mBody->GetWorldCenter()) + game_object_constants::PLAYER_SHIELD_POSITION_OFFSET;
         playerShieldSo.mCustomScale = game_object_constants::PLAYER_SHIELD_SCALE;
         playerShieldSo.mNameTag = scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME;
+        
+        Animation customAnim;
+        customAnim.mAnimationType = AnimationType::PULSING;
+        customAnim.mAnimDtAccumSpeed = game_object_constants::PLAYER_PULSE_SHIELD_ANIM_SPEED;
+        customAnim.mPulsingEnlargementFactor = game_object_constants::PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR;
+        
+        playerShieldSo.mCustomAnimation = customAnim;
         mScene.AddSceneObject(std::move(playerShieldSo));
     }
 }
@@ -165,10 +174,8 @@ void UpgradesLogicHandler::UpdateMirrorImages(const float)
 
 ///------------------------------------------------------------------------------------------------
 
-static float dtAccum = 0.0f;
 void UpgradesLogicHandler::UpdatePlayerShield(const float dtMillis)
 {
-    dtAccum += dtMillis * 0.01f;
     auto playerSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
     auto playerShieldSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
     
@@ -183,9 +190,7 @@ void UpgradesLogicHandler::UpdatePlayerShield(const float dtMillis)
     {
         auto& playerSo = playerSoOpt->get();
         auto& playerShieldSo = playerShieldSoOpt->get();
-        
         playerShieldSo.mCustomPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + game_object_constants::PLAYER_SHIELD_POSITION_OFFSET;
-        playerShieldSo.mCustomScale = game_object_constants::PLAYER_SHIELD_SCALE + math::Sinf(dtAccum)/5.0f;
     }
 }
 

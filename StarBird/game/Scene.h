@@ -38,6 +38,7 @@ public:
     void FreezeAllPhysicsBodies();
     void LoadLevel(const std::string& levelName);
     
+    void OnAppStateChange(Uint32 event);
     void UpdateScene(const float dtMillis);
     void RenderScene();
     

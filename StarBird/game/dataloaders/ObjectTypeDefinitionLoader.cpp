@@ -46,12 +46,12 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             mConstructedObjectTypeDef.mSpeed = std::stof(linearSpeed->value());
         }
         
-        auto* customLinearVelocity = node->first_attribute("customLinearVelocity");
-        if (customLinearVelocity)
+        auto* constantLinearVelocity = node->first_attribute("constantLinearVelocity");
+        if (constantLinearVelocity)
         {
-            auto customLinearVelocityComponents = strutils::StringSplit(std::string(customLinearVelocity->value()), ',');
-            mConstructedObjectTypeDef.mCustomLinearVelocity.x = std::stof(customLinearVelocityComponents[0]);
-            mConstructedObjectTypeDef.mCustomLinearVelocity.y = std::stof(customLinearVelocityComponents[1]);
+            auto constantLinearVelocityComponents = strutils::StringSplit(std::string(constantLinearVelocity->value()), ',');
+            mConstructedObjectTypeDef.mConstantLinearVelocity.x = std::stof(constantLinearVelocityComponents[0]);
+            mConstructedObjectTypeDef.mConstantLinearVelocity.y = std::stof(constantLinearVelocityComponents[1]);
         }
 
         auto* category = node->first_attribute("category");
@@ -130,6 +130,8 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             std::string textureName(texture->value());
             if (textureName.back() == '}')
             {
+                animation.mAnimationType = AnimationType::VARIABLE_TEXTURED;
+                
                 auto textureNameSplitByLBrace = strutils::StringSplit(textureName, '{');
                 auto textureRangeStr = textureNameSplitByLBrace[1];
                 textureRangeStr.pop_back();
@@ -145,6 +147,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             }
             else
             {
+                animation.mAnimationType = AnimationType::SINGLE_FRAME;
                 animation.mTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(texture->value()) + ".bmp");
             }
         }
@@ -164,6 +167,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         auto* textureSheetRow = node->first_attribute("textureSheetRow");
         if (textureSheetRow)
         {
+            animation.mAnimationType = AnimationType::MULTI_FRAME;
             animation.mTextureSheetRow = std::stoi(textureSheetRow->value());
         }
         

@@ -15,6 +15,7 @@ glm::vec2 GameSingletons::mWindowDimensions = glm::vec2();
 std::unordered_map<SceneObjectType, Camera> GameSingletons::mSceneObjectTypeToCameraMap = {};
 GameSingletons::UpgradeMap GameSingletons::mEquippedUpgrades = {};
 GameSingletons::UpgradeMap GameSingletons::mAvailableUpgrades = {};
+std::pair<UpgradeDefinition, UpgradeDefinition> GameSingletons::mUpgradeSelection = {};
 
 ///------------------------------------------------------------------------------------------------
 
@@ -111,6 +112,13 @@ void GameSingletons::SetEquippedUpgrades(UpgradeMap&& upgrades)
 void GameSingletons::SetAvailableUpgrades(UpgradeMap&& upgrades)
 {
     mAvailableUpgrades = upgrades;
+}
+
+///------------------------------------------------------------------------------------------------
+
+std::pair<UpgradeDefinition, UpgradeDefinition>& GameSingletons::GetUpgradeSelection()
+{
+    return mUpgradeSelection;
 }
 
 ///------------------------------------------------------------------------------------------------

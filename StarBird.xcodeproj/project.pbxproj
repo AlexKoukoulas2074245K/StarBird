@@ -93,6 +93,12 @@
 		92DAA4DC29829B380062A438 /* MathUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92DAA4D829829B380062A438 /* MathUtils.cpp */; };
 		92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92E8DAE4298E940B00591968 /* PhysicsCollisionListener.cpp */; };
 		92E96A6B29803597004A3120 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92E96A5F29803597004A3120 /* OpenGLES.framework */; };
+		92F9EC7C299E6C1A00C263E8 /* StateMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */; };
+		92F9EC7F299E71BB00C263E8 /* FightingWaveGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC7D299E71BB00C263E8 /* FightingWaveGameState.cpp */; };
+		92F9EC82299E799D00C263E8 /* WaveIntroGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC80299E799D00C263E8 /* WaveIntroGameState.cpp */; };
+		92F9EC85299E826D00C263E8 /* UpgradeOverlayInGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC84299E826D00C263E8 /* UpgradeOverlayInGameState.cpp */; };
+		92F9EC88299E85D500C263E8 /* UpgradeSelectionGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC86299E85D400C263E8 /* UpgradeSelectionGameState.cpp */; };
+		92F9EC8B299E884300C263E8 /* UpgradeOverlayOutGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC89299E884300C263E8 /* UpgradeOverlayOutGameState.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -761,6 +767,19 @@
 		92E96BE429805C9D004A3120 /* rotate_normalized_axis.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rotate_normalized_axis.hpp; sourceTree = "<group>"; };
 		92E96BE529805C9D004A3120 /* projection.inl */ = {isa = PBXFileReference; lastKnownFileType = text; path = projection.inl; sourceTree = "<group>"; };
 		92E96BE629805C9D004A3120 /* type_aligned.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = type_aligned.hpp; sourceTree = "<group>"; };
+		92F9EC79299E56AD00C263E8 /* BaseGameState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseGameState.h; sourceTree = "<group>"; };
+		92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateMachine.cpp; sourceTree = "<group>"; };
+		92F9EC7B299E6C1A00C263E8 /* StateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateMachine.h; sourceTree = "<group>"; };
+		92F9EC7D299E71BB00C263E8 /* FightingWaveGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FightingWaveGameState.cpp; sourceTree = "<group>"; };
+		92F9EC7E299E71BB00C263E8 /* FightingWaveGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FightingWaveGameState.h; sourceTree = "<group>"; };
+		92F9EC80299E799D00C263E8 /* WaveIntroGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveIntroGameState.cpp; sourceTree = "<group>"; };
+		92F9EC81299E799D00C263E8 /* WaveIntroGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveIntroGameState.h; sourceTree = "<group>"; };
+		92F9EC83299E826D00C263E8 /* UpgradeOverlayInGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradeOverlayInGameState.h; sourceTree = "<group>"; };
+		92F9EC84299E826D00C263E8 /* UpgradeOverlayInGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradeOverlayInGameState.cpp; sourceTree = "<group>"; };
+		92F9EC86299E85D400C263E8 /* UpgradeSelectionGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradeSelectionGameState.cpp; sourceTree = "<group>"; };
+		92F9EC87299E85D400C263E8 /* UpgradeSelectionGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradeSelectionGameState.h; sourceTree = "<group>"; };
+		92F9EC89299E884300C263E8 /* UpgradeOverlayOutGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradeOverlayOutGameState.cpp; sourceTree = "<group>"; };
+		92F9EC8A299E884300C263E8 /* UpgradeOverlayOutGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradeOverlayOutGameState.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1038,6 +1057,7 @@
 				925FD86929892BE00058E747 /* dataloaders */,
 				92894E11299D331200605302 /* datarepos */,
 				92894E0C299D330A00605302 /* definitions */,
+				92F9EC77299E565500C263E8 /* states */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -1591,6 +1611,27 @@
 			path = gtx;
 			sourceTree = "<group>";
 		};
+		92F9EC77299E565500C263E8 /* states */ = {
+			isa = PBXGroup;
+			children = (
+				92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */,
+				92F9EC7B299E6C1A00C263E8 /* StateMachine.h */,
+				92F9EC79299E56AD00C263E8 /* BaseGameState.h */,
+				92F9EC7D299E71BB00C263E8 /* FightingWaveGameState.cpp */,
+				92F9EC7E299E71BB00C263E8 /* FightingWaveGameState.h */,
+				92F9EC84299E826D00C263E8 /* UpgradeOverlayInGameState.cpp */,
+				92F9EC83299E826D00C263E8 /* UpgradeOverlayInGameState.h */,
+				92F9EC89299E884300C263E8 /* UpgradeOverlayOutGameState.cpp */,
+				92F9EC8A299E884300C263E8 /* UpgradeOverlayOutGameState.h */,
+				92F9EC86299E85D400C263E8 /* UpgradeSelectionGameState.cpp */,
+				92F9EC87299E85D400C263E8 /* UpgradeSelectionGameState.h */,
+				92F9EC80299E799D00C263E8 /* WaveIntroGameState.cpp */,
+				92F9EC81299E799D00C263E8 /* WaveIntroGameState.h */,
+			);
+			name = states;
+			path = StarBird/game/states;
+			sourceTree = SOURCE_ROOT;
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1821,6 +1862,8 @@
 				9254CC062969B79A00EFE0CC /* b2DynamicTree.cpp in Sources */,
 				9254CBE82969B79A00EFE0CC /* b2PolygonContact.cpp in Sources */,
 				92894E16299D331200605302 /* FontRepository.cpp in Sources */,
+				92F9EC88299E85D500C263E8 /* UpgradeSelectionGameState.cpp in Sources */,
+				92F9EC7C299E6C1A00C263E8 /* StateMachine.cpp in Sources */,
 				92DAA4C129829A4C0062A438 /* TextureResource.cpp in Sources */,
 				9254CBFF2969B79A00EFE0CC /* b2Settings.cpp in Sources */,
 				9254CBE32969B79A00EFE0CC /* b2Fixture.cpp in Sources */,
@@ -1863,6 +1906,7 @@
 				9254CBF32969B79A00EFE0CC /* b2MotorJoint.cpp in Sources */,
 				9254CC0C2969B79A00EFE0CC /* b2BroadPhase.cpp in Sources */,
 				9254CC082969B79A00EFE0CC /* b2EdgeShape.cpp in Sources */,
+				92F9EC85299E826D00C263E8 /* UpgradeOverlayInGameState.cpp in Sources */,
 				925FD87229893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp in Sources */,
 				9254CBEC2969B79A00EFE0CC /* b2Contact.cpp in Sources */,
 				92B44C07298D247E00191B22 /* FontLoader.cpp in Sources */,
@@ -1873,6 +1917,8 @@
 				9254CC092969B79A00EFE0CC /* b2CircleShape.cpp in Sources */,
 				9254CC052969B79A00EFE0CC /* b2CollidePolygon.cpp in Sources */,
 				925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */,
+				92F9EC7F299E71BB00C263E8 /* FightingWaveGameState.cpp in Sources */,
+				92F9EC82299E799D00C263E8 /* WaveIntroGameState.cpp in Sources */,
 				9254CBEB2969B79A00EFE0CC /* b2EdgeAndCircleContact.cpp in Sources */,
 				92DAA4CC29829A4C0062A438 /* DataFileResource.cpp in Sources */,
 				9254CC032969B79A00EFE0CC /* b2Distance.cpp in Sources */,
@@ -1881,6 +1927,7 @@
 				9254CBF02969B79A00EFE0CC /* b2FrictionJoint.cpp in Sources */,
 				925FD87B298AAF570058E747 /* GameSingletons.cpp in Sources */,
 				9254CBF22969B79A00EFE0CC /* b2WheelJoint.cpp in Sources */,
+				92F9EC8B299E884300C263E8 /* UpgradeOverlayOutGameState.cpp in Sources */,
 				9254CBE72969B79A00EFE0CC /* b2PolygonAndCircleContact.cpp in Sources */,
 				9254CBF52969B79A00EFE0CC /* b2GearJoint.cpp in Sources */,
 				9254CC072969B79A00EFE0CC /* b2ChainShape.cpp in Sources */,

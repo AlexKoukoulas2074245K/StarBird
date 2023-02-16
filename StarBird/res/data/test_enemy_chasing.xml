@@ -2,7 +2,7 @@
 <ObjectDefinition>
     <Animation state="idle" texture="enemy" duration="-1"/>
     <Animation state="dying" texture="explosion_sheet" scale="2.0f" textureSheetRow="0" duration="150"/>
-    <Physics density="1.0f" bodySize="1.0f" linearDamping="7.5f" customLinearVelocity="0.0f, -1.0f" speed="3.0f" category="enemy" collidingWithPlayerBullets="true" collidingWithEnemies="true" collidingWithPlayer="true"/>
+    <Physics density="1.0f" bodySize="1.0f" linearDamping="7.5f" constantLinearVelocity="0.0f, -1.0f" speed="3.0f" category="enemy" collidingWithPlayerBullets="true" collidingWithEnemies="true" collidingWithPlayer="true"/>
     <Shader name="basic"/>
     <Model name="quad"/>
     <GameAttributes movementControllerPattern="chasing_player" health="2.0f" damage="1.0f"/>

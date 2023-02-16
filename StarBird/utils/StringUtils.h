@@ -174,6 +174,7 @@ public:
     operator size_t () { return mStringId; }
     bool operator < (const StringId& rhs) { return mStringId < rhs.GetStringId(); }
     
+    bool isEmpty() const { return mStringId == 0; }
     const std::string& GetString() const { return mString; }
     size_t GetStringId() const { return mStringId; }
     

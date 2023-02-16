@@ -46,6 +46,8 @@ public:
     static void SetEquippedUpgrades(UpgradeMap&& upgrades);
     static void SetAvailableUpgrades(UpgradeMap&& upgrades);
     
+    static std::pair<UpgradeDefinition, UpgradeDefinition>& GetUpgradeSelection();
+    
 private:
     static InputContext mInputContext;
     static SDL_Window* mWindow;
@@ -53,6 +55,7 @@ private:
     static std::unordered_map<SceneObjectType, Camera> mSceneObjectTypeToCameraMap;
     static UpgradeMap mEquippedUpgrades;
     static UpgradeMap mAvailableUpgrades;
+    static std::pair<UpgradeDefinition, UpgradeDefinition> mUpgradeSelection;
 };
 
 ///------------------------------------------------------------------------------------------------
