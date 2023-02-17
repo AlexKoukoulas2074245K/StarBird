@@ -6,7 +6,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "FightingWaveGameState.h"
-#include "UpgradeOverlayInGameState.h"
+#include "UpgradeSelectionGameState.h"
 #include "WaveIntroGameState.h"
 #include "../LevelUpdater.h"
 #include "../GameSingletons.h"
@@ -97,7 +97,7 @@ PostStateUpdateDirective FightingWaveGameState::Update(const float)
     {
         if (GameSingletons::GetAvailableUpgrades().size() > 1)
         {
-            Complete(UpgradeOverlayInGameState::STATE_NAME);
+            Complete(UpgradeSelectionGameState::STATE_NAME);
         }
         else
         {

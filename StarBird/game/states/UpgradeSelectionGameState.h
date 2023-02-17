@@ -22,11 +22,25 @@ public:
 public:
     void Initialize() override;
     PostStateUpdateDirective Update(const float dtMillis) override;
- 
+    void Destroy() override;
+    
 private:
+    void CreateUpgradeSceneObjects();
+    void UpdateOverlayIn(const float dtMillis);
+    void UpdateUpgradeSelection(const float dtMillis);
+    void UpdateOverlayOut(const float dtMillis);
+    
     strutils::StringId TestForUpgradeSelected();
     
 private:
+    enum class SubState
+    {
+        OVERLAY_IN,
+        UPGRADE_SELECTION,
+        OVERLAY_OUT
+    };
+    
+    SubState mState;
     float mAnimationTween = 0.0f;
 };
 

@@ -21,8 +21,6 @@
 #include "states/WaveIntroGameState.h"
 #include "states/PauseMenuGameState.h"
 #include "states/UpgradeSelectionGameState.h"
-#include "states/UpgradeOverlayInGameState.h"
-#include "states/UpgradeOverlayOutGameState.h"
 
 #include "../utils/Logging.h"
 #include "../utils/ObjectiveCUtils.h"
@@ -258,9 +256,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
     mStateMachine.RegisterState<FightingWaveGameState>();
     mStateMachine.RegisterState<WaveIntroGameState>();
     mStateMachine.RegisterState<PauseMenuGameState>();
-    mStateMachine.RegisterState<UpgradeOverlayInGameState>();
     mStateMachine.RegisterState<UpgradeSelectionGameState>();
-    mStateMachine.RegisterState<UpgradeOverlayOutGameState>();
 
     mCurrentWaveNumber = 0;
     mStateMachine.InitStateMachine(WaveIntroGameState::STATE_NAME);
