@@ -28,10 +28,10 @@ void WaveIntroGameState::Initialize()
     waveTextSO.mCustomScale = game_object_constants::WAVE_INTRO_TEXT_SCALE;
     waveTextSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
     waveTextSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-    waveTextSO.mTextureResourceId = FontRepository::GetInstance().GetFont(strutils::StringId("font"))->get().mFontTextureResourceId;
-    waveTextSO.mFontName = strutils::StringId("font");
+    waveTextSO.mTextureResourceId = FontRepository::GetInstance().GetFont(scene_object_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId;
+    waveTextSO.mFontName = scene_object_constants::DEFAULT_FONT_NAME;
     waveTextSO.mSceneObjectType = SceneObjectType::GUIObject;
-    waveTextSO.mNameTag = scene_object_constants::WAVE_INTRO_TEXT_SCNE_OBJECT_NAME;
+    waveTextSO.mNameTag = scene_object_constants::WAVE_INTRO_TEXT_SCENE_OBJECT_NAME;
     waveTextSO.mText = "WAVE " + std::to_string(mLevelUpdater->GetCurrentWaveNumber() + 1);
     waveTextSO.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
     mScene->AddSceneObject(std::move(waveTextSO));
@@ -46,7 +46,7 @@ void WaveIntroGameState::Initialize()
 
 PostStateUpdateDirective WaveIntroGameState::Update(const float dtMillis)
 {
-    auto waveTextIntroSoOpt = mScene->GetSceneObject(scene_object_constants::WAVE_INTRO_TEXT_SCNE_OBJECT_NAME);
+    auto waveTextIntroSoOpt = mScene->GetSceneObject(scene_object_constants::WAVE_INTRO_TEXT_SCENE_OBJECT_NAME);
     auto waveTextIntroFlowOpt = mLevelUpdater->GetFlow(game_object_constants::WAVE_INTRO_FLOW_NAME);
     
     if (waveTextIntroSoOpt && waveTextIntroFlowOpt)
@@ -73,7 +73,7 @@ PostStateUpdateDirective WaveIntroGameState::Update(const float dtMillis)
 
 void WaveIntroGameState::Destroy()
 {
-    mScene->RemoveAllSceneObjectsWithNameTag(scene_object_constants::WAVE_INTRO_TEXT_SCNE_OBJECT_NAME);
+    mScene->RemoveAllSceneObjectsWithNameTag(scene_object_constants::WAVE_INTRO_TEXT_SCENE_OBJECT_NAME);
 }
 
 ///------------------------------------------------------------------------------------------------

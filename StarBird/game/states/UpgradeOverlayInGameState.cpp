@@ -29,15 +29,15 @@ void UpgradeOverlayInGameState::Initialize()
 
 PostStateUpdateDirective UpgradeOverlayInGameState::Update(const float dtMillis)
 {
-    auto upgradeOverlaySoOpt = mScene->GetSceneObject(scene_object_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME);
+    auto upgradeOverlaySoOpt = mScene->GetSceneObject(scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
     if (upgradeOverlaySoOpt)
     {
         auto& upgradeOverlaySo = upgradeOverlaySoOpt->get();
         auto& upgradeOverlayAlpha = upgradeOverlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-        upgradeOverlayAlpha += dtMillis * game_object_constants::OVERLAY_DARKENING_SPEED;
-        if (upgradeOverlayAlpha >= game_object_constants::UPGRADE_OVERLAY_MAX_ALPHA)
+        upgradeOverlayAlpha += dtMillis * game_object_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED;
+        if (upgradeOverlayAlpha >= game_object_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA)
         {
-            upgradeOverlayAlpha = game_object_constants::UPGRADE_OVERLAY_MAX_ALPHA;
+            upgradeOverlayAlpha = game_object_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA;
             Complete(UpgradeSelectionGameState::STATE_NAME);
         }
     }
@@ -55,12 +55,12 @@ void UpgradeOverlayInGameState::CreateUpgradeSceneObjects()
     {
         SceneObject overlaySo;
         overlaySo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-        overlaySo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_OVERLAY_TEXTURE_FILE_NAME);
+        overlaySo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME);
         overlaySo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
-        overlaySo.mCustomScale = game_object_constants::UPGRADE_OVERLAY_SCALE;
-        overlaySo.mCustomPosition = game_object_constants::UPGRADE_OVERLAY_POSITION;
-        overlaySo.mNameTag = scene_object_constants::UPGRADE_OVERLAY_SCENE_OBJECT_NAME;
+        overlaySo.mCustomScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
+        overlaySo.mCustomPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
+        overlaySo.mNameTag = scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
         overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
         mScene->AddSceneObject(std::move(overlaySo));
     }

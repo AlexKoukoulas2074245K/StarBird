@@ -117,9 +117,9 @@ void Game::Run()
     
     SDL_Event e;
     
-    auto lastFrameMillisSinceInit = 0.0f;
-    auto secsAccumulator         = 0.0f;
-    auto framesAccumulator       = 0LL;
+    auto lastFrameMillisSinceInit         = 0.0f;
+    auto secsAccumulator                  = 0.0f;
+    auto framesAccumulator                = 0LL;
     
     GameSingletons::SetInputContextEvent(SDL_FINGERUP);
     
@@ -136,6 +136,7 @@ void Game::Run()
         
         
         //Handle events on queue
+        auto lastAppForegroundBackgroundEvent = 0;
         while( SDL_PollEvent( &e ) != 0 )
         {
             //User requests quit
@@ -160,7 +161,7 @@ void Game::Run()
                 case SDL_APP_WILLENTERFOREGROUND:
                 case SDL_APP_DIDENTERFOREGROUND:
                 {
-                    scene.OnAppStateChange(e.type);
+                    lastAppForegroundBackgroundEvent = e.type;
                 } break;
             }
         }
@@ -174,6 +175,11 @@ void Game::Run()
         
         scene.UpdateScene(math::Min(20.0f, dtMillis));
         scene.RenderScene();
+        
+        if (lastAppForegroundBackgroundEvent)
+        {
+            scene.OnAppStateChange(lastAppForegroundBackgroundEvent);
+        }
     }
 }
 

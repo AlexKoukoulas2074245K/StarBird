@@ -20,18 +20,19 @@ namespace scene_object_constants
 ///------------------------------------------------------------------------------------------------
 
 static const strutils::StringId DEFAULT_SCENE_OBJECT_STATE = strutils::StringId("idle");
+static const strutils::StringId DEFAULT_FONT_NAME = strutils::StringId("font");
 
 static const strutils::StringId PLAYER_SCENE_OBJECT_NAME = strutils::StringId("PLAYER");
 static const strutils::StringId PLAYER_SHIELD_SCENE_OBJECT_NAME = strutils::StringId("PLAYER_SHIELD");
 static const strutils::StringId BACKGROUND_SCENE_OBJECT_NAME = strutils::StringId("BG");
 static const strutils::StringId JOYSTICK_SCENE_OBJECT_NAME = strutils::StringId("JOYSTICK");
 static const strutils::StringId JOYSTICK_BOUNDS_SCENE_OBJECT_NAME = strutils::StringId("JOYSTICK_BOUNDS");
-static const strutils::StringId WAVE_INTRO_TEXT_SCNE_OBJECT_NAME = strutils::StringId("WAVE_INTRO_TEXT");
+static const strutils::StringId WAVE_INTRO_TEXT_SCENE_OBJECT_NAME = strutils::StringId("WAVE_INTRO_TEXT");
 static const strutils::StringId LEFT_UPGRADE_SCENE_OBJECT_NAME = strutils::StringId("LEFT_UPGRADE");
 static const strutils::StringId LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME = strutils::StringId("LEFT_UPGRADE_CONTAINER");
 static const strutils::StringId RIGHT_UPGRADE_SCENE_OBJECT_NAME = strutils::StringId("RIGHT_UPGRADE");
 static const strutils::StringId RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME = strutils::StringId("RIGHT_UPGRADE_CONTAINER");
-static const strutils::StringId UPGRADE_OVERLAY_SCENE_OBJECT_NAME = strutils::StringId("UPGRADE_OVERLAY");
+static const strutils::StringId FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME = strutils::StringId("FULL_SCREEN_OVERLAY");
 static const strutils::StringId PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME = strutils::StringId("PLAYER_HEALTH_BAR");
 static const strutils::StringId PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME = strutils::StringId("PLAYER_HEALTH_BAR_FRAME");
 static const strutils::StringId LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME = strutils::StringId("LEFT_MIRROR_IMAGE");
@@ -56,7 +57,7 @@ static const char* BETTER_BULLET_TEXTURE_FILE_NAME = "better_bullet.bmp";
 static const char* JOYSTICK_TEXTURE_FILE_NAME = "joystick.bmp";
 static const char* JOYSTICK_BOUNDS_TEXTURE_FILE_NAME = "joystick_bounds.bmp";
 static const char* UPGRADE_CONTAINER_TEXTURE_FILE_NAME = "upgrade_container.bmp";
-static const char* UPGRADE_OVERLAY_TEXTURE_FILE_NAME = "overlay.bmp";
+static const char* FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME = "overlay.bmp";
 static const char* PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_frame_mm.bmp";
 static const char* PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME = "player_health_bar.bmp";
 static const char* PLAYER_SHIELD_TEXTURE_FILE_NAME = "player_shield.bmp";

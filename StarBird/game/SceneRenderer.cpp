@@ -150,11 +150,6 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
             const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
             const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
             world = glm::scale(world, glm::vec3(scaleX, scaleY, 1.0f));
-            
-            if (so.mBody->GetWorldCenter().x == 0.0f && so.mBody->GetWorldCenter().y == 0.0f)
-            {
-                Log(LogType::INFO, "NOW");
-            }
         }
         // Otherwise from its custom set one
         else

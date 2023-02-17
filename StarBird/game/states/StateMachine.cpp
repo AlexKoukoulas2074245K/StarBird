@@ -17,35 +17,52 @@ void StateMachine::InitStateMachine(const strutils::StringId& initStateName)
 
 ///------------------------------------------------------------------------------------------------
 
-PostStateUpdateDirective StateMachine::Update(const float dtMillis)
+void StateMachine::PushState(const strutils::StringId& stateName)
 {
-    while (mCurrentState->IsComplete())
-    {
-        SwitchToState(mCurrentState->GetNextStateName());
-    }
-    
-    return mCurrentState->Update(dtMillis);
+    SwitchToState(stateName, true);
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void StateMachine::SwitchToState(const strutils::StringId& nextStateName)
+PostStateUpdateDirective StateMachine::Update(const float dtMillis)
+{
+    while (mStateStack.top()->IsComplete())
+    {
+        if (mStateStack.top()->GetNextStateName() == BaseGameState::POP_STATE_COMPLETION_NAME)
+        {
+            mStateStack.top()->Destroy();
+            mStateStack.top()->mNextStateName = strutils::StringId();
+            mStateStack.pop();
+        }
+        else
+        {
+            SwitchToState(mStateStack.top()->GetNextStateName());
+        }
+    }
+    
+    return mStateStack.top()->Update(dtMillis);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void StateMachine::SwitchToState(const strutils::StringId& nextStateName, bool pushOnTop)
 {
     auto iter = mStateNameToInstanceMap.find(nextStateName);
     if (iter != mStateNameToInstanceMap.end())
     {
-        if (mCurrentState)
+        if (!mStateStack.empty() && !pushOnTop)
         {
-            mCurrentState->Destroy();
-            mCurrentState->mNextStateName = strutils::StringId();
+            mStateStack.top()->Destroy();
+            mStateStack.top()->mNextStateName = strutils::StringId();
+            mStateStack.pop();
         }
         
-        mCurrentState = iter->second.get();
-        mCurrentState->Initialize();
+        mStateStack.push(iter->second.get());
+        mStateStack.top()->Initialize();
     }
     else
     {
-        ospopups::ShowMessageBox(ospopups::MessageBoxType::ERROR, "Invalid State", "Invalid next state: " + mCurrentState->GetNextStateName().GetString());
+        ospopups::ShowMessageBox(ospopups::MessageBoxType::ERROR, "Invalid State", "Invalid next state: " + nextStateName.GetString());
     }
 }
 

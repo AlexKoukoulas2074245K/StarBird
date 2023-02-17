@@ -10,6 +10,7 @@
 #include "../GameObjectConstants.h"
 #include "../GameSingletons.h"
 #include "../Scene.h"
+#include "../SceneObjectUtils.h"
 #include "../../utils/MathUtils.h"
 
 ///------------------------------------------------------------------------------------------------
@@ -130,10 +131,7 @@ strutils::StringId UpgradeSelectionGameState::TestForUpgradeSelected()
         if (leftUpgradeSoOpt)
         {
             auto& leftUpgrade = leftUpgradeSoOpt->get();
-            auto upgradeRectBottomLeft = glm::vec2(leftUpgrade.mCustomPosition.x - leftUpgrade.mCustomScale.x/2, leftUpgrade.mCustomPosition.y - leftUpgrade.mCustomScale.y/2);
-            auto upgradeRectTopRight = glm::vec2(leftUpgrade.mCustomPosition.x + leftUpgrade.mCustomScale.x/2, leftUpgrade.mCustomPosition.y + leftUpgrade.mCustomScale.y/2);
-            
-            if (math::IsPointInsideRectangle(upgradeRectBottomLeft, upgradeRectTopRight, touchPos))
+            if (scene_object_utils::IsPointInsideSceneObject(leftUpgrade, touchPos))
             {
                 return leftUpgrade.mNameTag;
             }
@@ -143,10 +141,7 @@ strutils::StringId UpgradeSelectionGameState::TestForUpgradeSelected()
         if (rightUpgradeSoOpt)
         {
             auto& rightUpgrade = rightUpgradeSoOpt->get();
-            auto upgradeRectBottomLeft = glm::vec2(rightUpgrade.mCustomPosition.x - rightUpgrade.mCustomScale.x/2, rightUpgrade.mCustomPosition.y - rightUpgrade.mCustomScale.y/2);
-            auto upgradeRectTopRight = glm::vec2(rightUpgrade.mCustomPosition.x + rightUpgrade.mCustomScale.x/2, rightUpgrade.mCustomPosition.y + rightUpgrade.mCustomScale.y/2);
-            
-            if (math::IsPointInsideRectangle(upgradeRectBottomLeft, upgradeRectTopRight, touchPos))
+            if (scene_object_utils::IsPointInsideSceneObject(rightUpgrade, touchPos))
             {
                 return rightUpgrade.mNameTag;
             }

@@ -63,6 +63,7 @@ private:
     LevelDefinition mLevel;
     UpgradesLogicHandler mUpgradesLogicHandler;
     StateMachine mStateMachine;
+    PostStateUpdateDirective mLastPostStateMachineUpdateDirective;
     std::vector<RepeatableFlow> mFlows;
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> mWaveEnemies;
     

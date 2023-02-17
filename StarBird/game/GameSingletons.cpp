@@ -40,6 +40,13 @@ void GameSingletons::SetInputContextTouchPos(const glm::vec2& touchPos)
 
 ///------------------------------------------------------------------------------------------------
 
+void GameSingletons::ConsumeInput()
+{
+    SetInputContextEvent(SDL_FINGERUP);
+}
+
+///------------------------------------------------------------------------------------------------
+
 SDL_Window* GameSingletons::GetWindow()
 {
     return mWindow;

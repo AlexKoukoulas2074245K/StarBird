@@ -19,6 +19,7 @@
 #include "dataloaders/UpgradesLoader.h"
 #include "states/FightingWaveGameState.h"
 #include "states/WaveIntroGameState.h"
+#include "states/PauseMenuGameState.h"
 #include "states/UpgradeSelectionGameState.h"
 #include "states/UpgradeOverlayInGameState.h"
 #include "states/UpgradeOverlayOutGameState.h"
@@ -256,6 +257,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
     
     mStateMachine.RegisterState<FightingWaveGameState>();
     mStateMachine.RegisterState<WaveIntroGameState>();
+    mStateMachine.RegisterState<PauseMenuGameState>();
     mStateMachine.RegisterState<UpgradeOverlayInGameState>();
     mStateMachine.RegisterState<UpgradeSelectionGameState>();
     mStateMachine.RegisterState<UpgradeOverlayOutGameState>();
@@ -273,7 +275,10 @@ void LevelUpdater::OnAppStateChange(Uint32 event)
         case SDL_APP_WILLENTERBACKGROUND:
         case SDL_APP_DIDENTERBACKGROUND:
         {
-            
+            if (mLastPostStateMachineUpdateDirective != PostStateUpdateDirective::BLOCK_UPDATE)
+            {
+                mStateMachine.PushState(PauseMenuGameState::STATE_NAME);
+            }
         } break;
             
         case SDL_APP_WILLENTERFOREGROUND:
@@ -288,7 +293,8 @@ void LevelUpdater::OnAppStateChange(Uint32 event)
 
 void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMillis)
 {
-    if (mStateMachine.Update(dtMillis) == PostStateUpdateDirective::BLOCK_UPDATE)
+    mLastPostStateMachineUpdateDirective = mStateMachine.Update(dtMillis);
+    if (mLastPostStateMachineUpdateDirective == PostStateUpdateDirective::BLOCK_UPDATE)
     {
         OnBlockedUpdate();
         return;

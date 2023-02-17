@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9228C168299FD15A00410E49 /* GUISceneLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9228C166299FD15A00410E49 /* GUISceneLoader.cpp */; };
+		9228C16B299FDA5A00410E49 /* SceneObjectUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9228C169299FDA5900410E49 /* SceneObjectUtils.cpp */; };
 		9254CA512969B35800EFE0CC /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92C851A12969A8D00021923F /* SDL2.framework */; };
 		9254CBE12969B79A00EFE0CC /* b2Body.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CB7E2969B79A00EFE0CC /* b2Body.cpp */; };
 		9254CBE22969B79A00EFE0CC /* b2World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CB7F2969B79A00EFE0CC /* b2World.cpp */; };
@@ -99,6 +101,8 @@
 		92F9EC85299E826D00C263E8 /* UpgradeOverlayInGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC84299E826D00C263E8 /* UpgradeOverlayInGameState.cpp */; };
 		92F9EC88299E85D500C263E8 /* UpgradeSelectionGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC86299E85D400C263E8 /* UpgradeSelectionGameState.cpp */; };
 		92F9EC8B299E884300C263E8 /* UpgradeOverlayOutGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC89299E884300C263E8 /* UpgradeOverlayOutGameState.cpp */; };
+		92F9EC8E299E9A5300C263E8 /* PauseMenuGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC8C299E9A5200C263E8 /* PauseMenuGameState.cpp */; };
+		92F9EC90299E9BAA00C263E8 /* BaseGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC8F299E9BAA00C263E8 /* BaseGameState.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -210,6 +214,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9228C15A299FCE4F00410E49 /* GUISceneDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GUISceneDefinition.h; sourceTree = "<group>"; };
+		9228C166299FD15A00410E49 /* GUISceneLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUISceneLoader.cpp; sourceTree = "<group>"; };
+		9228C167299FD15A00410E49 /* GUISceneLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUISceneLoader.h; sourceTree = "<group>"; };
+		9228C169299FDA5900410E49 /* SceneObjectUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneObjectUtils.cpp; sourceTree = "<group>"; };
+		9228C16A299FDA5900410E49 /* SceneObjectUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneObjectUtils.h; sourceTree = "<group>"; };
 		9254CB7E2969B79A00EFE0CC /* b2Body.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Body.cpp; sourceTree = "<group>"; };
 		9254CB7F2969B79A00EFE0CC /* b2World.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2World.cpp; sourceTree = "<group>"; };
 		9254CB802969B79A00EFE0CC /* b2Fixture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Fixture.cpp; sourceTree = "<group>"; };
@@ -780,6 +789,9 @@
 		92F9EC87299E85D400C263E8 /* UpgradeSelectionGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradeSelectionGameState.h; sourceTree = "<group>"; };
 		92F9EC89299E884300C263E8 /* UpgradeOverlayOutGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradeOverlayOutGameState.cpp; sourceTree = "<group>"; };
 		92F9EC8A299E884300C263E8 /* UpgradeOverlayOutGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradeOverlayOutGameState.h; sourceTree = "<group>"; };
+		92F9EC8C299E9A5200C263E8 /* PauseMenuGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PauseMenuGameState.cpp; sourceTree = "<group>"; };
+		92F9EC8D299E9A5200C263E8 /* PauseMenuGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PauseMenuGameState.h; sourceTree = "<group>"; };
+		92F9EC8F299E9BAA00C263E8 /* BaseGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseGameState.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -996,6 +1008,8 @@
 				925FD86B29892BE00058E747 /* BaseGameDataLoader.cpp */,
 				92B44C06298D247E00191B22 /* FontLoader.cpp */,
 				92B44BFA298D247E00191B22 /* FontLoader.h */,
+				9228C166299FD15A00410E49 /* GUISceneLoader.cpp */,
+				9228C167299FD15A00410E49 /* GUISceneLoader.h */,
 				925FD87129893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp */,
 				925FD87029893CAF0058E747 /* ObjectTypeDefinitionLoader.h */,
 				925FD86C29892BE00058E747 /* LevelDataLoader.cpp */,
@@ -1009,9 +1023,10 @@
 		92894E0C299D330A00605302 /* definitions */ = {
 			isa = PBXGroup;
 			children = (
-				92894E0D299D330A00605302 /* ObjectTypeDefinition.h */,
-				92894E0E299D330A00605302 /* LevelDefinition.h */,
+				9228C15A299FCE4F00410E49 /* GUISceneDefinition.h */,
 				92894E0F299D330A00605302 /* FontDefinition.h */,
+				92894E0E299D330A00605302 /* LevelDefinition.h */,
+				92894E0D299D330A00605302 /* ObjectTypeDefinition.h */,
 				92894E10299D330A00605302 /* UpgradeDefinition.h */,
 			);
 			path = definitions;
@@ -1050,6 +1065,8 @@
 				92C2198329842CF500B2D2C6 /* Scene.h */,
 				92A8517C298570D200C99B61 /* SceneObject.h */,
 				925FD874298981750058E747 /* SceneObjectConstants.h */,
+				9228C169299FDA5900410E49 /* SceneObjectUtils.cpp */,
+				9228C16A299FDA5900410E49 /* SceneObjectUtils.h */,
 				92A8516E2985704800C99B61 /* SceneRenderer.cpp */,
 				92A8517A2985704800C99B61 /* SceneRenderer.h */,
 				92894E19299D36C500605302 /* UpgradesLogicHandler.cpp */,
@@ -1617,8 +1634,11 @@
 				92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */,
 				92F9EC7B299E6C1A00C263E8 /* StateMachine.h */,
 				92F9EC79299E56AD00C263E8 /* BaseGameState.h */,
+				92F9EC8F299E9BAA00C263E8 /* BaseGameState.cpp */,
 				92F9EC7D299E71BB00C263E8 /* FightingWaveGameState.cpp */,
 				92F9EC7E299E71BB00C263E8 /* FightingWaveGameState.h */,
+				92F9EC8C299E9A5200C263E8 /* PauseMenuGameState.cpp */,
+				92F9EC8D299E9A5200C263E8 /* PauseMenuGameState.h */,
 				92F9EC84299E826D00C263E8 /* UpgradeOverlayInGameState.cpp */,
 				92F9EC83299E826D00C263E8 /* UpgradeOverlayInGameState.h */,
 				92F9EC89299E884300C263E8 /* UpgradeOverlayOutGameState.cpp */,
@@ -1877,6 +1897,7 @@
 				92DAA4DC29829B380062A438 /* MathUtils.cpp in Sources */,
 				9254CC0D2969B79A00EFE0CC /* b2CollideEdge.cpp in Sources */,
 				9254CC012969B79A00EFE0CC /* b2StackAllocator.cpp in Sources */,
+				9228C168299FD15A00410E49 /* GUISceneLoader.cpp in Sources */,
 				9254CBFE2969B79A00EFE0CC /* b2BlockAllocator.cpp in Sources */,
 				9254CBE22969B79A00EFE0CC /* b2World.cpp in Sources */,
 				9254CBF62969B79A00EFE0CC /* b2Joint.cpp in Sources */,
@@ -1889,6 +1910,7 @@
 				9254CBF92969B79A00EFE0CC /* b2RopeJoint.cpp in Sources */,
 				9254CBE92969B79A00EFE0CC /* b2ContactSolver.cpp in Sources */,
 				925FD86F29892BE00058E747 /* LevelDataLoader.cpp in Sources */,
+				9228C16B299FDA5A00410E49 /* SceneObjectUtils.cpp in Sources */,
 				92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */,
 				92C851BA2969A9D70021923F /* main.cpp in Sources */,
 				9254CBEA2969B79A00EFE0CC /* b2CircleContact.cpp in Sources */,
@@ -1909,6 +1931,7 @@
 				92F9EC85299E826D00C263E8 /* UpgradeOverlayInGameState.cpp in Sources */,
 				925FD87229893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp in Sources */,
 				9254CBEC2969B79A00EFE0CC /* b2Contact.cpp in Sources */,
+				92F9EC90299E9BAA00C263E8 /* BaseGameState.cpp in Sources */,
 				92B44C07298D247E00191B22 /* FontLoader.cpp in Sources */,
 				9254CC042969B79A00EFE0CC /* b2CollideCircle.cpp in Sources */,
 				9254CBEF2969B79A00EFE0CC /* b2MouseJoint.cpp in Sources */,
@@ -1917,6 +1940,7 @@
 				9254CC092969B79A00EFE0CC /* b2CircleShape.cpp in Sources */,
 				9254CC052969B79A00EFE0CC /* b2CollidePolygon.cpp in Sources */,
 				925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */,
+				92F9EC8E299E9A5300C263E8 /* PauseMenuGameState.cpp in Sources */,
 				92F9EC7F299E71BB00C263E8 /* FightingWaveGameState.cpp in Sources */,
 				92F9EC82299E799D00C263E8 /* WaveIntroGameState.cpp in Sources */,
 				9254CBEB2969B79A00EFE0CC /* b2EdgeAndCircleContact.cpp in Sources */,

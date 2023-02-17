@@ -14,8 +14,10 @@
 #include "../../utils/StringUtils.h"
 
 #include <memory>
-#include <unordered_map>
+#include <stack>
 #include <type_traits>
+#include <unordered_map>
+
 
 ///------------------------------------------------------------------------------------------------
 
@@ -31,7 +33,6 @@ public:
         , mLevelUpdater(levelUpdater)
         , mUpgradesLogicHandler(upgradesLogicHandler)
         , mBox2dWorld(box2dWorld)
-        , mCurrentState(nullptr)
     {
     }
     
@@ -45,10 +46,11 @@ public:
     }
     
     void InitStateMachine(const strutils::StringId& initStateName);
+    void PushState(const strutils::StringId& stateName);
     PostStateUpdateDirective Update(const float dtMillis);
     
 private:
-    void SwitchToState(const strutils::StringId& nextStateName);
+    void SwitchToState(const strutils::StringId& nextStateName, const bool pushOnTop=false);
     
 private:
     Scene& mScene;
@@ -57,7 +59,7 @@ private:
     b2World& mBox2dWorld;
     
     std::unordered_map<strutils::StringId, std::unique_ptr<BaseGameState>, strutils::StringIdHasher> mStateNameToInstanceMap;
-    BaseGameState* mCurrentState;
+    std::stack<BaseGameState*> mStateStack;
     
 };
 

@@ -462,7 +462,7 @@ void Scene::LoadLevelInvariantObjects()
         AddSceneObject(std::move(healthBarFrameSo));
     }
     
-    FontRepository::GetInstance().LoadFont(strutils::StringId("font"));
+    FontRepository::GetInstance().LoadFont(scene_object_constants::DEFAULT_FONT_NAME);
 }
 
 ///------------------------------------------------------------------------------------------------

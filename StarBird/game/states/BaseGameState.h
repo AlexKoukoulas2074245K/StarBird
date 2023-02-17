@@ -55,6 +55,13 @@ public:
     }
     
 protected:
+    static const strutils::StringId POP_STATE_COMPLETION_NAME;
+    
+    void Complete()
+    {
+        mNextStateName = POP_STATE_COMPLETION_NAME;
+    }
+    
     void Complete(const strutils::StringId& nextStateName)
     {
         mNextStateName = nextStateName;
