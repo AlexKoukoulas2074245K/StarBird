@@ -39,6 +39,7 @@ static const strutils::StringId LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME = strutils::
 static const strutils::StringId RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME = strutils::StringId("RIGHT_MIRROR_IMAGE");
 
 static const strutils::StringId TEXTURE_OFFSET_UNIFORM_NAME = strutils::StringId("tex_offset");
+static const strutils::StringId SHINE_X_OFFSET_UNIFORM_NAME = strutils::StringId("shine_x_offset");
 static const strutils::StringId IS_TEXTURE_SHEET_UNIFORM_NAME = strutils::StringId("texture_sheet");
 static const strutils::StringId MIN_U_UNIFORM_NAME = strutils::StringId("min_u");
 static const strutils::StringId MIN_V_UNIFORM_NAME = strutils::StringId("min_v");
@@ -48,8 +49,10 @@ static const strutils::StringId CUSTOM_ALPHA_UNIFORM_NAME = strutils::StringId("
 
 static const char* QUAD_MESH_FILE_NAME = "quad.obj";
 static const char* BASIC_SHADER_FILE_NAME = "basic.vs";
+static const char* SHINE_SHADER_FILE_NAME = "shine.vs";
 static const char* TEXTURE_OFFSET_SHADER_FILE_NAME = "tex_offset.vs";
 static const char* CUSTOM_ALPHA_SHADER_FILE_NAME = "custom_alpha.vs";
+static const char* SHINE_EFFECT_TEXTURE_FILE_NAME = "shine_effect_fx.bmp";
 static const char* BACKGROUND_TEXTURE_FILE_NAME = "space_bg.bmp";
 static const char* PLAYER_TEXTURE_FILE_NAME = "player.bmp";
 static const char* BULLET_TEXTURE_FILE_NAME = "bullet.bmp";

@@ -22,6 +22,7 @@ const strutils::StringId UpgradeSelectionGameState::STATE_NAME("UpgradeSelection
 void UpgradeSelectionGameState::Initialize()
 {
     mState = SubState::OVERLAY_IN;
+    mSelectionState = SelectionState::NONE;
     mAnimationTween = 0.0f;
     CreateUpgradeSceneObjects();
 }
@@ -40,6 +41,11 @@ PostStateUpdateDirective UpgradeSelectionGameState::Update(const float dtMillis)
         case SubState::UPGRADE_SELECTION:
         {
             UpdateUpgradeSelection(dtMillis);
+        } break;
+            
+        case SubState::SHINE_SELECTION:
+        {
+            UpdateShineSelection(dtMillis);
         } break;
         
         case SubState::OVERLAY_OUT:
@@ -116,7 +122,11 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         auto& upgrade = upgradesIter->second;
         
         SceneObject leftUpgradeSO;
-        leftUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        leftUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::SHINE_SHADER_FILE_NAME);
+        leftUpgradeSO.mShaderIntUniformValues[strutils::StringId("tex")] = 0;
+        leftUpgradeSO.mShaderIntUniformValues[strutils::StringId("shineTex")] = 1;
+        leftUpgradeSO.mShaderFloatUniformValues[scene_object_constants::SHINE_X_OFFSET_UNIFORM_NAME] = 1.0f;
+        leftUpgradeSO.mShaderUniformTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::SHINE_EFFECT_TEXTURE_FILE_NAME);
         leftUpgradeSO.mTextureResourceId = upgrade.mTextureResourceId;
         leftUpgradeSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         leftUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
@@ -137,7 +147,11 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         auto& upgrade = upgradesIter->second;
         
         SceneObject rightUpgradeSO;
-        rightUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        rightUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::SHINE_SHADER_FILE_NAME);
+        rightUpgradeSO.mShaderIntUniformValues[strutils::StringId("tex")] = 0;
+        rightUpgradeSO.mShaderIntUniformValues[strutils::StringId("shineTex")] = 1;
+        rightUpgradeSO.mShaderFloatUniformValues[scene_object_constants::SHINE_X_OFFSET_UNIFORM_NAME] = 1.0f;
+        rightUpgradeSO.mShaderUniformTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::SHINE_EFFECT_TEXTURE_FILE_NAME);
         rightUpgradeSO.mTextureResourceId = upgrade.mTextureResourceId;
         rightUpgradeSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         rightUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
@@ -207,50 +221,57 @@ void UpgradeSelectionGameState::UpdateUpgradeSelection(const float dtMillis)
         auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
         auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
         
-        Animation customAnim;
-        customAnim.mAnimationType = AnimationType::PULSING;
-        customAnim.mAnimDtAccumSpeed = game_object_constants::SELECTED_UPGRADE_PULSE_ANIM_SPEED;
-        customAnim.mPulsingEnlargementFactor = game_object_constants::SELECTED_UPGRADE_PULSE_ENLARGEMENT_FACTOR;
-        
         auto& upgradeSelection = GameSingletons::GetUpgradeSelection();
         if (selectedUpgradeName == scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME)
         {
+            mSelectionState = SelectionState::LEFT_SELECTED;
             mUpgradesLogicHandler->OnUpgradeEquipped(upgradeSelection.first.mUpgradeName);
             equippedUpgrades[upgradeSelection.first.mUpgradeName] = upgradeSelection.first;
             availableUpgrades[upgradeSelection.second.mUpgradeName] = upgradeSelection.second;
-            
-            if (leftUpgradeSoOpt)
-            {
-                auto& leftUpgradeSo = leftUpgradeSoOpt->get();
-                leftUpgradeSo.mCustomAnimation = customAnim;
-            }
-            
-            if (leftUpgradeContainerSoOpt)
-            {
-                auto& leftUpgradeContainerSo = leftUpgradeContainerSoOpt->get();
-                leftUpgradeContainerSo.mCustomAnimation = customAnim;
-            }
         }
         else
         {
+            mSelectionState = SelectionState::RIGHT_SELECTED;
             mUpgradesLogicHandler->OnUpgradeEquipped(upgradeSelection.second.mUpgradeName);
             equippedUpgrades[upgradeSelection.second.mUpgradeName] = upgradeSelection.second;
             availableUpgrades[upgradeSelection.first.mUpgradeName] = upgradeSelection.first;
-            
-            if (rightUpgradeSoOpt)
-            {
-                auto& rightUpgradeSo = rightUpgradeSoOpt->get();
-                rightUpgradeSo.mCustomAnimation = customAnim;
-            }
-            
-            if (rightUpgradeContainerSoOpt)
-            {
-                auto& rightUpgradeContainerSo = rightUpgradeContainerSoOpt->get();
-                rightUpgradeContainerSo.mCustomAnimation = customAnim;
-            }
         }
         
-        mState = SubState::OVERLAY_OUT;
+        mState = SubState::SHINE_SELECTION;
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void UpgradeSelectionGameState::UpdateShineSelection(const float dtMillis)
+{
+    if (mSelectionState == SelectionState::LEFT_SELECTED)
+    {
+        auto leftUpgradeSoOpt = mScene->GetSceneObject(scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
+        if (leftUpgradeSoOpt)
+        {
+            leftUpgradeSoOpt->get().mShaderFloatUniformValues[scene_object_constants::SHINE_X_OFFSET_UNIFORM_NAME] -= 1.0f/200.0f * dtMillis;
+            if (leftUpgradeSoOpt->get().mShaderFloatUniformValues[scene_object_constants::SHINE_X_OFFSET_UNIFORM_NAME] < -1.0f)
+            {
+                mState = SubState::OVERLAY_OUT;
+            }
+        }
+    }
+    else if (mSelectionState == SelectionState::RIGHT_SELECTED)
+    {
+        auto rightUpgradeSoOpt = mScene->GetSceneObject(scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
+        if (rightUpgradeSoOpt)
+        {
+            rightUpgradeSoOpt->get().mShaderFloatUniformValues[scene_object_constants::SHINE_X_OFFSET_UNIFORM_NAME] -= 1.0f/200.0f * dtMillis;
+            if (rightUpgradeSoOpt->get().mShaderFloatUniformValues[scene_object_constants::SHINE_X_OFFSET_UNIFORM_NAME] < -1.0f)
+            {
+                mState = SubState::OVERLAY_OUT;
+            }
+        }
+    }
+    else
+    {
+        assert(false);
     }
 }
 
@@ -269,13 +290,11 @@ void UpgradeSelectionGameState::UpdateOverlayOut(const float dtMillis)
     
     if (leftUpgradeContainerSoOpt)
     {
-        mLevelUpdater->UpdateAnimation(leftUpgradeContainerSoOpt->get(), std::nullopt, dtMillis);
         leftUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_object_constants::LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
     }
     
     if (rightUpgradeContainerSoOpt)
     {
-        mLevelUpdater->UpdateAnimation(rightUpgradeContainerSoOpt->get(), std::nullopt, dtMillis);
         rightUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_object_constants::RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
     }
     

@@ -57,6 +57,7 @@ std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::stri
     SDL_SetColorKey(pixels, SDL_TRUE, SDL_MapRGB(pixels->format, 0, 0xFF, 0xFF));
     
     bool useMipMap = strutils::StringEndsWith(fileutils::GetFileNameWithoutExtension(resourcePath), "mm");
+    bool useUVWrap = !strutils::StringEndsWith(fileutils::GetFileNameWithoutExtension(resourcePath), "fx");
     
     // Create texture from surface pixels
     GLuint glTextureId;
@@ -75,8 +76,18 @@ std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::stri
     }
     
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+    
+    if (useUVWrap)
+    {
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+    }
+    else
+    {
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    }
+    
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     
     const auto surfaceWidth = loadedSurface->w;

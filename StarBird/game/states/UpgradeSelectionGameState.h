@@ -28,6 +28,7 @@ private:
     void CreateUpgradeSceneObjects();
     void UpdateOverlayIn(const float dtMillis);
     void UpdateUpgradeSelection(const float dtMillis);
+    void UpdateShineSelection(const float dtMillis);
     void UpdateOverlayOut(const float dtMillis);
     
     strutils::StringId TestForUpgradeSelected();
@@ -37,10 +38,19 @@ private:
     {
         OVERLAY_IN,
         UPGRADE_SELECTION,
+        SHINE_SELECTION,
         OVERLAY_OUT
     };
     
+    enum class SelectionState
+    {
+        NONE,
+        LEFT_SELECTED,
+        RIGHT_SELECTED
+    };
+    
     SubState mState;
+    SelectionState mSelectionState;
     float mAnimationTween = 0.0f;
 };
 

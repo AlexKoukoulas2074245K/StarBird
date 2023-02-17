@@ -40,6 +40,7 @@ struct SceneObject // 376b
     strutils::StringId mFontName = strutils::StringId();
     std::string mText;
     std::unordered_map<strutils::StringId, bool, strutils::StringIdHasher> mShaderBoolUniformValues;
+    std::unordered_map<strutils::StringId, int, strutils::StringIdHasher> mShaderIntUniformValues;
     std::unordered_map<strutils::StringId, float, strutils::StringIdHasher> mShaderFloatUniformValues;
     std::unordered_map<strutils::StringId, glm::mat4, strutils::StringIdHasher> mShaderMat4UniformValues;
     b2Body* mBody = nullptr;
@@ -48,6 +49,7 @@ struct SceneObject // 376b
     glm::vec3 mCustomScale = glm::vec3(1.0f, 1.0f, 1.0f);
     std::optional<Animation> mCustomAnimation;
     resources::ResourceId mTextureResourceId = resources::ResourceId();
+    resources::ResourceId mShaderUniformTextureResourceId = resources::ResourceId();
     resources::ResourceId mShaderResourceId = resources::ResourceId();
     resources::ResourceId mMeshResourceId = resources::ResourceId();
     SceneObjectType mSceneObjectType = SceneObjectType::WorldGameObject;

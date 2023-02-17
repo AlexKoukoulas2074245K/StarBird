@@ -79,7 +79,14 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
         if (so.mTextureResourceId == 0 || so.mTextureResourceId != currentTextureResourceId)
         {
             currentTextureResourceId = so.mTextureResourceId;
+            GL_CALL(glActiveTexture(GL_TEXTURE0));
             GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>(currentTextureResourceId).GetGLTextureId()));
+        }
+        
+        if (so.mShaderUniformTextureResourceId != 0)
+        {
+            GL_CALL(glActiveTexture(GL_TEXTURE1));
+            GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>(so.mShaderUniformTextureResourceId).GetGLTextureId()));
         }
         
         glm::mat4 world(1.0f);
@@ -122,6 +129,8 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
                     
                     for (auto boolEntry: so.mShaderBoolUniformValues)
                         currentShader->SetBool(boolEntry.first, boolEntry.second);
+                    for (auto intEntry: so.mShaderIntUniformValues)
+                        currentShader->SetInt(intEntry.first, intEntry.second);
                     for (auto floatEntry: so.mShaderFloatUniformValues)
                         currentShader->SetFloat(floatEntry.first, floatEntry.second);
                     for (auto mat4Entry: so.mShaderMat4UniformValues)
@@ -169,6 +178,8 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
         
         for (auto boolEntry: so.mShaderBoolUniformValues)
             currentShader->SetBool(boolEntry.first, boolEntry.second);
+        for (auto intEntry: so.mShaderIntUniformValues)
+            currentShader->SetInt(intEntry.first, intEntry.second);
         for (auto floatEntry: so.mShaderFloatUniformValues)
             currentShader->SetFloat(floatEntry.first, floatEntry.second);
         for (auto mat4Entry: so.mShaderMat4UniformValues)
