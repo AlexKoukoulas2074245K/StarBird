@@ -122,16 +122,15 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
     {
         auto* node = static_cast<const rapidxml::xml_node<>*>(n);
         
-        Animation animation;
+        IAnimation* animation = nullptr;
         
-        auto* texture = node->first_attribute("texture");
-        if (texture)
+        // Variable Textured Animation
+        auto* textureText = node->first_attribute("texture");
+        if (textureText)
         {
-            std::string textureName(texture->value());
+            std::string textureName(textureText->value());
             if (textureName.back() == '}')
             {
-                animation.mAnimationType = AnimationType::VARIABLE_TEXTURED;
-                
                 auto textureNameSplitByLBrace = strutils::StringSplit(textureName, '{');
                 auto textureRangeStr = textureNameSplitByLBrace[1];
                 textureRangeStr.pop_back();
@@ -140,41 +139,78 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
                 auto minTextureNumber = std::stoi(rangeComponents[0]);
                 auto maxTextureNumber = std::stoi(rangeComponents[1]);
                 
+                std::vector<resources::ResourceId> potentialTextureResourceIds;
+                
                 for (int i = minTextureNumber; i <= maxTextureNumber; ++i)
                 {
-                    animation.mVariableTextureResourceIds.push_back(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + textureNameSplitByLBrace[0] + std::to_string(i) + ".bmp"));
+                    potentialTextureResourceIds.push_back(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + textureNameSplitByLBrace[0] + std::to_string(i) + ".bmp"));
                 }
+                
+                animation = new VariableTexturedAnimation(potentialTextureResourceIds);
             }
-            else
+        }
+            
+        // Multi Frame Animation
+        auto* textureSheetRowText = node->first_attribute("textureSheetRow");
+        if (textureSheetRowText)
+        {
+            int textureSheetRow = std::stoi(textureSheetRowText->value());
+            float duration = 0.0f;
+            float scale = 1.0f;
+            
+            auto* durationText = node->first_attribute("duration");
+            if (durationText)
             {
-                animation.mAnimationType = AnimationType::SINGLE_FRAME;
-                animation.mTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(texture->value()) + ".bmp");
+                duration = std::stof(durationText->value());
+            }
+            
+            auto* scaleText = node->first_attribute("scale");
+            if (scaleText)
+            {
+                scale = std::stof(scaleText->value());
+            }
+            
+            auto* texture = node->first_attribute("texture");
+            if (texture)
+            {
+                animation = new MultiFrameAnimation(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(texture->value()) + ".bmp"), duration, scale, textureSheetRow);
             }
         }
         
-        auto* duration = node->first_attribute("duration");
-        if (duration)
+        // Dissolve Animation
+        auto* dissolveTextureText = node->first_attribute("dissolveTexture");
+        if (dissolveTextureText)
         {
-            animation.mDuration = std::stof(duration->value());
+            resources::ResourceId dissolveTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + dissolveTextureText->value() + ".bmp");
+            float dissolveSpeed = 0.0f;
+            
+            auto* dissolveSpeedText = node->first_attribute("dissolveSpeed");
+            if (dissolveSpeedText)
+            {
+                dissolveSpeed = std::stof(dissolveSpeedText->value());
+            }
+            
+            auto* texture = node->first_attribute("texture");
+            if (texture)
+            {
+                animation = new DissolveAnimation(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(texture->value()) + ".bmp"), dissolveTextureResourceId, dissolveSpeed);
+            }
         }
         
-        auto* scale = node->first_attribute("scale");
-        if (scale)
+        // Single Frame Animation
+        if (!animation)
         {
-            animation.mScale = std::stof(scale->value());
-        }
-        
-        auto* textureSheetRow = node->first_attribute("textureSheetRow");
-        if (textureSheetRow)
-        {
-            animation.mAnimationType = AnimationType::MULTI_FRAME;
-            animation.mTextureSheetRow = std::stoi(textureSheetRow->value());
+            auto* texture = node->first_attribute("texture");
+            if (texture)
+            {
+                animation = new SingleFrameAnimation(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(texture->value()) + ".bmp"));
+            }
         }
         
         auto* state = node->first_attribute("state");
         if (state)
         {
-            mConstructedObjectTypeDef.mAnimations[strutils::StringId(state->value())] = std::move(animation);
+            mConstructedObjectTypeDef.mAnimations[strutils::StringId(state->value())] = animation;
         }
     });
     
@@ -186,7 +222,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         auto* name = node->first_attribute("name");
         if (name)
         {
-            mConstructedObjectTypeDef.mAnimations[scene_object_constants::DEFAULT_SCENE_OBJECT_STATE].mTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(name->value()) + ".bmp");
+            mConstructedObjectTypeDef.mAnimations[scene_object_constants::DEFAULT_SCENE_OBJECT_STATE] = new SingleFrameAnimation( resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + std::string(name->value()) + ".bmp"));
         }
     });
     
@@ -227,14 +263,14 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
 
 ///------------------------------------------------------------------------------------------------
 
-ObjectTypeDefinition& ObjectTypeDefinitionLoader::LoadObjectTypeDefinition(const std::string &objectTypeDefinitionFileName)
+ObjectTypeDefinition&& ObjectTypeDefinitionLoader::LoadObjectTypeDefinition(const std::string &objectTypeDefinitionFileName)
 {
     mConstructedObjectTypeDef = ObjectTypeDefinition();
     mConstructedObjectTypeDef.mName = strutils::StringId(objectTypeDefinitionFileName);
     
     BaseGameDataLoader::LoadData(objectTypeDefinitionFileName);
     
-    return mConstructedObjectTypeDef;
+    return std::move(mConstructedObjectTypeDef);
 }
 
 ///------------------------------------------------------------------------------------------------

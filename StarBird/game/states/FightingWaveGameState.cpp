@@ -24,7 +24,7 @@ const strutils::StringId FightingWaveGameState::STATE_NAME("FightingWaveGameStat
 
 ///------------------------------------------------------------------------------------------------
 
-void FightingWaveGameState::Initialize()
+void FightingWaveGameState::VInitialize()
 {
     mLevelUpdater->AdvanceWave();
     
@@ -37,16 +37,7 @@ void FightingWaveGameState::Initialize()
         
         SceneObject so;
         
-        const auto& defaultAnim = enemyDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE);
-        if (defaultAnim.mAnimationType == AnimationType::VARIABLE_TEXTURED)
-        {
-            assert(!defaultAnim.mVariableTextureResourceIds.empty());
-            so.mTextureResourceId = defaultAnim.mVariableTextureResourceIds.at(math::RandomInt(0, static_cast<int>(defaultAnim.mVariableTextureResourceIds.size()) - 1));
-        }
-        else
-        {
-            so.mTextureResourceId = enemyDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE).mTextureResourceId;
-        }
+        so.mAnimation = enemyDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)->VClone();
         
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
@@ -55,7 +46,7 @@ void FightingWaveGameState::Initialize()
         body->SetLinearDamping(enemyDef.mLinearDamping);
         
         b2PolygonShape dynamicBox;
-        auto& enemyTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(so.mTextureResourceId);
+        auto& enemyTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(so.mAnimation->VGetCurrentTextureResourceId());
         
         float textureAspect = enemyTexture.GetDimensions().x/enemyTexture.GetDimensions().y;
         dynamicBox.SetAsBox(enemyDef.mSize, enemyDef.mSize/textureAspect);
@@ -91,7 +82,7 @@ void FightingWaveGameState::Initialize()
 
 ///------------------------------------------------------------------------------------------------
 
-PostStateUpdateDirective FightingWaveGameState::Update(const float)
+PostStateUpdateDirective FightingWaveGameState::VUpdate(const float)
 {
     if (mLevelUpdater->GetWaveEnemyCount() == 0)
     {

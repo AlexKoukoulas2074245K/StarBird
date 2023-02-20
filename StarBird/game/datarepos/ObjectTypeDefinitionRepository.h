@@ -24,7 +24,6 @@ class ObjectTypeDefinitionRepository final
 public:
     static ObjectTypeDefinitionRepository& GetInstance();
     
-    ~ObjectTypeDefinitionRepository() = default;
     ObjectTypeDefinitionRepository(const ObjectTypeDefinitionRepository&) = delete;
     ObjectTypeDefinitionRepository(ObjectTypeDefinitionRepository&&) = delete;
     const ObjectTypeDefinitionRepository& operator = (const ObjectTypeDefinitionRepository&) = delete;
@@ -36,6 +35,7 @@ public:
     
 private:
     ObjectTypeDefinitionRepository() = default;
+    ~ObjectTypeDefinitionRepository();
     
 private:
     ObjectTypeDefinitionLoader mLoader;

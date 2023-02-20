@@ -20,9 +20,13 @@
 class ObjectTypeDefinitionLoader: public BaseGameDataLoader
 {
 public:
+    friend class ObjectTypeDefinitionRepository;
+    
     ObjectTypeDefinitionLoader();
-    ObjectTypeDefinition& LoadObjectTypeDefinition(const std::string& objectTypeDefinitionFileName);
 
+private:
+    ObjectTypeDefinition&& LoadObjectTypeDefinition(const std::string& objectTypeDefinitionFileName);
+    
 private:
     ObjectTypeDefinition mConstructedObjectTypeDef;
 };

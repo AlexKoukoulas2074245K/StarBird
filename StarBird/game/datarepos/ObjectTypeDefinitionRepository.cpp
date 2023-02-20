@@ -51,3 +51,17 @@ void ObjectTypeDefinitionRepository::LoadObjectTypeDefinition(const strutils::St
 }
 
 ///------------------------------------------------------------------------------------------------
+
+ObjectTypeDefinitionRepository::~ObjectTypeDefinitionRepository()
+{
+    for (auto& objectDef: mObjectTypeDefinitionsMap)
+    {
+        for (auto& animation: objectDef.second.mAnimations)
+        {
+            delete animation.second;
+        }
+    }
+}
+
+
+///------------------------------------------------------------------------------------------------

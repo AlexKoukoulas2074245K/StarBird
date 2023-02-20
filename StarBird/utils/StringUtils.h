@@ -64,6 +64,18 @@ inline bool StringStartsWith(const std::string& s, const std::string& pattern)
 }
 
 ///-----------------------------------------------------------------------------------------------
+/// Checks whether the given string contains at least one occurence of the given pattern.
+/// @param[in] s the string to check.
+/// @param[in] pattern the pattern to check for in string s.
+/// @returns whether or not the given pattern appears at least once in s.
+inline bool StringContains(const std::string& s, const std::string& pattern)
+{
+    if (s.size() < pattern.size()) return false;
+    
+    return s.find(pattern) != s.npos;
+}
+
+///-----------------------------------------------------------------------------------------------
 /// Checks whether the given string ends with a given pattern.
 /// @param[in] s the string to check.
 /// @param[in] pattern the pattern to check for in string s.

@@ -5,9 +5,9 @@ precision mediump float;
 in vec2 uv_frag;
 
 uniform sampler2D tex;
-uniform sampler2D shineTex;
+uniform sampler2D dissolveTex;
 
-uniform float shine_x_offset;
+uniform float dissolve_y_offset;
 
 out vec4 frag_color;
 
@@ -19,8 +19,14 @@ void main()
     
     if (frag_color.a < 0.2) discard;
     
-    vec4 shine_color = texture(shineTex, vec2(finalUvX + shine_x_offset, finalUvY));
-    frag_color.rgba += shine_color.a;
+    vec4 dissolve_color = texture(dissolveTex, vec2(finalUvX, finalUvY + dissolve_y_offset));
+    
+    if (1.0f - dissolve_y_offset > finalUvY)
+    {
+        frag_color = dissolve_color;
+    }
+    
+    if (dissolve_color.a < 0.2) discard;
     
     frag_color = clamp(frag_color, 0.0f, 1.0f);
 }

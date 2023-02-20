@@ -76,17 +76,24 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
             GL_CALL(glUseProgram(currentShader->GetProgramId()));
         }
         
-        if (so.mTextureResourceId == 0 || so.mTextureResourceId != currentTextureResourceId)
+        for (size_t i = 0; i < currentShader->GetUniformSamplerNames().size(); ++i)
         {
-            currentTextureResourceId = so.mTextureResourceId;
+            currentShader->SetInt(currentShader->GetUniformSamplerNames().at(i), static_cast<int>(i));
+        }
+        
+        assert(so.mAnimation);
+        
+        if (so.mAnimation->VGetCurrentTextureResourceId() == 0 || so.mAnimation->VGetCurrentTextureResourceId() != currentTextureResourceId)
+        {
+            currentTextureResourceId = so.mAnimation->VGetCurrentTextureResourceId();
             GL_CALL(glActiveTexture(GL_TEXTURE0));
             GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>(currentTextureResourceId).GetGLTextureId()));
         }
         
-        if (so.mShaderUniformTextureResourceId != 0)
+        if (so.mShaderEffectTextureResourceId != 0)
         {
             GL_CALL(glActiveTexture(GL_TEXTURE1));
-            GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>(so.mShaderUniformTextureResourceId).GetGLTextureId()));
+            GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>(so.mShaderEffectTextureResourceId).GetGLTextureId()));
         }
         
         glm::mat4 world(1.0f);

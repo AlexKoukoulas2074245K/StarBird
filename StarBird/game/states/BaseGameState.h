@@ -39,9 +39,9 @@ public:
     {
     }
     
-    virtual void Initialize() {}
-    virtual PostStateUpdateDirective Update(const float dtMillis) { return PostStateUpdateDirective::CONTINUE; }
-    virtual void Destroy() {}
+    virtual void VInitialize() {}
+    virtual PostStateUpdateDirective VUpdate(const float dtMillis) { return PostStateUpdateDirective::CONTINUE; }
+    virtual void VDestroy() {}
     
     bool IsComplete() const { return !mNextStateName.isEmpty(); }
     const strutils::StringId& GetNextStateName() const { return mNextStateName; }

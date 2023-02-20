@@ -20,9 +20,9 @@ public:
     static const strutils::StringId STATE_NAME;
     
 public:
-    void Initialize() override;
-    PostStateUpdateDirective Update(const float dtMillis) override;
-    void Destroy() override;
+    void VInitialize() override;
+    PostStateUpdateDirective VUpdate(const float dtMillis) override;
+    void VDestroy() override;
 };
 
 ///------------------------------------------------------------------------------------------------

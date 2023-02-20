@@ -19,7 +19,7 @@ const strutils::StringId WaveIntroGameState::STATE_NAME("WaveIntroGameState");
 
 ///------------------------------------------------------------------------------------------------
 
-void WaveIntroGameState::Initialize()
+void WaveIntroGameState::VInitialize()
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
@@ -28,7 +28,7 @@ void WaveIntroGameState::Initialize()
     waveTextSO.mCustomScale = game_object_constants::WAVE_INTRO_TEXT_SCALE;
     waveTextSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
     waveTextSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-    waveTextSO.mTextureResourceId = FontRepository::GetInstance().GetFont(scene_object_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId;
+    waveTextSO.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(scene_object_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId);
     waveTextSO.mFontName = scene_object_constants::DEFAULT_FONT_NAME;
     waveTextSO.mSceneObjectType = SceneObjectType::GUIObject;
     waveTextSO.mNameTag = scene_object_constants::WAVE_INTRO_TEXT_SCENE_OBJECT_NAME;
@@ -44,7 +44,7 @@ void WaveIntroGameState::Initialize()
 
 ///------------------------------------------------------------------------------------------------
 
-PostStateUpdateDirective WaveIntroGameState::Update(const float dtMillis)
+PostStateUpdateDirective WaveIntroGameState::VUpdate(const float dtMillis)
 {
     auto waveTextIntroSoOpt = mScene->GetSceneObject(scene_object_constants::WAVE_INTRO_TEXT_SCENE_OBJECT_NAME);
     auto waveTextIntroFlowOpt = mLevelUpdater->GetFlow(game_object_constants::WAVE_INTRO_FLOW_NAME);
@@ -71,7 +71,7 @@ PostStateUpdateDirective WaveIntroGameState::Update(const float dtMillis)
 
 ///------------------------------------------------------------------------------------------------
 
-void WaveIntroGameState::Destroy()
+void WaveIntroGameState::VDestroy()
 {
     mScene->RemoveAllSceneObjectsWithNameTag(scene_object_constants::WAVE_INTRO_TEXT_SCENE_OBJECT_NAME);
 }

@@ -16,6 +16,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -35,6 +36,7 @@ public:
     ShaderResource
     (
         const std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher>& uniformNamesToLocations,
+        const std::vector<strutils::StringId>& uniformSamplerNamesInOrder,
         const GLuint programId
     );
     ShaderResource& operator = (const ShaderResource&);
@@ -55,11 +57,13 @@ public:
     GLuint GetProgramId() const;    
 
     const std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher>& GetUniformNamesToLocations() const;
-
+    const std::vector<strutils::StringId>& GetUniformSamplerNames() const;
+    
     void CopyConstruction(const ShaderResource&);
     
 private:
     std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher> mShaderUniformNamesToLocations;
+    std::vector<strutils::StringId> mUniformSamplerNamesInOrder;
     GLuint mProgramId;    
 };
 

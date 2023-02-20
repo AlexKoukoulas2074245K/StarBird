@@ -16,6 +16,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -49,7 +50,8 @@ private:
         const GLuint programId,
         const std::string& shaderName, 
         const std::string& vertexShaderFileContents,
-        const std::string& fragmentShaderFileContents
+        const std::string& fragmentShaderFileContents,
+        std::vector<strutils::StringId>& samplerNamesInOrder
     ) const;
 };
 

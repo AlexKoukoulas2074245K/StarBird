@@ -30,7 +30,7 @@ PostStateUpdateDirective StateMachine::Update(const float dtMillis)
     {
         if (mStateStack.top()->GetNextStateName() == BaseGameState::POP_STATE_COMPLETION_NAME)
         {
-            mStateStack.top()->Destroy();
+            mStateStack.top()->VDestroy();
             mStateStack.top()->mNextStateName = strutils::StringId();
             mStateStack.pop();
         }
@@ -40,7 +40,7 @@ PostStateUpdateDirective StateMachine::Update(const float dtMillis)
         }
     }
     
-    return mStateStack.top()->Update(dtMillis);
+    return mStateStack.top()->VUpdate(dtMillis);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -52,13 +52,13 @@ void StateMachine::SwitchToState(const strutils::StringId& nextStateName, bool p
     {
         if (!mStateStack.empty() && !pushOnTop)
         {
-            mStateStack.top()->Destroy();
+            mStateStack.top()->VDestroy();
             mStateStack.top()->mNextStateName = strutils::StringId();
             mStateStack.pop();
         }
         
         mStateStack.push(iter->second.get());
-        mStateStack.top()->Initialize();
+        mStateStack.top()->VInitialize();
     }
     else
     {

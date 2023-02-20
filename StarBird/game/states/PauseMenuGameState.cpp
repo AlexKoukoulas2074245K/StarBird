@@ -23,7 +23,7 @@ const strutils::StringId PauseMenuGameState::STATE_NAME("PauseMenuGameState");
 
 ///------------------------------------------------------------------------------------------------
 
-void PauseMenuGameState::Initialize()
+void PauseMenuGameState::VInitialize()
 {
     mSceneElementIds.clear();
     auto& resService = resources::ResourceLoadingService::GetInstance();
@@ -32,7 +32,7 @@ void PauseMenuGameState::Initialize()
     {
         SceneObject overlaySo;
         overlaySo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-        overlaySo.mTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME);
+        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME));
         overlaySo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
         overlaySo.mCustomScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
@@ -57,12 +57,12 @@ void PauseMenuGameState::Initialize()
         guiSceneObject.mFontName = guiElement.mFontName;
         guiSceneObject.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         guiSceneObject.mShaderResourceId = guiElement.mShaderResourceId;
-        guiSceneObject.mTextureResourceId = guiElement.mTextureResourceId;
+        guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId);
         guiSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
         
         if (!guiElement.mText.empty())
         {
-            guiSceneObject.mTextureResourceId = FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId;
+            guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId);
         }
         
         mSceneElementIds.push_back(guiSceneObject.mNameTag);
@@ -72,7 +72,7 @@ void PauseMenuGameState::Initialize()
 
 ///------------------------------------------------------------------------------------------------
 
-PostStateUpdateDirective PauseMenuGameState::Update(const float dtMillis)
+PostStateUpdateDirective PauseMenuGameState::VUpdate(const float dtMillis)
 {
     auto overlaySoOpt = mScene->GetSceneObject(scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
     if (overlaySoOpt)
@@ -107,7 +107,7 @@ PostStateUpdateDirective PauseMenuGameState::Update(const float dtMillis)
 
 ///------------------------------------------------------------------------------------------------
 
-void PauseMenuGameState::Destroy()
+void PauseMenuGameState::VDestroy()
 {
     for (auto elementId: mSceneElementIds)
     {

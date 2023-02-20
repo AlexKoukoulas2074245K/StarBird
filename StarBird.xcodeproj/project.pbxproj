@@ -71,6 +71,7 @@
 		92A8517B2985704800C99B61 /* SceneRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A8516E2985704800C99B61 /* SceneRenderer.cpp */; };
 		92AF7B2D29914F1500BCC894 /* UpgradesLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92AF7B2B29914F1500BCC894 /* UpgradesLoader.cpp */; };
 		92B44C07298D247E00191B22 /* FontLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B44C06298D247E00191B22 /* FontLoader.cpp */; };
+		92BF79BD29A39002002A52D8 /* Animations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92BF79BC29A39002002A52D8 /* Animations.cpp */; };
 		92C2198429842CF500B2D2C6 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198229842CF500B2D2C6 /* Scene.cpp */; };
 		92C2198A29842E6A00B2D2C6 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198829842E6A00B2D2C6 /* Game.cpp */; };
 		92C2198D2984395800B2D2C6 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C2198B2984395800B2D2C6 /* Camera.cpp */; };
@@ -351,6 +352,8 @@
 		92AF7B2C29914F1500BCC894 /* UpgradesLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradesLoader.h; sourceTree = "<group>"; };
 		92B44BFA298D247E00191B22 /* FontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontLoader.h; sourceTree = "<group>"; };
 		92B44C06298D247E00191B22 /* FontLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontLoader.cpp; sourceTree = "<group>"; };
+		92BF79BB29A39002002A52D8 /* Animations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Animations.h; sourceTree = "<group>"; };
+		92BF79BC29A39002002A52D8 /* Animations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Animations.cpp; sourceTree = "<group>"; };
 		92C2198229842CF500B2D2C6 /* Scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scene.cpp; sourceTree = "<group>"; };
 		92C2198329842CF500B2D2C6 /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
 		92C2198829842E6A00B2D2C6 /* Game.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Game.cpp; sourceTree = "<group>"; };
@@ -370,7 +373,6 @@
 		92C851BE2969AAA00021923F /* SDL_uikit_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SDL_uikit_main.c; sourceTree = "<group>"; };
 		92C851C62969ACB20021923F /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
 		92C852012969B2920021923F /* libbox2d.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbox2d.a; path = ThirdParty/box2d/lib/libbox2d.a; sourceTree = "<group>"; };
-		92CEB6EF298BD444002AAD2B /* Animation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Animation.h; sourceTree = "<group>"; };
 		92DAA49829829A4C0062A438 /* TextureResource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureResource.cpp; sourceTree = "<group>"; };
 		92DAA49929829A4C0062A438 /* ResourceLoadingService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourceLoadingService.h; sourceTree = "<group>"; };
 		92DAA49A29829A4C0062A438 /* TextureLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureLoader.cpp; sourceTree = "<group>"; };
@@ -1040,7 +1042,8 @@
 		92C2198129842CF500B2D2C6 /* game */ = {
 			isa = PBXGroup;
 			children = (
-				92CEB6EF298BD444002AAD2B /* Animation.h */,
+				92BF79BC29A39002002A52D8 /* Animations.cpp */,
+				92BF79BB29A39002002A52D8 /* Animations.h */,
 				92C2198B2984395800B2D2C6 /* Camera.cpp */,
 				92C2198C2984395800B2D2C6 /* Camera.h */,
 				92C2198829842E6A00B2D2C6 /* Game.cpp */,
@@ -1874,6 +1877,7 @@
 				92894E16299D331200605302 /* FontRepository.cpp in Sources */,
 				92F9EC88299E85D500C263E8 /* UpgradeSelectionGameState.cpp in Sources */,
 				92F9EC7C299E6C1A00C263E8 /* StateMachine.cpp in Sources */,
+				92BF79BD29A39002002A52D8 /* Animations.cpp in Sources */,
 				92DAA4C129829A4C0062A438 /* TextureResource.cpp in Sources */,
 				9254CBFF2969B79A00EFE0CC /* b2Settings.cpp in Sources */,
 				9254CBE32969B79A00EFE0CC /* b2Fixture.cpp in Sources */,

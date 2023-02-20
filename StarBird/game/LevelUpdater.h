@@ -37,7 +37,6 @@ public:
     void InitLevel(LevelDefinition&& levelDef);
     void OnAppStateChange(Uint32 event);
     void Update(std::vector<SceneObject>& sceneObjects, const float dtMillis);
-    void UpdateAnimation(SceneObject& sceneObject, std::optional<std::reference_wrapper<const ObjectTypeDefinition>> sceneObjectTypeDefOpt, const float dtMillis);
     void AdvanceWave();
     void AddFlow(RepeatableFlow&& flow);
     void AddWaveEnemy(const strutils::StringId& enemyTag);

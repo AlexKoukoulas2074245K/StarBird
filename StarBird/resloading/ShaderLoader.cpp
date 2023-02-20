@@ -29,7 +29,7 @@ const std::string ShaderLoader::FRAGMENT_SHADER_FILE_EXTENSION = ".fs";
 
 ///------------------------------------------------------------------------------------------------
 
-static void ExtractUniformFromLine(const std::string& line, const std::string& shaderName, const GLuint programId, std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher>& outUniformNamesToLocations);
+static void ExtractUniformFromLine(const std::string& line, const std::string& shaderName, const GLuint programId, std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher>& outUniformNamesToLocations, std::vector<strutils::StringId>& samplerNamesInOrder);
 
 ///------------------------------------------------------------------------------------------------
 
@@ -103,9 +103,10 @@ std::unique_ptr<IResource> ShaderLoader::VCreateAndLoadResource(const std::strin
     GL_CALL(glDeleteShader(vertexShaderId));
     GL_CALL(glDeleteShader(fragmentShaderId));
     
-    const auto uniformNamesToLocations = GetUniformNamesToLocationsMap(programId, resourcePath,  vertexShaderFileContents, fragmentShaderFileContents);
+    std::vector<strutils::StringId> samplerNamesInOrder;
+    const auto uniformNamesToLocations = GetUniformNamesToLocationsMap(programId, resourcePath,  vertexShaderFileContents, fragmentShaderFileContents, samplerNamesInOrder);
     
-    return std::make_unique<ShaderResource>(uniformNamesToLocations, programId);
+    return std::make_unique<ShaderResource>(uniformNamesToLocations, samplerNamesInOrder, programId);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -161,7 +162,8 @@ std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher> ShaderL
     const GLuint programId,
     const std::string& shaderName,
     const std::string& vertexShaderFileContents,
-    const std::string& fragmentShaderFileContents
+    const std::string& fragmentShaderFileContents,
+    std::vector<strutils::StringId>& samplerNamesInOrder
 ) const
 {
     std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher> uniformNamesToLocationsMap;
@@ -171,7 +173,7 @@ std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher> ShaderL
     {
         if (strutils::StringStartsWith(vertexShaderLine, "uniform"))
         {
-            ExtractUniformFromLine(vertexShaderLine, shaderName, programId, uniformNamesToLocationsMap);
+            ExtractUniformFromLine(vertexShaderLine, shaderName, programId, uniformNamesToLocationsMap, samplerNamesInOrder);
         }
     }
     
@@ -180,7 +182,7 @@ std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher> ShaderL
     {
         if (strutils::StringStartsWith(fragmentShaderLine, "uniform"))
         {
-            ExtractUniformFromLine(fragmentShaderLine, shaderName, programId, uniformNamesToLocationsMap);
+            ExtractUniformFromLine(fragmentShaderLine, shaderName, programId, uniformNamesToLocationsMap, samplerNamesInOrder);
         }
     }
     
@@ -189,7 +191,7 @@ std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher> ShaderL
 
 ///------------------------------------------------------------------------------------------------
 
-void ExtractUniformFromLine(const std::string& line, const std::string& shaderName, const GLuint programId, std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher>& outUniformNamesToLocations)
+void ExtractUniformFromLine(const std::string& line, const std::string& shaderName, const GLuint programId, std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher>& outUniformNamesToLocations, std::vector<strutils::StringId>& samplerNamesInOrder)
 {
     const auto uniformLineSplitBySpace = strutils::StringSplit(line, ' ');
     
@@ -229,6 +231,11 @@ void ExtractUniformFromLine(const std::string& line, const std::string& shaderNa
     {
         auto uniformLocation = GL_NO_CHECK_CALL(glGetUniformLocation(programId, uniformName.c_str()));
         outUniformNamesToLocations[strutils::StringId(uniformName)] = uniformLocation;
+        
+        if (strutils::StringContains(line, "sampler2D"))
+        {
+            samplerNamesInOrder.push_back(strutils::StringId(uniformName));
+        }
         
         if (uniformLocation == -1)
         {

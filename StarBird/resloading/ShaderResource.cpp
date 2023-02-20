@@ -19,9 +19,11 @@ namespace resources
 ShaderResource::ShaderResource
 (
     const std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher>& uniformNamesToLocations,
+    const std::vector<strutils::StringId>& uniformSamplerNamesInOrder,
     const GLuint programId
 )
-    : mShaderUniformNamesToLocations(uniformNamesToLocations) 
+    : mShaderUniformNamesToLocations(uniformNamesToLocations)
+    , mUniformSamplerNamesInOrder(uniformSamplerNamesInOrder)
     , mProgramId(programId)
 {
     
@@ -200,10 +202,18 @@ const std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher>& 
 
 ///------------------------------------------------------------------------------------------------
 
+const std::vector<strutils::StringId>& ShaderResource::GetUniformSamplerNames() const
+{
+    return mUniformSamplerNamesInOrder;
+}
+
+///------------------------------------------------------------------------------------------------
+
 void ShaderResource::CopyConstruction(const ShaderResource& rhs)
 {
     mProgramId = rhs.GetProgramId();
     mShaderUniformNamesToLocations = rhs.GetUniformNamesToLocations();
+    mUniformSamplerNamesInOrder = rhs.GetUniformSamplerNames();
 }
 
 ///------------------------------------------------------------------------------------------------

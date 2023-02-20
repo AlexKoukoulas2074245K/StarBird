@@ -11,6 +11,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "BaseGameState.h"
+#include "../../resloading/ResourceLoadingService.h"
 
 ///------------------------------------------------------------------------------------------------
 
@@ -20,9 +21,11 @@ public:
     static const strutils::StringId STATE_NAME;
     
 public:
-    void Initialize() override;
-    PostStateUpdateDirective Update(const float dtMillis) override;
-    void Destroy() override;
+    UpgradeSelectionGameState();
+    
+    void VInitialize() override;
+    PostStateUpdateDirective VUpdate(const float dtMillis) override;
+    void VDestroy() override;
     
 private:
     void CreateUpgradeSceneObjects();
@@ -48,7 +51,9 @@ private:
         LEFT_SELECTED,
         RIGHT_SELECTED
     };
-    
+  
+private:
+    resources::ResourceId mShineTextureResourceId;
     SubState mState;
     SelectionState mSelectionState;
     float mAnimationTween = 0.0f;

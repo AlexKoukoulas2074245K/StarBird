@@ -56,8 +56,11 @@ std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::stri
     // Color key image
     SDL_SetColorKey(pixels, SDL_TRUE, SDL_MapRGB(pixels->format, 0, 0xFF, 0xFF));
     
-    bool useMipMap = strutils::StringEndsWith(fileutils::GetFileNameWithoutExtension(resourcePath), "mm");
-    bool useUVWrap = !strutils::StringEndsWith(fileutils::GetFileNameWithoutExtension(resourcePath), "fx");
+    const auto fileNameWithoutExtension = fileutils::GetFileNameWithoutExtension(resourcePath);
+    
+    bool useMipMap = strutils::StringContains(fileNameWithoutExtension, "mm");
+    bool useUWrap  = !strutils::StringContains(fileNameWithoutExtension, "fxx");
+    bool useVWrap  = !strutils::StringContains(fileNameWithoutExtension, "fxy");
     
     // Create texture from surface pixels
     GLuint glTextureId;
@@ -77,14 +80,21 @@ std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::stri
     
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     
-    if (useUVWrap)
+    if (useUWrap)
     {
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
     }
     else
     {
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    }
+    
+    if (useVWrap)
+    {
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+    }
+    else
+    {
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
     }
     
