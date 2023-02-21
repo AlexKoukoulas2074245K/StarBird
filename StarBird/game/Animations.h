@@ -14,28 +14,6 @@
 
 #include <memory>
 
-//enum class AnimationType
-//{
-//    SINGLE_FRAME, MULTI_FRAME, VARIABLE_TEXTURED, PULSING, SHINE, DISSOLVE
-//};
-//
-/////------------------------------------------------------------------------------------------------
-//
-//
-//
-//struct Animation
-//{
-//    std::vector<resources::ResourceId> mVariableTextureResourceIds;
-//    resources::ResourceId mTextureResourceId;
-//    float mDuration = 0.0f;
-//    float mScale = 1.0f;
-//    float mAnimDtAccum = 0.0f;
-//    float mAnimDtAccumSpeed = 0.0f;
-//    float mPulsingEnlargementFactor = 0.0f;
-//    int mTextureSheetRow = 0;
-//    AnimationType mAnimationType = AnimationType::SINGLE_FRAME;
-//};
-
 ///------------------------------------------------------------------------------------------------
 
 class SceneObject;
@@ -158,8 +136,36 @@ private:
     resources::ResourceId mTextureResourceId;
     resources::ResourceId mDissolveTextureResourceId;
     resources::ResourceId mDissolveShaderResourceId;
+    
     float mDissolveSpeed;
     float mDissolveYOffset;
+};
+
+///------------------------------------------------------------------------------------------------
+
+class RotationAnimation final: public IAnimation
+{
+public:
+    enum class RotationAxis
+    {
+        X, Y, Z
+    };
+    
+    RotationAnimation(const resources::ResourceId textureResourceId, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed);
+    
+    std::unique_ptr<IAnimation> VClone() const override;
+    void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    resources::ResourceId VGetCurrentTextureResourceId() const override;
+    float VGetDuration() const override;
+    
+private:
+    resources::ResourceId mTextureResourceId;
+    resources::ResourceId mBasicShaderResourceId;
+    RotationAxis mRotationAxis;
+    float mRotationRadians;
+    float mRotationSpeed;
+    float mRotationDtAccum;
+    bool mLeftHandRotation;
 };
 
 ///------------------------------------------------------------------------------------------------

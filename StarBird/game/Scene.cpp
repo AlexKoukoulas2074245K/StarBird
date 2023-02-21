@@ -14,6 +14,7 @@
 #include "ObjectTypeDefinitionRepository.h"
 #include "dataloaders/LevelDataLoader.h"
 #include "../resloading/ResourceLoadingService.h"
+#include "../resloading/MeshResource.h"
 #include "../resloading/TextureResource.h"
 #include "../utils/Logging.h"
 
@@ -229,14 +230,9 @@ void Scene::LoadLevelInvariantObjects()
         
         b2PolygonShape dynamicBox;
         
-        // Load projectiles
-        resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::BULLET_TEXTURE_FILE_NAME);
+        auto& playerMesh = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(playerObjectDef.mMeshResourceId);
         
-        auto playerTextureResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_TEXTURE_FILE_NAME);
-        auto& playerTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(playerTextureResourceId);
-        
-        float textureAspect = playerTexture.GetDimensions().x/playerTexture.GetDimensions().y;
-        dynamicBox.SetAsBox(1.0f, 1.0f/textureAspect);
+        dynamicBox.SetAsBox(playerMesh.GetDimensions().x, playerMesh.GetDimensions().y);
         
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &dynamicBox;
@@ -250,8 +246,8 @@ void Scene::LoadLevelInvariantObjects()
         playerSO.mBody = body;
         playerSO.mHealth = playerObjectDef.mHealth;
         playerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        playerSO.mAnimation = std::make_unique<SingleFrameAnimation>(playerTextureResourceId);
-        playerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        playerSO.mAnimation = std::make_unique<SingleFrameAnimation>(playerObjectDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)->VGetCurrentTextureResourceId());
+        playerSO.mMeshResourceId = playerObjectDef.mMeshResourceId;
         playerSO.mSceneObjectType = SceneObjectType::WorldGameObject;
         playerSO.mCustomPosition.z = 0.0f;
         playerSO.mNameTag = scene_object_constants::PLAYER_SCENE_OBJECT_NAME;

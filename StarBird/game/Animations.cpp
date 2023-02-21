@@ -218,3 +218,60 @@ float DissolveAnimation::VGetDuration() const
 }
 
 ///------------------------------------------------------------------------------------------------
+
+RotationAnimation::RotationAnimation(const resources::ResourceId textureResourceId, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed)
+    : mTextureResourceId(textureResourceId)
+    , mBasicShaderResourceId(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME))
+    , mRotationAxis(rotationAxis)
+    , mRotationRadians(glm::radians(rotationDegrees))
+    , mRotationSpeed(rotationSpeed)
+    , mRotationDtAccum(0.0f)
+    , mLeftHandRotation(rotationDegrees < 0.0f)
+{
+}
+
+std::unique_ptr<IAnimation> RotationAnimation::VClone() const
+{
+    return std::make_unique<RotationAnimation>(*this);
+}
+
+void RotationAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
+{
+    sceneObject.mShaderResourceId = mBasicShaderResourceId;
+    
+    if (mLeftHandRotation)
+    {
+        mRotationDtAccum -= dtMillis * mRotationSpeed;
+        if (mRotationDtAccum < mRotationRadians)
+        {
+            mRotationDtAccum = mRotationRadians;
+        }
+    }
+    else
+    {
+        mRotationDtAccum += dtMillis * mRotationSpeed;
+        if (mRotationDtAccum > mRotationRadians)
+        {
+            mRotationDtAccum = mRotationRadians;
+        }
+    }
+    
+    switch (mRotationAxis)
+    {
+        case RotationAxis::X: sceneObject.mCustomRotation.x = mRotationDtAccum; break;
+        case RotationAxis::Y: sceneObject.mCustomRotation.y = mRotationDtAccum; break;
+        case RotationAxis::Z: sceneObject.mCustomRotation.z = mRotationDtAccum; break;
+    }
+}
+
+resources::ResourceId RotationAnimation::VGetCurrentTextureResourceId() const
+{
+    return mTextureResourceId;
+}
+
+float RotationAnimation::VGetDuration() const
+{
+    return math::Abs(mRotationRadians)/mRotationSpeed;
+}
+
+///------------------------------------------------------------------------------------------------

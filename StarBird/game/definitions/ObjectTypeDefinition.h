@@ -30,6 +30,7 @@ enum class MovementControllerPattern
 struct ObjectTypeDefinition
 {    
     strutils::StringId mName = strutils::StringId();
+    strutils::StringId mProjectileType = strutils::StringId();
     float mHealth = 0;
     float mDamage = 0;
     resources::ResourceId mShaderResourceId = resources::ResourceId();
@@ -41,6 +42,7 @@ struct ObjectTypeDefinition
     float mDensity = 0.0f;
     float mSize = 0.0f;
     float mLinearDamping = 0.0f;
+    float mShootingFrequencyMillis = 0.0f;
     MovementControllerPattern mMovementControllerPattern = MovementControllerPattern::NONE;
 };
 

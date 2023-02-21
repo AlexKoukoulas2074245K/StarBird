@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ObjectDefinition>
-    <Animation state="idle" texture="mini_alien" duration="-1"/>
+    <Animation state="idle" texture="enemies/mini_alien_mm" duration="-1"/>
     <Animation state="dying" texture="explosion_sheet" scale="2.0f" textureSheetRow="0" duration="150"/>
-    <Physics density="1.0f" bodySize="0.5f" linearDamping="5.0f" constantLinearVelocity="0.0f, -1.0f" speed="4.0f" category="enemy" collidingWithPlayerBullets="true" collidingWithEnemies="true" collidingWithPlayer="true"/>
+    <Physics density="1.0f" bodySize="0.75f" linearDamping="5.0f" speed="8.0f" category="enemy" collidingWithPlayerBullets="true" collidingWithEnemies="true" collidingWithPlayer="true"/>
     <Shader name="basic"/>
     <Model name="quad"/>
     <GameAttributes movementControllerPattern="chasing_player" health="1.0f" damage="1.0f"/>

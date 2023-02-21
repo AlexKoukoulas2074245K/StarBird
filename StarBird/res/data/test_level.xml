@@ -8,9 +8,9 @@
     </Wave>
     
     <Wave>
-        <Enemy position="-5.0f, 20.0f" type="small_enemy_chasing"/>
-        <Enemy position=" 0.0f, 20.0f" type="small_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="small_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemy_shooting"/>
+        <Enemy position=" 0.0f, 20.0f" type="enemy_shooting"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemy_shooting"/>
     </Wave>
     
     <Wave>

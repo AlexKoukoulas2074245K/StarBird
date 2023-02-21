@@ -69,6 +69,10 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             {
                 mConstructedObjectTypeDef.mContactFilter.categoryBits = physics_constants::PLAYER_BULLET_CATEGORY_BIT;
             }
+            else if (strcmp(category->value(), "enemy_bullet") == 0)
+            {
+                mConstructedObjectTypeDef.mContactFilter.categoryBits = physics_constants::ENEMY_BULLET_CATEGORY_BIT;
+            }
         }
         
         auto* shouldCollideWithPlayerBullets = node->first_attribute("collidingWithPlayerBullets");
@@ -258,15 +262,29 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         {
             mConstructedObjectTypeDef.mDamage = std::stof(damage->value());
         }
+        
+        auto* shootingFrequency = node->first_attribute("shootingFrequency");
+        if (shootingFrequency)
+        {
+            mConstructedObjectTypeDef.mShootingFrequencyMillis = std::stof(shootingFrequency->value());
+        }
+        
+        auto* projectile = node->first_attribute("projectile");
+        if (projectile)
+        {
+            mConstructedObjectTypeDef.mProjectileType = strutils::StringId(projectile->value());
+            mSubObjectsFound->insert(mConstructedObjectTypeDef.mProjectileType);
+        }
     });
 }
 
 ///------------------------------------------------------------------------------------------------
 
-ObjectTypeDefinition&& ObjectTypeDefinitionLoader::LoadObjectTypeDefinition(const std::string &objectTypeDefinitionFileName)
+ObjectTypeDefinition&& ObjectTypeDefinitionLoader::LoadObjectTypeDefinition(const std::string& objectTypeDefinitionFileName, std::unordered_set<strutils::StringId, strutils::StringIdHasher>* subObjectsFound)
 {
     mConstructedObjectTypeDef = ObjectTypeDefinition();
     mConstructedObjectTypeDef.mName = strutils::StringId(objectTypeDefinitionFileName);
+    mSubObjectsFound = subObjectsFound;
     
     BaseGameDataLoader::LoadData(objectTypeDefinitionFileName);
     

@@ -51,6 +51,7 @@ static const strutils::StringId CUSTOM_ALPHA_UNIFORM_NAME = strutils::StringId("
 static const float SHINE_EFFECT_X_OFFSET_INIT_VAL = 1.0f;
 static const float SHINE_EFFECT_X_OFFSET_END_VAL = -1.0f;
 static const float UPGRADE_SHINE_EFFECT_SPEED = 1.0f/200.0f;
+static const float PLAYER_SHINE_EFFECT_SPEED = 1.0f/400.0f;
 
 static const float DISSOLVE_EFFECT_Y_INIT_VAL = 1.0f;
 static const float DISSOLVE_EFFECT_SPEED = 1.0f/1000.0f;
@@ -64,7 +65,7 @@ static const char* CUSTOM_ALPHA_SHADER_FILE_NAME = "custom_alpha.vs";
 static const char* UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME = "shine_effect_fxx.bmp";
 static const char* DISSOLVE_EFFECT_TEXTURE_FILE_NAME = "dissolve_line_fxy_mm.bmp";
 static const char* BACKGROUND_TEXTURE_FILE_NAME = "space_bg.bmp";
-static const char* PLAYER_TEXTURE_FILE_NAME = "player.bmp";
+static const char* MIRROR_IMAGE_TEXTURE_FILE_NAME = "player_mirror_image_mm.bmp";
 static const char* BULLET_TEXTURE_FILE_NAME = "bullet.bmp";
 static const char* BETTER_BULLET_TEXTURE_FILE_NAME = "better_bullet.bmp";
 static const char* JOYSTICK_TEXTURE_FILE_NAME = "joystick.bmp";

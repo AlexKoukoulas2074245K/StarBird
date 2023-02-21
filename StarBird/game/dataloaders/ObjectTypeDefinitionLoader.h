@@ -14,10 +14,11 @@
 #include "../definitions/ObjectTypeDefinition.h"
 
 #include <string>
+#include <unordered_set>
 
 ///------------------------------------------------------------------------------------------------
 
-class ObjectTypeDefinitionLoader: public BaseGameDataLoader
+class ObjectTypeDefinitionLoader final: public BaseGameDataLoader
 {
 public:
     friend class ObjectTypeDefinitionRepository;
@@ -25,10 +26,11 @@ public:
     ObjectTypeDefinitionLoader();
 
 private:
-    ObjectTypeDefinition&& LoadObjectTypeDefinition(const std::string& objectTypeDefinitionFileName);
+    ObjectTypeDefinition&& LoadObjectTypeDefinition(const std::string& objectTypeDefinitionFileName, std::unordered_set<strutils::StringId, strutils::StringIdHasher>* subObjectsFound);
     
 private:
     ObjectTypeDefinition mConstructedObjectTypeDef;
+    std::unordered_set<strutils::StringId, strutils::StringIdHasher>* mSubObjectsFound;
 };
 
 ///------------------------------------------------------------------------------------------------

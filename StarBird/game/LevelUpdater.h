@@ -66,8 +66,10 @@ private:
     std::vector<RepeatableFlow> mFlows;
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> mWaveEnemies;
     
+    glm::vec3 mPreviousMotionVec;
     size_t mCurrentWaveNumber;
     bool mAllowInputControl;
+    bool mMovementRotationAllowed;
 };
 
 ///------------------------------------------------------------------------------------------------

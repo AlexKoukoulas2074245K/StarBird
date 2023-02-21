@@ -160,9 +160,11 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
         {
             world = glm::translate(world, glm::vec3(so.mBody->GetWorldCenter().x, so.mBody->GetWorldCenter().y, so.mCustomPosition.z));
             
-            //world = glm::rotate(world, so.mCustomRotation);
-            const auto& shape = dynamic_cast<const b2PolygonShape&>(*so.mBody->GetFixtureList()->GetShape());
+            world = glm::rotate(world, so.mCustomRotation.x, math::X_AXIS);
+            world = glm::rotate(world, so.mCustomRotation.y, math::Y_AXIS);
+            world = glm::rotate(world, so.mCustomRotation.z, math::Z_AXIS);
             
+            const auto& shape = dynamic_cast<const b2PolygonShape&>(*so.mBody->GetFixtureList()->GetShape());
             const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
             const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
             world = glm::scale(world, glm::vec3(scaleX, scaleY, 1.0f));
@@ -171,7 +173,9 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
         else
         {
             world = glm::translate(world, so.mCustomPosition);
-            //world = glm::rotate(world, so.mCustomRotation);
+            world = glm::rotate(world, so.mCustomRotation.x, math::X_AXIS);
+            world = glm::rotate(world, so.mCustomRotation.y, math::Y_AXIS);
+            world = glm::rotate(world, so.mCustomRotation.z, math::Z_AXIS);
             world = glm::scale(world, so.mCustomScale);
         }
         

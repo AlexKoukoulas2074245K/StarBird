@@ -38,6 +38,7 @@ public:
     inline float GetDuration() const { return mTargetDuration; }
     inline float GetTicksLeft() const { return mTicksLeft; }
     
+    inline void ForceFinish() { mIsRunning = false; }
     inline void SetDuration(float durationMillis) { mTargetDuration = durationMillis; }
     
     void Update(float dt)

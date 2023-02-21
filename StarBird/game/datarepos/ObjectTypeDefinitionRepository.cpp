@@ -46,7 +46,13 @@ void ObjectTypeDefinitionRepository::LoadObjectTypeDefinition(const strutils::St
     auto findIter = mObjectTypeDefinitionsMap.find(objectTypeDefName);
     if (findIter == mObjectTypeDefinitionsMap.end())
     {
-        mObjectTypeDefinitionsMap[objectTypeDefName] = mLoader.LoadObjectTypeDefinition(objectTypeDefName.GetString());
+        std::unordered_set<strutils::StringId, strutils::StringIdHasher> subObjectsFound;
+        mObjectTypeDefinitionsMap[objectTypeDefName] = mLoader.LoadObjectTypeDefinition(objectTypeDefName.GetString(), &subObjectsFound);
+        
+        for (const auto& subObjectTypeDefName: subObjectsFound)
+        {
+            LoadObjectTypeDefinition(subObjectTypeDefName);
+        }
     }
 }
 

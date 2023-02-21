@@ -40,28 +40,51 @@ static const strutils::StringId BETTER_PLAYER_BULLET_TYPE = strutils::StringId("
 static const strutils::StringId MIRROR_IMAGE_BULLET_TYPE = strutils::StringId("mirror_image_bullet");
 static const strutils::StringId BETTER_MIRROR_IMAGE_BULLET_TYPE = strutils::StringId("mirror_image_better_bullet");
 
+static const std::string ENEMY_PROJECTILE_FLOW_POSTFIX = std::string("_PROJECTILE_FLOW");
+
 static const float BACKGROUND_SPEED = 1.0f/4000.0f;
+
 static const float WAVE_INTRO_TEXT_SPEED = 0.01f;
+
 static const float FULL_SCREEN_OVERLAY_DARKENING_SPEED = 1.0f/400.0f;
+
 static const float UPGRADE_MOVEMENT_SPEED = 1.0f/400.0f;
+
 static const float WAVE_INTRO_DURATION_MILLIS = 3000.0f;
+
 static const float PLAYER_BULLET_FLOW_DELAY_MILLIS = 300.0f;
 static const float HASTENED_PLAYER_BULLET_FLOW_DELAY_MILLIS = 200.0f;
+
 static const float PLAYER_SPEED_UPGRADE_MULTIPLIER = 1.5f;
+
 static const float PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS = 300.0f;
+
 static const float JOYSTICK_Z = 1.0f;
 static const float JOYSTICK_BOUNDS_Z = 2.0f;
+
 static const float BACKGROUND_Z = -1.0f;
+
 static const float BULLET_Z = -0.5f;
+
 static const float PLAYER_HEALTH_BAR_Z = 0.5f;
+
 static const float FULL_SCREEN_OVERLAY_MAX_ALPHA = 0.8f;
+
 static const float PLAYER_BULLET_X_OFFSET = 0.48f;
+
 static const float MIRROR_IMAGE_BULLET_X_OFFSET = 0.38f;
+
 static const float HEALTH_POTION_HEALTH_GAIN = 5.0f;
+
 static const float PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR = 1.0/50.0f;
 static const float PLAYER_PULSE_SHIELD_ANIM_SPEED = 0.01f;
+
 static const float SELECTED_UPGRADE_PULSE_ENLARGEMENT_FACTOR = 1.0/5.0f;
 static const float SELECTED_UPGRADE_PULSE_ANIM_SPEED = 0.03f;
+
+static const float PLAYER_MOVEMENT_ROLL_CHANCE = 0.333f;
+static const float PLAYER_MOVEMENT_ROLL_SPEED = 0.008f;
+static const float PLAYER_MOVEMENT_ROLL_ANGLE = 180.0f;
 
 static const glm::vec3 PLAYER_INITIAL_POS = glm::vec3(0.0f, -10.0f, 0.0f);
 static const glm::vec3 BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
@@ -100,7 +123,7 @@ static const glm::vec3 LEFT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
 static const glm::vec3 RIGHT_MIRROR_IMAGE_POSITION_OFFSET = glm::vec3(2.0f, -0.5f, 0.0f);
 static const glm::vec3 RIGHT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
 
-static const glm::vec3 PLAYER_SHIELD_POSITION_OFFSET = glm::vec3(0.0f, 0.0f, 0.5f);
+static const glm::vec3 PLAYER_SHIELD_POSITION_OFFSET = glm::vec3(0.0f, 0.5f, 0.5f);
 static const glm::vec3 PLAYER_SHIELD_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
 
 ///------------------------------------------------------------------------------------------------

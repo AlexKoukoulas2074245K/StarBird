@@ -43,6 +43,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld)
     , mStateMachine(scene, *this, mUpgradesLogicHandler, mBox2dWorld)
     , mCurrentWaveNumber(0)
     , mAllowInputControl(false)
+    , mMovementRotationAllowed(false)
 {
 }
 
@@ -52,76 +53,76 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
 {
     mLevel = levelDef;
     
-//    mFlows.emplace_back([&]()
-//    {
-//        auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
-//        bool hasBulletDamageUpgrade = equippedUpgrades.count(game_object_constants::BULLET_DAMAGE_UGPRADE_NAME) != 0;
-//        bool hasDoubleBulletUpgrade = equippedUpgrades.count(game_object_constants::DOUBLE_BULLET_UGPRADE_NAME) != 0;
-//        bool hasMirrorImageUpgrade = equippedUpgrades.count(game_object_constants::MIRROR_IMAGE_UGPRADE_NAME) != 0;
-//
-//        auto playerOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
-//        if (playerOpt)
-//        {
-//            if (hasDoubleBulletUpgrade)
-//            {
-//                auto bulletPosition = math::Box2dVec2ToGlmVec3(playerOpt->get().mBody->GetWorldCenter());
-//
-//                // Left Bullet
-//                bulletPosition.x -= game_object_constants::PLAYER_BULLET_X_OFFSET;
-//                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_PLAYER_BULLET_TYPE : game_object_constants::PLAYER_BULLET_TYPE, bulletPosition);
-//
-//                // Right Bullet
-//                bulletPosition.x += 2 * game_object_constants::PLAYER_BULLET_X_OFFSET;
-//                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_PLAYER_BULLET_TYPE : game_object_constants::PLAYER_BULLET_TYPE, bulletPosition);
-//
-//                if (hasMirrorImageUpgrade)
-//                {
-//                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-//                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-//
-//                    if (leftMirrorImageSoOpt)
-//                    {
-//                        auto bulletPosition = leftMirrorImageSoOpt->get().mCustomPosition;
-//                        bulletPosition.x -= game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
-//                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
-//
-//                        bulletPosition.x += 2 * game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
-//                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
-//                    }
-//
-//                    if (rightMirrorImageSoOpt)
-//                    {
-//                        auto bulletPosition = rightMirrorImageSoOpt->get().mCustomPosition;
-//                        bulletPosition.x -= game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
-//                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
-//
-//                        bulletPosition.x += 2 * game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
-//                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_PLAYER_BULLET_TYPE : game_object_constants::PLAYER_BULLET_TYPE, math::Box2dVec2ToGlmVec3( playerOpt->get().mBody->GetWorldCenter()));
-//
-//                if (hasMirrorImageUpgrade)
-//                {
-//                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-//                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-//
-//                    if (leftMirrorImageSoOpt)
-//                    {
-//                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, leftMirrorImageSoOpt->get().mCustomPosition);
-//                    }
-//
-//                    if (rightMirrorImageSoOpt)
-//                    {
-//                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, rightMirrorImageSoOpt->get().mCustomPosition);
-//                    }
-//                }
-//            }
-//        }
-//    }, game_object_constants::PLAYER_BULLET_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::REPEAT, game_object_constants::PLAYER_BULLET_FLOW_NAME);
+    mFlows.emplace_back([&]()
+    {
+        auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
+        bool hasBulletDamageUpgrade = equippedUpgrades.count(game_object_constants::BULLET_DAMAGE_UGPRADE_NAME) != 0;
+        bool hasDoubleBulletUpgrade = equippedUpgrades.count(game_object_constants::DOUBLE_BULLET_UGPRADE_NAME) != 0;
+        bool hasMirrorImageUpgrade = equippedUpgrades.count(game_object_constants::MIRROR_IMAGE_UGPRADE_NAME) != 0;
+
+        auto playerOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+        if (playerOpt)
+        {
+            if (hasDoubleBulletUpgrade)
+            {
+                auto bulletPosition = math::Box2dVec2ToGlmVec3(playerOpt->get().mBody->GetWorldCenter());
+
+                // Left Bullet
+                bulletPosition.x -= game_object_constants::PLAYER_BULLET_X_OFFSET;
+                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_PLAYER_BULLET_TYPE : game_object_constants::PLAYER_BULLET_TYPE, bulletPosition);
+
+                // Right Bullet
+                bulletPosition.x += 2 * game_object_constants::PLAYER_BULLET_X_OFFSET;
+                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_PLAYER_BULLET_TYPE : game_object_constants::PLAYER_BULLET_TYPE, bulletPosition);
+
+                if (hasMirrorImageUpgrade)
+                {
+                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+
+                    if (leftMirrorImageSoOpt)
+                    {
+                        auto bulletPosition = leftMirrorImageSoOpt->get().mCustomPosition;
+                        bulletPosition.x -= game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+
+                        bulletPosition.x += 2 * game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                    }
+
+                    if (rightMirrorImageSoOpt)
+                    {
+                        auto bulletPosition = rightMirrorImageSoOpt->get().mCustomPosition;
+                        bulletPosition.x -= game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+
+                        bulletPosition.x += 2 * game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                    }
+                }
+            }
+            else
+            {
+                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_PLAYER_BULLET_TYPE : game_object_constants::PLAYER_BULLET_TYPE, math::Box2dVec2ToGlmVec3( playerOpt->get().mBody->GetWorldCenter()));
+
+                if (hasMirrorImageUpgrade)
+                {
+                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+
+                    if (leftMirrorImageSoOpt)
+                    {
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, leftMirrorImageSoOpt->get().mCustomPosition);
+                    }
+
+                    if (rightMirrorImageSoOpt)
+                    {
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, rightMirrorImageSoOpt->get().mCustomPosition);
+                    }
+                }
+            }
+        }
+    }, game_object_constants::PLAYER_BULLET_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::REPEAT, game_object_constants::PLAYER_BULLET_FLOW_NAME);
 
     static PhysicsCollisionListener collisionListener;
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::PLAYER_BULLET_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
@@ -161,6 +162,12 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 {
                     mWaveEnemies.erase(enemyBodyAddressTag);
                     mScene.RemoveAllSceneObjectsWithNameTag(enemyBodyAddressTag);
+                    
+                    auto enemyBulletFlow = GetFlow(strutils::StringId(enemyBodyAddressTag.GetString() + game_object_constants::ENEMY_PROJECTILE_FLOW_POSTFIX));
+                    if (enemyBulletFlow)
+                    {
+                        enemyBulletFlow->get().ForceFinish();
+                    }
                 }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
             }
             
@@ -235,6 +242,78 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         }
     });
     
+    collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::PLAYER_CATEGORY_BIT, physics_constants::ENEMY_BULLET_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
+    {
+        auto iter = std::find_if(mFlows.begin(), mFlows.end(), [](const RepeatableFlow& flow)
+        {
+            return flow.GetName() == game_object_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME;
+        });
+        if (iter != mFlows.end()) return;
+        
+        auto playerSceneObjectOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+        
+        
+        strutils::StringId enemyBulletBodyAddressTag;
+        enemyBulletBodyAddressTag.fromAddress(secondBody);
+        auto enemyBulletSceneObjectOpt = mScene.GetSceneObject(enemyBulletBodyAddressTag);
+        
+        if (playerSceneObjectOpt && enemyBulletSceneObjectOpt)
+        {
+            auto& playerSO = playerSceneObjectOpt->get();
+            auto& enemyBulletSO = enemyBulletSceneObjectOpt->get();
+            
+            auto enemyBulletSceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemyBulletSO.mObjectFamilyTypeName)->get();
+            
+            if (mScene.GetSceneObject(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
+            {
+                mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+            }
+            else
+            {
+                playerSO.mHealth -= enemyBulletSceneObjectTypeDef.mDamage;
+                objectiveC_utils::Vibrate();
+            }
+            
+            mFlows.emplace_back([]()
+            {
+            }, game_object_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_object_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
+            
+            if (playerSO.mHealth <= 0)
+            {
+                playerSO.mStateName = strutils::StringId("dying");
+                playerSO.mUseBodyForRendering = false;
+                playerSO.mCustomPosition.x = firstBody->GetWorldCenter().x;
+                playerSO.mCustomPosition.y = firstBody->GetWorldCenter().y;
+                
+                auto filter = firstBody->GetFixtureList()[0].GetFilterData();
+                filter.maskBits = 0;
+                firstBody->GetFixtureList()[0].SetFilterData(filter);
+                
+                playerSO.mAnimation = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSO.mObjectFamilyTypeName)->get().mAnimations.at(playerSO.mStateName)->VClone();
+                
+                // Inherit body scale
+                const auto& shape = dynamic_cast<const b2PolygonShape&>(*firstBody->GetFixtureList()->GetShape());
+                const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
+                const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
+                playerSO.mCustomScale = glm::vec3(scaleX, scaleY, 1.0f);
+                
+                mFlows.emplace_back([=]()
+                {
+                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+                }, playerSO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
+            }
+            
+            // Erase bullet collision mask so that it doesn't also contribute to other
+            // enemy damage until it is removed from b2World
+            auto bulletFilter = secondBody->GetFixtureList()[0].GetFilterData();
+            bulletFilter.maskBits = 0;
+            secondBody->GetFixtureList()[0].SetFilterData(bulletFilter);
+            
+            mWaveEnemies.erase(enemyBulletBodyAddressTag);
+            mScene.RemoveAllSceneObjectsWithNameTag(enemyBulletBodyAddressTag);
+        }
+    });
+    
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::PLAYER_BULLET_CATEGORY_BIT, physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
         strutils::StringId bulletAddressTag;
@@ -249,7 +328,15 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         mScene.RemoveAllSceneObjectsWithNameTag(enemyAddressTag);
         mWaveEnemies.erase(enemyAddressTag);
     });
-
+    
+    collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_BULLET_CATEGORY_BIT, physics_constants::ENEMY_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
+    {
+        strutils::StringId enemyBulletAddressTag;
+        enemyBulletAddressTag.fromAddress(firstBody);
+        mScene.RemoveAllSceneObjectsWithNameTag(enemyBulletAddressTag);
+        mWaveEnemies.erase(enemyBulletAddressTag);
+    });
+    
     mBox2dWorld.SetContactListener(&collisionListener);
     
     UpgradesLoader loader;
@@ -441,6 +528,9 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                  joystickSO->get().mCustomPosition.z = game_object_constants::JOYSTICK_BOUNDS_Z;
 
                  mAllowInputControl = true;
+                 
+                 mMovementRotationAllowed = true;
+                 mPreviousMotionVec.x = mPreviousMotionVec.y = 0.0f;
              }
         } break;
             
@@ -466,8 +556,29 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                 
                 motionVec.x *= sceneObjectTypeDef.mSpeed * dtMilis;
                 motionVec.y *= sceneObjectTypeDef.mSpeed * dtMilis;
-
+                
+                if (motionVec.x > 0.0f && mPreviousMotionVec.x <= 0.0f && mMovementRotationAllowed)
+                {
+                    if (math::RandomFloat() < game_object_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
+                    {
+                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), RotationAnimation::RotationAxis::Y, game_object_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_object_constants::PLAYER_MOVEMENT_ROLL_SPEED);
+                    }
+                    
+                    mMovementRotationAllowed = false;
+                }
+                else if (motionVec.x < 0.0f && mPreviousMotionVec.x >= 0.0f && mMovementRotationAllowed)
+                {
+                    if (math::RandomFloat() < game_object_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
+                    {
+                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), RotationAnimation::RotationAxis::Y, -game_object_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_object_constants::PLAYER_MOVEMENT_ROLL_SPEED);
+                    }
+                    
+                    mMovementRotationAllowed = false;
+                }
+                
                 sceneObject.mBody->SetLinearVelocity(b2Vec2(motionVec.x, motionVec.y));
+                
+                mPreviousMotionVec = motionVec;
             }
             
         } break;
@@ -541,9 +652,9 @@ void LevelUpdater::UpdateBackground(const float dtMillis)
 
 void LevelUpdater::UpdateFlows(const float dtMillis)
 {
-    for (auto& flow: mFlows)
+    for (size_t i = 0; i < mFlows.size(); ++i)
     {
-        flow.Update(dtMillis);
+        mFlows[i].Update(dtMillis);
     }
     
     mFlows.erase(std::remove_if(mFlows.begin(), mFlows.end(), [](const RepeatableFlow& flow)
@@ -556,6 +667,7 @@ void LevelUpdater::UpdateFlows(const float dtMillis)
 
 void LevelUpdater::OnBlockedUpdate()
 {
+    mAllowInputControl = false;
     auto joystickSoOpt = mScene.GetSceneObject(scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME);
     auto joystickBoundsSOopt = mScene.GetSceneObject(scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
     auto playerSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);

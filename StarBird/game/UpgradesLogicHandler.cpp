@@ -90,7 +90,7 @@ void UpgradesLogicHandler::CreateMirrorImageSceneObjects()
     {
         SceneObject leftMirrorImageSo;
         leftMirrorImageSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-        leftMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_TEXTURE_FILE_NAME));
+        leftMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME));
         leftMirrorImageSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         leftMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
         leftMirrorImageSo.mCustomPosition = game_object_constants::LEFT_MIRROR_IMAGE_POSITION_OFFSET;
@@ -103,7 +103,7 @@ void UpgradesLogicHandler::CreateMirrorImageSceneObjects()
     {
         SceneObject rightMirrorImageSo;
         rightMirrorImageSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-        rightMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_TEXTURE_FILE_NAME));
+        rightMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME));
         rightMirrorImageSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         rightMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
         rightMirrorImageSo.mCustomPosition = game_object_constants::RIGHT_MIRROR_IMAGE_POSITION_OFFSET;

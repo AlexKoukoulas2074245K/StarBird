@@ -309,7 +309,8 @@ void UpgradeSelectionGameState::UpdateOverlayOut(const float dtMillis)
     auto rightUpgradeContainerSoOpt = mScene->GetSceneObject(scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
     auto leftUpgradeSoOpt = mScene->GetSceneObject(scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
     auto rightUpgradeSoOpt = mScene->GetSceneObject(scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
-    
+    auto playerSoOpt = mScene->GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+
     if (leftUpgradeContainerSoOpt)
     {
         leftUpgradeContainerSoOpt->get().mCustomPosition.x = (1.0f - perc) * game_object_constants::LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_object_constants::LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
@@ -338,6 +339,14 @@ void UpgradeSelectionGameState::UpdateOverlayOut(const float dtMillis)
         if (upgradeOverlayAlpha <= 0)
         {
             upgradeOverlayAlpha = 0.0f;
+            
+            if (playerSoOpt)
+            {
+                // Override roll effect animation
+                playerSoOpt->get().mCustomRotation.y = 0.0f;
+                
+                playerSoOpt->get().mAnimation = std::make_unique<ShineAnimation>(playerSoOpt->get().mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, scene_object_constants::UPGRADE_SHINE_EFFECT_SPEED);
+            }
             Complete(WaveIntroGameState::STATE_NAME);
         }
     }
