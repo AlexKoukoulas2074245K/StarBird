@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Level>
-    <Camera type="world_cam" lenseHeight="30.0f"/>
+    <Camera type="world_cam" lenseHeight="60.0f"/>
     <Camera type="gui_cam" lenseHeight="30.0f"/>
     
     <Wave>
-        <Enemy position=" -3.0f, 20.0f" type="small_enemy_chasing"/>
+        <Enemy position="0.0f, 20.0f" type="test_enemy_chasing"/>
+        <Enemy position="-3.0f, 35.0f" type="test_enemy_chasing"/>
+        <Enemy position="4.0f, 35.0f" type="test_enemy_chasing"/>
+        <Enemy position="-6.0f, 50.0f" type="test_enemy_chasing"/>
+        <Enemy position="1.0f, 50.0f" type="test_enemy_chasing"/>
+        <Enemy position="-3.0f, 52.0f" type="test_enemy_chasing"/>
+        <Enemy position="4.0f, 52.0f" type="test_enemy_chasing"/>
+        <Enemy position="-2.0f, 78.0f" type="test_enemy_chasing"/>
+        <Enemy position="3.0f, 78.0f" type="test_enemy_chasing"/>
+        <Enemy position="-4.0f, 80.0f" type="test_enemy_chasing"/>
+        <Enemy position="5.0f, 80.0f" type="test_enemy_chasing"/>
+        <Enemy position="-6.0f, 82.0f" type="test_enemy_chasing"/>
+        <Enemy position="1.0f, 82.0f" type="test_enemy_chasing"/>
+        <Enemy position="0.0f, 198.0f" type="small_enemy_chasing"/>
+        <Enemy position="-3.0f, 218.0f" type="small_enemy_chasing"/>
+        <Enemy position="4.0f, 218.0f" type="small_enemy_chasing"/>
+        <Enemy position="1.0f, 253.0f" type="small_enemy_chasing"/>
+        <Enemy position="-3.0f, 254.0f" type="small_enemy_chasing"/>
+        <Enemy position="5.0f, 254.0f" type="small_enemy_chasing"/>
+        <Enemy position="-5.0f, 256.0f" type="small_enemy_chasing"/>
+        <Enemy position="1.0f, 256.0f" type="small_enemy_chasing"/>
+        <Enemy position="6.0f, 256.0f" type="small_enemy_chasing"/>
     </Wave>
     
     <Wave>

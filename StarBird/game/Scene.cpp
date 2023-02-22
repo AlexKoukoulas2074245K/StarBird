@@ -257,7 +257,7 @@ void Scene::LoadLevelInvariantObjects()
         AddSceneObject(std::move(playerSO));
     }
     
-    const auto& worldCamOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
+    const auto& worldCamOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
     assert(worldCamOpt);
     const auto& worldCam = worldCamOpt->get();
     

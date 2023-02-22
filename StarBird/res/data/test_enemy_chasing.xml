@@ -5,5 +5,5 @@
     <Physics density="1.0f" bodySize="1.0f" linearDamping="7.5f" speed="6.0f" category="enemy" collidingWithPlayerBullets="true" collidingWithEnemies="true" collidingWithPlayer="true"/>
     <Shader name="basic"/>
     <Model name="quad"/>
-    <GameAttributes movementControllerPattern="chasing_player" health="8.0f" damage="1.0f"/>
+    <GameAttributes movementControllerPattern="chasing_player" health="4.0f" damage="1.0f"/>
 </ObjectDefinition>

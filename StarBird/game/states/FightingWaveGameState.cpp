@@ -27,8 +27,6 @@ const strutils::StringId FightingWaveGameState::STATE_NAME("FightingWaveGameStat
 
 void FightingWaveGameState::VInitialize()
 {
-    mLevelUpdater->AdvanceWave();
-    
     auto& objectTypeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
     for (const auto& enemy: mLevelUpdater->GetCurrentLevelDefinition().mWaves[mLevelUpdater->GetCurrentWaveNumber()].mEnemies)
     {
@@ -145,6 +143,8 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float)
 {
     if (mLevelUpdater->GetWaveEnemyCount() == 0)
     {
+        mLevelUpdater->AdvanceWave();
+        
         if (GameSingletons::GetAvailableUpgrades().size() > 1)
         {
             Complete(UpgradeSelectionGameState::STATE_NAME);
