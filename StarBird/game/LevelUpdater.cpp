@@ -208,7 +208,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             else
             {
                 playerSO.mHealth -= enemySceneObjectTypeDef.mDamage;
-                objectiveC_utils::Vibrate();
+                OnPlayerDamaged();
             }
             
             mFlows.emplace_back([]()
@@ -271,7 +271,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             else
             {
                 playerSO.mHealth -= enemyBulletSceneObjectTypeDef.mDamage;
-                objectiveC_utils::Vibrate();
+                OnPlayerDamaged();
             }
             
             mFlows.emplace_back([]()
@@ -441,9 +441,9 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
     }
     
     mUpgradesLogicHandler.OnUpdate(dtMillis);
-    UpdateHealthBars(dtMillis);
     UpdateBackground(dtMillis);
     UpdateFlows(dtMillis);
+    UpdateCameras(dtMillis);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -595,45 +595,6 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
 
 ///------------------------------------------------------------------------------------------------
 
-void LevelUpdater::UpdateHealthBars(const float dtMillis)
-{
-    auto playerSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
-    auto playerHealthBarFrameSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
-    auto playerHealthBarSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME);
-    
-    if (!playerHealthBarFrameSoOpt || !playerHealthBarSoOpt)
-    {
-        return;
-    }
-    
-    if (playerSoOpt)
-    {
-        auto& playerSo = playerSoOpt->get();
-        auto& healthBarFrameSo = playerHealthBarFrameSoOpt->get();
-        auto& healthBarSo = playerHealthBarSoOpt->get();
-        
-        auto& playerObjectDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSo.mObjectFamilyTypeName)->get();
-        
-        healthBarSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
-        healthBarSo.mCustomPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
-        
-        healthBarFrameSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
-        healthBarFrameSo.mCustomPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
-        
-        float healthPerc = playerSo.mHealth/static_cast<float>(playerObjectDef.mHealth);
-        
-        healthBarSo.mCustomScale.x = game_object_constants::HEALTH_BAR_SCALE.x * healthPerc;
-        healthBarSo.mCustomPosition.x -= (1.0f - healthPerc)/2.0f * game_object_constants::HEALTH_BAR_SCALE.x;
-    }
-    else
-    {
-        playerHealthBarFrameSoOpt->get().mInvisible = true;
-        playerHealthBarSoOpt->get().mInvisible = true;
-    }
-}
-
-///------------------------------------------------------------------------------------------------
-
 void LevelUpdater::UpdateBackground(const float dtMillis)
 {
     static float msAccum = 0.0f;
@@ -661,6 +622,30 @@ void LevelUpdater::UpdateFlows(const float dtMillis)
     {
         return !flow.IsRunning();
     }), mFlows.end());
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::UpdateCameras(const float dtMillis)
+{
+    const auto& guiCamOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
+    const auto& worldCamOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
+    
+    if (guiCamOpt) guiCamOpt->get().Update(dtMillis);
+    if (worldCamOpt) worldCamOpt->get().Update(dtMillis);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::OnPlayerDamaged()
+{
+    objectiveC_utils::Vibrate();
+    
+    const auto& guiCamOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
+    const auto& worldCamOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
+    
+    if (guiCamOpt) guiCamOpt->get().Shake();
+    if (worldCamOpt) worldCamOpt->get().Shake();
 }
 
 ///------------------------------------------------------------------------------------------------

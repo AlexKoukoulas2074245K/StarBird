@@ -29,6 +29,8 @@ public:
     const glm::mat4& GetViewMatrix() const;
     const glm::mat4& GetProjMatrix() const;
     
+    void Shake();
+    void Update(const float dtMillis);
     void SetZoomFactor(const float zoomFactor);
     void SetPosition(const glm::vec3& position);
     
@@ -39,8 +41,19 @@ private:
     static const float DEFAULT_CAMERA_ZNEAR;
     static const float DEFAULT_CAMERA_ZFAR;
     static const float DEFAULT_CAMERA_ZOOM_FACTOR;
+    static const float SHAKE_DAMPING;
+    static const float SHAKE_MAX_RADIUS;
+    static const float SHAKE_MIN_RADIUS;
     
 private:
+    struct ShakeData
+    {
+        glm::vec3 mPreShakePosition;
+        float mShakeRadius;
+        float mShakeRandomAngle;
+    };
+    
+    ShakeData mShakeData;
     float mZoomFactor;
     float mCameraLenseWidth;
     float mCameraLenseHeight;

@@ -10,13 +10,17 @@
 
 ///------------------------------------------------------------------------------------------------
 
-const glm::vec3 Camera::DEFAULT_CAMERA_POSITION     = glm::vec3(0.0f, 0.0f, 5.0f);
+const glm::vec3 Camera::DEFAULT_CAMERA_POSITION     = glm::vec3(0.0f, 0.0f, -5.0f);
 const glm::vec3 Camera::DEFAULT_CAMERA_FRONT_VECTOR = glm::vec3(0.0f, 0.0f, -1.0f);
 const glm::vec3 Camera::DEFAULT_CAMERA_UP_VECTOR    = glm::vec3(0.0f, 1.0f, 0.0f);
 
-const float Camera::DEFAULT_CAMERA_ZNEAR       = 0.0f;
+const float Camera::DEFAULT_CAMERA_ZNEAR       = -50.0f;
 const float Camera::DEFAULT_CAMERA_ZFAR        = 50.0f;
 const float Camera::DEFAULT_CAMERA_ZOOM_FACTOR = 16.0f/14.0f;
+
+const float Camera::SHAKE_DAMPING = 0.72f;
+const float Camera::SHAKE_MAX_RADIUS = 0.5f;
+const float Camera::SHAKE_MIN_RADIUS = 0.001f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -35,7 +39,7 @@ Camera::Camera(float cameraLenseHeight)
 
 void Camera::RecalculateMatrices()
 {
-    mView = glm::lookAt(DEFAULT_CAMERA_POSITION, DEFAULT_CAMERA_POSITION + DEFAULT_CAMERA_FRONT_VECTOR, DEFAULT_CAMERA_UP_VECTOR);
+    mView = glm::lookAt(mPosition, mPosition + DEFAULT_CAMERA_FRONT_VECTOR, DEFAULT_CAMERA_UP_VECTOR);
     mProj = glm::ortho(-mCameraLenseWidth/2.0f/mZoomFactor, mCameraLenseWidth/2.0f/mZoomFactor, -mCameraLenseHeight/2.0f/mZoomFactor, mCameraLenseHeight/2.0f/mZoomFactor, DEFAULT_CAMERA_ZNEAR, DEFAULT_CAMERA_ZFAR);
 }
 
@@ -79,6 +83,43 @@ const glm::mat4& Camera::GetViewMatrix() const
 const glm::mat4& Camera::GetProjMatrix() const
 {
     return mProj;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void Camera::Shake()
+{
+    if (mShakeData.mShakeRadius <= SHAKE_MIN_RADIUS)
+    {
+        mShakeData.mPreShakePosition = mPosition;
+        
+        mShakeData.mShakeRadius = SHAKE_MAX_RADIUS;
+        
+        mShakeData.mShakeRandomAngle = math::RandomFloat(0.0f, 2.0f * math::PI);
+        auto offset = glm::vec2(math::Sinf(mShakeData.mShakeRandomAngle) * mShakeData.mShakeRadius, math::Cosf(mShakeData.mShakeRandomAngle) * mShakeData.mShakeRadius);
+        
+        SetPosition(glm::vec3(mShakeData.mPreShakePosition.x + offset.x, mShakeData.mPreShakePosition.y + offset.y, GetPosition().z));
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void Camera::Update(const float dtMillis)
+{
+    mShakeData.mShakeRadius *= SHAKE_DAMPING;
+    
+    if (mShakeData.mShakeRadius <= SHAKE_MIN_RADIUS)
+    {
+        mShakeData.mShakeRadius = SHAKE_MIN_RADIUS;
+        SetPosition(mShakeData.mPreShakePosition);
+    }
+    else
+    {
+        mShakeData.mShakeRandomAngle = math::RandomFloat(0.0f, 2.0f * math::PI);
+        auto offset = glm::vec2(math::Sinf(mShakeData.mShakeRandomAngle) * mShakeData.mShakeRadius, math::Cosf(mShakeData.mShakeRandomAngle) * mShakeData.mShakeRadius);
+        
+        SetPosition(glm::vec3(mShakeData.mPreShakePosition.x + offset.x, mShakeData.mPreShakePosition.y + offset.y, GetPosition().z));
+    }
 }
 
 ///------------------------------------------------------------------------------------------------

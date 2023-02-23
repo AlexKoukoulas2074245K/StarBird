@@ -48,10 +48,11 @@ public:
     
 private:
     void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMillis);
-    void UpdateHealthBars(const float dtMillis);
     void UpdateBackground(const float dtMillis);
+    void UpdateCameras(const float dtMillis);
     void UpdateFlows(const float dtMillis);
     
+    void OnPlayerDamaged();
     void OnBlockedUpdate();
 
     void CreateBulletAtPosition(const strutils::StringId& bulletType, const glm::vec3& position);

@@ -67,6 +67,8 @@ static const float BACKGROUND_Z = -1.0f;
 static const float BULLET_Z = -0.5f;
 
 static const float PLAYER_HEALTH_BAR_Z = 0.5f;
+static const float PLAYER_HEALTH_LOST_BAR_Z = 0.4f;
+static const float HEALTH_LOST_SPEED = 0.001f;
 
 static const float FULL_SCREEN_OVERLAY_MAX_ALPHA = 0.8f;
 
