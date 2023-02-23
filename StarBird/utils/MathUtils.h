@@ -39,7 +39,7 @@ namespace math
 static constexpr unsigned int FRUSTUM_SIDES = 6;
 
 static constexpr float PI              = 3.141592f;
-static constexpr float EQ_THRESHOLD    = 1e-4f;
+static constexpr float EQ_THRESHOLD    = 1e-5f;
 static constexpr float DEGREES_PER_RAD = 57.2958f;
 static constexpr float RADS_PER_DEGREE = 0.0174532925f;
 

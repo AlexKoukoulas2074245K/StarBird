@@ -49,6 +49,7 @@ public:
 private:
     void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMillis);
     void UpdateBackground(const float dtMillis);
+    void UpdateHealthBars(const float dtMillis);
     void UpdateCameras(const float dtMillis);
     void UpdateFlows(const float dtMillis);
     
@@ -69,6 +70,7 @@ private:
     
     glm::vec3 mPreviousMotionVec;
     size_t mCurrentWaveNumber;
+    float mAnimatedHealthBarPerc;
     bool mAllowInputControl;
     bool mMovementRotationAllowed;
 };

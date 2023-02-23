@@ -19,15 +19,12 @@ class FightingWaveGameState final: public BaseGameState
 public:
     static const strutils::StringId STATE_NAME;
     
-    FightingWaveGameState();
-    
 public:
     void VInitialize() override;
     PostStateUpdateDirective VUpdate(const float dtMillis) override;
-    void UpdateHealthBars(const float dtMillis);
     
 private:
-    float mAnimatedHealthBarPerc;
+    
 };
 
 ///------------------------------------------------------------------------------------------------

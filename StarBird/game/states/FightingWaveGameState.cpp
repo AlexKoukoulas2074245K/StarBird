@@ -25,13 +25,6 @@ const strutils::StringId FightingWaveGameState::STATE_NAME("FightingWaveGameStat
 
 ///------------------------------------------------------------------------------------------------
 
-FightingWaveGameState::FightingWaveGameState()
-    : mAnimatedHealthBarPerc(1.0f)
-{
-}
-
-///------------------------------------------------------------------------------------------------
-
 void FightingWaveGameState::VInitialize()
 {
     auto& objectTypeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
@@ -148,8 +141,6 @@ void FightingWaveGameState::VInitialize()
 
 PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
 {
-    UpdateHealthBars(dtMillis);
-    
     if (mLevelUpdater->GetWaveEnemyCount() == 0)
     {
         mLevelUpdater->AdvanceWave();
@@ -165,50 +156,6 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
     }
     
     return PostStateUpdateDirective::CONTINUE;
-}
-
-///------------------------------------------------------------------------------------------------
-
-void FightingWaveGameState::UpdateHealthBars(const float dtMillis)
-{
-    auto playerSoOpt = mScene->GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
-    auto playerHealthBarFrameSoOpt = mScene->GetSceneObject(scene_object_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
-    auto playerHealthBarSoOpt = mScene->GetSceneObject(scene_object_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME);
-    
-    if (!playerHealthBarFrameSoOpt || !playerHealthBarSoOpt)
-    {
-        return;
-    }
-    
-    if (playerSoOpt)
-    {
-        auto& playerSo = playerSoOpt->get();
-        auto& healthBarFrameSo = playerHealthBarFrameSoOpt->get();
-        auto& healthBarSo = playerHealthBarSoOpt->get();
-        
-        auto& playerObjectDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSo.mObjectFamilyTypeName)->get();
-        
-        healthBarSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
-        healthBarSo.mCustomPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
-        
-        healthBarFrameSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
-        healthBarFrameSo.mCustomPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
-        
-        float healthPerc = playerSo.mHealth/static_cast<float>(playerObjectDef.mHealth);
-        
-        healthBarSo.mCustomScale.x = game_object_constants::HEALTH_BAR_SCALE.x * mAnimatedHealthBarPerc;
-        healthBarSo.mCustomPosition.x -= (1.0f - mAnimatedHealthBarPerc)/2.0f * game_object_constants::HEALTH_BAR_SCALE.x;
-        
-        if (healthPerc < mAnimatedHealthBarPerc)
-        {
-            mAnimatedHealthBarPerc -= game_object_constants::HEALTH_LOST_SPEED * dtMillis;
-        }
-    }
-    else
-    {
-        playerHealthBarFrameSoOpt->get().mInvisible = true;
-        playerHealthBarSoOpt->get().mInvisible = true;
-    }
 }
 
 ///------------------------------------------------------------------------------------------------
