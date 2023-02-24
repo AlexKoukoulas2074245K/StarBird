@@ -6,7 +6,23 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "../../utils/OSMessageBox.h"
+#include "BaseGameState.h"
 #include "StateMachine.h"
+
+///------------------------------------------------------------------------------------------------
+
+const strutils::StringId& StateMachine::GetActiveStateName() const
+{
+    for (const auto& entry: mStateNameToInstanceMap)
+    {
+        if (entry.second.get() == mStateStack.top())
+        {
+            return entry.first;
+        }
+    }
+    
+    return mStateNameToInstanceMap.begin()->first;
+}
 
 ///------------------------------------------------------------------------------------------------
 

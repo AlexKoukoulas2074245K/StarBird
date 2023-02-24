@@ -155,8 +155,6 @@ void Scene::UpdateScene(const float dtMillis)
 {
     mPreFirstUpdate = false;
     
-    mBox2dWorld.Step(physics_constants::WORLD_STEP, physics_constants::WORLD_VELOCITY_ITERATIONS, physics_constants::WORLD_POSITION_ITERATIONS);
-    
     mLevelUpdater.Update(mSceneObjects, dtMillis);
     
     for (const auto& nameTag: mNameTagsOfSceneObjectsToRemove)
@@ -286,7 +284,8 @@ void Scene::LoadLevelInvariantObjects()
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        so.mInvisible = true;
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mInvisible = false;
         AddSceneObject(std::move(so));
     }
     
@@ -315,7 +314,8 @@ void Scene::LoadLevelInvariantObjects()
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        so.mInvisible = true;
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mInvisible = false;
         AddSceneObject(std::move(so));
     }
 
@@ -344,7 +344,8 @@ void Scene::LoadLevelInvariantObjects()
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        so.mInvisible = true;
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mInvisible = false;
         AddSceneObject(std::move(so));
     }
     
@@ -373,7 +374,8 @@ void Scene::LoadLevelInvariantObjects()
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        so.mInvisible = true;
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mInvisible = false;
         AddSceneObject(std::move(so));
     }
     
@@ -402,7 +404,8 @@ void Scene::LoadLevelInvariantObjects()
         so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        so.mInvisible = true;
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mInvisible = false;
         AddSceneObject(std::move(so));
     }
     

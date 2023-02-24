@@ -16,6 +16,7 @@
 #include "../datarepos/ObjectTypeDefinitionRepository.h"
 #include "../../resloading/ResourceLoadingService.h"
 #include "../../resloading/TextureResource.h"
+#include "../../utils/Logging.h"
 
 #include <Box2D/Box2D.h>
 
@@ -72,7 +73,7 @@ void FightingWaveGameState::VInitialize()
         strutils::StringId nameTag;
         nameTag.fromAddress(so.mBody);
         so.mNameTag = nameTag;
-    
+
         if (!enemyDef.mProjectileType.isEmpty())
         {
             auto projectileFlowName = strutils::StringId(so.mNameTag.GetString() + game_object_constants::ENEMY_PROJECTILE_FLOW_POSTFIX);
@@ -127,6 +128,10 @@ void FightingWaveGameState::VInitialize()
                     mLevelUpdater->AddWaveEnemy(so.mNameTag);
                     
                     mScene->AddSceneObject(std::move(so));
+                }
+                else
+                {
+                    Log(LogType::INFO, "Flow %s is dead", projectileFlowName.GetString().c_str());
                 }
             }, enemyDef.mShootingFrequencyMillis, RepeatableFlow::RepeatPolicy::REPEAT, projectileFlowName));
         }

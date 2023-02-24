@@ -65,6 +65,7 @@
 		925FD87B298AAF570058E747 /* GameSingletons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD879298AAF570058E747 /* GameSingletons.cpp */; };
 		925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */; };
 		925FD880298AD7D50058E747 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925FD87F298AD7D50058E747 /* AudioToolbox.framework */; };
+		9285241529A8D5B9007EA0D9 /* DebugConsoleGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9285241429A8D5B9007EA0D9 /* DebugConsoleGameState.cpp */; };
 		92894E16299D331200605302 /* FontRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92894E12299D331200605302 /* FontRepository.cpp */; };
 		92894E17299D331200605302 /* ObjectTypeDefinitionRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92894E15299D331200605302 /* ObjectTypeDefinitionRepository.cpp */; };
 		92894E1A299D36C500605302 /* UpgradesLogicHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92894E19299D36C500605302 /* UpgradesLogicHandler.cpp */; };
@@ -334,6 +335,8 @@
 		925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ObjectiveCUtils.mm; sourceTree = "<group>"; };
 		925FD87D298AD7050058E747 /* ObjectiveCUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjectiveCUtils.h; sourceTree = "<group>"; };
 		925FD87F298AD7D50058E747 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		9285240829A8D5B9007EA0D9 /* DebugConsoleGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugConsoleGameState.h; sourceTree = "<group>"; };
+		9285241429A8D5B9007EA0D9 /* DebugConsoleGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebugConsoleGameState.cpp; sourceTree = "<group>"; };
 		92894E0D299D330A00605302 /* ObjectTypeDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectTypeDefinition.h; sourceTree = "<group>"; };
 		92894E0E299D330A00605302 /* LevelDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelDefinition.h; sourceTree = "<group>"; };
 		92894E0F299D330A00605302 /* FontDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontDefinition.h; sourceTree = "<group>"; };
@@ -1628,6 +1631,8 @@
 		92F9EC77299E565500C263E8 /* states */ = {
 			isa = PBXGroup;
 			children = (
+				9285241429A8D5B9007EA0D9 /* DebugConsoleGameState.cpp */,
+				9285240829A8D5B9007EA0D9 /* DebugConsoleGameState.h */,
 				92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */,
 				92F9EC7B299E6C1A00C263E8 /* StateMachine.h */,
 				92F9EC79299E56AD00C263E8 /* BaseGameState.h */,
@@ -1943,6 +1948,7 @@
 				9254CBFD2969B79A00EFE0CC /* b2Draw.cpp in Sources */,
 				9254CBF02969B79A00EFE0CC /* b2FrictionJoint.cpp in Sources */,
 				925FD87B298AAF570058E747 /* GameSingletons.cpp in Sources */,
+				9285241529A8D5B9007EA0D9 /* DebugConsoleGameState.cpp in Sources */,
 				9254CBF22969B79A00EFE0CC /* b2WheelJoint.cpp in Sources */,
 				9254CBE72969B79A00EFE0CC /* b2PolygonAndCircleContact.cpp in Sources */,
 				9254CBF52969B79A00EFE0CC /* b2GearJoint.cpp in Sources */,

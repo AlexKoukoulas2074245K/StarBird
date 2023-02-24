@@ -17,6 +17,7 @@
 #include "SceneObjectConstants.h"
 
 #include "dataloaders/UpgradesLoader.h"
+#include "states/DebugConsoleGameState.h"
 #include "states/FightingWaveGameState.h"
 #include "states/WaveIntroGameState.h"
 #include "states/PauseMenuGameState.h"
@@ -161,14 +162,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 
                 mFlows.emplace_back([=]()
                 {
-                    mWaveEnemies.erase(enemyBodyAddressTag);
-                    mScene.RemoveAllSceneObjectsWithNameTag(enemyBodyAddressTag);
-                    
-                    auto enemyBulletFlow = GetFlow(strutils::StringId(enemyBodyAddressTag.GetString() + game_object_constants::ENEMY_PROJECTILE_FLOW_POSTFIX));
-                    if (enemyBulletFlow)
-                    {
-                        enemyBulletFlow->get().ForceFinish();
-                    }
+                    RemoveWaveEnemy(enemyBodyAddressTag);
                 }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
             }
             
@@ -310,8 +304,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             bulletFilter.maskBits = 0;
             secondBody->GetFixtureList()[0].SetFilterData(bulletFilter);
             
-            mWaveEnemies.erase(enemyBulletBodyAddressTag);
-            mScene.RemoveAllSceneObjectsWithNameTag(enemyBulletBodyAddressTag);
+            RemoveWaveEnemy(enemyBulletBodyAddressTag);
         }
     });
     
@@ -326,22 +319,24 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
     {
         strutils::StringId enemyAddressTag;
         enemyAddressTag.fromAddress(firstBody);
-        mScene.RemoveAllSceneObjectsWithNameTag(enemyAddressTag);
-        mWaveEnemies.erase(enemyAddressTag);
+        RemoveWaveEnemy(enemyAddressTag);
     });
     
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_BULLET_CATEGORY_BIT, physics_constants::ENEMY_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
         strutils::StringId enemyBulletAddressTag;
         enemyBulletAddressTag.fromAddress(firstBody);
-        mScene.RemoveAllSceneObjectsWithNameTag(enemyBulletAddressTag);
-        mWaveEnemies.erase(enemyBulletAddressTag);
+        RemoveWaveEnemy(enemyBulletAddressTag);
     });
     
     mBox2dWorld.SetContactListener(&collisionListener);
     
     UpgradesLoader loader;
     GameSingletons::SetAvailableUpgrades(loader.LoadAllUpgrades());
+    
+#ifdef DEBUG
+    mStateMachine.RegisterState<DebugConsoleGameState>();
+#endif
     
     mStateMachine.RegisterState<FightingWaveGameState>();
     mStateMachine.RegisterState<WaveIntroGameState>();
@@ -361,10 +356,17 @@ void LevelUpdater::OnAppStateChange(Uint32 event)
         case SDL_APP_WILLENTERBACKGROUND:
         case SDL_APP_DIDENTERBACKGROUND:
         {
+#ifdef DEBUG
+            if (mStateMachine.GetActiveStateName() != DebugConsoleGameState::STATE_NAME)
+            {
+                mStateMachine.PushState(DebugConsoleGameState::STATE_NAME);
+            }
+#else
             if (mLastPostStateMachineUpdateDirective != PostStateUpdateDirective::BLOCK_UPDATE)
             {
                 mStateMachine.PushState(PauseMenuGameState::STATE_NAME);
             }
+#endif
         } break;
             
         case SDL_APP_WILLENTERFOREGROUND:
@@ -385,6 +387,8 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
         OnBlockedUpdate();
         return;
     }
+    
+    mBox2dWorld.Step(physics_constants::WORLD_STEP, physics_constants::WORLD_VELOCITY_ITERATIONS, physics_constants::WORLD_POSITION_ITERATIONS);
     
     auto joystickSO = mScene.GetSceneObject(scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME);
     auto joystickBoundsSO = mScene.GetSceneObject(scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
@@ -408,7 +412,7 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
             auto& sceneObjectTypeDef = sceneObjectTypeDefOpt->get();
             switch (sceneObjectTypeDef.mMovementControllerPattern)
             {
-                case MovementControllerPattern::CUSTOM_VELOCITY:
+                case MovementControllerPattern::CONSTANT_VELOCITY:
                 {
                     sceneObject.mBody->SetLinearVelocity(b2Vec2(sceneObjectTypeDef.mConstantLinearVelocity.x, sceneObjectTypeDef.mConstantLinearVelocity.y));
                 } break;
@@ -467,6 +471,20 @@ void LevelUpdater::AddFlow(RepeatableFlow&& flow)
 void LevelUpdater::AddWaveEnemy(const strutils::StringId& enemyTag)
 {
     mWaveEnemies.insert(enemyTag);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::RemoveWaveEnemy(const strutils::StringId &enemyTag)
+{
+    mWaveEnemies.erase(enemyTag);
+    mScene.RemoveAllSceneObjectsWithNameTag(enemyTag);
+    
+    auto enemyBulletFlow = GetFlow(strutils::StringId(enemyTag.GetString() + game_object_constants::ENEMY_PROJECTILE_FLOW_POSTFIX));
+    if (enemyBulletFlow)
+    {
+        enemyBulletFlow->get().ForceFinish();
+    }
 }
 
 ///------------------------------------------------------------------------------------------------

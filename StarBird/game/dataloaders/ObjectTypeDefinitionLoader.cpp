@@ -46,7 +46,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             mConstructedObjectTypeDef.mSpeed = std::stof(linearSpeed->value());
         }
         
-        auto* constantLinearVelocity = node->first_attribute("constantLinearVelocity");
+        auto* constantLinearVelocity = node->first_attribute("constantVelocity");
         if (constantLinearVelocity)
         {
             auto constantLinearVelocityComponents = strutils::StringSplit(std::string(constantLinearVelocity->value()), ',');
@@ -237,9 +237,9 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         auto* movementControllerPattern = node->first_attribute("movementControllerPattern");
         if (movementControllerPattern)
         {
-            if (strcmp(movementControllerPattern->value(), "custom_velocity") == 0)
+            if (strcmp(movementControllerPattern->value(), "constant_velocity") == 0)
             {
-                mConstructedObjectTypeDef.mMovementControllerPattern = MovementControllerPattern::CUSTOM_VELOCITY;
+                mConstructedObjectTypeDef.mMovementControllerPattern = MovementControllerPattern::CONSTANT_VELOCITY;
             }
             else if (strcmp(movementControllerPattern->value(), "chasing_player") == 0)
             {

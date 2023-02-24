@@ -22,7 +22,7 @@
 
 enum class MovementControllerPattern
 {
-    NONE, CUSTOM_VELOCITY, CHASING_PLAYER, INPUT_CONTROLLED
+    NONE, CONSTANT_VELOCITY, CHASING_PLAYER, INPUT_CONTROLLED
 };
 
 ///------------------------------------------------------------------------------------------------

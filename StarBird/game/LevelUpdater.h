@@ -40,6 +40,7 @@ public:
     void AdvanceWave();
     void AddFlow(RepeatableFlow&& flow);
     void AddWaveEnemy(const strutils::StringId& enemyTag);
+    void RemoveWaveEnemy(const strutils::StringId& enemyTag);
     
     const LevelDefinition& GetCurrentLevelDefinition() const;
     size_t GetCurrentWaveNumber() const;

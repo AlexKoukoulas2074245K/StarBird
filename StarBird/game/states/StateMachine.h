@@ -45,6 +45,7 @@ public:
         mStateNameToInstanceMap[StateClass::STATE_NAME] = std::move(stateInstance);
     }
     
+    const strutils::StringId& GetActiveStateName() const;
     void InitStateMachine(const strutils::StringId& initStateName);
     void PushState(const strutils::StringId& stateName);
     PostStateUpdateDirective Update(const float dtMillis);
