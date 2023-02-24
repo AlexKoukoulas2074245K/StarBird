@@ -16,6 +16,18 @@ namespace scene_object_utils
 
 ///------------------------------------------------------------------------------------------------
 
+static std::unordered_map<char, Glyph>::const_iterator GetGlyphIter(char c, const FontDefinition& fontDef)
+{
+    auto findIter = fontDef.mGlyphs.find(c);
+    if (findIter == fontDef.mGlyphs.end())
+    {
+        return fontDef.mGlyphs.find(' ');
+    }
+    return findIter;
+}
+
+///------------------------------------------------------------------------------------------------
+
 bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& point)
 {
     // Text SO
@@ -35,7 +47,7 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
         
         for (size_t i = 0; i < sceneObject.mText.size(); ++i)
         {
-            const auto& glyph = font.mGlyphs.at(sceneObject.mText[i]);
+            const auto& glyph = GetGlyphIter(sceneObject.mText[i], font)->second;
             
             float targetX = xCursor;
             float targetY = yCursor + glyph.mYOffsetPixels * sceneObject.mCustomScale.y * 0.5f;
@@ -49,7 +61,7 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
             {
                 // Since each glyph is rendered with its center as the origin, we advance
                 // half this glyph's width + half the next glyph's width ahead
-                const auto& nextGlyph = font.mGlyphs.at(sceneObject.mText[i + 1]);
+                const auto& nextGlyph = GetGlyphIter(sceneObject.mText[i + 1], font)->second;
                 xCursor += (glyph.mWidthPixels * sceneObject.mCustomScale.x) * 0.5f + (nextGlyph.mWidthPixels * sceneObject.mCustomScale.x) * 0.5f;
             }
         }

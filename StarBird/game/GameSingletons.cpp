@@ -40,6 +40,20 @@ void GameSingletons::SetInputContextTouchPos(const glm::vec2& touchPos)
 
 ///------------------------------------------------------------------------------------------------
 
+void GameSingletons::SetInputContextText(const std::string& text)
+{
+    mInputContext.mText = text;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetInputContextKey(const SDL_Scancode keyCode)
+{
+    mInputContext.mKeyCode = keyCode;
+}
+
+///------------------------------------------------------------------------------------------------
+
 void GameSingletons::ConsumeInput()
 {
     SetInputContextEvent(SDL_FINGERUP);

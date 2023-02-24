@@ -12,14 +12,17 @@
 
 #include "../utils/MathUtils.h"
 
+#include <string>
 #include <SDL_events.h>
 
 ///------------------------------------------------------------------------------------------------
 
 struct InputContext
 {
+    std::string mText;
     glm::vec2 mTouchPos;
     Uint32 mEventType;
+    SDL_Scancode mKeyCode;
 };
 
 ///------------------------------------------------------------------------------------------------

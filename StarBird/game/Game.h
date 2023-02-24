@@ -10,6 +10,10 @@
 
 ///------------------------------------------------------------------------------------------------
 
+#include <string>
+
+///------------------------------------------------------------------------------------------------
+
 class Game final
 {
 public:
@@ -19,6 +23,9 @@ public:
 private:
     bool InitSystems();
     void Run();
+    
+private:
+    void OnTextInput(const std::string& text);
     
 private:
     bool mIsFinished;

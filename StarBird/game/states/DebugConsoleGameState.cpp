@@ -60,7 +60,7 @@ void DebugConsoleGameState::VInitialize()
         guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId);
         guiSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
         
-        if (!guiElement.mText.empty())
+        if (guiSceneObject.mFontName != strutils::StringId())
         {
             guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId);
         }
@@ -68,6 +68,9 @@ void DebugConsoleGameState::VInitialize()
         mSceneElementIds.push_back(guiSceneObject.mNameTag);
         mScene->AddSceneObject(std::move(guiSceneObject));
     }
+    
+    GameSingletons::SetInputContextText("");
+    SDL_StartTextInput();
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -86,6 +89,12 @@ PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
         }
     }
     
+    auto commandTextSoOpt = mScene->GetSceneObject(scene_object_constants::DEBUG_COMMAND_TEXT_SCENE_OBJECT_NAME);
+    if (commandTextSoOpt)
+    {
+        commandTextSoOpt->get().mText = GameSingletons::GetInputContext().mText;
+    }
+    
     const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
     const auto& guiCamera = camOpt->get();
     const auto& inputContext = GameSingletons::GetInputContext();
@@ -94,9 +103,10 @@ PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
     {
         auto touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
         
-        auto continueButtonSoOpt = mScene->GetSceneObject(strutils::StringId("continue_button"));
+        auto continueButtonSoOpt = mScene->GetSceneObject(scene_object_constants::DEBUG_BACK_TO_GAME_SCENE_OBJECT_NAME);
         if (continueButtonSoOpt && scene_object_utils::IsPointInsideSceneObject(continueButtonSoOpt->get(), touchPos))
         {
+            SDL_StopTextInput();
             GameSingletons::ConsumeInput();
             Complete();
         }

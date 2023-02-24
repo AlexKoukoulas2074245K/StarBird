@@ -30,6 +30,8 @@ public:
     static const InputContext& GetInputContext();
     static void SetInputContextEvent(Uint32 event);
     static void SetInputContextTouchPos(const glm::vec2& touchPos);
+    static void SetInputContextText(const std::string& text);
+    static void SetInputContextKey(const SDL_Scancode keyCode);
     static void ConsumeInput();
     
     static SDL_Window* GetWindow();

@@ -27,6 +27,18 @@ static const strutils::StringId PROJ_MATRIX_STRING_ID  = strutils::StringId("pro
 
 ///------------------------------------------------------------------------------------------------
 
+static std::unordered_map<char, Glyph>::const_iterator GetGlyphIter(char c, const FontDefinition& fontDef)
+{
+    auto findIter = fontDef.mGlyphs.find(c);
+    if (findIter == fontDef.mGlyphs.end())
+    {
+        return fontDef.mGlyphs.find(' ');
+    }
+    return findIter;
+}
+
+///------------------------------------------------------------------------------------------------
+
 SceneRenderer::SceneRenderer()
 {
 }
@@ -115,7 +127,7 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
                 
                 for (size_t i = 0; i < so.mText.size(); ++i)
                 {
-                    const auto& glyph = font.mGlyphs.at(so.mText[i]);
+                    const auto& glyph = GetGlyphIter(so.mText[i], font)->second;
                     
                     float targetX = xCursor;
                     float targetY = yCursor + glyph.mYOffsetPixels * so.mCustomScale.y * 0.5f;
@@ -149,7 +161,7 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
                     {
                         // Since each glyph is rendered with its center as the origin, we advance
                         // half this glyph's width + half the next glyph's width ahead
-                        const auto& nextGlyph = font.mGlyphs.at(so.mText[i + 1]);
+                        const auto& nextGlyph = GetGlyphIter(so.mText[i + 1], font)->second;
                         xCursor += (glyph.mWidthPixels * so.mCustomScale.x) * 0.5f + (nextGlyph.mWidthPixels * so.mCustomScale.x) * 0.5f;
                     }
                 }

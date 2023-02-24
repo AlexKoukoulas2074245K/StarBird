@@ -60,7 +60,7 @@ void PauseMenuGameState::VInitialize()
         guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId);
         guiSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
         
-        if (!guiElement.mText.empty())
+        if (guiSceneObject.mFontName != strutils::StringId())
         {
             guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId);
         }

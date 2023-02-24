@@ -14,6 +14,7 @@
 
 #include "../utils/Logging.h"
 #include "../utils/MathUtils.h"
+#include "../utils/ObjectiveCUtils.h"
 #include "../utils/OpenGL.h"
 #include "../utils/OSMessageBox.h"
 
@@ -67,7 +68,7 @@ bool Game::InitSystems()
     windowHeight = displayMode.h;
     
     // Create window
-    auto* window = SDL_CreateWindow("StarBird", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    auto* window = SDL_CreateWindow("StarBird", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS);
     
     if(!window)
     {
@@ -134,7 +135,6 @@ void Game::Run()
         framesAccumulator++;
         secsAccumulator += dtMillis * 0.001f; // dt in seconds;
         
-        
         //Handle events on queue
         auto lastAppForegroundBackgroundEvent = 0;
         while( SDL_PollEvent( &e ) != 0 )
@@ -154,8 +154,70 @@ void Game::Run()
                     GameSingletons::SetInputContextEvent(e.type);
                     GameSingletons::SetInputContextTouchPos(glm::vec2(e.tfinger.x, e.tfinger.y));
                 } break;
-                default: break;
+                
+                case SDL_KEYDOWN:
+                {
+                    const auto keyCode = e.key.keysym.scancode;
                     
+                    GameSingletons::SetInputContextEvent(e.type);
+                    GameSingletons::SetInputContextKey(keyCode);
+                    
+                    if (keyCode == SDL_SCANCODE_BACKSPACE)
+                    {
+                        const auto& currentText = GameSingletons::GetInputContext().mText;
+                        if (!currentText.empty())
+                        {
+                            GameSingletons::SetInputContextText(currentText.substr(0, currentText.size() - 1));
+                        }
+                    }
+                    else if (keyCode != SDL_SCANCODE_RETURN && !SDL_IsScreenKeyboardShown(GameSingletons::GetWindow()))
+                    {
+                        if ((e.key.keysym.mod & KMOD_LSHIFT) == 0 && (e.key.keysym.mod & KMOD_RSHIFT) == 0)
+                        {
+                            OnTextInput(std::string(1, e.key.keysym.sym));
+                        }
+                        else
+                        {
+                            if (e.key.keysym.sym >= 'a' && e.key.keysym.sym <= 'z')
+                            {
+                                OnTextInput(std::string(1, e.key.keysym.sym - 32));
+                            }
+                            else
+                            {
+                                switch (e.key.keysym.sym)
+                                {
+                                    case SDLK_1:            OnTextInput("!"); break;
+                                    case SDLK_2:            OnTextInput("@"); break;
+                                    case SDLK_3:            OnTextInput("£"); break;
+                                    case SDLK_4:            OnTextInput("$"); break;
+                                    case SDLK_5:            OnTextInput("%"); break;
+                                    case SDLK_6:            OnTextInput("^"); break;
+                                    case SDLK_7:            OnTextInput("&"); break;
+                                    case SDLK_8:            OnTextInput("*"); break;
+                                    case SDLK_9:            OnTextInput("("); break;
+                                    case SDLK_0:            OnTextInput(")"); break;
+                                    case SDLK_MINUS:        OnTextInput("_"); break;
+                                    case SDLK_EQUALS:       OnTextInput("+"); break;
+                                    case SDLK_LEFTBRACKET:  OnTextInput("{"); break;
+                                    case SDLK_RIGHTBRACKET: OnTextInput("}"); break;
+                                    case SDLK_SEMICOLON:    OnTextInput(":"); break;
+                                    case SDLK_QUOTE:        OnTextInput("\""); break;
+                                    case SDLK_LESS:         OnTextInput("<"); break;
+                                    case SDLK_GREATER:      OnTextInput(">"); break;
+                                
+                                    default: Log(LogType::WARNING, "Unhandled input %s with pressed shift", std::string(1, e.key.keysym.sym).c_str());
+                                }
+                            }
+                        }
+                    }
+                    
+                } break;
+                    
+                case SDL_TEXTINPUT:
+                {
+                    OnTextInput(e.text.text);
+                } break;
+                
                 case SDL_APP_WILLENTERBACKGROUND:
                 case SDL_APP_DIDENTERBACKGROUND:
                 case SDL_APP_WILLENTERFOREGROUND:
@@ -175,12 +237,20 @@ void Game::Run()
         
         scene.UpdateScene(math::Min(20.0f, dtMillis));
         scene.RenderScene();
-        
+
         if (lastAppForegroundBackgroundEvent)
         {
             scene.OnAppStateChange(lastAppForegroundBackgroundEvent);
         }
     }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void Game::OnTextInput(const std::string& text)
+{
+    GameSingletons::SetInputContextEvent(SDL_TEXTINPUT);
+    GameSingletons::SetInputContextText(GameSingletons::GetInputContext().mText + text);
 }
 
 ///------------------------------------------------------------------------------------------------

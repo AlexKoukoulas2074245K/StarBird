@@ -351,16 +351,15 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
 
 void LevelUpdater::OnAppStateChange(Uint32 event)
 {
+    static bool hasLeftForegroundOnce = false;
+    
     switch (event)
     {
         case SDL_APP_WILLENTERBACKGROUND:
         case SDL_APP_DIDENTERBACKGROUND:
         {
 #ifdef DEBUG
-            if (mStateMachine.GetActiveStateName() != DebugConsoleGameState::STATE_NAME)
-            {
-                mStateMachine.PushState(DebugConsoleGameState::STATE_NAME);
-            }
+            hasLeftForegroundOnce = true;
 #else
             if (mLastPostStateMachineUpdateDirective != PostStateUpdateDirective::BLOCK_UPDATE)
             {
@@ -372,7 +371,15 @@ void LevelUpdater::OnAppStateChange(Uint32 event)
         case SDL_APP_WILLENTERFOREGROUND:
         case SDL_APP_DIDENTERFOREGROUND:
         {
-            
+#ifdef DEBUG
+            if (hasLeftForegroundOnce)
+            {
+                if (mStateMachine.GetActiveStateName() != DebugConsoleGameState::STATE_NAME)
+                {
+                    mStateMachine.PushState(DebugConsoleGameState::STATE_NAME);
+                }
+            }
+#endif
         } break;
     }
 }
