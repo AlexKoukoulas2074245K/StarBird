@@ -146,13 +146,15 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
                     currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, camera.GetViewMatrix());
                     currentShader->SetMatrix4fv(PROJ_MATRIX_STRING_ID, camera.GetProjMatrix());
                     
-                    for (auto boolEntry: so.mShaderBoolUniformValues)
+                    for (const auto& boolEntry: so.mShaderBoolUniformValues)
                         currentShader->SetBool(boolEntry.first, boolEntry.second);
-                    for (auto intEntry: so.mShaderIntUniformValues)
+                    for (const auto& intEntry: so.mShaderIntUniformValues)
                         currentShader->SetInt(intEntry.first, intEntry.second);
-                    for (auto floatEntry: so.mShaderFloatUniformValues)
+                    for (const auto& floatEntry: so.mShaderFloatUniformValues)
                         currentShader->SetFloat(floatEntry.first, floatEntry.second);
-                    for (auto mat4Entry: so.mShaderMat4UniformValues)
+                    for (const auto& floatVec4Entry: so.mShaderFloatVec4UniformValues)
+                        currentShader->SetFloatVec4(floatVec4Entry.first, floatVec4Entry.second);
+                    for (const auto& mat4Entry: so.mShaderMat4UniformValues)
                         currentShader->SetMatrix4fv(mat4Entry.first, mat4Entry.second);
                     
                     GL_CALL(glDrawElements(GL_TRIANGLES, currentMesh->GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
@@ -199,13 +201,15 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
         currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, camera.GetViewMatrix());
         currentShader->SetMatrix4fv(PROJ_MATRIX_STRING_ID, camera.GetProjMatrix());
         
-        for (auto boolEntry: so.mShaderBoolUniformValues)
+        for (const auto& boolEntry: so.mShaderBoolUniformValues)
             currentShader->SetBool(boolEntry.first, boolEntry.second);
-        for (auto intEntry: so.mShaderIntUniformValues)
+        for (const auto& intEntry: so.mShaderIntUniformValues)
             currentShader->SetInt(intEntry.first, intEntry.second);
-        for (auto floatEntry: so.mShaderFloatUniformValues)
+        for (const auto& floatEntry: so.mShaderFloatUniformValues)
             currentShader->SetFloat(floatEntry.first, floatEntry.second);
-        for (auto mat4Entry: so.mShaderMat4UniformValues)
+        for (const auto& floatVec4Entry: so.mShaderFloatVec4UniformValues)
+            currentShader->SetFloatVec4(floatVec4Entry.first, floatVec4Entry.second);
+        for (const auto& mat4Entry: so.mShaderMat4UniformValues)
             currentShader->SetMatrix4fv(mat4Entry.first, mat4Entry.second);
         
         GL_CALL(glDrawElements(GL_TRIANGLES, currentMesh->GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));

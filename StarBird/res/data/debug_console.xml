@@ -2,5 +2,6 @@
 <Scene>
     <GUIElement name="PROMPT" fontName="font" position="-5.0f, 10.0f, 4.0f" scale="0.008f, 0.008f" shader="basic" text=">" />
     <GUIElement name="COMMAND_TEXT" fontName="font" position="-4.0f, 10.0f, 4.0f" scale="0.008f, 0.008f" shader="basic" text="" />
+    <GUIElement name="COMMAND_OUTPUT" fontName="font" position="-5.0f, 9.0f, 4.0f" scale="0.008f, 0.008f" shader="basic" text="" />
     <GUIElement name="BACK_TO_GAME" fontName="font" position="-3.0f, -0.0f, 4.0f" scale="0.01f, 0.01f" shader="basic" text="Back to Game" />
 </Scene>

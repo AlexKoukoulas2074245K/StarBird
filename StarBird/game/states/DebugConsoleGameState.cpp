@@ -20,15 +20,19 @@
 ///------------------------------------------------------------------------------------------------
 
 const strutils::StringId DebugConsoleGameState::STATE_NAME("DebugConsoleGameState");
+const glm::vec4 DebugConsoleGameState::SUCCESS_COLOR(0.0f, 1.0f, 0.0f, 1.0f);
+const glm::vec4 DebugConsoleGameState::FAILURE_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
 
 ///------------------------------------------------------------------------------------------------
 
 void DebugConsoleGameState::VInitialize()
 {
+    RegisterCommands();
     mSceneElementIds.clear();
     mPastCommandElementIds.clear();
     
     auto& resService = resources::ResourceLoadingService::GetInstance();
+    resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_COLOR_SHADER_FILE_NAME);
     
     // Overlay
     {
@@ -139,11 +143,64 @@ void DebugConsoleGameState::VDestroy()
 
 ///------------------------------------------------------------------------------------------------
 
+void DebugConsoleGameState::RegisterCommands()
+{
+    mCommandMap[strutils::StringId("physics_debug")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("physics_debug toggle on|off");
+        
+        if (commandComponents.size() != 3)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        else if (commandComponents[1] != "toggle")
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        else if (commandComponents[2] != "on" && commandComponents[2] != "off")
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        return CommandExecutionResult(true, "SUCCES!");
+    };
+}
+
+///------------------------------------------------------------------------------------------------
+
 void DebugConsoleGameState::ExecuteCommand(const std::string& command, const SceneObject& commandTextSo)
 {
     auto commandComponents = strutils::StringSplit(command, ' ');
     
-    PostCommandExecution(command, commandTextSo);
+    if (!commandComponents.empty())
+    {
+        auto commandIter = mCommandMap.find(strutils::StringId(commandComponents[0]));
+        if (commandIter != mCommandMap.end())
+        {
+            auto commandExecutionResult = mCommandMap[commandIter->first](commandComponents);
+            SetCommandExecutionOutput(commandExecutionResult);
+        }
+        else
+        {
+            SetCommandExecutionOutput(CommandExecutionResult(false, "Invalid command"));
+        }
+        
+        PostCommandExecution(command, commandTextSo);
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void DebugConsoleGameState::SetCommandExecutionOutput(const CommandExecutionResult& executionResult)
+{
+    auto commandOutputSoOpt = mScene->GetSceneObject(scene_object_constants::DEBUG_COMMAND_OUTPUT_SCENE_OBJECT_NAME);
+    if (commandOutputSoOpt)
+    {
+        auto& commandOutputSo = commandOutputSoOpt->get();
+        commandOutputSo.mText = executionResult.mMessage;
+        commandOutputSo.mShaderResourceId = resources::ResourceLoadingService::GetInstance().GetResourceIdFromPath(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_COLOR_SHADER_FILE_NAME);
+        commandOutputSo.mShaderFloatVec4UniformValues[scene_object_constants::CUSTOM_COLOR_UNIFORM_NAME] = executionResult.mSuccess ? SUCCESS_COLOR : FAILURE_COLOR;
+    }
 }
 
 ///------------------------------------------------------------------------------------------------

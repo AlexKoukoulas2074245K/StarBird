@@ -43,6 +43,7 @@ struct SceneObject // 376b
     std::unordered_map<strutils::StringId, bool, strutils::StringIdHasher> mShaderBoolUniformValues;
     std::unordered_map<strutils::StringId, int, strutils::StringIdHasher> mShaderIntUniformValues;
     std::unordered_map<strutils::StringId, float, strutils::StringIdHasher> mShaderFloatUniformValues;
+    std::unordered_map<strutils::StringId, glm::vec4, strutils::StringIdHasher> mShaderFloatVec4UniformValues;
     std::unordered_map<strutils::StringId, glm::mat4, strutils::StringIdHasher> mShaderMat4UniformValues;
     std::unique_ptr<IAnimation> mAnimation = nullptr;
     b2Body* mBody = nullptr;

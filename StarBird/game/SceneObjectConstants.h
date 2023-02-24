@@ -40,6 +40,7 @@ static const strutils::StringId LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME = strutils::
 static const strutils::StringId RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME = strutils::StringId("RIGHT_MIRROR_IMAGE");
 
 static const strutils::StringId DEBUG_COMMAND_TEXT_SCENE_OBJECT_NAME = strutils::StringId("COMMAND_TEXT");
+static const strutils::StringId DEBUG_COMMAND_OUTPUT_SCENE_OBJECT_NAME = strutils::StringId("COMMAND_OUTPUT");
 static const strutils::StringId DEBUG_BACK_TO_GAME_SCENE_OBJECT_NAME = strutils::StringId("BACK_TO_GAME");
 
 
@@ -52,6 +53,7 @@ static const strutils::StringId MIN_V_UNIFORM_NAME = strutils::StringId("min_v")
 static const strutils::StringId MAX_U_UNIFORM_NAME = strutils::StringId("max_u");
 static const strutils::StringId MAX_V_UNIFORM_NAME = strutils::StringId("max_v");
 static const strutils::StringId CUSTOM_ALPHA_UNIFORM_NAME = strutils::StringId("custom_alpha");
+static const strutils::StringId CUSTOM_COLOR_UNIFORM_NAME = strutils::StringId("custom_color");
 
 static const float SHINE_EFFECT_X_OFFSET_INIT_VAL = 1.0f;
 static const float SHINE_EFFECT_X_OFFSET_END_VAL = -1.0f;
@@ -69,6 +71,7 @@ static const char* DISSOLVE_SHADER_FILE_NAME = "dissolve.vs";
 static const char* SHINE_SHADER_FILE_NAME = "shine.vs";
 static const char* TEXTURE_OFFSET_SHADER_FILE_NAME = "tex_offset.vs";
 static const char* CUSTOM_ALPHA_SHADER_FILE_NAME = "custom_alpha.vs";
+static const char* CUSTOM_COLOR_SHADER_FILE_NAME = "custom_color.vs";
 static const char* UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME = "shine_effect_fxx.bmp";
 static const char* DISSOLVE_EFFECT_TEXTURE_FILE_NAME = "dissolve_line_fxy_mm.bmp";
 static const char* BACKGROUND_TEXTURE_FILE_NAME = "space_bg.bmp";
