@@ -16,6 +16,7 @@
 
 ///------------------------------------------------------------------------------------------------
 
+class SceneObject;
 class DebugConsoleGameState final: public BaseGameState
 {
 public:
@@ -27,7 +28,12 @@ public:
     void VDestroy() override;
 
 private:
+    void ExecuteCommand(const std::string& command, const SceneObject& commandTextSo);
+    void PostCommandExecution(const std::string& command, const SceneObject& commandTextSo);
+    
+private:
     std::vector<strutils::StringId> mSceneElementIds;
+    std::vector<strutils::StringId> mPastCommandElementIds;
 };
 
 ///------------------------------------------------------------------------------------------------

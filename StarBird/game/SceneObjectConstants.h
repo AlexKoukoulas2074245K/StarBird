@@ -55,6 +55,8 @@ static const strutils::StringId CUSTOM_ALPHA_UNIFORM_NAME = strutils::StringId("
 
 static const float SHINE_EFFECT_X_OFFSET_INIT_VAL = 1.0f;
 static const float SHINE_EFFECT_X_OFFSET_END_VAL = -1.0f;
+static const float DEBUG_PAST_COMMAND_X_OFFSET = -1.0f;
+static const float DEBUG_PAST_COMMAND_Y_OFFSET = 1.0f;
 static const float UPGRADE_SHINE_EFFECT_SPEED = 1.0f/200.0f;
 static const float PLAYER_SHINE_EFFECT_SPEED = 1.0f/400.0f;
 

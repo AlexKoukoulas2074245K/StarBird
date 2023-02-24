@@ -26,6 +26,8 @@ const strutils::StringId DebugConsoleGameState::STATE_NAME("DebugConsoleGameStat
 void DebugConsoleGameState::VInitialize()
 {
     mSceneElementIds.clear();
+    mPastCommandElementIds.clear();
+    
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
     // Overlay
@@ -93,6 +95,11 @@ PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
     if (commandTextSoOpt)
     {
         commandTextSoOpt->get().mText = GameSingletons::GetInputContext().mText;
+        
+        if (GameSingletons::GetInputContext().mEventType == SDL_KEYDOWN && GameSingletons::GetInputContext().mKeyCode == SDL_SCANCODE_RETURN)
+        {
+            ExecuteCommand(GameSingletons::GetInputContext().mText, commandTextSoOpt->get());
+        }
     }
     
     const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
@@ -119,10 +126,59 @@ PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
 
 void DebugConsoleGameState::VDestroy()
 {
-    for (auto elementId: mSceneElementIds)
+    for (const auto& elementId: mSceneElementIds)
     {
         mScene->RemoveAllSceneObjectsWithNameTag(elementId);
     }
+    
+    for (const auto& elementId: mPastCommandElementIds)
+    {
+        mScene->RemoveAllSceneObjectsWithNameTag(elementId);
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void DebugConsoleGameState::ExecuteCommand(const std::string& command, const SceneObject& commandTextSo)
+{
+    auto commandComponents = strutils::StringSplit(command, ' ');
+    
+    PostCommandExecution(command, commandTextSo);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void DebugConsoleGameState::PostCommandExecution(const std::string& command, const SceneObject& commandTextSo)
+{
+    // Create a past command SO out of current executed command
+    {
+        SceneObject pastTextSceneObject;
+        pastTextSceneObject.mNameTag = strutils::StringId(std::to_string(mPastCommandElementIds.size()));
+        pastTextSceneObject.mCustomPosition = commandTextSo.mCustomPosition;
+        pastTextSceneObject.mCustomPosition.x += scene_object_constants::DEBUG_PAST_COMMAND_X_OFFSET;
+        pastTextSceneObject.mCustomScale = commandTextSo.mCustomScale;
+        pastTextSceneObject.mText = commandTextSo.mText;
+        pastTextSceneObject.mFontName = commandTextSo.mFontName;
+        pastTextSceneObject.mMeshResourceId = commandTextSo.mMeshResourceId;
+        pastTextSceneObject.mShaderResourceId = commandTextSo.mShaderResourceId;
+        pastTextSceneObject.mAnimation = commandTextSo.mAnimation->VClone();
+        pastTextSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
+        mPastCommandElementIds.push_back(pastTextSceneObject.mNameTag);
+        mScene->AddSceneObject(std::move(pastTextSceneObject));
+    }
+    
+    // Push all past commands up
+    for (const auto& id: mPastCommandElementIds)
+    {
+        auto soOpt = mScene->GetSceneObject(id);
+        if (soOpt)
+        {
+            soOpt->get().mCustomPosition.y += scene_object_constants::DEBUG_PAST_COMMAND_Y_OFFSET;
+        }
+    }
+    
+    GameSingletons::ConsumeInput();
+    GameSingletons::SetInputContextText("");
 }
 
 ///------------------------------------------------------------------------------------------------

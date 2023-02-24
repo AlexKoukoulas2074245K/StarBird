@@ -34,7 +34,7 @@ Scene::Scene()
 
 std::string Scene::GetSceneStateDescription() const
 {
-    return "bodies: " + std::to_string(mBox2dWorld.GetBodyCount()) + " enemies: " + std::to_string(mLevelUpdater.GetWaveEnemyCount());
+    return "SOs: " + std::to_string(mSceneObjects.size()) + " bodies: " + std::to_string(mBox2dWorld.GetBodyCount()) + " enemies: " + std::to_string(mLevelUpdater.GetWaveEnemyCount());
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -50,6 +50,17 @@ std::optional<std::reference_wrapper<SceneObject>> Scene::GetSceneObject(const s
     {
         return std::optional<std::reference_wrapper<SceneObject>>{*findIter};
     }
+    
+    findIter = std::find_if(mSceneObjectsToAdd.begin(), mSceneObjectsToAdd.end(), [&](SceneObject& so)
+    {
+        return so.mNameTag == sceneObjectNameTag;
+    });
+    
+    if (findIter != mSceneObjects.end())
+    {
+        return std::optional<std::reference_wrapper<SceneObject>>{*findIter};
+    }
+    
     return std::nullopt;
 }
 
