@@ -5,5 +5,5 @@
     <Physics density="0.1f" bodySize="1.0f" speed="0.4f" category="player" collidingWithPlayerBullets="false" collidingWithEnemies="true" collidingWithPlayer="false"/>
     <Shader name="basic"/>
     <Model name="player_alt"/>
-    <GameAttributes movementControllerPattern="input_controlled" health="100.0f"/>
+    <GameAttributes movementControllerPattern="input_controlled" health="10.0f"/>
 </ObjectDefinition>

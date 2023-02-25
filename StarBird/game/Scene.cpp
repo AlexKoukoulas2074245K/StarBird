@@ -56,7 +56,7 @@ std::optional<std::reference_wrapper<SceneObject>> Scene::GetSceneObject(const s
         return so.mNameTag == sceneObjectNameTag;
     });
     
-    if (findIter != mSceneObjects.end())
+    if (findIter != mSceneObjectsToAdd.end())
     {
         return std::optional<std::reference_wrapper<SceneObject>>{*findIter};
     }
