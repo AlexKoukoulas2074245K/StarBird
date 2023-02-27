@@ -33,14 +33,20 @@ public:
 private:
     struct CommandExecutionResult
     {
-        CommandExecutionResult(bool success, const std::string& message)
+        CommandExecutionResult(bool success, const std::vector<std::string>& outputMessage)
             : mSuccess(success)
-            , mMessage(message)
+            , mOutputMessage(outputMessage)
+        {
+        }
+        
+        CommandExecutionResult(bool success, const std::string& outputMessage)
+            : mSuccess(success)
+            , mOutputMessage({outputMessage})
         {
         }
         
         const bool mSuccess;
-        const std::string mMessage;
+        const std::vector<std::string> mOutputMessage;
     };
     
 private:
@@ -58,6 +64,7 @@ private:
     std::unordered_map<strutils::StringId, std::function<CommandExecutionResult(const std::vector<std::string>&)>, strutils::StringIdHasher> mCommandMap;
     std::vector<strutils::StringId> mSceneElementIds;
     std::vector<strutils::StringId> mPastCommandElementIds;
+    std::vector<strutils::StringId> mCommandOutputElementIds;
     float mPreviousCameraLenseHeight = 0.0f;
 };
 

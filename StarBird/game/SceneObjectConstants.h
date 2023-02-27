@@ -39,7 +39,8 @@ static const strutils::StringId PLAYER_HEALTH_LOST_BAR_SCENE_OBJECT_NAME = strut
 static const strutils::StringId PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME = strutils::StringId("PLAYER_HEALTH_BAR_FRAME");
 static const strutils::StringId LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME = strutils::StringId("LEFT_MIRROR_IMAGE");
 static const strutils::StringId RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME = strutils::StringId("RIGHT_MIRROR_IMAGE");
-
+static const strutils::StringId DEBUG_PAST_COMMAND_LINE_NAME_PREFIX = strutils::StringId("PAST_COMMAND_");
+static const strutils::StringId DEBUG_COMMAND_OUTPUT_LINE_NAME_PREFIX = strutils::StringId("OUTPUT_LINE_");
 static const strutils::StringId DEBUG_COMMAND_TEXT_SCENE_OBJECT_NAME = strutils::StringId("COMMAND_TEXT");
 static const strutils::StringId DEBUG_COMMAND_OUTPUT_SCENE_OBJECT_NAME = strutils::StringId("COMMAND_OUTPUT");
 static const strutils::StringId DEBUG_BACK_TO_GAME_SCENE_OBJECT_NAME = strutils::StringId("BACK_TO_GAME");
