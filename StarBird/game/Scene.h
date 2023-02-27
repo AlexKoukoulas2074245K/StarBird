@@ -31,6 +31,7 @@ public:
     
     std::optional<std::reference_wrapper<SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectNameTag);
     std::optional<std::reference_wrapper<const SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectNameTag) const;
+    const std::vector<SceneObject>& GetSceneObjects() const;
     
     void AddSceneObject(SceneObject&& sceneObject);
     void RemoveAllSceneObjectsWithNameTag(const strutils::StringId& nameTag);

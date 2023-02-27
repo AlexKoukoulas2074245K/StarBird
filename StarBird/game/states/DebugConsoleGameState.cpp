@@ -16,7 +16,6 @@
 #include "../datarepos/FontRepository.h"
 #include "../dataloaders/GUISceneLoader.h"
 #include "../../resloading/ResourceLoadingService.h"
-#include "../../utils/Logging.h"
 
 ///------------------------------------------------------------------------------------------------
 
@@ -24,6 +23,10 @@ const strutils::StringId DebugConsoleGameState::STATE_NAME("DebugConsoleGameStat
 const glm::vec4 DebugConsoleGameState::SUCCESS_COLOR(0.0f, 1.0f, 0.0f, 1.0f);
 const glm::vec4 DebugConsoleGameState::FAILURE_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
 const float DebugConsoleGameState::BIRDS_EYE_VIEW_CAMERA_LENSE_HEIGHT = 90.0f;
+const int DebugConsoleGameState::SCROLL_LINE_THRESHOLD = 8;
+const float DebugConsoleGameState::SCROLL_TOUCH_MIN_Y = 1.0f;
+const float DebugConsoleGameState::SCROLL_MIN_Y = 1.5f;
+const float DebugConsoleGameState::SCROLL_MAX_Y = 9.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -33,9 +36,11 @@ void DebugConsoleGameState::VInitialize()
     mSceneElementIds.clear();
     mPastCommandElementIds.clear();
     mCommandOutputElementIds.clear();
+    mPastCommandHistoryIndex = -1;
+    mLastEventType = 0;
     
     auto& resService = resources::ResourceLoadingService::GetInstance();
-    resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_COLOR_SHADER_FILE_NAME);
+    resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::DEBUG_CONSOLE_FONT_SHADER_FILE_NAME);
     
     // Overlay
     {
@@ -86,6 +91,7 @@ void DebugConsoleGameState::VInitialize()
 
 PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
 {
+    // Overlay Alpha Update
     auto overlaySoOpt = mScene->GetSceneObject(scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
     if (overlaySoOpt)
     {
@@ -98,21 +104,40 @@ PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
         }
     }
     
+    auto& inputContext = GameSingletons::GetInputContext();
+    
+    // Up/Down/Execute keys
     auto commandTextSoOpt = mScene->GetSceneObject(scene_object_constants::DEBUG_COMMAND_TEXT_SCENE_OBJECT_NAME);
     if (commandTextSoOpt)
     {
-        commandTextSoOpt->get().mText = GameSingletons::GetInputContext().mText;
+        auto& commandTextSo = commandTextSoOpt->get();
         
-        if (GameSingletons::GetInputContext().mEventType == SDL_KEYDOWN && GameSingletons::GetInputContext().mKeyCode == SDL_SCANCODE_RETURN)
+        if (inputContext.mEventType == SDL_KEYDOWN && mLastEventType != SDL_KEYDOWN)
         {
-            ExecuteCommand(GameSingletons::GetInputContext().mText, commandTextSoOpt->get());
+            if (inputContext.mKeyCode == SDL_SCANCODE_UP && mPastCommandElementIds.size() > 0)
+            {
+                mPastCommandHistoryIndex = (mPastCommandHistoryIndex + 1) % mPastCommandElementIds.size();
+                GameSingletons::SetInputContextText(mScene->GetSceneObject(mPastCommandElementIds[mPastCommandElementIds.size() - 1 - mPastCommandHistoryIndex])->get().mText);
+            }
+            else if (inputContext.mKeyCode == SDL_SCANCODE_DOWN && mPastCommandElementIds.size() > 0)
+            {
+                mPastCommandHistoryIndex--;
+                if (mPastCommandHistoryIndex < 0) mPastCommandHistoryIndex = static_cast<int>(mPastCommandElementIds.size()) - 1;
+                GameSingletons::SetInputContextText(mScene->GetSceneObject(mPastCommandElementIds[mPastCommandElementIds.size() - 1 - mPastCommandHistoryIndex])->get().mText);
+            }
+            else if (inputContext.mKeyCode == SDL_SCANCODE_RETURN)
+            {
+                ExecuteCommand(inputContext.mText, commandTextSoOpt->get());
+            }
         }
+    
+        commandTextSo.mText = GameSingletons::GetInputContext().mText;
     }
     
     const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
     const auto& guiCamera = camOpt->get();
-    const auto& inputContext = GameSingletons::GetInputContext();
     
+    // Back to game button press test
     bool completeButtonPressed = false;
     if (inputContext.mEventType == SDL_FINGERDOWN)
     {
@@ -125,13 +150,50 @@ PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
         }
     }
     
-    if (completeButtonPressed || inputContext.mKeyCode == SDL_SCANCODE_ESCAPE)
+    // Output scrolling
+    if (inputContext.mEventType == SDL_FINGERMOTION && mCommandOutputElementIds.size() > SCROLL_LINE_THRESHOLD)
+    {
+        auto touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
+        
+        if (mPreviousMotionY > 0.0f && touchPos.y > SCROLL_TOUCH_MIN_Y)
+        {
+            float dy = touchPos.y - mPreviousMotionY;
+            
+            auto& firstLineSo = mScene->GetSceneObject(mCommandOutputElementIds.front())->get();
+            auto& lastLineSo = mScene->GetSceneObject(mCommandOutputElementIds.back())->get();
+            
+            if (firstLineSo.mCustomPosition.y + dy < SCROLL_MAX_Y)
+            {
+                dy = SCROLL_MAX_Y - firstLineSo.mCustomPosition.y;
+            }
+            else if (lastLineSo.mCustomPosition.y + dy > SCROLL_MIN_Y)
+            {
+                dy = SCROLL_MIN_Y - lastLineSo.mCustomPosition.y;
+            }
+            
+            for (const auto& elementId: mCommandOutputElementIds)
+            {
+                mScene->GetSceneObject(elementId)->get().mCustomPosition.y += dy;
+            }
+        }
+        
+        mPreviousMotionY = touchPos.y;
+    }
+    
+    if (inputContext.mEventType == SDL_FINGERUP)
+    {
+        mPreviousMotionY = 0.0f;
+    }
+    
+    // Screen exit
+    if (completeButtonPressed || (inputContext.mKeyCode == SDL_SCANCODE_ESCAPE))
     {
         SDL_StopTextInput();
         GameSingletons::ConsumeInput();
         Complete();
     }
     
+    mLastEventType = inputContext.mEventType;
     return PostStateUpdateDirective::BLOCK_UPDATE;
 }
 
@@ -159,9 +221,27 @@ void DebugConsoleGameState::VDestroy()
 
 void DebugConsoleGameState::RegisterCommands()
 {
+    mCommandMap[strutils::StringId("commands")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: commands");
+        
+        if (commandComponents.size() != 1)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        std::vector<std::string> output;
+        for (const auto& entry: mCommandMap)
+        {
+            output.push_back(entry.first.GetString());
+        }
+        
+        return CommandExecutionResult(true, output);
+    };
+    
     mCommandMap[strutils::StringId("physx")] = [&](const std::vector<std::string>& commandComponents)
     {
-        static const std::string USAGE_TEXT("physx on|off");
+        static const std::string USAGE_TEXT("Usage: physx on|off");
         
         if (commandComponents.size() != 2)
         {
@@ -176,9 +256,9 @@ void DebugConsoleGameState::RegisterCommands()
         return CommandExecutionResult(true, "Physics Debug turned " + commandComponents[1]);
     };
     
-    mCommandMap[strutils::StringId("bov")] = [&](const std::vector<std::string>& commandComponents)
+    mCommandMap[strutils::StringId("bev")] = [&](const std::vector<std::string>& commandComponents)
     {
-        static const std::string USAGE_TEXT("bov on|off");
+        static const std::string USAGE_TEXT("Usage: bev on|off");
         
         if (commandComponents.size() != 2)
         {
@@ -204,7 +284,193 @@ void DebugConsoleGameState::RegisterCommands()
             mScene->CreateLevelWalls(GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject)->get(), true);
         }
         
-        return CommandExecutionResult(true, {"Bird's Eye View turned " + commandComponents[1]});
+        return CommandExecutionResult(true, "Bird's Eye View turned " + commandComponents[1]);
+    };
+    
+    mCommandMap[strutils::StringId("getpos")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: getpos <scene_object_name>");
+        
+        if (commandComponents.size() != 2)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        if (!mScene->GetSceneObject(strutils::StringId(commandComponents[1])))
+        {
+            return CommandExecutionResult(false, "Scene Object not found");
+        }
+        
+        auto& sceneObject = mScene->GetSceneObject(strutils::StringId(commandComponents[1]))->get();
+        if (sceneObject.mBody)
+        {
+            return CommandExecutionResult(true, "Position: " + strutils::FloatToString(sceneObject.mBody->GetWorldCenter().x, 4) + ", " +
+                                                               strutils::FloatToString(sceneObject.mBody->GetWorldCenter().y, 4) + ", " +
+                                                               strutils::FloatToString(sceneObject.mCustomPosition.z, 4));
+        }
+        else
+        {
+            return CommandExecutionResult(true, "Position: " + strutils::FloatToString(sceneObject.mCustomPosition.x, 4) + ", " +
+                                                               strutils::FloatToString(sceneObject.mCustomPosition.y, 4) + ", " +
+                                                               strutils::FloatToString(sceneObject.mCustomPosition.z, 4));
+        }
+    };
+    
+    mCommandMap[strutils::StringId("addpos")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: addpos <scene_object_name> dx dy dz");
+        
+        if (commandComponents.size() != 5)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        if (!mScene->GetSceneObject(strutils::StringId(commandComponents[1])))
+        {
+            return CommandExecutionResult(false, "Scene Object not found");
+        }
+        
+        auto dx = std::stof(commandComponents[2]);
+        auto dy = std::stof(commandComponents[3]);
+        auto dz = std::stof(commandComponents[4]);
+        
+        auto& sceneObject = mScene->GetSceneObject(strutils::StringId(commandComponents[1]))->get();
+        sceneObject.mCustomPosition.z += dz;
+        
+        if (sceneObject.mBody)
+        {
+            sceneObject.mBody->SetTransform(b2Vec2(sceneObject.mBody->GetWorldCenter().x + dx, sceneObject.mBody->GetWorldCenter().y + dy), 0.0f);
+            return CommandExecutionResult(true, "New Position: " + strutils::FloatToString(sceneObject.mBody->GetWorldCenter().x, 4) + ", " +
+                                                               strutils::FloatToString(sceneObject.mBody->GetWorldCenter().y, 4) + ", " +
+                                                               strutils::FloatToString(sceneObject.mCustomPosition.z, 4));
+        }
+        else
+        {
+            sceneObject.mCustomPosition.x += dx;
+            sceneObject.mCustomPosition.y += dy;
+            return CommandExecutionResult(true, "New Position: " + strutils::FloatToString(sceneObject.mCustomPosition.x, 4) + ", " +
+                                                               strutils::FloatToString(sceneObject.mCustomPosition.y, 4) + ", " +
+                                                               strutils::FloatToString(sceneObject.mCustomPosition.z, 4));
+        }
+    };
+    
+    mCommandMap[strutils::StringId("getscale")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: scale <scene_object_name>");
+        
+        if (commandComponents.size() != 2)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        if (!mScene->GetSceneObject(strutils::StringId(commandComponents[1])))
+        {
+            return CommandExecutionResult(false, "Scene Object not found");
+        }
+        
+        auto& sceneObject = mScene->GetSceneObject(strutils::StringId(commandComponents[1]))->get();
+        if (sceneObject.mBody)
+        {
+            return CommandExecutionResult(false, "Scene Object has a body!");
+        }
+        else
+        {
+            return CommandExecutionResult(true, "Scale: " + strutils::FloatToString(sceneObject.mCustomScale.x, 4) + ", " +
+                                                               strutils::FloatToString(sceneObject.mCustomScale.y, 4) + ", " +
+                                                               strutils::FloatToString(sceneObject.mCustomScale.z, 4));
+        }
+    };
+    
+    mCommandMap[strutils::StringId("addscale")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: addscale <scene_object_name> dsx dsy dsz");
+        
+        if (commandComponents.size() != 5)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        if (!mScene->GetSceneObject(strutils::StringId(commandComponents[1])))
+        {
+            return CommandExecutionResult(false, "Scene Object not found");
+        }
+        
+        auto dsx = std::stof(commandComponents[2]);
+        auto dsy = std::stof(commandComponents[3]);
+        auto dsz = std::stof(commandComponents[4]);
+        
+        auto& sceneObject = mScene->GetSceneObject(strutils::StringId(commandComponents[1]))->get();
+        if (sceneObject.mBody)
+        {
+            return CommandExecutionResult(false, "Scene Object has a body!");
+        }
+        else
+        {
+            sceneObject.mCustomScale.x += dsx;
+            sceneObject.mCustomScale.y += dsy;
+            sceneObject.mCustomScale.z += dsz;
+            return CommandExecutionResult(true, "New Scale: " + strutils::FloatToString(sceneObject.mCustomScale.x, 4) + ", " +
+                                                               strutils::FloatToString(sceneObject.mCustomScale.y, 4) + ", " +
+                                                               strutils::FloatToString(sceneObject.mCustomScale.z, 4));
+        }
+    };
+    
+    mCommandMap[strutils::StringId("visible_bodies")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: visible_bodies");
+        
+        if (commandComponents.size() != 1)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        std::vector<std::string> output;
+        
+        const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
+        if (camOpt)
+        {
+            auto& cam = camOpt->get();
+            for (const auto& so: mScene->GetSceneObjects())
+            {
+                if (so.mBody)
+                {
+                    const auto& bodyPosition = so.mBody->GetWorldCenter();
+                    if (bodyPosition.x > -cam.GetCameraLenseWidth()/2 &&
+                        bodyPosition.x < +cam.GetCameraLenseWidth()/2 &&
+                        bodyPosition.y > -cam.GetCameraLenseHeight()/2 &&
+                        bodyPosition.y < +cam.GetCameraLenseHeight()/2)
+                    {
+                        output.emplace_back(so.mNameTag.GetString() + " at " + strutils::FloatToString(bodyPosition.x, 4) + ", " + strutils::FloatToString(bodyPosition.y, 4));
+                    }
+                }
+            }
+        }
+        return CommandExecutionResult(true, output);
+    };
+    
+    mCommandMap[strutils::StringId("scene_objects")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: scene_objects");
+        
+        if (commandComponents.size() != 1)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        std::vector<std::string> output;
+        for (const auto& so: mScene->GetSceneObjects())
+        {
+            if (so.mBody)
+            {
+                output.emplace_back(so.mNameTag.GetString() + " at " + strutils::FloatToString(so.mBody->GetWorldCenter().x, 4) + ", " + strutils::FloatToString(so.mBody->GetWorldCenter().y, 4));
+            }
+            else
+            {
+                output.emplace_back(so.mNameTag.GetString() + " at " + strutils::FloatToString(so.mCustomPosition.x, 4) + ", " + strutils::FloatToString(so.mCustomPosition.y, 4));
+            }
+        }
+        
+        return CommandExecutionResult(true, output);
     };
 }
 
@@ -239,6 +505,7 @@ void DebugConsoleGameState::SetCommandExecutionOutput(const CommandExecutionResu
     {
         mScene->RemoveAllSceneObjectsWithNameTag(elementId);
     }
+    mCommandOutputElementIds.clear();
     
     auto commandOutputSoOpt = mScene->GetSceneObject(scene_object_constants::DEBUG_COMMAND_OUTPUT_SCENE_OBJECT_NAME);
     if (commandOutputSoOpt)
@@ -247,14 +514,14 @@ void DebugConsoleGameState::SetCommandExecutionOutput(const CommandExecutionResu
         for (size_t i = 0; i < executionResult.mOutputMessage.size(); ++i)
         {
             SceneObject outputLineSceneObject;
-            outputLineSceneObject.mNameTag = strutils::StringId(scene_object_constants::DEBUG_COMMAND_OUTPUT_LINE_NAME_PREFIX.GetString() +  std::to_string(mPastCommandElementIds.size()));
+            outputLineSceneObject.mNameTag = strutils::StringId(scene_object_constants::DEBUG_COMMAND_OUTPUT_LINE_NAME_PREFIX.GetString() +  std::to_string(i));
             outputLineSceneObject.mCustomPosition = commandOutputSo.mCustomPosition;
             outputLineSceneObject.mCustomPosition.y -= i * 1.0f;
             outputLineSceneObject.mCustomScale = commandOutputSo.mCustomScale;
             outputLineSceneObject.mText = executionResult.mOutputMessage[i];
             outputLineSceneObject.mFontName = commandOutputSo.mFontName;
             outputLineSceneObject.mMeshResourceId = commandOutputSo.mMeshResourceId;
-            outputLineSceneObject.mShaderResourceId = resources::ResourceLoadingService::GetInstance().GetResourceIdFromPath(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_COLOR_SHADER_FILE_NAME);
+            outputLineSceneObject.mShaderResourceId = resources::ResourceLoadingService::GetInstance().GetResourceIdFromPath(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::DEBUG_CONSOLE_FONT_SHADER_FILE_NAME);
             outputLineSceneObject.mShaderFloatVec4UniformValues[scene_object_constants::CUSTOM_COLOR_UNIFORM_NAME] = executionResult.mSuccess ? SUCCESS_COLOR : FAILURE_COLOR;
             outputLineSceneObject.mAnimation = commandOutputSoOpt->get().mAnimation->VClone();
             outputLineSceneObject.mSceneObjectType = SceneObjectType::GUIObject;

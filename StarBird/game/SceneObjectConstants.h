@@ -74,6 +74,7 @@ static const char* SHINE_SHADER_FILE_NAME = "shine.vs";
 static const char* TEXTURE_OFFSET_SHADER_FILE_NAME = "tex_offset.vs";
 static const char* CUSTOM_ALPHA_SHADER_FILE_NAME = "custom_alpha.vs";
 static const char* CUSTOM_COLOR_SHADER_FILE_NAME = "custom_color.vs";
+static const char* DEBUG_CONSOLE_FONT_SHADER_FILE_NAME = "debug_console_font.vs";
 static const char* UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME = "shine_effect_fxx.bmp";
 static const char* DISSOLVE_EFFECT_TEXTURE_FILE_NAME = "dissolve_line_fxy_mm.bmp";
 static const char* BACKGROUND_TEXTURE_FILE_NAME = "space_bg.bmp";

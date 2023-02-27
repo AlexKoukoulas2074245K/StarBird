@@ -99,6 +99,12 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
             currentShader->SetInt(currentShader->GetUniformSamplerNames().at(i), static_cast<int>(i));
         }
         
+        if (so.mShaderBoolUniformValues.count(scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME) == 0)
+        {
+            so.mShaderBoolUniformValues[scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = false;
+        }
+        
+        
         assert(so.mAnimation);
         
         if (so.mAnimation->VGetCurrentTextureResourceId() == 0 || so.mAnimation->VGetCurrentTextureResourceId() != currentTextureResourceId)
@@ -117,7 +123,7 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
         glm::mat4 world(1.0f);
         
         // If it's a text element
-        if (so.mText.size() > 0)
+        if (!so.mFontName.isEmpty() && so.mText.size() > 0)
         {
             auto fontOpt = FontRepository::GetInstance().GetFont(so.mFontName);
             if (fontOpt)

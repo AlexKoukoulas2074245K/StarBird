@@ -16,6 +16,7 @@ uniform float max_u;
 uniform float max_v;
 
 out vec2 uv_frag;
+out vec3 interp_pos;
 
 void main()
 {
@@ -30,5 +31,7 @@ void main()
         else                  uv_frag.y = min_v;
     }
     
-    gl_Position = proj * view * world * vec4(position, 1.0f);
+    gl_Position = proj * view * world * vec4(position, 1.0);
+    vec4 worldPos = proj * view * world * vec4(position, 1.0f);
+    interp_pos = worldPos.xyz;
 }

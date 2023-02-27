@@ -406,8 +406,6 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
     
     for (auto& sceneObject: sceneObjects)
     {
-        sceneObject.mShaderBoolUniformValues[scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = false;
-        
         // Check if this scene object has a respective family object definition
         auto sceneObjectTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(sceneObject.mObjectFamilyTypeName);
         if (sceneObjectTypeDefOpt)

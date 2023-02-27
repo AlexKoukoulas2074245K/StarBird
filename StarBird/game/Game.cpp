@@ -172,7 +172,7 @@ void Game::Run()
                             GameSingletons::SetInputContextText(currentText.substr(0, currentText.size() - 1));
                         }
                     }
-                    else if (keyCode != SDL_SCANCODE_RETURN && !SDL_IsScreenKeyboardShown(GameSingletons::GetWindow()))
+                    else if (keyCode != SDL_SCANCODE_RETURN && keyCode != SDL_SCANCODE_UP && keyCode != SDL_SCANCODE_DOWN && !SDL_IsScreenKeyboardShown(GameSingletons::GetWindow()))
                     {
                         if (keyCode == SDL_SCANCODE_GRAVE)
                         {
@@ -219,6 +219,10 @@ void Game::Run()
                         }
                     }
                     
+                } break;
+                case SDL_KEYUP:
+                {
+                    GameSingletons::SetInputContextEvent(e.type);
                 } break;
                     
                 case SDL_TEXTINPUT:

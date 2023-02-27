@@ -83,6 +83,13 @@ std::optional<std::reference_wrapper<const SceneObject>> Scene::GetSceneObject(c
 
 ///------------------------------------------------------------------------------------------------
 
+const std::vector<SceneObject>& Scene::GetSceneObjects() const
+{
+    return mSceneObjects;
+}
+
+///------------------------------------------------------------------------------------------------
+
 void Scene::AddSceneObject(SceneObject&& sceneObject)
 {
     if (mPreFirstUpdate)

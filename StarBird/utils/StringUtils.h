@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <iomanip>
 #include <regex>
 #include <sstream>
 #include <string>
@@ -166,6 +167,18 @@ inline std::string GetHoursMinutesStringFromSeconds(const int seconds)
 inline void StringReplaceAllOccurences(const std::string& pattern, const std::string& replacement, std::string& s)
 {
     s = regex_replace(s, std::regex(pattern), replacement);
+}
+
+///-----------------------------------------------------------------------------------------------
+/// Converts float to string with given precision
+/// @param[in] val the float value to convert to string s.
+/// @param[in] decimalPlaces of the stringified float.
+/// @returns the parsed string.
+inline std::string FloatToString(const float val, const int decimalPlaces)
+{
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(decimalPlaces - 1) << val;
+    return ss.str();
 }
 
 ///-----------------------------------------------------------------------------------------------

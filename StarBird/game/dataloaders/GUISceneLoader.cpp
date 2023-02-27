@@ -47,6 +47,7 @@ GUISceneLoader::GUISceneLoader()
             auto scaleComponents = strutils::StringSplit(std::string(scale->value()), ',');
             guiElement.mScale.x = std::stof(scaleComponents[0]);
             guiElement.mScale.y = std::stof(scaleComponents[1]);
+            guiElement.mScale.z = 1.0f;
         }
         
         auto* texture = node->first_attribute("texture");

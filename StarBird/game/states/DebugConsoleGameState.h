@@ -52,7 +52,11 @@ private:
 private:
     static const glm::vec4 SUCCESS_COLOR;
     static const glm::vec4 FAILURE_COLOR;
+    static const int SCROLL_LINE_THRESHOLD;
     static const float BIRDS_EYE_VIEW_CAMERA_LENSE_HEIGHT;
+    static const float SCROLL_TOUCH_MIN_Y;
+    static const float SCROLL_MIN_Y;
+    static const float SCROLL_MAX_Y;
     
 private:
     void RegisterCommands();
@@ -65,7 +69,10 @@ private:
     std::vector<strutils::StringId> mSceneElementIds;
     std::vector<strutils::StringId> mPastCommandElementIds;
     std::vector<strutils::StringId> mCommandOutputElementIds;
+    unsigned int mLastEventType = 0;
+    int mPastCommandHistoryIndex = 0;
     float mPreviousCameraLenseHeight = 0.0f;
+    float mPreviousMotionY = 0.0f;
 };
 
 ///------------------------------------------------------------------------------------------------
