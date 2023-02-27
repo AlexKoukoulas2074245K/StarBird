@@ -33,7 +33,9 @@ static std::hash<std::string> hashFunction;
 /// @returns the hashed input string.
 inline std::size_t GetStringHash(const std::string& s)
 {
-    return hashFunction(s);
+    auto result = hashFunction(s);
+    assert(result > 2);
+    return result;
 }
 
 ///-----------------------------------------------------------------------------------------------

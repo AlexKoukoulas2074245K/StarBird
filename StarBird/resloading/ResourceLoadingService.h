@@ -53,6 +53,10 @@ public:
     static const std::string RES_TEXTURES_ROOT;     
     static const std::string RES_ATLASES_ROOT;
     static const std::string RES_FONT_MAP_DATA_ROOT;
+    static const ResourceId FALLBACK_TEXTURE_ID;
+    static const ResourceId FALLBACK_SHADER_ID;
+    static const ResourceId FALLBACK_MESH_ID;
+    
 
     /// The default method of getting a hold of this singleton.
     ///
@@ -124,10 +128,20 @@ public:
     /// @param[in] resourceId the id of the resource to unload.    
     void UnloadResource(const ResourceId resourceId);
     
-    /// Sets the fallback  texture to be used when one is not provided/can't be found
+    /// Sets the fallback texture to be used when one is not provided/can't be found
     ///
-    /// @param[in] fallbackTexturePath the path of the debug texture  file.
+    /// @param[in] fallbackTexturePath the path of the debug texture file.
     void SetFallbackTexture(const std::string& fallbackTexturePath);
+    
+    /// Sets the fallback mesh to be used when one is not provided/can't be found
+    ///
+    /// @param[in] fallbackMeshPath the path of the debug mesh file.
+    void SetFallbackMesh(const std::string& fallbackMeshPath);
+    
+    /// Sets the fallback shader to be used when one is not provided/can't be found
+    ///
+    /// @param[in] fallbackShaderPath the path of the debug shader file.
+    void SetFallbackShader(const std::string& fallbackShaderPath);
     
     /// Gets the concrete type of the resource that was loaded based on the given path.
     ///    

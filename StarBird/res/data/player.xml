@@ -2,7 +2,7 @@
 <ObjectDefinition>
     <Animation state="idle" texture="player_starship_mm" duration="-1"/>
     <Animation state="dying" texture="player" dissolveTexture="dissolve_line_fxy_mm" dissolveSpeed="0.001"/>
-    <Physics density="0.1f" bodySize="1.0f" speed="0.4f" category="player" collidingWithPlayerBullets="false" collidingWithEnemies="true" collidingWithPlayer="false"/>
+    <Physics bodySize="1.0f" speed="0.4f" category="player" collidingWithPlayerBullets="false" collidingWithEnemies="true" collidingWithPlayer="false"/>
     <Shader name="basic"/>
     <Model name="player_alt"/>
     <GameAttributes movementControllerPattern="input_controlled" health="10.0f"/>

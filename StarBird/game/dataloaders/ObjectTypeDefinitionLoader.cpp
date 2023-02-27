@@ -22,12 +22,6 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
     {
         auto* node = static_cast<const rapidxml::xml_node<>*>(n);
         
-        auto* density = node->first_attribute("density");
-        if (density)
-        {
-            mConstructedObjectTypeDef.mDensity = std::stof(density->value());
-        }
-        
         auto* bodySize = node->first_attribute("bodySize");
         if (bodySize)
         {

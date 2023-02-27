@@ -60,9 +60,9 @@ struct b2FixtureDef
 	{
 		shape = NULL;
 		userData = NULL;
-		friction = 0.2f;
+		friction = 0.0f;
 		restitution = 0.0f;
-		density = 0.0f;
+		density = 1.0f;
 		isSensor = false;
 	}
 

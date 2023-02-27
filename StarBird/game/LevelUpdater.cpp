@@ -374,10 +374,7 @@ void LevelUpdater::OnAppStateChange(Uint32 event)
 #ifdef DEBUG
             if (hasLeftForegroundOnce)
             {
-                if (mStateMachine.GetActiveStateName() != DebugConsoleGameState::STATE_NAME)
-                {
-                    mStateMachine.PushState(DebugConsoleGameState::STATE_NAME);
-                }
+                OpenDebugConsole();
             }
 #endif
         } break;
@@ -529,6 +526,18 @@ std::optional<std::reference_wrapper<RepeatableFlow>> LevelUpdater::GetFlow(cons
     }
     return std::nullopt;
 }
+
+///------------------------------------------------------------------------------------------------
+
+#ifdef DEBUG
+void LevelUpdater::OpenDebugConsole()
+{
+    if (mStateMachine.GetActiveStateName() != DebugConsoleGameState::STATE_NAME)
+    {
+        mStateMachine.PushState(DebugConsoleGameState::STATE_NAME);
+    }
+}
+#endif
 
 ///------------------------------------------------------------------------------------------------
 
@@ -780,11 +789,7 @@ void LevelUpdater::CreateBulletAtPosition(const strutils::StringId& bulletType, 
         
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &dynamicBox;
-        fixtureDef.density = bulletDef.mDensity;
-        fixtureDef.friction = 0.0f;
-        fixtureDef.restitution = 0.0f;
         fixtureDef.filter = bulletDef.mContactFilter;
-        
         body->CreateFixture(&fixtureDef);
         
         so.mBody = body;

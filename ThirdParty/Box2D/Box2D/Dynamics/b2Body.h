@@ -62,7 +62,7 @@ struct b2BodyDef
 		angularDamping = 0.0f;
 		allowSleep = true;
 		awake = true;
-		fixedRotation = false;
+		fixedRotation = true;
 		bullet = false;
 		type = b2_staticBody;
 		active = true;

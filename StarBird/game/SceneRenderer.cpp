@@ -24,6 +24,7 @@
 static const strutils::StringId WORLD_MATRIX_STRING_ID = strutils::StringId("world");
 static const strutils::StringId VIEW_MATRIX_STRING_ID  = strutils::StringId("view");
 static const strutils::StringId PROJ_MATRIX_STRING_ID  = strutils::StringId("proj");
+static const float DEBUG_VERTEX_ASPECT_SCALE = 1.2f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -39,8 +40,13 @@ static std::unordered_map<char, Glyph>::const_iterator GetGlyphIter(char c, cons
 
 ///------------------------------------------------------------------------------------------------
 
-SceneRenderer::SceneRenderer()
+SceneRenderer::SceneRenderer(b2World& box2dWorld)
+    : mBox2dWorld(box2dWorld)
+    , mPhysicsDebugMode(false)
 {
+    mBox2dWorld.SetDebugDraw(this);
+    SetFlags(b2Draw::e_aabbBit);
+    resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_COLOR_SHADER_FILE_NAME);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -178,10 +184,17 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
             world = glm::rotate(world, so.mCustomRotation.y, math::Y_AXIS);
             world = glm::rotate(world, so.mCustomRotation.z, math::Z_AXIS);
             
-            const auto& shape = dynamic_cast<const b2PolygonShape&>(*so.mBody->GetFixtureList()->GetShape());
-            const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
-            const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
-            world = glm::scale(world, glm::vec3(scaleX, scaleY, 1.0f));
+            if (so.mCustomBodyDimensions.x > 0.0f || so.mCustomBodyDimensions.y > 0.0f)
+            {
+                world = glm::scale(world, glm::vec3(currentMesh->GetDimensions().x * 2, currentMesh->GetDimensions().y * 2, 1.0f));
+            }
+            else
+            {
+                const auto& shape = dynamic_cast<const b2PolygonShape&>(*so.mBody->GetFixtureList()->GetShape());
+                const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
+                const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
+                world = glm::scale(world, glm::vec3(scaleX, scaleY, 1.0f));
+            }
         }
         // Otherwise from its custom set one
         else
@@ -214,9 +227,78 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
         
         GL_CALL(glDrawElements(GL_TRIANGLES, currentMesh->GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
     }
+   
+    if (mPhysicsDebugMode)
+    {
+        mPhysicsDebugQuads.clear();
+        
+        // This will populate (via individual callbacks) all debug vertices from box2d's POV
+        mBox2dWorld.DrawDebugData();
+        
+        
+        const auto& windowDimensions = GameSingletons::GetWindowDimensions();
+        float aspectFactor = windowDimensions.x/windowDimensions.y * DEBUG_VERTEX_ASPECT_SCALE;
+        
+        for (const auto& debugQuad: mPhysicsDebugQuads)
+        {
+            currentMesh = &(resService.GetResource<resources::MeshResource>(resources::ResourceLoadingService::FALLBACK_MESH_ID));
+            GL_CALL(glBindVertexArray(currentMesh->GetVertexArrayObject()));
+            
+            currentShader = &(resService.GetResource<resources::ShaderResource>(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_COLOR_SHADER_FILE_NAME));
+            
+            GL_CALL(glUseProgram(currentShader->GetProgramId()));
+            
+            currentTextureResourceId = resources::ResourceLoadingService::FALLBACK_TEXTURE_ID;
+            GL_CALL(glActiveTexture(GL_TEXTURE0));
+            GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>(currentTextureResourceId).GetGLTextureId()));
+            
+            GL_CALL(glActiveTexture(GL_TEXTURE1));
+            GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>(currentTextureResourceId).GetGLTextureId()));
+            
+            glm::mat4 world = glm::mat4(1.0f);
+            float posX = debugQuad[0].x + debugQuad[1].x;
+            float posY = debugQuad[1].y + debugQuad[2].y;
+            world = glm::translate(world, glm::vec3(posX, posY, 2.0f));
+            
+            
+            const auto scaleX = b2Abs(debugQuad[0].x - debugQuad[1].x);
+            const auto scaleY = b2Abs(debugQuad[1].y - debugQuad[2].y);
+            world = glm::scale(world, glm::vec3(scaleX/aspectFactor, scaleY/aspectFactor, 1.0f));
+            
+            currentShader->SetMatrix4fv(WORLD_MATRIX_STRING_ID, world);
+            currentShader->SetFloatVec4(scene_object_constants::CUSTOM_COLOR_UNIFORM_NAME, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+            
+            const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
+            assert(camOpt);
+            const auto& camera = camOpt->get();
+            
+            currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, camera.GetViewMatrix());
+            currentShader->SetMatrix4fv(PROJ_MATRIX_STRING_ID, camera.GetProjMatrix());
+            
+            GL_CALL(glDrawElements(GL_TRIANGLES, currentMesh->GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
+        }
+    }
     
     // Swap window buffers
     GL_CALL(SDL_GL_SwapWindow(GameSingletons::GetWindow()));
+}
+
+///------------------------------------------------------------------------------------------------
+
+void SceneRenderer::DrawPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color)
+{
+    mPhysicsDebugQuads.emplace_back();
+    mPhysicsDebugQuads.back()[0] = b2Vec2(vertices[0].x/2.0f, vertices[0].y/2.0f);
+    mPhysicsDebugQuads.back()[1] = b2Vec2(vertices[1].x/2.0f, vertices[1].y/2.0f);
+    mPhysicsDebugQuads.back()[2] = b2Vec2(vertices[2].x/2.0f, vertices[2].y/2.0f);
+    mPhysicsDebugQuads.back()[3] = b2Vec2(vertices[3].x/2.0f, vertices[3].y/2.0f);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void SceneRenderer::SetPhysicsDebugMode(const bool physicsDebugMode)
+{
+    mPhysicsDebugMode = physicsDebugMode;
 }
 
 ///------------------------------------------------------------------------------------------------

@@ -101,6 +101,8 @@ bool Game::InitSystems()
     
     // Set fallback texture
     resources::ResourceLoadingService::GetInstance().SetFallbackTexture(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "debug.bmp");
+    resources::ResourceLoadingService::GetInstance().SetFallbackMesh(resources::ResourceLoadingService::RES_MODELS_ROOT + "quad.obj");
+    resources::ResourceLoadingService::GetInstance().SetFallbackShader(resources::ResourceLoadingService::RES_SHADERS_ROOT + "basic.vs");
     
     Log(LogType::INFO, "Vendor     : %s", GL_NO_CHECK_CALL(glGetString(GL_VENDOR)));
     Log(LogType::INFO, "Renderer   : %s", GL_NO_CHECK_CALL(glGetString(GL_RENDERER)));
@@ -172,7 +174,13 @@ void Game::Run()
                     }
                     else if (keyCode != SDL_SCANCODE_RETURN && !SDL_IsScreenKeyboardShown(GameSingletons::GetWindow()))
                     {
-                        if ((e.key.keysym.mod & KMOD_LSHIFT) == 0 && (e.key.keysym.mod & KMOD_RSHIFT) == 0)
+                        if (keyCode == SDL_SCANCODE_GRAVE)
+                        {
+#ifdef DEBUG
+                            scene.OpenDebugConsole();
+#endif
+                        }
+                        else if ((e.key.keysym.mod & KMOD_LSHIFT) == 0 && (e.key.keysym.mod & KMOD_RSHIFT) == 0)
                         {
                             OnTextInput(std::string(1, e.key.keysym.sym));
                         }

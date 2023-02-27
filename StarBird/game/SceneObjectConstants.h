@@ -22,6 +22,7 @@ namespace scene_object_constants
 static const strutils::StringId DEFAULT_SCENE_OBJECT_STATE = strutils::StringId("idle");
 static const strutils::StringId DEFAULT_FONT_NAME = strutils::StringId("font");
 
+static const strutils::StringId WALL_SCENE_OBJECT_NAME = strutils::StringId("WALL");
 static const strutils::StringId PLAYER_SCENE_OBJECT_NAME = strutils::StringId("PLAYER");
 static const strutils::StringId PLAYER_SHIELD_SCENE_OBJECT_NAME = strutils::StringId("PLAYER_SHIELD");
 static const strutils::StringId BACKGROUND_SCENE_OBJECT_NAME = strutils::StringId("BG");

@@ -55,6 +55,7 @@ static const float WAVE_INTRO_DURATION_MILLIS = 3000.0f;
 static const float PLAYER_BULLET_FLOW_DELAY_MILLIS = 300.0f;
 static const float HASTENED_PLAYER_BULLET_FLOW_DELAY_MILLIS = 200.0f;
 
+static const float PLAYER_BODY_X_SCALE = 0.5f;
 static const float PLAYER_SPEED_UPGRADE_MULTIPLIER = 1.5f;
 
 static const float PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS = 300.0f;
@@ -63,6 +64,7 @@ static const float JOYSTICK_Z = 1.0f;
 static const float JOYSTICK_BOUNDS_Z = 2.0f;
 
 static const float BACKGROUND_Z = -1.0f;
+static const float WALL_Z = -0.5f;
 
 static const float BULLET_Z = -0.5f;
 

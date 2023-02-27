@@ -26,6 +26,7 @@
 Scene::Scene()
     : mBox2dWorld(b2Vec2(0.0f, 0.0f))
     , mLevelUpdater(*this, mBox2dWorld)
+    , mSceneRenderer(mBox2dWorld)
     , mPreFirstUpdate(true)
 {
 }
@@ -170,23 +171,30 @@ void Scene::UpdateScene(const float dtMillis)
     
     for (const auto& nameTag: mNameTagsOfSceneObjectsToRemove)
     {
-        auto iter = std::find_if(mSceneObjects.begin(), mSceneObjects.end(), [&](const SceneObject& so)
+        do
         {
-            return so.mNameTag == nameTag;
-        });
+            auto iter = std::find_if(mSceneObjects.begin(), mSceneObjects.end(), [&](const SceneObject& so)
+            {
+                return so.mNameTag == nameTag;
+            });
             
-        if (iter != mSceneObjects.end())
-        {
+            if (iter == mSceneObjects.end())
+            {
+                break;
+            }
+            
             if (iter->mBody)
             {
                 mBox2dWorld.DestroyBody(iter->mBody);
             }
+            
             auto sizeBefore = mSceneObjects.size();
             mSceneObjects.erase(iter);
             auto sizeNow = mSceneObjects.size();
             assert(sizeBefore = sizeNow + 1);
-        }
+        } while (true);
     }
+    
     mNameTagsOfSceneObjectsToRemove.clear();
     
     std::move(mSceneObjectsToAdd.begin(), mSceneObjectsToAdd.end(), std::back_inserter(mSceneObjects));
@@ -198,6 +206,179 @@ void Scene::UpdateScene(const float dtMillis)
 void Scene::RenderScene()
 {
     mSceneRenderer.Render(mSceneObjects);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void Scene::SetSceneRendererPhysicsDebugMode(const bool debugMode)
+{
+    mSceneRenderer.SetPhysicsDebugMode(debugMode);
+}
+
+///------------------------------------------------------------------------------------------------
+
+#ifdef DEBUG
+void Scene::OpenDebugConsole()
+{
+    mLevelUpdater.OpenDebugConsole();
+}
+#endif
+
+///------------------------------------------------------------------------------------------------
+
+void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
+{
+    auto& resService = resources::ResourceLoadingService::GetInstance();
+    
+    // L_WALL
+    {
+        b2BodyDef wallBodyDef;
+        wallBodyDef.type = b2_staticBody;
+        wallBodyDef.position.Set(-cam.GetCameraLenseWidth()/2.0f, 0.0f);
+        
+        b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
+
+        b2PolygonShape wallShape;
+        wallShape.SetAsBox(1.0f, cam.GetCameraLenseHeight() * 4);
+        
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &wallShape;
+        fixtureDef.filter.categoryBits = physics_constants::GLOBAL_WALL_CATEGORY_BIT;
+     
+        wallBody->CreateFixture(&fixtureDef);
+        
+        SceneObject so;
+        so.mBody = wallBody;
+        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mUseBodyForRendering = true;
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mInvisible = invisible;
+        so.mCustomPosition.z = game_object_constants::WALL_Z;
+        so.mNameTag = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        AddSceneObject(std::move(so));
+    }
+    
+    // R_WALL
+    {
+        b2BodyDef wallBodyDef;
+        wallBodyDef.type = b2_staticBody;
+        wallBodyDef.position.Set(cam.GetCameraLenseWidth()/2, 0.0f);
+        
+        b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
+
+        b2PolygonShape wallShape;
+        wallShape.SetAsBox(1.0f, cam.GetCameraLenseHeight() * 4);
+        
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &wallShape;
+        fixtureDef.filter.categoryBits = physics_constants::GLOBAL_WALL_CATEGORY_BIT;
+     
+        wallBody->CreateFixture(&fixtureDef);
+        
+        SceneObject so;
+        so.mBody = wallBody;
+        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mUseBodyForRendering = true;
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mInvisible = invisible;
+        so.mCustomPosition.z = game_object_constants::WALL_Z;
+        so.mNameTag = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        AddSceneObject(std::move(so));
+    }
+
+    // PLAYER_ONLY_BOT_WALL
+    {
+        b2BodyDef wallBodyDef;
+        wallBodyDef.type = b2_staticBody;
+        wallBodyDef.position.Set(0.0f, -cam.GetCameraLenseHeight()/2 + 1.0f);
+        
+        b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
+
+        b2PolygonShape wallShape;
+        wallShape.SetAsBox(cam.GetCameraLenseWidth()/2.0, 1.0f);
+        
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &wallShape;
+        fixtureDef.filter.categoryBits = physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT;
+     
+        wallBody->CreateFixture(&fixtureDef);
+        
+        SceneObject so;
+        so.mBody = wallBody;
+        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mUseBodyForRendering = true;
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mInvisible = invisible;
+        so.mCustomPosition.z = game_object_constants::WALL_Z;
+        so.mNameTag = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        AddSceneObject(std::move(so));
+    }
+    
+    // ENEMY_ONLY_BOT_WALL
+    {
+        b2BodyDef wallBodyDef;
+        wallBodyDef.type = b2_staticBody;
+        wallBodyDef.position.Set(0.0f, -cam.GetCameraLenseHeight()/2 - 7.0f);
+        
+        b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
+
+        b2PolygonShape wallShape;
+        wallShape.SetAsBox(cam.GetCameraLenseWidth() * 4, 2.0f);
+        
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &wallShape;
+        fixtureDef.filter.categoryBits = physics_constants::ENEMY_ONLY_WALL_CATEGORY_BIT;
+     
+        wallBody->CreateFixture(&fixtureDef);
+        
+        SceneObject so;
+        so.mBody = wallBody;
+        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mUseBodyForRendering = true;
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mInvisible = invisible;
+        so.mCustomPosition.z = game_object_constants::WALL_Z;
+        so.mNameTag = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        AddSceneObject(std::move(so));
+    }
+    
+    // BULLET_TOP_WALL
+    {
+        b2BodyDef wallBodyDef;
+        wallBodyDef.type = b2_staticBody;
+        wallBodyDef.position.Set(0.0f, cam.GetCameraLenseHeight()/2 + 1.0f);
+        
+        b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
+
+        b2PolygonShape wallShape;
+        wallShape.SetAsBox(cam.GetCameraLenseWidth()/2.0, 1.0f);
+        
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &wallShape;
+        fixtureDef.filter.categoryBits = physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT;
+     
+        wallBody->CreateFixture(&fixtureDef);
+        
+        SceneObject so;
+        so.mBody = wallBody;
+        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
+        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        so.mSceneObjectType = SceneObjectType::WorldGameObject;
+        so.mUseBodyForRendering = true;
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mInvisible = invisible;
+        so.mCustomPosition.z = game_object_constants::WALL_Z;
+        so.mNameTag = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        AddSceneObject(std::move(so));
+    }
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -241,13 +422,12 @@ void Scene::LoadLevelInvariantObjects()
         
         auto& playerMesh = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(playerObjectDef.mMeshResourceId);
         
-        dynamicBox.SetAsBox(playerMesh.GetDimensions().x, playerMesh.GetDimensions().y);
+        playerSO.mCustomBodyDimensions = glm::vec2(playerMesh.GetDimensions().x * game_object_constants::PLAYER_BODY_X_SCALE, playerMesh.GetDimensions().y);
+        dynamicBox.SetAsBox(playerSO.mCustomBodyDimensions.x, playerSO.mCustomBodyDimensions.y);
+        
         
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &dynamicBox;
-        fixtureDef.density = playerObjectDef.mDensity;
-        fixtureDef.friction = 0.0f;
-        fixtureDef.restitution = 0.0f;
         fixtureDef.filter.categoryBits = physics_constants::PLAYER_CATEGORY_BIT;
         fixtureDef.filter.maskBits &= ~(physics_constants::PLAYER_BULLET_CATEGORY_BIT);
         body->CreateFixture(&fixtureDef);
@@ -270,155 +450,7 @@ void Scene::LoadLevelInvariantObjects()
     assert(worldCamOpt);
     const auto& worldCam = worldCamOpt->get();
     
-    // L_WALL
-    {
-        b2BodyDef wallBodyDef;
-        wallBodyDef.position.Set(-worldCam.GetCameraLenseWidth()/2.0f, 0.0f);
-        
-        b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
-
-        b2PolygonShape wallShape;
-        wallShape.SetAsBox(1.0f, worldCam.GetCameraLenseHeight() * 4);
-        
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &wallShape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.0f;
-        fixtureDef.restitution = 0.0f;
-        fixtureDef.filter.categoryBits = physics_constants::GLOBAL_WALL_CATEGORY_BIT;
-     
-        wallBody->CreateFixture(&fixtureDef);
-        
-        SceneObject so;
-        so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-        so.mSceneObjectType = SceneObjectType::WorldGameObject;
-        so.mUseBodyForRendering = true;
-        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
-        so.mInvisible = false;
-        AddSceneObject(std::move(so));
-    }
-    
-    // R_WALL
-    {
-        b2BodyDef wallBodyDef;
-        wallBodyDef.position.Set(worldCam.GetCameraLenseWidth()/2, 0.0f);
-        
-        b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
-
-        b2PolygonShape wallShape;
-        wallShape.SetAsBox(1.0f, worldCam.GetCameraLenseHeight() * 4);
-        
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &wallShape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.0f;
-        fixtureDef.restitution = 0.0f;
-        fixtureDef.filter.categoryBits = physics_constants::GLOBAL_WALL_CATEGORY_BIT;
-     
-        wallBody->CreateFixture(&fixtureDef);
-        
-        SceneObject so;
-        so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-        so.mSceneObjectType = SceneObjectType::WorldGameObject;
-        so.mUseBodyForRendering = true;
-        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
-        so.mInvisible = false;
-        AddSceneObject(std::move(so));
-    }
-
-    // PLAYER_ONLY_BOT_WALL
-    {
-        b2BodyDef wallBodyDef;
-        wallBodyDef.position.Set(0.0f, -worldCam.GetCameraLenseHeight()/2 + 1.0f);
-        
-        b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
-
-        b2PolygonShape wallShape;
-        wallShape.SetAsBox(worldCam.GetCameraLenseWidth()/2.0, 1.0f);
-        
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &wallShape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.0f;
-        fixtureDef.restitution = 0.0f;
-        fixtureDef.filter.categoryBits = physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT;
-     
-        wallBody->CreateFixture(&fixtureDef);
-        
-        SceneObject so;
-        so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-        so.mSceneObjectType = SceneObjectType::WorldGameObject;
-        so.mUseBodyForRendering = true;
-        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
-        so.mInvisible = false;
-        AddSceneObject(std::move(so));
-    }
-    
-    // ENEMY_ONLY_BOT_WALL
-    {
-        b2BodyDef wallBodyDef;
-        wallBodyDef.position.Set(0.0f, -worldCam.GetCameraLenseHeight()/2 - 7.0f);
-        
-        b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
-
-        b2PolygonShape wallShape;
-        wallShape.SetAsBox(worldCam.GetCameraLenseWidth() * 4, 2.0f);
-        
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &wallShape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.0f;
-        fixtureDef.restitution = 0.0f;
-        fixtureDef.filter.categoryBits = physics_constants::ENEMY_ONLY_WALL_CATEGORY_BIT;
-     
-        wallBody->CreateFixture(&fixtureDef);
-        
-        SceneObject so;
-        so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-        so.mSceneObjectType = SceneObjectType::WorldGameObject;
-        so.mUseBodyForRendering = true;
-        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
-        so.mInvisible = false;
-        AddSceneObject(std::move(so));
-    }
-    
-    // BULLET_TOP_WALL
-    {
-        b2BodyDef wallBodyDef;
-        wallBodyDef.position.Set(0.0f, worldCam.GetCameraLenseHeight()/2 + 1.0f);
-        
-        b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
-
-        b2PolygonShape wallShape;
-        wallShape.SetAsBox(worldCam.GetCameraLenseWidth()/2.0, 1.0f);
-        
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &wallShape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.0f;
-        fixtureDef.restitution = 0.0f;
-        fixtureDef.filter.categoryBits = physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT;
-     
-        wallBody->CreateFixture(&fixtureDef);
-        
-        SceneObject so;
-        so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-        so.mSceneObjectType = SceneObjectType::WorldGameObject;
-        so.mUseBodyForRendering = true;
-        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
-        so.mInvisible = false;
-        AddSceneObject(std::move(so));
-    }
+    CreateLevelWalls(worldCam, true);
     
     // Joystick
     {
@@ -476,3 +508,4 @@ void Scene::LoadLevelInvariantObjects()
 }
 
 ///------------------------------------------------------------------------------------------------
+

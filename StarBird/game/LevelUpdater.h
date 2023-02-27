@@ -47,6 +47,10 @@ public:
     size_t GetWaveEnemyCount() const;
     std::optional<std::reference_wrapper<RepeatableFlow>> GetFlow(const strutils::StringId& flowName);
     
+#ifdef DEBUG
+    void OpenDebugConsole();
+#endif
+    
 private:
     void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMillis);
     void UpdateBackground(const float dtMillis);

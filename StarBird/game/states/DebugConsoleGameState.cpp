@@ -8,6 +8,7 @@
 #include "DebugConsoleGameState.h"
 #include "../GameObjectConstants.h"
 #include "../GameSingletons.h"
+#include "../PhysicsConstants.h"
 #include "../Scene.h"
 #include "../SceneObject.h"
 #include "../SceneObjectConstants.h"
@@ -22,6 +23,7 @@
 const strutils::StringId DebugConsoleGameState::STATE_NAME("DebugConsoleGameState");
 const glm::vec4 DebugConsoleGameState::SUCCESS_COLOR(0.0f, 1.0f, 0.0f, 1.0f);
 const glm::vec4 DebugConsoleGameState::FAILURE_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
+const float DebugConsoleGameState::BIRDS_EYE_VIEW_CAMERA_LENSE_HEIGHT = 90.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -110,6 +112,7 @@ PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
     const auto& guiCamera = camOpt->get();
     const auto& inputContext = GameSingletons::GetInputContext();
     
+    bool completeButtonPressed = false;
     if (inputContext.mEventType == SDL_FINGERDOWN)
     {
         auto touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
@@ -117,10 +120,15 @@ PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
         auto continueButtonSoOpt = mScene->GetSceneObject(scene_object_constants::DEBUG_BACK_TO_GAME_SCENE_OBJECT_NAME);
         if (continueButtonSoOpt && scene_object_utils::IsPointInsideSceneObject(continueButtonSoOpt->get(), touchPos))
         {
-            SDL_StopTextInput();
-            GameSingletons::ConsumeInput();
-            Complete();
+            completeButtonPressed = true;
         }
+    }
+    
+    if (completeButtonPressed || inputContext.mKeyCode == SDL_SCANCODE_ESCAPE)
+    {
+        SDL_StopTextInput();
+        GameSingletons::ConsumeInput();
+        Complete();
     }
     
     return PostStateUpdateDirective::BLOCK_UPDATE;
@@ -145,24 +153,52 @@ void DebugConsoleGameState::VDestroy()
 
 void DebugConsoleGameState::RegisterCommands()
 {
-    mCommandMap[strutils::StringId("physics_debug")] = [&](const std::vector<std::string>& commandComponents)
+    mCommandMap[strutils::StringId("physx")] = [&](const std::vector<std::string>& commandComponents)
     {
-        static const std::string USAGE_TEXT("physics_debug toggle on|off");
+        static const std::string USAGE_TEXT("physx on|off");
         
-        if (commandComponents.size() != 3)
+        if (commandComponents.size() != 2)
         {
             return CommandExecutionResult(false, USAGE_TEXT);
         }
-        else if (commandComponents[1] != "toggle")
-        {
-            return CommandExecutionResult(false, USAGE_TEXT);
-        }
-        else if (commandComponents[2] != "on" && commandComponents[2] != "off")
+        else if (commandComponents[1] != "on" && commandComponents[1] != "off")
         {
             return CommandExecutionResult(false, USAGE_TEXT);
         }
         
-        return CommandExecutionResult(true, "SUCCES!");
+        mScene->SetSceneRendererPhysicsDebugMode(commandComponents[1] == "on");
+        return CommandExecutionResult(true, "Physics Debug turned " + commandComponents[1]);
+    };
+    
+    mCommandMap[strutils::StringId("bov")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("bov on|off");
+        
+        if (commandComponents.size() != 2)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        else if (commandComponents[1] != "on" && commandComponents[1] != "off")
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        mScene->RemoveAllSceneObjectsWithNameTag(scene_object_constants::WALL_SCENE_OBJECT_NAME);
+        
+        if (commandComponents[1] == "on")
+        {
+            mPreviousCameraLenseHeight = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject)->get().GetCameraLenseHeight();
+            
+            GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera(BIRDS_EYE_VIEW_CAMERA_LENSE_HEIGHT));
+            mScene->CreateLevelWalls(GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject)->get(), false);
+        }
+        else if (mPreviousCameraLenseHeight > 0.0f)
+        {
+            GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera(mPreviousCameraLenseHeight));
+            mScene->CreateLevelWalls(GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject)->get(), true);
+        }
+        
+        return CommandExecutionResult(true, "Bird's Eye View turned " + commandComponents[1]);
     };
 }
 

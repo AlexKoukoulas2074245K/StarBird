@@ -46,6 +46,7 @@ private:
 private:
     static const glm::vec4 SUCCESS_COLOR;
     static const glm::vec4 FAILURE_COLOR;
+    static const float BIRDS_EYE_VIEW_CAMERA_LENSE_HEIGHT;
     
 private:
     void RegisterCommands();
@@ -57,6 +58,7 @@ private:
     std::unordered_map<strutils::StringId, std::function<CommandExecutionResult(const std::vector<std::string>&)>, strutils::StringIdHasher> mCommandMap;
     std::vector<strutils::StringId> mSceneElementIds;
     std::vector<strutils::StringId> mPastCommandElementIds;
+    float mPreviousCameraLenseHeight = 0.0f;
 };
 
 ///------------------------------------------------------------------------------------------------

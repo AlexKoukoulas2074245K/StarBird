@@ -33,7 +33,7 @@ enum class SceneObjectType
 
 ///------------------------------------------------------------------------------------------------
 
-struct SceneObject // 376b
+struct SceneObject // 456b
 {
     strutils::StringId mObjectFamilyTypeName = strutils::StringId();
     strutils::StringId mNameTag = strutils::StringId();
@@ -50,6 +50,7 @@ struct SceneObject // 376b
     glm::vec3 mCustomPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 mCustomRotation = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 mCustomScale = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec2 mCustomBodyDimensions = glm::vec2(0.0f, 0.0f);
     resources::ResourceId mShaderEffectTextureResourceId = resources::ResourceId();
     resources::ResourceId mShaderResourceId = resources::ResourceId();
     resources::ResourceId mMeshResourceId = resources::ResourceId();
@@ -57,14 +58,6 @@ struct SceneObject // 376b
     float mHealth = 0;
     bool mInvisible = false;
     bool mUseBodyForRendering = false;
-};
-
-///------------------------------------------------------------------------------------------------
-
-struct SceneObjectComparator {
-    bool operator()(const SceneObject& lhs, const SceneObject& rhs) const {
-        return lhs.mMeshResourceId < rhs.mMeshResourceId;
-    }
 };
 
 ///------------------------------------------------------------------------------------------------

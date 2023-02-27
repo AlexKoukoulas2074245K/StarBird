@@ -337,6 +337,7 @@
 		925FD87F298AD7D50058E747 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		9285240829A8D5B9007EA0D9 /* DebugConsoleGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugConsoleGameState.h; sourceTree = "<group>"; };
 		9285241429A8D5B9007EA0D9 /* DebugConsoleGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebugConsoleGameState.cpp; sourceTree = "<group>"; };
+		9285241629A9095A007EA0D9 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 		92894E0D299D330A00605302 /* ObjectTypeDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectTypeDefinition.h; sourceTree = "<group>"; };
 		92894E0E299D330A00605302 /* LevelDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelDefinition.h; sourceTree = "<group>"; };
 		92894E0F299D330A00605302 /* FontDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontDefinition.h; sourceTree = "<group>"; };
@@ -1157,6 +1158,7 @@
 		92C851B42969A95A0021923F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9285241629A9095A007EA0D9 /* GameController.framework */,
 				925FD87F298AD7D50058E747 /* AudioToolbox.framework */,
 				92E96A5F29803597004A3120 /* OpenGLES.framework */,
 				92C852012969B2920021923F /* libbox2d.a */,

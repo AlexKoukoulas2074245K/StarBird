@@ -42,6 +42,14 @@ public:
     void UpdateScene(const float dtMillis);
     void RenderScene();
     
+    void SetSceneRendererPhysicsDebugMode(const bool debugMode);
+    
+#ifdef DEBUG
+    void OpenDebugConsole();
+#endif
+    
+    void CreateLevelWalls(const Camera& cam, const bool invisible);
+    
 private:
     void LoadLevelInvariantObjects();
     

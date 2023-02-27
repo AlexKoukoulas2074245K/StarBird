@@ -18,7 +18,7 @@ class Camera final
 {
 public:
     Camera() = default;
-    Camera(float cameraLenseHeight);
+    Camera(const float cameraLenseHeight);
     
     void RecalculateMatrices();
     
@@ -38,6 +38,7 @@ private:
     static const glm::vec3 DEFAULT_CAMERA_POSITION;
     static const glm::vec3 DEFAULT_CAMERA_FRONT_VECTOR;
     static const glm::vec3 DEFAULT_CAMERA_UP_VECTOR;
+    static const float DEVICE_INVARIABLE_ASPECT;
     static const float DEFAULT_CAMERA_ZNEAR;
     static const float DEFAULT_CAMERA_ZFAR;
     static const float DEFAULT_CAMERA_ZOOM_FACTOR;
@@ -48,9 +49,10 @@ private:
 private:
     struct ShakeData
     {
+        bool mIsShaking = false;
         glm::vec3 mPreShakePosition;
-        float mShakeRadius;
-        float mShakeRandomAngle;
+        float mShakeRadius = 0.0f;
+        float mShakeRandomAngle = 0.0f;
     };
     
     ShakeData mShakeData;

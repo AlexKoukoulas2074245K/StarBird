@@ -53,14 +53,11 @@ void FightingWaveGameState::VInitialize()
         
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &dynamicBox;
-        fixtureDef.density = enemyDef.mDensity;
-        fixtureDef.friction = 0.0f;
-        fixtureDef.restitution = 0.0f;
         fixtureDef.filter = enemyDef.mContactFilter;
         fixtureDef.filter.maskBits &= (~physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
         fixtureDef.filter.maskBits &= (~physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT);
         body->CreateFixture(&fixtureDef);
-    
+        
         so.mObjectFamilyTypeName = enemy.mGameObjectEnemyType;
         so.mBody = body;
         so.mHealth = enemyDef.mHealth;
@@ -103,9 +100,6 @@ void FightingWaveGameState::VInitialize()
                     
                     b2FixtureDef fixtureDef;
                     fixtureDef.shape = &dynamicBox;
-                    fixtureDef.density = bulletDef.mDensity;
-                    fixtureDef.friction = 0.0f;
-                    fixtureDef.restitution = 0.0f;
                     fixtureDef.filter = bulletDef.mContactFilter;
                     fixtureDef.filter.maskBits &= (~physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
                     fixtureDef.filter.maskBits &= (~physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT);
