@@ -35,18 +35,30 @@ private:
     {
         CommandExecutionResult(bool success, const std::vector<std::string>& outputMessage)
             : mSuccess(success)
-            , mOutputMessage(outputMessage)
         {
+            // Break down msesage further to wrap around edges of output area
+            static int MAX_LINE_CHARS = 29;
+            for (size_t i = 0; i < outputMessage.size(); ++i)
+            {
+                auto message = outputMessage[i];
+                
+                while (message.size() > MAX_LINE_CHARS)
+                {
+                    mOutputMessage.push_back(message.substr(0, MAX_LINE_CHARS) + "\\");
+                    message = message.substr(MAX_LINE_CHARS);
+                }
+                
+                mOutputMessage.push_back(message);
+            }
         }
         
         CommandExecutionResult(bool success, const std::string& outputMessage)
-            : mSuccess(success)
-            , mOutputMessage({outputMessage})
+            : CommandExecutionResult(success, std::vector<std::string>{outputMessage})
         {
         }
         
         const bool mSuccess;
-        const std::vector<std::string> mOutputMessage;
+        std::vector<std::string> mOutputMessage;
     };
     
 private:
