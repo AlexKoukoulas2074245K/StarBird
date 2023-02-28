@@ -60,7 +60,8 @@ public:
     ~TextureResource();
     
     GLuint GetGLTextureId() const;
-    const glm::vec2& GetDimensions() const;
+    glm::vec2 GetDimensions() const;
+    glm::vec2 GetSingleTextureFrameDimensions() const;
     
     SheetMetadata* GetSheetMetadata() const;
     

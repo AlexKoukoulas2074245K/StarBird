@@ -54,43 +54,30 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             if (strcmp(category->value(), "enemy") == 0)
             {
                 mConstructedObjectTypeDef.mContactFilter.categoryBits = physics_constants::ENEMY_CATEGORY_BIT;
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT);
             }
             else if (strcmp(category->value(), "player") == 0)
             {
                 mConstructedObjectTypeDef.mContactFilter.categoryBits = physics_constants::PLAYER_CATEGORY_BIT;
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= ~(physics_constants::PLAYER_BULLET_CATEGORY_BIT);
             }
             else if (strcmp(category->value(), "player_bullet") == 0)
             {
                 mConstructedObjectTypeDef.mContactFilter.categoryBits = physics_constants::PLAYER_BULLET_CATEGORY_BIT;
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::PLAYER_BULLET_CATEGORY_BIT);
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::ENEMY_BULLET_CATEGORY_BIT);
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::PLAYER_CATEGORY_BIT);
             }
             else if (strcmp(category->value(), "enemy_bullet") == 0)
             {
                 mConstructedObjectTypeDef.mContactFilter.categoryBits = physics_constants::ENEMY_BULLET_CATEGORY_BIT;
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT);
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::ENEMY_CATEGORY_BIT);
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::PLAYER_BULLET_CATEGORY_BIT);
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::ENEMY_BULLET_CATEGORY_BIT);
             }
-        }
-        
-        auto* shouldCollideWithPlayerBullets = node->first_attribute("collidingWithPlayerBullets");
-        if (shouldCollideWithPlayerBullets && strcmp(shouldCollideWithPlayerBullets->value(), "false") == 0)
-        {
-            mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::PLAYER_BULLET_CATEGORY_BIT);
-        }
-        
-        auto* shouldCollideWithEnemyBullets = node->first_attribute("collidingWithEnemyBullets");
-        if (shouldCollideWithEnemyBullets && strcmp(shouldCollideWithEnemyBullets->value(), "false") == 0)
-        {
-            mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::ENEMY_BULLET_CATEGORY_BIT);
-        }
-        
-        auto* shouldCollideWithEnemies = node->first_attribute("collidingWithEnemies");
-        if (shouldCollideWithEnemies && strcmp(shouldCollideWithEnemies->value(), "false") == 0)
-        {
-            mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::ENEMY_CATEGORY_BIT);
-        }
-        
-        auto* shouldCollideWithPlayer = node->first_attribute("collidingWithPlayer");
-        if (shouldCollideWithPlayer && strcmp(shouldCollideWithPlayer->value(), "false") == 0)
-        {
-            mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::PLAYER_CATEGORY_BIT);
         }
     });
 

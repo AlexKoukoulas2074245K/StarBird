@@ -36,7 +36,7 @@ enum class SceneObjectType
 struct SceneObject // 456b
 {
     strutils::StringId mObjectFamilyTypeName = strutils::StringId();
-    strutils::StringId mNameTag = strutils::StringId();
+    strutils::StringId mName = strutils::StringId();
     strutils::StringId mStateName = scene_object_constants::DEFAULT_SCENE_OBJECT_STATE;
     strutils::StringId mFontName = strutils::StringId();
     std::string mText;

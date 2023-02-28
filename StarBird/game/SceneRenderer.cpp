@@ -264,8 +264,7 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
             glm::mat4 world = glm::mat4(1.0f);
             float posX = debugQuad[0].x + debugQuad[1].x;
             float posY = debugQuad[1].y + debugQuad[2].y;
-            world = glm::translate(world, glm::vec3(posX, posY, 2.0f));
-            
+            world = glm::translate(world, glm::vec3(posX, posY, -0.8f));
             
             const auto scaleX = b2Abs(debugQuad[0].x - debugQuad[1].x);
             const auto scaleY = b2Abs(debugQuad[1].y - debugQuad[2].y);

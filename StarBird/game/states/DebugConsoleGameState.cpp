@@ -51,10 +51,10 @@ void DebugConsoleGameState::VInitialize()
         overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
         overlaySo.mCustomScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
         overlaySo.mCustomPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
-        overlaySo.mNameTag = scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
+        overlaySo.mName = scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
         overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
         
-        mSceneElementIds.push_back(overlaySo.mNameTag);
+        mSceneElementIds.push_back(overlaySo.mName);
         mScene->AddSceneObject(std::move(overlaySo));
     }
     
@@ -64,7 +64,7 @@ void DebugConsoleGameState::VInitialize()
     for (const auto& guiElement: sceneDefinition.mGUIElements)
     {
         SceneObject guiSceneObject;
-        guiSceneObject.mNameTag = guiElement.mSceneObjectName;
+        guiSceneObject.mName = guiElement.mSceneObjectName;
         guiSceneObject.mCustomPosition = guiElement.mPosition;
         guiSceneObject.mCustomScale = guiElement.mScale;
         guiSceneObject.mText = guiElement.mText;
@@ -79,7 +79,7 @@ void DebugConsoleGameState::VInitialize()
             guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId);
         }
         
-        mSceneElementIds.push_back(guiSceneObject.mNameTag);
+        mSceneElementIds.push_back(guiSceneObject.mName);
         mScene->AddSceneObject(std::move(guiSceneObject));
     }
     
@@ -203,17 +203,17 @@ void DebugConsoleGameState::VDestroy()
 {
     for (const auto& elementId: mSceneElementIds)
     {
-        mScene->RemoveAllSceneObjectsWithNameTag(elementId);
+        mScene->RemoveAllSceneObjectsWithName(elementId);
     }
     
     for (const auto& elementId: mPastCommandElementIds)
     {
-        mScene->RemoveAllSceneObjectsWithNameTag(elementId);
+        mScene->RemoveAllSceneObjectsWithName(elementId);
     }
     
     for (const auto& elementId: mCommandOutputElementIds)
     {
-        mScene->RemoveAllSceneObjectsWithNameTag(elementId);
+        mScene->RemoveAllSceneObjectsWithName(elementId);
     }
 }
 
@@ -269,7 +269,7 @@ void DebugConsoleGameState::RegisterCommands()
             return CommandExecutionResult(false, USAGE_TEXT);
         }
         
-        mScene->RemoveAllSceneObjectsWithNameTag(scene_object_constants::WALL_SCENE_OBJECT_NAME);
+        mScene->RemoveAllSceneObjectsWithName(scene_object_constants::WALL_SCENE_OBJECT_NAME);
         
         if (commandComponents[1] == "on")
         {
@@ -440,7 +440,7 @@ void DebugConsoleGameState::RegisterCommands()
                         bodyPosition.y > -cam.GetCameraLenseHeight()/2 &&
                         bodyPosition.y < +cam.GetCameraLenseHeight()/2)
                     {
-                        output.emplace_back(so.mNameTag.GetString() + " at " + strutils::FloatToString(bodyPosition.x, 4) + ", " + strutils::FloatToString(bodyPosition.y, 4));
+                        output.emplace_back(so.mName.GetString() + " at " + strutils::FloatToString(bodyPosition.x, 4) + ", " + strutils::FloatToString(bodyPosition.y, 4));
                     }
                 }
             }
@@ -462,11 +462,11 @@ void DebugConsoleGameState::RegisterCommands()
         {
             if (so.mBody)
             {
-                output.emplace_back(so.mNameTag.GetString() + " at " + strutils::FloatToString(so.mBody->GetWorldCenter().x, 4) + ", " + strutils::FloatToString(so.mBody->GetWorldCenter().y, 4));
+                output.emplace_back(so.mName.GetString() + " at " + strutils::FloatToString(so.mBody->GetWorldCenter().x, 4) + ", " + strutils::FloatToString(so.mBody->GetWorldCenter().y, 4));
             }
             else
             {
-                output.emplace_back(so.mNameTag.GetString() + " at " + strutils::FloatToString(so.mCustomPosition.x, 4) + ", " + strutils::FloatToString(so.mCustomPosition.y, 4));
+                output.emplace_back(so.mName.GetString() + " at " + strutils::FloatToString(so.mCustomPosition.x, 4) + ", " + strutils::FloatToString(so.mCustomPosition.y, 4));
             }
         }
         
@@ -503,7 +503,7 @@ void DebugConsoleGameState::SetCommandExecutionOutput(const CommandExecutionResu
 {
     for (const auto& elementId: mCommandOutputElementIds)
     {
-        mScene->RemoveAllSceneObjectsWithNameTag(elementId);
+        mScene->RemoveAllSceneObjectsWithName(elementId);
     }
     mCommandOutputElementIds.clear();
     
@@ -514,7 +514,7 @@ void DebugConsoleGameState::SetCommandExecutionOutput(const CommandExecutionResu
         for (size_t i = 0; i < executionResult.mOutputMessage.size(); ++i)
         {
             SceneObject outputLineSceneObject;
-            outputLineSceneObject.mNameTag = strutils::StringId(scene_object_constants::DEBUG_COMMAND_OUTPUT_LINE_NAME_PREFIX.GetString() +  std::to_string(i));
+            outputLineSceneObject.mName = strutils::StringId(scene_object_constants::DEBUG_COMMAND_OUTPUT_LINE_NAME_PREFIX.GetString() +  std::to_string(i));
             outputLineSceneObject.mCustomPosition = commandOutputSo.mCustomPosition;
             outputLineSceneObject.mCustomPosition.y -= i * 1.0f;
             outputLineSceneObject.mCustomScale = commandOutputSo.mCustomScale;
@@ -525,7 +525,7 @@ void DebugConsoleGameState::SetCommandExecutionOutput(const CommandExecutionResu
             outputLineSceneObject.mShaderFloatVec4UniformValues[scene_object_constants::CUSTOM_COLOR_UNIFORM_NAME] = executionResult.mSuccess ? SUCCESS_COLOR : FAILURE_COLOR;
             outputLineSceneObject.mAnimation = commandOutputSoOpt->get().mAnimation->VClone();
             outputLineSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
-            mCommandOutputElementIds.push_back(outputLineSceneObject.mNameTag);
+            mCommandOutputElementIds.push_back(outputLineSceneObject.mName);
             mScene->AddSceneObject(std::move(outputLineSceneObject));
         }
     }
@@ -538,7 +538,7 @@ void DebugConsoleGameState::PostCommandExecution(const std::string& command, con
     // Create a past command SO out of current executed command
     {
         SceneObject pastTextSceneObject;
-        pastTextSceneObject.mNameTag = strutils::StringId(scene_object_constants::DEBUG_PAST_COMMAND_LINE_NAME_PREFIX.GetString() +  std::to_string(mPastCommandElementIds.size()));
+        pastTextSceneObject.mName = strutils::StringId(scene_object_constants::DEBUG_PAST_COMMAND_LINE_NAME_PREFIX.GetString() +  std::to_string(mPastCommandElementIds.size()));
         pastTextSceneObject.mCustomPosition = commandTextSo.mCustomPosition;
         pastTextSceneObject.mCustomPosition.x += scene_object_constants::DEBUG_PAST_COMMAND_X_OFFSET;
         pastTextSceneObject.mCustomScale = commandTextSo.mCustomScale;
@@ -548,7 +548,7 @@ void DebugConsoleGameState::PostCommandExecution(const std::string& command, con
         pastTextSceneObject.mShaderResourceId = commandTextSo.mShaderResourceId;
         pastTextSceneObject.mAnimation = commandTextSo.mAnimation->VClone();
         pastTextSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
-        mPastCommandElementIds.push_back(pastTextSceneObject.mNameTag);
+        mPastCommandElementIds.push_back(pastTextSceneObject.mName);
         mScene->AddSceneObject(std::move(pastTextSceneObject));
     }
     

@@ -37,10 +37,10 @@ void PauseMenuGameState::VInitialize()
         overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
         overlaySo.mCustomScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
         overlaySo.mCustomPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
-        overlaySo.mNameTag = scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
+        overlaySo.mName = scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
         overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
         
-        mSceneElementIds.push_back(overlaySo.mNameTag);
+        mSceneElementIds.push_back(overlaySo.mName);
         mScene->AddSceneObject(std::move(overlaySo));
     }
     
@@ -50,7 +50,7 @@ void PauseMenuGameState::VInitialize()
     for (const auto& guiElement: sceneDefinition.mGUIElements)
     {
         SceneObject guiSceneObject;
-        guiSceneObject.mNameTag = guiElement.mSceneObjectName;
+        guiSceneObject.mName = guiElement.mSceneObjectName;
         guiSceneObject.mCustomPosition = guiElement.mPosition;
         guiSceneObject.mCustomScale = guiElement.mScale;
         guiSceneObject.mText = guiElement.mText;
@@ -65,7 +65,7 @@ void PauseMenuGameState::VInitialize()
             guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId);
         }
         
-        mSceneElementIds.push_back(guiSceneObject.mNameTag);
+        mSceneElementIds.push_back(guiSceneObject.mName);
         mScene->AddSceneObject(std::move(guiSceneObject));
     }
 }
@@ -111,7 +111,7 @@ void PauseMenuGameState::VDestroy()
 {
     for (auto elementId: mSceneElementIds)
     {
-        mScene->RemoveAllSceneObjectsWithNameTag(elementId);
+        mScene->RemoveAllSceneObjectsWithName(elementId);
     }
 }
 

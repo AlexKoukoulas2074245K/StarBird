@@ -32,9 +32,24 @@ GLuint TextureResource::GetGLTextureId() const
 
 ///------------------------------------------------------------------------------------------------
 
-const glm::vec2& TextureResource::GetDimensions() const
+glm::vec2 TextureResource::GetDimensions() const
 {
     return mDimensions;
+}
+
+///------------------------------------------------------------------------------------------------
+
+glm::vec2 TextureResource::GetSingleTextureFrameDimensions() const
+{
+    if (GetSheetMetadata())
+    {
+        const auto& firstColData = GetSheetMetadata()->mRowMetadata[0].mColMetadata[0];
+        return glm::vec2((firstColData.maxU - firstColData.minU) * mDimensions.x, (firstColData.maxV - firstColData.minV) * mDimensions.y);
+    }
+    else
+    {
+        return GetDimensions();
+    }
 }
 
 ///------------------------------------------------------------------------------------------------

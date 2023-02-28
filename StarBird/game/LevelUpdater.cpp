@@ -15,6 +15,7 @@
 #include "PhysicsCollisionListener.h"
 #include "Scene.h"
 #include "SceneObjectConstants.h"
+#include "SceneObjectUtils.h"
 
 #include "dataloaders/UpgradesLoader.h"
 #include "states/DebugConsoleGameState.h"
@@ -129,13 +130,13 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
     static PhysicsCollisionListener collisionListener;
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::PLAYER_BULLET_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-        strutils::StringId enemyBodyAddressTag;
-        enemyBodyAddressTag.fromAddress(firstBody);
-        auto enemySceneObjectOpt = mScene.GetSceneObject(enemyBodyAddressTag);
+        strutils::StringId enemyName;
+        enemyName.fromAddress(firstBody);
+        auto enemySceneObjectOpt = mScene.GetSceneObject(enemyName);
         
-        strutils::StringId bulletAddressTag;
-        bulletAddressTag.fromAddress(secondBody);
-        auto bulletSceneObjectOpt = mScene.GetSceneObject(bulletAddressTag);
+        strutils::StringId bulletName;
+        bulletName.fromAddress(secondBody);
+        auto bulletSceneObjectOpt = mScene.GetSceneObject(bulletName);
         
         if (enemySceneObjectOpt && bulletSceneObjectOpt)
         {
@@ -162,7 +163,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 
                 mFlows.emplace_back([=]()
                 {
-                    RemoveWaveEnemy(enemyBodyAddressTag);
+                    RemoveWaveEnemy(enemyName);
                 }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
             }
             
@@ -172,7 +173,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             bulletFilter.maskBits = 0;
             secondBody->GetFixtureList()[0].SetFilterData(bulletFilter);
 
-            mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
+            mScene.RemoveAllSceneObjectsWithName(bulletName);
         }
     });
     
@@ -185,9 +186,9 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         if (iter != mFlows.end()) return;
         
         auto playerSceneObjectOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
-        strutils::StringId enemyBodyAddressTag;
-        enemyBodyAddressTag.fromAddress(secondBody);
-        auto enemySceneObjectOpt = mScene.GetSceneObject(enemyBodyAddressTag);
+        strutils::StringId enemyName;
+        enemyName.fromAddress(secondBody);
+        auto enemySceneObjectOpt = mScene.GetSceneObject(enemyName);
         
         if (playerSceneObjectOpt && enemySceneObjectOpt)
         {
@@ -198,7 +199,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             
             if (mScene.GetSceneObject(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
             {
-                mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+                mScene.RemoveAllSceneObjectsWithName(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
             }
             else
             {
@@ -231,7 +232,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 
                 mFlows.emplace_back([=]()
                 {
-                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithName(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
                 }, playerSO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
             }
         }
@@ -248,9 +249,9 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         auto playerSceneObjectOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
         
         
-        strutils::StringId enemyBulletBodyAddressTag;
-        enemyBulletBodyAddressTag.fromAddress(secondBody);
-        auto enemyBulletSceneObjectOpt = mScene.GetSceneObject(enemyBulletBodyAddressTag);
+        strutils::StringId enemyBulletName;
+        enemyBulletName.fromAddress(secondBody);
+        auto enemyBulletSceneObjectOpt = mScene.GetSceneObject(enemyBulletName);
         
         if (playerSceneObjectOpt && enemyBulletSceneObjectOpt)
         {
@@ -261,7 +262,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             
             if (mScene.GetSceneObject(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
             {
-                mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+                mScene.RemoveAllSceneObjectsWithName(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
             }
             else
             {
@@ -294,7 +295,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 
                 mFlows.emplace_back([=]()
                 {
-                    mScene.RemoveAllSceneObjectsWithNameTag(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithName(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
                 }, playerSO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
             }
             
@@ -304,29 +305,29 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             bulletFilter.maskBits = 0;
             secondBody->GetFixtureList()[0].SetFilterData(bulletFilter);
             
-            RemoveWaveEnemy(enemyBulletBodyAddressTag);
+            RemoveWaveEnemy(enemyBulletName);
         }
     });
     
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::PLAYER_BULLET_CATEGORY_BIT, physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-        strutils::StringId bulletAddressTag;
-        bulletAddressTag.fromAddress(firstBody);
-        mScene.RemoveAllSceneObjectsWithNameTag(bulletAddressTag);
+        strutils::StringId bulletName;
+        bulletName.fromAddress(firstBody);
+        mScene.RemoveAllSceneObjectsWithName(bulletName);
     });
 
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::ENEMY_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-        strutils::StringId enemyAddressTag;
-        enemyAddressTag.fromAddress(firstBody);
-        RemoveWaveEnemy(enemyAddressTag);
+        strutils::StringId enemyName;
+        enemyName.fromAddress(firstBody);
+        RemoveWaveEnemy(enemyName);
     });
     
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_BULLET_CATEGORY_BIT, physics_constants::ENEMY_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-        strutils::StringId enemyBulletAddressTag;
-        enemyBulletAddressTag.fromAddress(firstBody);
-        RemoveWaveEnemy(enemyBulletAddressTag);
+        strutils::StringId enemyBulletName;
+        enemyBulletName.fromAddress(firstBody);
+        RemoveWaveEnemy(enemyBulletName);
     });
     
     mBox2dWorld.SetContactListener(&collisionListener);
@@ -470,19 +471,19 @@ void LevelUpdater::AddFlow(RepeatableFlow&& flow)
 
 ///------------------------------------------------------------------------------------------------
 
-void LevelUpdater::AddWaveEnemy(const strutils::StringId& enemyTag)
+void LevelUpdater::AddWaveEnemy(const strutils::StringId& enemyName)
 {
-    mWaveEnemies.insert(enemyTag);
+    mWaveEnemies.insert(enemyName);
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void LevelUpdater::RemoveWaveEnemy(const strutils::StringId &enemyTag)
+void LevelUpdater::RemoveWaveEnemy(const strutils::StringId& enemyName)
 {
-    mWaveEnemies.erase(enemyTag);
-    mScene.RemoveAllSceneObjectsWithNameTag(enemyTag);
+    mWaveEnemies.erase(enemyName);
+    mScene.RemoveAllSceneObjectsWithName(enemyName);
     
-    auto enemyBulletFlow = GetFlow(strutils::StringId(enemyTag.GetString() + game_object_constants::ENEMY_PROJECTILE_FLOW_POSTFIX));
+    auto enemyBulletFlow = GetFlow(strutils::StringId(enemyName.GetString() + game_object_constants::ENEMY_PROJECTILE_FLOW_POSTFIX));
     if (enemyBulletFlow)
     {
         enemyBulletFlow->get().ForceFinish();
@@ -770,37 +771,9 @@ void LevelUpdater::CreateBulletAtPosition(const strutils::StringId& bulletType, 
     if (bulletDefOpt)
     {
         auto& bulletDef = bulletDefOpt->get();
-        
-        SceneObject so;
-        b2BodyDef bodyDef;
-        bodyDef.type = b2_dynamicBody;
-        bodyDef.position.x = position.x;
-        bodyDef.position.y = position.y;
-        bodyDef.bullet =  true;
-        b2Body* body = mBox2dWorld.CreateBody(&bodyDef);
-        body->SetLinearVelocity(b2Vec2(bulletDef.mConstantLinearVelocity.x, bulletDef.mConstantLinearVelocity.y));
-        b2PolygonShape dynamicBox;
-        
-        auto& bulletTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(bulletDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)->VGetCurrentTextureResourceId());
-        float textureAspect = bulletTexture.GetDimensions().x/bulletTexture.GetDimensions().y;
-        dynamicBox.SetAsBox(bulletDef.mSize, bulletDef.mSize/textureAspect);
-        
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &dynamicBox;
-        fixtureDef.filter = bulletDef.mContactFilter;
-        body->CreateFixture(&fixtureDef);
-        
-        so.mBody = body;
-        so.mCustomPosition.z = game_object_constants::BULLET_Z;
-        so.mShaderResourceId = bulletDef.mShaderResourceId;
-        so.mAnimation = std::make_unique<SingleFrameAnimation>(bulletDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)->VGetCurrentTextureResourceId());
-        so.mMeshResourceId = bulletDef.mMeshResourceId;
-        so.mSceneObjectType = SceneObjectType::WorldGameObject;
-        so.mNameTag.fromAddress(so.mBody);
-        so.mUseBodyForRendering = true;
-        so.mObjectFamilyTypeName = bulletType;
-        
-        mScene.AddSceneObject(std::move(so));
+        auto bulletPos = position;
+        bulletPos.z = game_object_constants::BULLET_Z;
+        mScene.AddSceneObject(scene_object_utils::CreateSceneObjectWithBody(bulletDef, position, mBox2dWorld));
     }
 }
 

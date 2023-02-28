@@ -29,12 +29,12 @@ public:
     
     std::string GetSceneStateDescription() const;
     
-    std::optional<std::reference_wrapper<SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectNameTag);
-    std::optional<std::reference_wrapper<const SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectNameTag) const;
+    std::optional<std::reference_wrapper<SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectName);
+    std::optional<std::reference_wrapper<const SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectName) const;
     const std::vector<SceneObject>& GetSceneObjects() const;
     
     void AddSceneObject(SceneObject&& sceneObject);
-    void RemoveAllSceneObjectsWithNameTag(const strutils::StringId& nameTag);
+    void RemoveAllSceneObjectsWithName(const strutils::StringId& name);
 
     void FreezeAllPhysicsBodies();
     void LoadLevel(const std::string& levelName);
@@ -58,7 +58,7 @@ private:
     b2World mBox2dWorld;
     std::vector<SceneObject> mSceneObjects;
     std::vector<SceneObject> mSceneObjectsToAdd;
-    std::vector<strutils::StringId> mNameTagsOfSceneObjectsToRemove;
+    std::vector<strutils::StringId> mNamesOfSceneObjectsToRemove;
     LevelUpdater mLevelUpdater;
     SceneRenderer mSceneRenderer;
     bool mPreFirstUpdate;

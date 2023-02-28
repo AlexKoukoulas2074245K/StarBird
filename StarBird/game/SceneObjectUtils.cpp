@@ -8,6 +8,10 @@
 #include "SceneObjectUtils.h"
 #include "Scene.h"
 #include "datarepos/FontRepository.h"
+#include "definitions/ObjectTypeDefinition.h"
+#include "../resloading/TextureResource.h"
+
+#include <Box2D/Box2D.h>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -94,6 +98,63 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
         
         return math::IsPointInsideRectangle(rectBottomLeft, rectTopRight, point);
     }
+}
+
+///------------------------------------------------------------------------------------------------
+
+strutils::StringId GenerateSceneObjectName(const SceneObject& sceneObject)
+{
+    if (!sceneObject.mBody) return strutils::StringId();
+    
+    strutils::StringId name;
+    name.fromAddress(sceneObject.mBody);
+    return name;
+}
+
+///------------------------------------------------------------------------------------------------
+
+SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, const glm::vec3& position, b2World& box2dWorld, strutils::StringId sceneObjectName)
+{
+    SceneObject so;
+    so.mAnimation = objectDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)->VClone();
+    
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position.Set(position.x, position.y);
+    b2Body* body = box2dWorld.CreateBody(&bodyDef);
+    body->SetLinearDamping(objectDef.mLinearDamping);
+    
+    b2PolygonShape dynamicBox;
+    auto& texture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(so.mAnimation->VGetCurrentTextureResourceId());
+    
+    float textureAspect = texture.GetSingleTextureFrameDimensions().x/texture.GetSingleTextureFrameDimensions().y;
+    dynamicBox.SetAsBox(objectDef.mSize, objectDef.mSize/textureAspect);
+    
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &dynamicBox;
+    fixtureDef.filter = objectDef.mContactFilter;
+    fixtureDef.density = objectDef.mSize;
+    body->CreateFixture(&fixtureDef);
+    
+    so.mObjectFamilyTypeName = objectDef.mName;
+    so.mBody = body;
+    so.mHealth = objectDef.mHealth;
+    so.mShaderResourceId = objectDef.mShaderResourceId;
+    so.mMeshResourceId = objectDef.mMeshResourceId;
+    so.mSceneObjectType = SceneObjectType::WorldGameObject;
+    so.mCustomPosition.z = position.z;
+    so.mUseBodyForRendering = true;
+    
+    if (sceneObjectName.isEmpty())
+    {
+        so.mName = GenerateSceneObjectName(so);
+    }
+    else
+    {
+        so.mName = sceneObjectName;
+    }
+    
+    return so;
 }
 
 ///------------------------------------------------------------------------------------------------

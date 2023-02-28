@@ -8,11 +8,13 @@
 #include "FightingWaveGameState.h"
 #include "UpgradeSelectionGameState.h"
 #include "WaveIntroGameState.h"
+
 #include "../LevelUpdater.h"
 #include "../GameSingletons.h"
 #include "../GameObjectConstants.h"
 #include "../PhysicsConstants.h"
 #include "../Scene.h"
+#include "../SceneObjectUtils.h"
 #include "../datarepos/ObjectTypeDefinitionRepository.h"
 #include "../../resloading/ResourceLoadingService.h"
 #include "../../resloading/TextureResource.h"
@@ -35,93 +37,28 @@ void FightingWaveGameState::VInitialize()
         if (!enemyDefOpt) continue;
         const auto& enemyDef = enemyDefOpt->get();
         
-        SceneObject so;
+        SceneObject so = scene_object_utils::CreateSceneObjectWithBody(enemyDef, enemy.mPosition, *mBox2dWorld);
+        auto enemyName = so.mName;
         
-        so.mAnimation = enemyDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)->VClone();
-        
-        b2BodyDef bodyDef;
-        bodyDef.type = b2_dynamicBody;
-        bodyDef.position.Set(enemy.mPosition.x, enemy.mPosition.y);
-        b2Body* body = mBox2dWorld->CreateBody(&bodyDef);
-        body->SetLinearDamping(enemyDef.mLinearDamping);
-        
-        b2PolygonShape dynamicBox;
-        auto& enemyTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(so.mAnimation->VGetCurrentTextureResourceId());
-        
-        float textureAspect = enemyTexture.GetDimensions().x/enemyTexture.GetDimensions().y;
-        dynamicBox.SetAsBox(enemyDef.mSize, enemyDef.mSize/textureAspect);
-        
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &dynamicBox;
-        fixtureDef.filter = enemyDef.mContactFilter;
-        fixtureDef.filter.maskBits &= (~physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
-        fixtureDef.filter.maskBits &= (~physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT);
-        body->CreateFixture(&fixtureDef);
-        
-        so.mObjectFamilyTypeName = enemy.mGameObjectEnemyType;
-        so.mBody = body;
-        so.mHealth = enemyDef.mHealth;
-        so.mShaderResourceId = enemyDef.mShaderResourceId;
-        so.mMeshResourceId = enemyDef.mMeshResourceId;
-        so.mSceneObjectType = SceneObjectType::WorldGameObject;
-        so.mCustomPosition.z = 0.0f;
-        so.mUseBodyForRendering = true;
-        
-        strutils::StringId nameTag;
-        nameTag.fromAddress(so.mBody);
-        so.mNameTag = nameTag;
-
         if (!enemyDef.mProjectileType.isEmpty())
         {
-            auto projectileFlowName = strutils::StringId(so.mNameTag.GetString() + game_object_constants::ENEMY_PROJECTILE_FLOW_POSTFIX);
+            auto projectileFlowName = strutils::StringId(so.mName.GetString() + game_object_constants::ENEMY_PROJECTILE_FLOW_POSTFIX);
             mLevelUpdater->AddFlow(RepeatableFlow([=]()
             {
                 auto bulletDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemyDef.mProjectileType);
-                auto sourceEnemySoOpt = mScene->GetSceneObject(nameTag);
+                auto sourceEnemySoOpt = mScene->GetSceneObject(enemyName);
                 
                 if (bulletDefOpt && sourceEnemySoOpt)
                 {
                     auto& bulletDef = bulletDefOpt->get();
                     auto& sourceEnemySo = sourceEnemySoOpt->get();
                     
-                    SceneObject so;
-                    b2BodyDef bodyDef;
-                    bodyDef.type = b2_dynamicBody;
-                    bodyDef.position.x = sourceEnemySo.mBody->GetWorldCenter().x;
-                    bodyDef.position.y = sourceEnemySo.mBody->GetWorldCenter().y;
-                    bodyDef.bullet =  true;
-                    b2Body* body = mBox2dWorld->CreateBody(&bodyDef);
-                    body->SetLinearVelocity(b2Vec2(bulletDef.mConstantLinearVelocity.x, bulletDef.mConstantLinearVelocity.y));
-                    b2PolygonShape dynamicBox;
+                    auto bulletPosition = math::Box2dVec2ToGlmVec3(sourceEnemySo.mBody->GetWorldCenter());
+                    bulletPosition.z = game_object_constants::BULLET_Z;
+                    SceneObject bulletSceneObject = scene_object_utils::CreateSceneObjectWithBody(bulletDef, bulletPosition, *mBox2dWorld);
                     
-                    auto& bulletTexture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(bulletDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)->VGetCurrentTextureResourceId());
-                    float textureAspect = bulletTexture.GetDimensions().x/bulletTexture.GetDimensions().y;
-                    dynamicBox.SetAsBox(bulletDef.mSize, bulletDef.mSize/textureAspect);
-                    
-                    b2FixtureDef fixtureDef;
-                    fixtureDef.shape = &dynamicBox;
-                    fixtureDef.filter = bulletDef.mContactFilter;
-                    fixtureDef.filter.maskBits &= (~physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
-                    fixtureDef.filter.maskBits &= (~physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT);
-                    
-                    body->CreateFixture(&fixtureDef);
-                    
-                    so.mBody = body;
-                    so.mCustomPosition.z = game_object_constants::BULLET_Z;
-                    so.mShaderResourceId = bulletDef.mShaderResourceId;
-                    so.mAnimation = std::make_unique<SingleFrameAnimation>(bulletDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)->VGetCurrentTextureResourceId());
-                    so.mMeshResourceId = bulletDef.mMeshResourceId;
-                    so.mSceneObjectType = SceneObjectType::WorldGameObject;
-                    so.mNameTag.fromAddress(so.mBody);
-                    so.mUseBodyForRendering = true;
-                    so.mObjectFamilyTypeName = enemyDef.mProjectileType;
-                    
-                    strutils::StringId nameTag;
-                    nameTag.fromAddress(so.mBody);
-                    so.mNameTag = nameTag;
-                    mLevelUpdater->AddWaveEnemy(so.mNameTag);
-                    
-                    mScene->AddSceneObject(std::move(so));
+                    mLevelUpdater->AddWaveEnemy(bulletSceneObject.mName);
+                    mScene->AddSceneObject(std::move(bulletSceneObject));
                 }
                 else
                 {
@@ -130,7 +67,7 @@ void FightingWaveGameState::VInitialize()
             }, enemyDef.mShootingFrequencyMillis, RepeatableFlow::RepeatPolicy::REPEAT, projectileFlowName));
         }
                                    
-        mLevelUpdater->AddWaveEnemy(nameTag);
+        mLevelUpdater->AddWaveEnemy(enemyName);
         
         mScene->AddSceneObject(std::move(so));
     }

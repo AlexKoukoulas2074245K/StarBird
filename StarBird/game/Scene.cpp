@@ -11,6 +11,7 @@
 #include "GameObjectConstants.h"
 #include "PhysicsConstants.h"
 #include "SceneObjectConstants.h"
+#include "SceneObjectUtils.h"
 #include "ObjectTypeDefinitionRepository.h"
 #include "dataloaders/LevelDataLoader.h"
 #include "../resloading/ResourceLoadingService.h"
@@ -40,11 +41,11 @@ std::string Scene::GetSceneStateDescription() const
 
 ///------------------------------------------------------------------------------------------------
 
-std::optional<std::reference_wrapper<SceneObject>> Scene::GetSceneObject(const strutils::StringId& sceneObjectNameTag)
+std::optional<std::reference_wrapper<SceneObject>> Scene::GetSceneObject(const strutils::StringId& sceneObjectName)
 {
     auto findIter = std::find_if(mSceneObjects.begin(), mSceneObjects.end(), [&](SceneObject& so)
     {
-        return so.mNameTag == sceneObjectNameTag;
+        return so.mName == sceneObjectName;
     });
     
     if (findIter != mSceneObjects.end())
@@ -54,7 +55,7 @@ std::optional<std::reference_wrapper<SceneObject>> Scene::GetSceneObject(const s
     
     findIter = std::find_if(mSceneObjectsToAdd.begin(), mSceneObjectsToAdd.end(), [&](SceneObject& so)
     {
-        return so.mNameTag == sceneObjectNameTag;
+        return so.mName == sceneObjectName;
     });
     
     if (findIter != mSceneObjectsToAdd.end())
@@ -67,11 +68,11 @@ std::optional<std::reference_wrapper<SceneObject>> Scene::GetSceneObject(const s
 
 ///------------------------------------------------------------------------------------------------
 
-std::optional<std::reference_wrapper<const SceneObject>> Scene::GetSceneObject(const strutils::StringId& sceneObjectNameTag) const
+std::optional<std::reference_wrapper<const SceneObject>> Scene::GetSceneObject(const strutils::StringId& sceneObjectName) const
 {
     auto findIter = std::find_if(mSceneObjects.cbegin(), mSceneObjects.cend(), [&](const SceneObject& so)
     {
-        return so.mNameTag == sceneObjectNameTag;
+        return so.mName == sceneObjectName;
     });
     
     if (findIter != mSceneObjects.cend())
@@ -105,10 +106,10 @@ void Scene::AddSceneObject(SceneObject&& sceneObject)
 
 ///------------------------------------------------------------------------------------------------
 
-void Scene::RemoveAllSceneObjectsWithNameTag(const strutils::StringId& nameTag)
+void Scene::RemoveAllSceneObjectsWithName(const strutils::StringId& name)
 {
     assert(!mPreFirstUpdate);
-    mNameTagsOfSceneObjectsToRemove.push_back(nameTag);
+    mNamesOfSceneObjectsToRemove.push_back(name);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -176,13 +177,13 @@ void Scene::UpdateScene(const float dtMillis)
     
     mLevelUpdater.Update(mSceneObjects, dtMillis);
     
-    for (const auto& nameTag: mNameTagsOfSceneObjectsToRemove)
+    for (const auto& name: mNamesOfSceneObjectsToRemove)
     {
         do
         {
             auto iter = std::find_if(mSceneObjects.begin(), mSceneObjects.end(), [&](const SceneObject& so)
             {
-                return so.mNameTag == nameTag;
+                return so.mName == name;
             });
             
             if (iter == mSceneObjects.end())
@@ -202,7 +203,7 @@ void Scene::UpdateScene(const float dtMillis)
         } while (true);
     }
     
-    mNameTagsOfSceneObjectsToRemove.clear();
+    mNamesOfSceneObjectsToRemove.clear();
     
     std::move(mSceneObjectsToAdd.begin(), mSceneObjectsToAdd.end(), std::back_inserter(mSceneObjects));
     mSceneObjectsToAdd.clear();
@@ -263,7 +264,7 @@ void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
         so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
         so.mInvisible = invisible;
         so.mCustomPosition.z = game_object_constants::WALL_Z;
-        so.mNameTag = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(so));
     }
     
@@ -293,7 +294,7 @@ void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
         so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
         so.mInvisible = invisible;
         so.mCustomPosition.z = game_object_constants::WALL_Z;
-        so.mNameTag = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(so));
     }
 
@@ -323,7 +324,7 @@ void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
         so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
         so.mInvisible = invisible;
         so.mCustomPosition.z = game_object_constants::WALL_Z;
-        so.mNameTag = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(so));
     }
     
@@ -353,7 +354,7 @@ void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
         so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
         so.mInvisible = invisible;
         so.mCustomPosition.z = game_object_constants::WALL_Z;
-        so.mNameTag = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(so));
     }
     
@@ -383,7 +384,7 @@ void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
         so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
         so.mInvisible = invisible;
         so.mCustomPosition.z = game_object_constants::WALL_Z;
-        so.mNameTag = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(so));
     }
 }
@@ -403,7 +404,7 @@ void Scene::LoadLevelInvariantObjects()
         bgSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::TEXTURE_OFFSET_SHADER_FILE_NAME);
         bgSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::BACKGROUND_TEXTURE_FILE_NAME));
         bgSO.mSceneObjectType = SceneObjectType::GUIObject;
-        bgSO.mNameTag = scene_object_constants::BACKGROUND_SCENE_OBJECT_NAME;
+        bgSO.mName = scene_object_constants::BACKGROUND_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(bgSO));
     }
     
@@ -419,36 +420,7 @@ void Scene::LoadLevelInvariantObjects()
         
         auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(game_object_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
         
-        SceneObject playerSO;
-        b2BodyDef bodyDef;
-        bodyDef.type = b2_dynamicBody;
-        bodyDef.position.Set(game_object_constants::PLAYER_INITIAL_POS.x, game_object_constants::PLAYER_INITIAL_POS.y);
-        b2Body* body = mBox2dWorld.CreateBody(&bodyDef);
-        
-        b2PolygonShape dynamicBox;
-        
-        auto& playerMesh = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(playerObjectDef.mMeshResourceId);
-        
-        playerSO.mCustomBodyDimensions = glm::vec2(playerMesh.GetDimensions().x * game_object_constants::PLAYER_BODY_X_SCALE, playerMesh.GetDimensions().y);
-        dynamicBox.SetAsBox(playerSO.mCustomBodyDimensions.x, playerSO.mCustomBodyDimensions.y);
-        
-        
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &dynamicBox;
-        fixtureDef.filter.categoryBits = physics_constants::PLAYER_CATEGORY_BIT;
-        fixtureDef.filter.maskBits &= ~(physics_constants::PLAYER_BULLET_CATEGORY_BIT);
-        body->CreateFixture(&fixtureDef);
-        
-        playerSO.mBody = body;
-        playerSO.mHealth = playerObjectDef.mHealth;
-        playerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        playerSO.mAnimation = std::make_unique<SingleFrameAnimation>(playerObjectDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)->VGetCurrentTextureResourceId());
-        playerSO.mMeshResourceId = playerObjectDef.mMeshResourceId;
-        playerSO.mSceneObjectType = SceneObjectType::WorldGameObject;
-        playerSO.mCustomPosition.z = 0.0f;
-        playerSO.mNameTag = scene_object_constants::PLAYER_SCENE_OBJECT_NAME;
-        playerSO.mObjectFamilyTypeName = game_object_constants::PLAYER_OBJECT_TYPE_DEF_NAME;
-        playerSO.mUseBodyForRendering = true;
+        SceneObject playerSO = scene_object_utils::CreateSceneObjectWithBody(playerObjectDef, game_object_constants::PLAYER_INITIAL_POS, mBox2dWorld, scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
         
         AddSceneObject(std::move(playerSO));
     }
@@ -467,7 +439,7 @@ void Scene::LoadLevelInvariantObjects()
         joystickSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         joystickSO.mSceneObjectType = SceneObjectType::GUIObject;
         joystickSO.mCustomScale = game_object_constants::JOYSTICK_SCALE;
-        joystickSO.mNameTag = scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME;
+        joystickSO.mName = scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME;
         joystickSO.mInvisible = true;
         AddSceneObject(std::move(joystickSO));
     }
@@ -480,7 +452,7 @@ void Scene::LoadLevelInvariantObjects()
         joystickBoundsSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         joystickBoundsSO.mSceneObjectType = SceneObjectType::GUIObject;
         joystickBoundsSO.mCustomScale = game_object_constants::JOYSTICK_BOUNDS_SCALE;
-        joystickBoundsSO.mNameTag = scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME;
+        joystickBoundsSO.mName = scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME;
         joystickBoundsSO.mInvisible = true;
         AddSceneObject(std::move(joystickBoundsSO));
     }
@@ -494,7 +466,7 @@ void Scene::LoadLevelInvariantObjects()
         healthBarSo.mSceneObjectType = SceneObjectType::GUIObject;
         healthBarSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
         healthBarSo.mCustomScale = game_object_constants::HEALTH_BAR_SCALE;
-        healthBarSo.mNameTag = scene_object_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME;
+        healthBarSo.mName = scene_object_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(healthBarSo));
     }
     
@@ -507,7 +479,7 @@ void Scene::LoadLevelInvariantObjects()
         healthBarFrameSo.mSceneObjectType = SceneObjectType::GUIObject;
         healthBarFrameSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
         healthBarFrameSo.mCustomScale = game_object_constants::HEALTH_BAR_SCALE;
-        healthBarFrameSo.mNameTag = scene_object_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
+        healthBarFrameSo.mName = scene_object_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(healthBarFrameSo));
     }
     

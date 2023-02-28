@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ObjectDefinition>
-    <Animation state="idle" texture="bullet" duration="-1"/>
-    <Physics bodySize="0.25f" linearDamping="0.0f" constantVelocity="0.0f, 16.0f" category="player_bullet" collidingWithEnemies="true" collidingWithPlayerBullets="false" collidingWithEnemyBullets="false"/>
+    <Animation state="idle" texture="bullet_sheet" scale="1.0f" textureSheetRow="0" duration="600"/>
+    <Physics bodySize="0.25f" linearDamping="0.0f" constantVelocity="0.0f, 16.0f" category="player_bullet"/>
     <Shader name="basic"/>
     <Model name="quad"/>
     <GameAttributes movementControllerPattern="constant_velocity" damage="1.0f"/>

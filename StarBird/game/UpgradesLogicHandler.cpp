@@ -95,7 +95,7 @@ void UpgradesLogicHandler::CreateMirrorImageSceneObjects()
         leftMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
         leftMirrorImageSo.mCustomPosition = game_object_constants::LEFT_MIRROR_IMAGE_POSITION_OFFSET;
         leftMirrorImageSo.mCustomScale = game_object_constants::LEFT_MIRROR_IMAGE_SCALE;
-        leftMirrorImageSo.mNameTag = scene_object_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
+        leftMirrorImageSo.mName = scene_object_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
         leftMirrorImageSo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.5f;
         mScene.AddSceneObject(std::move(leftMirrorImageSo));
     }
@@ -108,7 +108,7 @@ void UpgradesLogicHandler::CreateMirrorImageSceneObjects()
         rightMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
         rightMirrorImageSo.mCustomPosition = game_object_constants::RIGHT_MIRROR_IMAGE_POSITION_OFFSET;
         rightMirrorImageSo.mCustomScale = game_object_constants::RIGHT_MIRROR_IMAGE_SCALE;
-        rightMirrorImageSo.mNameTag = scene_object_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
+        rightMirrorImageSo.mName = scene_object_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
         rightMirrorImageSo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.5f;
         mScene.AddSceneObject(std::move(rightMirrorImageSo));
     }
@@ -130,7 +130,7 @@ void UpgradesLogicHandler::CreatePlayerShieldSceneObject()
         playerShieldSo.mSceneObjectType = SceneObjectType::WorldGameObject;
         playerShieldSo.mCustomPosition = math::Box2dVec2ToGlmVec3(playerSoOpt->get().mBody->GetWorldCenter()) + game_object_constants::PLAYER_SHIELD_POSITION_OFFSET;
         playerShieldSo.mCustomScale = game_object_constants::PLAYER_SHIELD_SCALE;
-        playerShieldSo.mNameTag = scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME;
+        playerShieldSo.mName = scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(playerShieldSo));
     }
 }

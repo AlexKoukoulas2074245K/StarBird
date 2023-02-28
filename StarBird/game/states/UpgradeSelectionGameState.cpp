@@ -71,11 +71,11 @@ PostStateUpdateDirective UpgradeSelectionGameState::VUpdate(const float dtMillis
 
 void UpgradeSelectionGameState::VDestroy()
 {
-    mScene->RemoveAllSceneObjectsWithNameTag(scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
-    mScene->RemoveAllSceneObjectsWithNameTag(scene_object_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-    mScene->RemoveAllSceneObjectsWithNameTag(scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
-    mScene->RemoveAllSceneObjectsWithNameTag(scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
-    mScene->RemoveAllSceneObjectsWithNameTag(scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
+    mScene->RemoveAllSceneObjectsWithName(scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
+    mScene->RemoveAllSceneObjectsWithName(scene_object_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+    mScene->RemoveAllSceneObjectsWithName(scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
+    mScene->RemoveAllSceneObjectsWithName(scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
+    mScene->RemoveAllSceneObjectsWithName(scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -93,7 +93,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
         overlaySo.mCustomScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
         overlaySo.mCustomPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
-        overlaySo.mNameTag = scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
+        overlaySo.mName = scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
         overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
         mScene->AddSceneObject(std::move(overlaySo));
     }
@@ -107,7 +107,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         leftUpgradeContainerSO.mSceneObjectType = SceneObjectType::GUIObject;
         leftUpgradeContainerSO.mCustomScale = game_object_constants::LEFT_UPGRADE_CONTAINER_SCALE;
         leftUpgradeContainerSO.mCustomPosition = game_object_constants::LEFT_UPGRADE_CONTAINER_INIT_POS;
-        leftUpgradeContainerSO.mNameTag = scene_object_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
+        leftUpgradeContainerSO.mName = scene_object_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
         mScene->AddSceneObject(std::move(leftUpgradeContainerSO));
     }
     
@@ -120,7 +120,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         rightUpgradeContainerSO.mSceneObjectType = SceneObjectType::GUIObject;
         rightUpgradeContainerSO.mCustomScale = game_object_constants::RIGHT_UPGRADE_CONTAINER_SCALE;
         rightUpgradeContainerSO.mCustomPosition = game_object_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS;
-        rightUpgradeContainerSO.mNameTag = scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
+        rightUpgradeContainerSO.mName = scene_object_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
         mScene->AddSceneObject(std::move(rightUpgradeContainerSO));
     }
     
@@ -138,7 +138,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         leftUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
         leftUpgradeSO.mCustomScale = game_object_constants::LEFT_UPGRADE_SCALE;
         leftUpgradeSO.mCustomPosition = game_object_constants::LEFT_UPGRADE_INIT_POS;
-        leftUpgradeSO.mNameTag = scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME;
+        leftUpgradeSO.mName = scene_object_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME;
         mScene->AddSceneObject(std::move(leftUpgradeSO));
         
         GameSingletons::GetUpgradeSelection().first = upgrade;
@@ -159,7 +159,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         rightUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
         rightUpgradeSO.mCustomScale = game_object_constants::RIGHT_UPGRADE_SCALE;
         rightUpgradeSO.mCustomPosition = game_object_constants::RIGHT_UPGRADE_INIT_POS;
-        rightUpgradeSO.mNameTag = scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME;
+        rightUpgradeSO.mName = scene_object_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME;
         mScene->AddSceneObject(std::move(rightUpgradeSO));
         
         GameSingletons::GetUpgradeSelection().second = upgrade;
@@ -374,7 +374,7 @@ strutils::StringId UpgradeSelectionGameState::TestForUpgradeSelected()
             auto& leftUpgrade = leftUpgradeSoOpt->get();
             if (scene_object_utils::IsPointInsideSceneObject(leftUpgrade, touchPos))
             {
-                return leftUpgrade.mNameTag;
+                return leftUpgrade.mName;
             }
         }
         
@@ -384,7 +384,7 @@ strutils::StringId UpgradeSelectionGameState::TestForUpgradeSelected()
             auto& rightUpgrade = rightUpgradeSoOpt->get();
             if (scene_object_utils::IsPointInsideSceneObject(rightUpgrade, touchPos))
             {
-                return rightUpgrade.mNameTag;
+                return rightUpgrade.mName;
             }
         }
     }

@@ -39,8 +39,8 @@ public:
     void Update(std::vector<SceneObject>& sceneObjects, const float dtMillis);
     void AdvanceWave();
     void AddFlow(RepeatableFlow&& flow);
-    void AddWaveEnemy(const strutils::StringId& enemyTag);
-    void RemoveWaveEnemy(const strutils::StringId& enemyTag);
+    void AddWaveEnemy(const strutils::StringId& enemyName);
+    void RemoveWaveEnemy(const strutils::StringId& enemyName);
     
     const LevelDefinition& GetCurrentLevelDefinition() const;
     size_t GetCurrentWaveNumber() const;
