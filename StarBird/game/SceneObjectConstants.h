@@ -50,6 +50,7 @@ static const strutils::StringId TEXTURE_OFFSET_UNIFORM_NAME = strutils::StringId
 static const strutils::StringId SHINE_X_OFFSET_UNIFORM_NAME = strutils::StringId("shine_x_offset");
 static const strutils::StringId DISSOLVE_Y_OFFSET_UNIFORM_NAME = strutils::StringId("dissolve_y_offset");
 static const strutils::StringId IS_TEXTURE_SHEET_UNIFORM_NAME = strutils::StringId("texture_sheet");
+static const strutils::StringId IS_AFFECTED_BY_LIGHT_UNIFORM_NAME = strutils::StringId("affected_by_light");
 static const strutils::StringId MIN_U_UNIFORM_NAME = strutils::StringId("min_u");
 static const strutils::StringId MIN_V_UNIFORM_NAME = strutils::StringId("min_v");
 static const strutils::StringId MAX_U_UNIFORM_NAME = strutils::StringId("max_u");

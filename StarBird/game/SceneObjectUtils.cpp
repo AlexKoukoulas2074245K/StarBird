@@ -10,6 +10,7 @@
 #include "datarepos/FontRepository.h"
 #include "definitions/ObjectTypeDefinition.h"
 #include "../resloading/TextureResource.h"
+#include "../resloading/MeshResource.h"
 
 #include <Box2D/Box2D.h>
 
@@ -113,7 +114,7 @@ strutils::StringId GenerateSceneObjectName(const SceneObject& sceneObject)
 
 ///------------------------------------------------------------------------------------------------
 
-SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, const glm::vec3& position, b2World& box2dWorld, strutils::StringId sceneObjectName)
+SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, const glm::vec3& position, b2World& box2dWorld, strutils::StringId sceneObjectName, glm::vec2 bodyCustomScaling)
 {
     SceneObject so;
     so.mAnimation = objectDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)->VClone();
@@ -126,14 +127,21 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
     
     b2PolygonShape dynamicBox;
     auto& texture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(so.mAnimation->VGetCurrentTextureResourceId());
+    auto& mesh = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(objectDef.mMeshResourceId);
     
     float textureAspect = texture.GetSingleTextureFrameDimensions().x/texture.GetSingleTextureFrameDimensions().y;
     dynamicBox.SetAsBox(objectDef.mSize, objectDef.mSize/textureAspect);
     
+    if (bodyCustomScaling.x > 0.0f || bodyCustomScaling.y > 0.0f)
+    {
+         so.mCustomBodyDimensions = glm::vec2(mesh.GetDimensions().x * bodyCustomScaling.x, bodyCustomScaling.y);
+         dynamicBox.SetAsBox(so.mCustomBodyDimensions.x, so.mCustomBodyDimensions.y);
+    }
+    
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
     fixtureDef.filter = objectDef.mContactFilter;
-    fixtureDef.density = objectDef.mSize;
+    fixtureDef.density = objectDef.mSize * objectDef.mSize; // Density is size^2
     body->CreateFixture(&fixtureDef);
     
     so.mObjectFamilyTypeName = objectDef.mName;
@@ -144,6 +152,7 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
     so.mSceneObjectType = SceneObjectType::WorldGameObject;
     so.mCustomPosition.z = position.z;
     so.mUseBodyForRendering = true;
+    so.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = true;
     
     if (sceneObjectName.isEmpty())
     {

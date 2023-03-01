@@ -13,6 +13,8 @@
 #include "SceneObject.h"
 #include "LevelUpdater.h"
 #include "SceneRenderer.h"
+
+#include "datarepos/LightRepository.h"
 #include "../utils/StringUtils.h"
 
 #include <optional>
@@ -32,6 +34,9 @@ public:
     std::optional<std::reference_wrapper<SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectName);
     std::optional<std::reference_wrapper<const SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectName) const;
     const std::vector<SceneObject>& GetSceneObjects() const;
+    
+    const LightRepository& GetLightRepository() const;
+    LightRepository& GetLightRepository();
     
     void AddSceneObject(SceneObject&& sceneObject);
     void RemoveAllSceneObjectsWithName(const strutils::StringId& name);
@@ -59,6 +64,7 @@ private:
     std::vector<SceneObject> mSceneObjects;
     std::vector<SceneObject> mSceneObjectsToAdd;
     std::vector<strutils::StringId> mNamesOfSceneObjectsToRemove;
+    LightRepository mLightRepository;
     LevelUpdater mLevelUpdater;
     SceneRenderer mSceneRenderer;
     bool mPreFirstUpdate;

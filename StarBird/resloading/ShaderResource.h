@@ -36,6 +36,7 @@ public:
     ShaderResource
     (
         const std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher>& uniformNamesToLocations,
+        const std::unordered_map<strutils::StringId, int, strutils::StringIdHasher>& uniformArrayElementCounts,
         const std::vector<strutils::StringId>& uniformSamplerNamesInOrder,
         const GLuint programId
     );
@@ -64,6 +65,7 @@ public:
 private:
     std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher> mShaderUniformNamesToLocations;
     std::vector<strutils::StringId> mUniformSamplerNamesInOrder;
+    std::unordered_map<strutils::StringId, int, strutils::StringIdHasher> mUniformArrayElementCounts;
     GLuint mProgramId;    
 };
 

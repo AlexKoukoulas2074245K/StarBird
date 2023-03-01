@@ -55,8 +55,9 @@ private:
     void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMillis);
     void UpdateBackground(const float dtMillis);
     void UpdateHealthBars(const float dtMillis);
-    void UpdateCameras(const float dtMillis);
     void UpdateFlows(const float dtMillis);
+    void UpdateCameras(const float dtMillis);
+    void UpdateLights(const float dtMillis);
     
     void OnPlayerDamaged();
     void OnBlockedUpdate();
@@ -72,6 +73,7 @@ private:
     PostStateUpdateDirective mLastPostStateMachineUpdateDirective;
     std::vector<RepeatableFlow> mFlows;
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> mWaveEnemies;
+    std::unordered_set<strutils::StringId, strutils::StringIdHasher> mActiveLightNames;
     
     glm::vec3 mPreviousMotionVec;
     size_t mCurrentWaveNumber;

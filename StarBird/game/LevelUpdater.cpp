@@ -64,7 +64,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         bool hasMirrorImageUpgrade = equippedUpgrades.count(game_object_constants::MIRROR_IMAGE_UGPRADE_NAME) != 0;
 
         auto playerOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
-        if (playerOpt)
+        if (playerOpt && playerOpt->get().mStateName == scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)
         {
             if (hasDoubleBulletUpgrade)
             {
@@ -165,6 +165,9 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 {
                     RemoveWaveEnemy(enemyName);
                 }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
+                
+                mActiveLightNames.insert(enemyName);
+                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_object_constants::POINT_LIGHT_COLOR, enemySO.mCustomPosition, game_object_constants::EXPLOSION_LIGHT_POWER);
             }
             
             // Erase bullet collision mask so that it doesn't also contribute to other
@@ -344,6 +347,8 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
     mStateMachine.RegisterState<PauseMenuGameState>();
     mStateMachine.RegisterState<UpgradeSelectionGameState>();
 
+    mActiveLightNames.clear();
+    mWaveEnemies.clear();
     mCurrentWaveNumber = 0;
     mStateMachine.InitStateMachine(WaveIntroGameState::STATE_NAME);
 }
@@ -453,6 +458,7 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
     UpdateHealthBars(dtMillis);
     UpdateFlows(dtMillis);
     UpdateCameras(dtMillis);
+    UpdateLights(dtMillis);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -723,6 +729,32 @@ void LevelUpdater::UpdateCameras(const float dtMillis)
     
     if (guiCamOpt) guiCamOpt->get().Update(dtMillis);
     if (worldCamOpt) worldCamOpt->get().Update(dtMillis);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::UpdateLights(const float dtMillis)
+{
+    auto& lightRepository = mScene.GetLightRepository();
+    
+    auto lightIter = mActiveLightNames.begin();
+    while (lightIter != mActiveLightNames.end())
+    {
+        auto lightName = *lightIter;
+        auto lightIndex = lightRepository.GetLightIndex(lightName);
+        auto lightPower = lightRepository.GetLightPower(lightIndex);
+        if (lightPower < 0.0f)
+        {
+            lightRepository.RemoveLight(lightName);
+            lightIter = mActiveLightNames.erase(lightIter);
+        }
+        else
+        {
+            lightPower -= dtMillis * game_object_constants::EXPLOSION_LIGHT_FADE_SPEED;
+            lightRepository.SetLightPower(lightIndex, lightPower);
+            lightIter++;
+        }
+    }
 }
 
 ///------------------------------------------------------------------------------------------------

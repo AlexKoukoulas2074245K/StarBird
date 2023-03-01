@@ -19,10 +19,12 @@ namespace resources
 ShaderResource::ShaderResource
 (
     const std::unordered_map<strutils::StringId, GLuint, strutils::StringIdHasher>& uniformNamesToLocations,
+    const std::unordered_map<strutils::StringId, int, strutils::StringIdHasher>&   uniformArrayElementCounts,
     const std::vector<strutils::StringId>& uniformSamplerNamesInOrder,
     const GLuint programId
 )
     : mShaderUniformNamesToLocations(uniformNamesToLocations)
+    , mUniformArrayElementCounts(uniformArrayElementCounts)
     , mUniformSamplerNamesInOrder(uniformSamplerNamesInOrder)
     , mProgramId(programId)
 {
@@ -66,6 +68,11 @@ bool ShaderResource::SetMatrix4fv
 
 bool ShaderResource::SetMatrix4Array(const strutils::StringId& uniformName, const std::vector<glm::mat4>& values) const
 {
+    if (mUniformArrayElementCounts.count(uniformName) && values.size() > mUniformArrayElementCounts.at(uniformName))
+    {
+        Log(LogType::WARNING, "Uniform array size exceeded");
+    }
+    
     for (auto i = 0U; i < values.size(); ++i)
     {
         auto setUniformResult = SetMatrix4fv(strutils::StringId(uniformName.GetString() + "[" + std::to_string(i) + "]"), values[i]);
@@ -82,6 +89,11 @@ bool ShaderResource::SetMatrix4Array(const strutils::StringId& uniformName, cons
 
 bool ShaderResource::SetFloatVec4Array(const strutils::StringId& uniformName, const std::vector<glm::vec4>& values) const
 {
+    if (mUniformArrayElementCounts.count(uniformName) && values.size() > mUniformArrayElementCounts.at(uniformName))
+    {
+        Log(LogType::WARNING, "Uniform array size exceeded");
+    }
+    
     for (auto i = 0U; i < values.size(); ++i)
     {
         auto setUniformResult = SetFloatVec4(strutils::StringId(uniformName.GetString() + "[" + std::to_string(i) + "]"), values[i]);
@@ -98,6 +110,11 @@ bool ShaderResource::SetFloatVec4Array(const strutils::StringId& uniformName, co
 
 bool ShaderResource::SetFloatVec3Array(const strutils::StringId& uniformName, const std::vector<glm::vec3>& values) const
 {
+    if (mUniformArrayElementCounts.count(uniformName) && values.size() > mUniformArrayElementCounts.at(uniformName))
+    {
+        Log(LogType::WARNING, "Uniform array size exceeded");
+    }
+    
     for (auto i = 0U; i < values.size(); ++i)
     {
         auto setUniformResult = SetFloatVec3(strutils::StringId(uniformName.GetString() + "[" + std::to_string(i) + "]"), values[i]);
@@ -150,6 +167,11 @@ bool ShaderResource::SetFloat(const strutils::StringId& uniformName, const float
 
 bool ShaderResource::SetFloatArray(const strutils::StringId& uniformName, const std::vector<float>& values) const
 {
+    if (mUniformArrayElementCounts.count(uniformName) && values.size() > mUniformArrayElementCounts.at(uniformName))
+    {
+        Log(LogType::WARNING, "Uniform array size exceeded");
+    }
+    
     for (auto i = 0U; i < values.size(); ++i)
     {
         auto setUniformResult = SetFloat(strutils::StringId(uniformName.GetString() + "[" + std::to_string(i) + "]"), values[i]);

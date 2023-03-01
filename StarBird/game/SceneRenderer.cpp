@@ -10,6 +10,8 @@
 #include "SceneObjectConstants.h"
 #include "SceneRenderer.h"
 
+#include "datarepos/LightRepository.h"
+
 #include "../resloading/MeshResource.h"
 #include "../resloading/ShaderResource.h"
 #include "../resloading/TextureResource.h"
@@ -21,9 +23,14 @@
 
 ///------------------------------------------------------------------------------------------------
 
-static const strutils::StringId WORLD_MATRIX_STRING_ID = strutils::StringId("world");
-static const strutils::StringId VIEW_MATRIX_STRING_ID  = strutils::StringId("view");
-static const strutils::StringId PROJ_MATRIX_STRING_ID  = strutils::StringId("proj");
+static const strutils::StringId WORLD_MATRIX_UNIFORM_NAME = strutils::StringId("world");
+static const strutils::StringId VIEW_MATRIX_UNIFORM_NAME  = strutils::StringId("view");
+static const strutils::StringId PROJ_MATRIX_UNIFORM_NAME  = strutils::StringId("proj");
+static const strutils::StringId ACTIVE_LIGHT_COUNT_UNIFORM_NAME = strutils::StringId("active_light_count");
+static const strutils::StringId AMBIENT_LIGHT_COLOR_UNIFORM_NAME = strutils::StringId("ambient_light_color");
+static const strutils::StringId POINT_LIGHT_COLORS_UNIFORM_NAME = strutils::StringId("point_light_colors");
+static const strutils::StringId POINT_LIGHT_POSITIONS_UNIFORM_NAME = strutils::StringId("point_light_positions");
+static const strutils::StringId POINT_LIGHT_POWERS_UNIFORM_NAME = strutils::StringId("point_light_powers");
 static const float DEBUG_VERTEX_ASPECT_SCALE = 1.2f;
 
 ///------------------------------------------------------------------------------------------------
@@ -51,7 +58,7 @@ SceneRenderer::SceneRenderer(b2World& box2dWorld)
 
 ///------------------------------------------------------------------------------------------------
 
-void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
+void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRepository& lightRepository)
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
@@ -104,6 +111,10 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
             so.mShaderBoolUniformValues[scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = false;
         }
         
+        if (so.mShaderBoolUniformValues.count(scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME) == 0)
+        {
+            so.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+        }
         
         assert(so.mAnimation);
         
@@ -154,9 +165,9 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
                     so.mShaderFloatUniformValues[scene_object_constants::MAX_U_UNIFORM_NAME] = glyph.maxU;
                     so.mShaderFloatUniformValues[scene_object_constants::MAX_V_UNIFORM_NAME] = glyph.maxV;
                     
-                    currentShader->SetMatrix4fv(WORLD_MATRIX_STRING_ID, world);
-                    currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, camera.GetViewMatrix());
-                    currentShader->SetMatrix4fv(PROJ_MATRIX_STRING_ID, camera.GetProjMatrix());
+                    currentShader->SetMatrix4fv(WORLD_MATRIX_UNIFORM_NAME, world);
+                    currentShader->SetMatrix4fv(VIEW_MATRIX_UNIFORM_NAME, camera.GetViewMatrix());
+                    currentShader->SetMatrix4fv(PROJ_MATRIX_UNIFORM_NAME, camera.GetProjMatrix());
                     
                     for (const auto& boolEntry: so.mShaderBoolUniformValues)
                         currentShader->SetBool(boolEntry.first, boolEntry.second);
@@ -216,9 +227,14 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
         assert(camOpt);
         const auto& camera = camOpt->get();
         
-        currentShader->SetMatrix4fv(WORLD_MATRIX_STRING_ID, world);
-        currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, camera.GetViewMatrix());
-        currentShader->SetMatrix4fv(PROJ_MATRIX_STRING_ID, camera.GetProjMatrix());
+        currentShader->SetMatrix4fv(WORLD_MATRIX_UNIFORM_NAME, world);
+        currentShader->SetMatrix4fv(VIEW_MATRIX_UNIFORM_NAME, camera.GetViewMatrix());
+        currentShader->SetMatrix4fv(PROJ_MATRIX_UNIFORM_NAME, camera.GetProjMatrix());
+        currentShader->SetFloatVec4(AMBIENT_LIGHT_COLOR_UNIFORM_NAME, lightRepository.mAmbientLightColor);
+        currentShader->SetFloatVec4Array(POINT_LIGHT_COLORS_UNIFORM_NAME, lightRepository.mPointLightColors);
+        currentShader->SetFloatVec3Array(POINT_LIGHT_POSITIONS_UNIFORM_NAME, lightRepository.mPointLightPositions);
+        currentShader->SetFloatArray(POINT_LIGHT_POWERS_UNIFORM_NAME, lightRepository.mPointLightPowers);
+        currentShader->SetInt(ACTIVE_LIGHT_COUNT_UNIFORM_NAME, static_cast<int>(lightRepository.mPointLightNames.size()));
         
         for (const auto& boolEntry: so.mShaderBoolUniformValues)
             currentShader->SetBool(boolEntry.first, boolEntry.second);
@@ -260,6 +276,10 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
             
             GL_CALL(glActiveTexture(GL_TEXTURE1));
             GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>(currentTextureResourceId).GetGLTextureId()));
+    
+            const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
+            assert(camOpt);
+            const auto& camera = camOpt->get();
             
             glm::mat4 world = glm::mat4(1.0f);
             float posX = debugQuad[0].x + debugQuad[1].x;
@@ -270,15 +290,11 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects)
             const auto scaleY = b2Abs(debugQuad[1].y - debugQuad[2].y);
             world = glm::scale(world, glm::vec3(scaleX/aspectFactor, scaleY/aspectFactor, 1.0f));
             
-            currentShader->SetMatrix4fv(WORLD_MATRIX_STRING_ID, world);
+            currentShader->SetMatrix4fv(WORLD_MATRIX_UNIFORM_NAME, world);
+            currentShader->SetMatrix4fv(VIEW_MATRIX_UNIFORM_NAME, camera.GetViewMatrix());
+            currentShader->SetMatrix4fv(PROJ_MATRIX_UNIFORM_NAME, camera.GetProjMatrix());
+            
             currentShader->SetFloatVec4(scene_object_constants::CUSTOM_COLOR_UNIFORM_NAME, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
-            
-            const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
-            assert(camOpt);
-            const auto& camera = camOpt->get();
-            
-            currentShader->SetMatrix4fv(VIEW_MATRIX_STRING_ID, camera.GetViewMatrix());
-            currentShader->SetMatrix4fv(PROJ_MATRIX_STRING_ID, camera.GetProjMatrix());
             
             GL_CALL(glDrawElements(GL_TRIANGLES, currentMesh->GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
         }

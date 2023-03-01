@@ -51,6 +51,7 @@ private:
         const std::string& shaderName, 
         const std::string& vertexShaderFileContents,
         const std::string& fragmentShaderFileContents,
+        std::unordered_map<strutils::StringId, int, strutils::StringIdHasher>& uniformArrayElementCounts,
         std::vector<strutils::StringId>& samplerNamesInOrder
     ) const;
 };

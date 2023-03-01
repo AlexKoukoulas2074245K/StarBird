@@ -18,12 +18,13 @@
 
 ///------------------------------------------------------------------------------------------------
 class b2World;
+class LightRepository;
 class SceneRenderer final: public b2Draw
 {
 public:
     SceneRenderer(b2World& box2dWorld);
     
-    void Render(std::vector<SceneObject>& sceneObjects);
+    void Render(std::vector<SceneObject>& sceneObjects, const LightRepository& lightRepository);
     
     void SetPhysicsDebugMode(const bool physicsDebugMode);
     

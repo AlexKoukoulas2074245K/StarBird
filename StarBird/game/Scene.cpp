@@ -70,15 +70,26 @@ std::optional<std::reference_wrapper<SceneObject>> Scene::GetSceneObject(const s
 
 std::optional<std::reference_wrapper<const SceneObject>> Scene::GetSceneObject(const strutils::StringId& sceneObjectName) const
 {
-    auto findIter = std::find_if(mSceneObjects.cbegin(), mSceneObjects.cend(), [&](const SceneObject& so)
+    auto findIter = std::find_if(mSceneObjects.begin(), mSceneObjects.end(), [&](const SceneObject& so)
     {
         return so.mName == sceneObjectName;
     });
     
-    if (findIter != mSceneObjects.cend())
+    if (findIter != mSceneObjects.end())
     {
         return std::optional<std::reference_wrapper<const SceneObject>>{*findIter};
     }
+    
+    findIter = std::find_if(mSceneObjectsToAdd.begin(), mSceneObjectsToAdd.end(), [&](const SceneObject& so)
+    {
+        return so.mName == sceneObjectName;
+    });
+    
+    if (findIter != mSceneObjectsToAdd.end())
+    {
+        return std::optional<std::reference_wrapper<const SceneObject>>{*findIter};
+    }
+    
     return std::nullopt;
 }
 
@@ -87,6 +98,20 @@ std::optional<std::reference_wrapper<const SceneObject>> Scene::GetSceneObject(c
 const std::vector<SceneObject>& Scene::GetSceneObjects() const
 {
     return mSceneObjects;
+}
+
+///------------------------------------------------------------------------------------------------
+
+LightRepository& Scene::GetLightRepository()
+{
+    return mLightRepository;
+}
+
+///------------------------------------------------------------------------------------------------
+
+const LightRepository& Scene::GetLightRepository() const
+{
+    return mLightRepository;
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -213,7 +238,7 @@ void Scene::UpdateScene(const float dtMillis)
 
 void Scene::RenderScene()
 {
-    mSceneRenderer.Render(mSceneObjects);
+    mSceneRenderer.Render(mSceneObjects, mLightRepository);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -393,6 +418,8 @@ void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
 
 void Scene::LoadLevelInvariantObjects()
 {
+    mLightRepository.AddLight(LightType::AMBIENT_LIGHT, strutils::StringId("AMBIENT_LIGHT"), game_object_constants::AMBIENT_LIGHT_COLOR, glm::vec3(0.0f), 0.0f);
+    
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
     // Background
@@ -405,6 +432,7 @@ void Scene::LoadLevelInvariantObjects()
         bgSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::BACKGROUND_TEXTURE_FILE_NAME));
         bgSO.mSceneObjectType = SceneObjectType::GUIObject;
         bgSO.mName = scene_object_constants::BACKGROUND_SCENE_OBJECT_NAME;
+        bgSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = true;
         AddSceneObject(std::move(bgSO));
     }
     
@@ -420,8 +448,7 @@ void Scene::LoadLevelInvariantObjects()
         
         auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(game_object_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
         
-        SceneObject playerSO = scene_object_utils::CreateSceneObjectWithBody(playerObjectDef, game_object_constants::PLAYER_INITIAL_POS, mBox2dWorld, scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
-        
+        SceneObject playerSO = scene_object_utils::CreateSceneObjectWithBody(playerObjectDef, game_object_constants::PLAYER_INITIAL_POS, mBox2dWorld, scene_object_constants::PLAYER_SCENE_OBJECT_NAME, glm::vec2(game_object_constants::PLAYER_BODY_X_SCALE, 1.0f));
         AddSceneObject(std::move(playerSO));
     }
     
