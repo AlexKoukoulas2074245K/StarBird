@@ -415,6 +415,24 @@ void DebugConsoleGameState::RegisterCommands()
         }
     };
     
+    mCommandMap[strutils::StringId("game_speed")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: game_speed [<speed>]");
+        
+        if (commandComponents.size() != 1 && commandComponents.size() != 2)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        
+        if (commandComponents.size() == 2)
+        {
+            GameSingletons::SetGameSpeedMultiplier(std::stof(commandComponents[1]));
+        }
+        
+        return CommandExecutionResult(true, "Game speed: " + std::to_string(GameSingletons::GetGameSpeedMultiplier()));
+    };
+    
     mCommandMap[strutils::StringId("visible_bodies")] = [&](const std::vector<std::string>& commandComponents)
     {
         static const std::string USAGE_TEXT("Usage: visible_bodies");

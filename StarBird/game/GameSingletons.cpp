@@ -16,6 +16,7 @@ std::unordered_map<SceneObjectType, Camera> GameSingletons::mSceneObjectTypeToCa
 GameSingletons::UpgradeMap GameSingletons::mEquippedUpgrades = {};
 GameSingletons::UpgradeMap GameSingletons::mAvailableUpgrades = {};
 std::pair<UpgradeDefinition, UpgradeDefinition> GameSingletons::mUpgradeSelection = {};
+float GameSingletons::mGameSpeedMultiplier = 1.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -140,6 +141,20 @@ void GameSingletons::SetAvailableUpgrades(UpgradeMap&& upgrades)
 std::pair<UpgradeDefinition, UpgradeDefinition>& GameSingletons::GetUpgradeSelection()
 {
     return mUpgradeSelection;
+}
+
+///------------------------------------------------------------------------------------------------
+
+float GameSingletons::GetGameSpeedMultiplier()
+{
+    return mGameSpeedMultiplier;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetGameSpeedMultiplier(const float gameSpeedMultiplier)
+{
+    mGameSpeedMultiplier = gameSpeedMultiplier;
 }
 
 ///------------------------------------------------------------------------------------------------

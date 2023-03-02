@@ -398,7 +398,7 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
         return;
     }
     
-    mBox2dWorld.Step(physics_constants::WORLD_STEP, physics_constants::WORLD_VELOCITY_ITERATIONS, physics_constants::WORLD_POSITION_ITERATIONS);
+    mBox2dWorld.Step(physics_constants::WORLD_STEP * GameSingletons::GetGameSpeedMultiplier(), physics_constants::WORLD_VELOCITY_ITERATIONS, physics_constants::WORLD_POSITION_ITERATIONS);
     
     auto joystickSO = mScene.GetSceneObject(scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME);
     auto joystickBoundsSO = mScene.GetSceneObject(scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);

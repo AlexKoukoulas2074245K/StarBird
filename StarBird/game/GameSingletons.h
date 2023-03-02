@@ -51,6 +51,9 @@ public:
     
     static std::pair<UpgradeDefinition, UpgradeDefinition>& GetUpgradeSelection();
     
+    static float GetGameSpeedMultiplier();
+    static void SetGameSpeedMultiplier(const float gameSpeedMultiplier);
+    
 private:
     static InputContext mInputContext;
     static SDL_Window* mWindow;
@@ -59,6 +62,7 @@ private:
     static UpgradeMap mEquippedUpgrades;
     static UpgradeMap mAvailableUpgrades;
     static std::pair<UpgradeDefinition, UpgradeDefinition> mUpgradeSelection;
+    static float mGameSpeedMultiplier;
 };
 
 ///------------------------------------------------------------------------------------------------

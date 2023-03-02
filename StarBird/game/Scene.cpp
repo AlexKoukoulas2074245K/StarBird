@@ -200,7 +200,7 @@ void Scene::UpdateScene(const float dtMillis)
 {
     mPreFirstUpdate = false;
     
-    mLevelUpdater.Update(mSceneObjects, dtMillis);
+    mLevelUpdater.Update(mSceneObjects, dtMillis * GameSingletons::GetGameSpeedMultiplier());
     
     for (const auto& name: mNamesOfSceneObjectsToRemove)
     {

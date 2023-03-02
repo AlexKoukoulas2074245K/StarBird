@@ -31,6 +31,8 @@ static const strutils::StringId AMBIENT_LIGHT_COLOR_UNIFORM_NAME = strutils::Str
 static const strutils::StringId POINT_LIGHT_COLORS_UNIFORM_NAME = strutils::StringId("point_light_colors");
 static const strutils::StringId POINT_LIGHT_POSITIONS_UNIFORM_NAME = strutils::StringId("point_light_positions");
 static const strutils::StringId POINT_LIGHT_POWERS_UNIFORM_NAME = strutils::StringId("point_light_powers");
+static const glm::vec4 DEBUG_VERTEX_COLOR = glm::vec4(0.0f, 0.0f, 1.0f, 0.5f);
+static const float DEBUG_VERTEX_Z = 3.0f;
 static const float DEBUG_VERTEX_ASPECT_SCALE = 1.2f;
 
 ///------------------------------------------------------------------------------------------------
@@ -257,7 +259,6 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
         // This will populate (via individual callbacks) all debug vertices from box2d's POV
         mBox2dWorld.DrawDebugData();
         
-        
         const auto& windowDimensions = GameSingletons::GetWindowDimensions();
         float aspectFactor = windowDimensions.x/windowDimensions.y * DEBUG_VERTEX_ASPECT_SCALE;
         
@@ -284,7 +285,7 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
             glm::mat4 world = glm::mat4(1.0f);
             float posX = debugQuad[0].x + debugQuad[1].x;
             float posY = debugQuad[1].y + debugQuad[2].y;
-            world = glm::translate(world, glm::vec3(posX, posY, -0.8f));
+            world = glm::translate(world, glm::vec3(posX, posY, DEBUG_VERTEX_Z));
             
             const auto scaleX = b2Abs(debugQuad[0].x - debugQuad[1].x);
             const auto scaleY = b2Abs(debugQuad[1].y - debugQuad[2].y);
@@ -294,7 +295,7 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
             currentShader->SetMatrix4fv(VIEW_MATRIX_UNIFORM_NAME, camera.GetViewMatrix());
             currentShader->SetMatrix4fv(PROJ_MATRIX_UNIFORM_NAME, camera.GetProjMatrix());
             
-            currentShader->SetFloatVec4(scene_object_constants::CUSTOM_COLOR_UNIFORM_NAME, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+            currentShader->SetFloatVec4(scene_object_constants::CUSTOM_COLOR_UNIFORM_NAME, DEBUG_VERTEX_COLOR);
             
             GL_CALL(glDrawElements(GL_TRIANGLES, currentMesh->GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
         }
