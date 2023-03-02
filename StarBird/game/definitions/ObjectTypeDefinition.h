@@ -40,8 +40,6 @@ struct ObjectTypeDefinition
     strutils::StringId mProjectileType = strutils::StringId();
     float mHealth = 0;
     float mDamage = 0;
-    resources::ResourceId mShaderResourceId = resources::ResourceId();
-    resources::ResourceId mMeshResourceId = resources::ResourceId();
     std::unordered_map<strutils::StringId, IAnimation*, strutils::StringIdHasher> mAnimations;
     b2Filter mContactFilter;
     glm::vec2 mConstantLinearVelocity = glm::vec2(0.0f, 0.0f);

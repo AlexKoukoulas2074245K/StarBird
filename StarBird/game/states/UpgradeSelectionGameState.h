@@ -53,6 +53,7 @@ private:
     };
   
 private:
+    resources::ResourceId mShineShaderFileResourceId;
     resources::ResourceId mShineTextureResourceId;
     SubState mState;
     SelectionState mSelectionState;

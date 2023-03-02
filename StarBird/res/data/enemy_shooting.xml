@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ObjectDefinition>
-    <Animation state="idle" texture="enemies/alien_shooting"/>
-    <Animation state="dying" texture="explosion_sheet" scale="2.0f" textureSheetRow="0" duration="150"/>
+    <Animation state="idle" texture="enemies/alien_shooting" mesh="quad" shader="basic"/>
+    <Animation state="dying" texture="explosion_sheet" mesh="quad" shader="basic" scale="2.0f" textureSheetRow="0" duration="150"/>
     <Physics bodySize="1.0f" linearDamping="0.0f" category="enemy" constantVelocity="0.0f, -1.0f"/>
-    <Shader name="basic"/>
-    <Model name="quad"/>
     <GameAttributes movementControllerPattern="constant_velocity" health="6.0f" damage="1.0f" projectile="enemy_bullet" shootingFrequency="1000.0f" />
 </ObjectDefinition>

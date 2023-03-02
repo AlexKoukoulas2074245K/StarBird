@@ -52,8 +52,6 @@ struct SceneObject // 456b
     glm::vec3 mCustomScale = glm::vec3(1.0f, 1.0f, 1.0f);
     glm::vec2 mCustomBodyDimensions = glm::vec2(0.0f, 0.0f);
     resources::ResourceId mShaderEffectTextureResourceId = resources::ResourceId();
-    resources::ResourceId mShaderResourceId = resources::ResourceId();
-    resources::ResourceId mMeshResourceId = resources::ResourceId();
     SceneObjectType mSceneObjectType = SceneObjectType::WorldGameObject;
     float mHealth = 0;
     bool mInvisible = false;

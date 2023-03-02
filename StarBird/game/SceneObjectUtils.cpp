@@ -127,7 +127,7 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
     
     b2PolygonShape dynamicBox;
     auto& texture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(so.mAnimation->VGetCurrentTextureResourceId());
-    auto& mesh = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(objectDef.mMeshResourceId);
+    auto& mesh = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(so.mAnimation->VGetCurrentMeshResourceId());
     
     float textureAspect = texture.GetSingleTextureFrameDimensions().x/texture.GetSingleTextureFrameDimensions().y;
     dynamicBox.SetAsBox(objectDef.mSize, objectDef.mSize/textureAspect);
@@ -155,8 +155,6 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
     so.mObjectFamilyTypeName = objectDef.mName;
     so.mBody = body;
     so.mHealth = objectDef.mHealth;
-    so.mShaderResourceId = objectDef.mShaderResourceId;
-    so.mMeshResourceId = objectDef.mMeshResourceId;
     so.mSceneObjectType = SceneObjectType::WorldGameObject;
     so.mCustomPosition.z = position.z;
     so.mUseBodyForRendering = true;

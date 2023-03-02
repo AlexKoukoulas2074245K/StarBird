@@ -101,7 +101,7 @@ bool Game::InitSystems()
     
     // Set fallback texture
     resources::ResourceLoadingService::GetInstance().SetFallbackTexture(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "debug.bmp");
-    resources::ResourceLoadingService::GetInstance().SetFallbackMesh(resources::ResourceLoadingService::RES_MODELS_ROOT + "quad.obj");
+    resources::ResourceLoadingService::GetInstance().SetFallbackMesh(resources::ResourceLoadingService::RES_MESHES_ROOT + "quad.obj");
     resources::ResourceLoadingService::GetInstance().SetFallbackShader(resources::ResourceLoadingService::RES_SHADERS_ROOT + "basic.vs");
     
     Log(LogType::INFO, "Vendor     : %s", GL_NO_CHECK_CALL(glGetString(GL_VENDOR)));

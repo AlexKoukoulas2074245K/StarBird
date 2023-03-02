@@ -89,16 +89,18 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
     {
         if (so.mInvisible) continue;
         
-        if (so.mMeshResourceId != currentMeshReourceId)
+        assert(so.mAnimation);
+        
+        if (so.mAnimation->VGetCurrentMeshResourceId() != currentMeshReourceId)
         {
-            currentMeshReourceId = so.mMeshResourceId;
+            currentMeshReourceId = so.mAnimation->VGetCurrentMeshResourceId();
             currentMesh = &(resService.GetResource<resources::MeshResource>(currentMeshReourceId));
             GL_CALL(glBindVertexArray(currentMesh->GetVertexArrayObject()));
         }
         
-        if (so.mShaderResourceId != currentShaderResourceId)
+        if (so.mAnimation->VGetCurrentShaderResourceId() != currentShaderResourceId)
         {
-            currentShaderResourceId = so.mShaderResourceId;
+            currentShaderResourceId = so.mAnimation->VGetCurrentShaderResourceId();
             currentShader = &(resService.GetResource<resources::ShaderResource>(currentShaderResourceId));
             GL_CALL(glUseProgram(currentShader->GetProgramId()));
         }
@@ -118,7 +120,6 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
             so.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
         }
         
-        assert(so.mAnimation);
         
         if (so.mAnimation->VGetCurrentTextureResourceId() == 0 || so.mAnimation->VGetCurrentTextureResourceId() != currentTextureResourceId)
         {

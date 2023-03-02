@@ -30,7 +30,7 @@ namespace resources
 const std::string ResourceLoadingService::RES_ROOT               = "res/";
 const std::string ResourceLoadingService::RES_DATA_ROOT          = RES_ROOT + "data/";
 const std::string ResourceLoadingService::RES_SCRIPTS_ROOT       = RES_ROOT + "scripts/";
-const std::string ResourceLoadingService::RES_MODELS_ROOT        = RES_ROOT + "models/";
+const std::string ResourceLoadingService::RES_MESHES_ROOT        = RES_ROOT + "meshes/";
 const std::string ResourceLoadingService::RES_MUSIC_ROOT         = RES_ROOT + "music/";
 const std::string ResourceLoadingService::RES_SFX_ROOT           = RES_ROOT + "sfx/";
 const std::string ResourceLoadingService::RES_SHADERS_ROOT       = RES_ROOT + "shaders/";

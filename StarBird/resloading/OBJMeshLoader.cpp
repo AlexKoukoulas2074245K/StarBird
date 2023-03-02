@@ -15,6 +15,7 @@
 #include "../utils/StringUtils.h"
 #include "../utils/MathUtils.h"
 #include "../utils/OpenGL.h"
+#include "../utils/OSMessageBox.h"
 
 #include <cassert>
 #include <cstdio>
@@ -51,7 +52,12 @@ std::unique_ptr<IResource> OBJMeshLoader::VCreateAndLoadResource(const std::stri
     float minX = 100.0f, maxX = -100.0f, minY = 100.0f, maxY = -100.0f, minZ = 100.0f, maxZ = -100.0f;
     
     FILE * file = std::fopen(trimmedPath.c_str(), "r");
-    assert(file != nullptr && "Model file not found");
+    
+    if (!file)
+    {
+        ospopups::ShowMessageBox(ospopups::MessageBoxType::ERROR, "File could not be found", path.c_str());
+        return nullptr;
+    }
     
     while(1)
     {

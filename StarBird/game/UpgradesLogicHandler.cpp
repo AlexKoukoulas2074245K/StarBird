@@ -89,9 +89,7 @@ void UpgradesLogicHandler::CreateMirrorImageSceneObjects()
     
     {
         SceneObject leftMirrorImageSo;
-        leftMirrorImageSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-        leftMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME));
-        leftMirrorImageSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        leftMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME));
         leftMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
         leftMirrorImageSo.mCustomPosition = game_object_constants::LEFT_MIRROR_IMAGE_POSITION_OFFSET;
         leftMirrorImageSo.mCustomScale = game_object_constants::LEFT_MIRROR_IMAGE_SCALE;
@@ -102,9 +100,7 @@ void UpgradesLogicHandler::CreateMirrorImageSceneObjects()
     
     {
         SceneObject rightMirrorImageSo;
-        rightMirrorImageSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-        rightMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME));
-        rightMirrorImageSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        rightMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME));
         rightMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
         rightMirrorImageSo.mCustomPosition = game_object_constants::RIGHT_MIRROR_IMAGE_POSITION_OFFSET;
         rightMirrorImageSo.mCustomScale = game_object_constants::RIGHT_MIRROR_IMAGE_SCALE;
@@ -124,9 +120,7 @@ void UpgradesLogicHandler::CreatePlayerShieldSceneObject()
     if (playerSoOpt)
     {
         SceneObject playerShieldSo;
-        playerShieldSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        playerShieldSo.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_SHIELD_TEXTURE_FILE_NAME), game_object_constants::PLAYER_PULSE_SHIELD_ANIM_SPEED, game_object_constants::PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR);
-        playerShieldSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        playerShieldSo.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_SHIELD_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), game_object_constants::PLAYER_PULSE_SHIELD_ANIM_SPEED, game_object_constants::PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR);
         playerShieldSo.mSceneObjectType = SceneObjectType::WorldGameObject;
         playerShieldSo.mCustomPosition = math::Box2dVec2ToGlmVec3(playerSoOpt->get().mBody->GetWorldCenter()) + game_object_constants::PLAYER_SHIELD_POSITION_OFFSET;
         playerShieldSo.mCustomScale = game_object_constants::PLAYER_SHIELD_SCALE;

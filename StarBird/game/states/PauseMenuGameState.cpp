@@ -31,9 +31,7 @@ void PauseMenuGameState::VInitialize()
     // Overlay
     {
         SceneObject overlaySo;
-        overlaySo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME));
-        overlaySo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME));
         overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
         overlaySo.mCustomScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
         overlaySo.mCustomPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
@@ -55,14 +53,12 @@ void PauseMenuGameState::VInitialize()
         guiSceneObject.mCustomScale = guiElement.mScale;
         guiSceneObject.mText = guiElement.mText;
         guiSceneObject.mFontName = guiElement.mFontName;
-        guiSceneObject.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-        guiSceneObject.mShaderResourceId = guiElement.mShaderResourceId;
-        guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId);
+        guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId);
         guiSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
         
         if (guiSceneObject.mFontName != strutils::StringId())
         {
-            guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId);
+            guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId);
         }
         
         mSceneElementIds.push_back(guiSceneObject.mName);

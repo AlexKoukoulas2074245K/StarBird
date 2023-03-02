@@ -21,10 +21,9 @@ const strutils::StringId UpgradeSelectionGameState::STATE_NAME("UpgradeSelection
 
 // Preload shine texture to avoid stuttering
 UpgradeSelectionGameState::UpgradeSelectionGameState()
-    : mShineTextureResourceId(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME))
+    : mShineShaderFileResourceId(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::SHINE_SHADER_FILE_NAME))
+    , mShineTextureResourceId(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME))
 {
-    
-    
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -87,9 +86,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
     // Overlay
     {
         SceneObject overlaySo;
-        overlaySo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME);
-        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME));
-        overlaySo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME));
         overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
         overlaySo.mCustomScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
         overlaySo.mCustomPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
@@ -101,9 +98,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
     // Left Upgrade Container
     {
         SceneObject leftUpgradeContainerSO;
-        leftUpgradeContainerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        leftUpgradeContainerSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME));
-        leftUpgradeContainerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        leftUpgradeContainerSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME));
         leftUpgradeContainerSO.mSceneObjectType = SceneObjectType::GUIObject;
         leftUpgradeContainerSO.mCustomScale = game_object_constants::LEFT_UPGRADE_CONTAINER_SCALE;
         leftUpgradeContainerSO.mCustomPosition = game_object_constants::LEFT_UPGRADE_CONTAINER_INIT_POS;
@@ -114,9 +109,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
     // Right Upgrade Container
     {
         SceneObject rightUpgradeContainerSO;
-        rightUpgradeContainerSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        rightUpgradeContainerSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME));
-        rightUpgradeContainerSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        rightUpgradeContainerSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME));
         rightUpgradeContainerSO.mSceneObjectType = SceneObjectType::GUIObject;
         rightUpgradeContainerSO.mCustomScale = game_object_constants::RIGHT_UPGRADE_CONTAINER_SCALE;
         rightUpgradeContainerSO.mCustomPosition = game_object_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS;
@@ -132,9 +125,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         auto& upgrade = upgradesIter->second;
         
         SceneObject leftUpgradeSO;
-        leftUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        leftUpgradeSO.mAnimation = std::make_unique<SingleFrameAnimation>(upgrade.mTextureResourceId);
-        leftUpgradeSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        leftUpgradeSO.mAnimation = std::make_unique<SingleFrameAnimation>(upgrade.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME));
         leftUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
         leftUpgradeSO.mCustomScale = game_object_constants::LEFT_UPGRADE_SCALE;
         leftUpgradeSO.mCustomPosition = game_object_constants::LEFT_UPGRADE_INIT_POS;
@@ -153,9 +144,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         auto& upgrade = upgradesIter->second;
         
         SceneObject rightUpgradeSO;
-        rightUpgradeSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        rightUpgradeSO.mAnimation = std::make_unique<SingleFrameAnimation>(upgrade.mTextureResourceId);
-        rightUpgradeSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        rightUpgradeSO.mAnimation = std::make_unique<SingleFrameAnimation>(upgrade.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME));
         rightUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
         rightUpgradeSO.mCustomScale = game_object_constants::RIGHT_UPGRADE_SCALE;
         rightUpgradeSO.mCustomPosition = game_object_constants::RIGHT_UPGRADE_INIT_POS;
@@ -234,7 +223,7 @@ void UpgradeSelectionGameState::UpdateUpgradeSelection(const float dtMillis)
             if (leftUpgradeSoOpt)
             {
                 auto& leftUpgradeSo = leftUpgradeSoOpt->get();
-                leftUpgradeSo.mAnimation = std::make_unique<ShineAnimation>(leftUpgradeSo.mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, scene_object_constants::UPGRADE_SHINE_EFFECT_SPEED);
+                leftUpgradeSo.mAnimation = std::make_unique<ShineAnimation>(&leftUpgradeSo, leftUpgradeSo.mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, leftUpgradeSo.mAnimation->VGetCurrentMeshResourceId(), mShineShaderFileResourceId, scene_object_constants::UPGRADE_SHINE_EFFECT_SPEED);
             }
         }
         else
@@ -247,7 +236,7 @@ void UpgradeSelectionGameState::UpdateUpgradeSelection(const float dtMillis)
             if (rightUpgradeSoOpt)
             {
                 auto& rightUpgradeSo = rightUpgradeSoOpt->get();
-                rightUpgradeSo.mAnimation = std::make_unique<ShineAnimation>(rightUpgradeSo.mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, scene_object_constants::UPGRADE_SHINE_EFFECT_SPEED);
+                rightUpgradeSo.mAnimation = std::make_unique<ShineAnimation>(&rightUpgradeSo, rightUpgradeSo.mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, rightUpgradeSo.mAnimation->VGetCurrentMeshResourceId(), mShineShaderFileResourceId, scene_object_constants::UPGRADE_SHINE_EFFECT_SPEED);
             }
         }
         
@@ -344,8 +333,7 @@ void UpgradeSelectionGameState::UpdateOverlayOut(const float dtMillis)
             {
                 // Override roll effect animation
                 playerSoOpt->get().mCustomRotation.y = 0.0f;
-                
-                playerSoOpt->get().mAnimation = std::make_unique<ShineAnimation>(playerSoOpt->get().mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, scene_object_constants::UPGRADE_SHINE_EFFECT_SPEED);
+                playerSoOpt->get().mAnimation = std::make_unique<ShineAnimation>(&playerSoOpt->get(), playerSoOpt->get().mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, playerSoOpt->get().mAnimation->VGetCurrentMeshResourceId(), mShineShaderFileResourceId, scene_object_constants::UPGRADE_SHINE_EFFECT_SPEED);
             }
             Complete(WaveIntroGameState::STATE_NAME);
         }

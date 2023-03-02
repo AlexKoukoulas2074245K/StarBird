@@ -282,11 +282,9 @@ void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
         
         SceneObject so;
         so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(resources::ResourceLoadingService::FALLBACK_TEXTURE_ID, resources::ResourceLoadingService::FALLBACK_MESH_ID, resources::ResourceLoadingService::FALLBACK_SHADER_ID);
         so.mInvisible = invisible;
         so.mCustomPosition.z = game_object_constants::WALL_Z;
         so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
@@ -312,11 +310,9 @@ void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
         
         SceneObject so;
         so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(resources::ResourceLoadingService::FALLBACK_TEXTURE_ID, resources::ResourceLoadingService::FALLBACK_MESH_ID, resources::ResourceLoadingService::FALLBACK_SHADER_ID);
         so.mInvisible = invisible;
         so.mCustomPosition.z = game_object_constants::WALL_Z;
         so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
@@ -342,11 +338,9 @@ void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
         
         SceneObject so;
         so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(resources::ResourceLoadingService::FALLBACK_TEXTURE_ID, resources::ResourceLoadingService::FALLBACK_MESH_ID, resources::ResourceLoadingService::FALLBACK_SHADER_ID);
         so.mInvisible = invisible;
         so.mCustomPosition.z = game_object_constants::WALL_Z;
         so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
@@ -372,11 +366,9 @@ void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
         
         SceneObject so;
         so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(resources::ResourceLoadingService::FALLBACK_TEXTURE_ID, resources::ResourceLoadingService::FALLBACK_MESH_ID, resources::ResourceLoadingService::FALLBACK_SHADER_ID);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
         so.mInvisible = invisible;
         so.mCustomPosition.z = game_object_constants::WALL_Z;
         so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
@@ -402,11 +394,9 @@ void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
         
         SceneObject so;
         so.mBody = wallBody;
-        so.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        so.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mUseBodyForRendering = true;
-        so.mAnimation = std::make_unique<SingleFrameAnimation>(0);
+        so.mAnimation = std::make_unique<SingleFrameAnimation>(resources::ResourceLoadingService::FALLBACK_TEXTURE_ID, resources::ResourceLoadingService::FALLBACK_MESH_ID, resources::ResourceLoadingService::FALLBACK_SHADER_ID);
         so.mInvisible = invisible;
         so.mCustomPosition.z = game_object_constants::WALL_Z;
         so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
@@ -427,9 +417,7 @@ void Scene::LoadLevelInvariantObjects()
         SceneObject bgSO;
         bgSO.mCustomScale = game_object_constants::BACKGROUND_SCALE;
         bgSO.mCustomPosition.z = game_object_constants::BACKGROUND_Z;
-        bgSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
-        bgSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::TEXTURE_OFFSET_SHADER_FILE_NAME);
-        bgSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::BACKGROUND_TEXTURE_FILE_NAME));
+        bgSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::BACKGROUND_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::TEXTURE_OFFSET_SHADER_FILE_NAME));
         bgSO.mSceneObjectType = SceneObjectType::GUIObject;
         bgSO.mName = scene_object_constants::BACKGROUND_SCENE_OBJECT_NAME;
         bgSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = true;
@@ -461,9 +449,7 @@ void Scene::LoadLevelInvariantObjects()
     // Joystick
     {
         SceneObject joystickSO;
-        joystickSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        joystickSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::JOYSTICK_TEXTURE_FILE_NAME));
-        joystickSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        joystickSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::JOYSTICK_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME));
         joystickSO.mSceneObjectType = SceneObjectType::GUIObject;
         joystickSO.mCustomScale = game_object_constants::JOYSTICK_SCALE;
         joystickSO.mName = scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME;
@@ -474,9 +460,7 @@ void Scene::LoadLevelInvariantObjects()
     // Joystick Bounds
     {
         SceneObject joystickBoundsSO;
-        joystickBoundsSO.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        joystickBoundsSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::JOYSTICK_BOUNDS_TEXTURE_FILE_NAME));
-        joystickBoundsSO.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        joystickBoundsSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::JOYSTICK_BOUNDS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME));
         joystickBoundsSO.mSceneObjectType = SceneObjectType::GUIObject;
         joystickBoundsSO.mCustomScale = game_object_constants::JOYSTICK_BOUNDS_SCALE;
         joystickBoundsSO.mName = scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME;
@@ -487,9 +471,7 @@ void Scene::LoadLevelInvariantObjects()
     // Player Health Bar
     {
         SceneObject healthBarSo;
-        healthBarSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        healthBarSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME));
-        healthBarSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        healthBarSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME));
         healthBarSo.mSceneObjectType = SceneObjectType::GUIObject;
         healthBarSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
         healthBarSo.mCustomScale = game_object_constants::HEALTH_BAR_SCALE;
@@ -500,9 +482,7 @@ void Scene::LoadLevelInvariantObjects()
     // Player Health Bar Frame
     {
         SceneObject healthBarFrameSo;
-        healthBarFrameSo.mShaderResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME);
-        healthBarFrameSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME));
-        healthBarFrameSo.mMeshResourceId = resService.LoadResource(resources::ResourceLoadingService::RES_MODELS_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME);
+        healthBarFrameSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME));
         healthBarFrameSo.mSceneObjectType = SceneObjectType::GUIObject;
         healthBarFrameSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
         healthBarFrameSo.mCustomScale = game_object_constants::HEALTH_BAR_SCALE;
