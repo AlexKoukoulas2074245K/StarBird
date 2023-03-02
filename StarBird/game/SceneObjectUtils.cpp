@@ -138,6 +138,14 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
          dynamicBox.SetAsBox(so.mCustomBodyDimensions.x, so.mCustomBodyDimensions.y);
     }
     
+    switch(objectDef.mFlippedDisplay)
+    {
+        case FlippedDisplay::FLIPPED_X: so.mCustomScale.x = -1.0f; break;
+        case FlippedDisplay::FLIPPED_Y: so.mCustomScale.y = -1.0f; break;
+        case FlippedDisplay::FLIPPED_XY: so.mCustomScale = glm::vec3(-1.0f, -1.0f, 0.0f); break;
+        default: break;
+    }
+    
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
     fixtureDef.filter = objectDef.mContactFilter;

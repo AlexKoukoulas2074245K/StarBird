@@ -78,6 +78,13 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
                 mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::PLAYER_BULLET_CATEGORY_BIT);
                 mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::ENEMY_BULLET_CATEGORY_BIT);
             }
+            else if (strcmp(category->value(), "boss") == 0)
+            {
+                mConstructedObjectTypeDef.mContactFilter.categoryBits = physics_constants::ENEMY_CATEGORY_BIT;
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::ENEMY_CATEGORY_BIT);
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::PLAYER_ONLY_WALL_CATEGORY_BIT);
+            }
         }
     });
 
@@ -255,6 +262,23 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         {
             mConstructedObjectTypeDef.mProjectileType = strutils::StringId(projectile->value());
             mSubObjectsFound->insert(mConstructedObjectTypeDef.mProjectileType);
+        }
+        
+        auto* flipped = node->first_attribute("flipped");
+        if (flipped)
+        {
+            if (strcmp(flipped->value(), "x") == 0)
+            {
+                mConstructedObjectTypeDef.mFlippedDisplay = FlippedDisplay::FLIPPED_X;
+            }
+            else if (strcmp(flipped->value(), "y") == 0)
+            {
+                mConstructedObjectTypeDef.mFlippedDisplay = FlippedDisplay::FLIPPED_Y;
+            }
+            else if (strcmp(flipped->value(), "xy") == 0)
+            {
+                mConstructedObjectTypeDef.mFlippedDisplay = FlippedDisplay::FLIPPED_XY;
+            }
         }
     });
 }

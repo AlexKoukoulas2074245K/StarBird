@@ -27,6 +27,13 @@ enum class MovementControllerPattern
 
 ///------------------------------------------------------------------------------------------------
 
+enum class FlippedDisplay
+{
+    NONE, FLIPPED_X, FLIPPED_Y, FLIPPED_XY
+};
+
+///------------------------------------------------------------------------------------------------
+
 struct ObjectTypeDefinition
 {    
     strutils::StringId mName = strutils::StringId();
@@ -43,6 +50,7 @@ struct ObjectTypeDefinition
     float mLinearDamping = 0.0f;
     float mShootingFrequencyMillis = 0.0f;
     MovementControllerPattern mMovementControllerPattern = MovementControllerPattern::NONE;
+    FlippedDisplay mFlippedDisplay = FlippedDisplay::NONE;
 };
 
 ///------------------------------------------------------------------------------------------------

@@ -205,14 +205,15 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
             
             if (so.mCustomBodyDimensions.x > 0.0f || so.mCustomBodyDimensions.y > 0.0f)
             {
-                world = glm::scale(world, glm::vec3(currentMesh->GetDimensions().x * 2, currentMesh->GetDimensions().y * 2, 1.0f));
+                world = glm::scale(world, glm::vec3(so.mCustomScale.x * currentMesh->GetDimensions().x * 2, so.mCustomScale.x * currentMesh->GetDimensions().y * 2, 1.0f));
             }
             else
             {
                 const auto& shape = dynamic_cast<const b2PolygonShape&>(*so.mBody->GetFixtureList()->GetShape());
                 const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
                 const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
-                world = glm::scale(world, glm::vec3(scaleX, scaleY, 1.0f));
+                
+                world = glm::scale(world, glm::vec3(so.mCustomScale.x * scaleX, so.mCustomScale.y * scaleY, 1.0f));
             }
         }
         // Otherwise from its custom set one
