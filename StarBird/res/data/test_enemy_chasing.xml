@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ObjectDefinition>
-    <Animation state="idle" texture="enemies/alien_mm" mesh="quad" shader="basic" duration="-1"/>
+    <Animation state="idle" texture="enemies/alien_mm" mesh="quad" shader="basic" scale="2.0f" duration="-1"/>
     <Animation state="dying" texture="explosion_sheet" mesh="quad" shader="basic" scale="2.0f" textureSheetRow="0" duration="150"/>
-    <Physics bodySize="1.0f" linearDamping="7.5f" speed="6.0f" category="enemy"/>
+    <Physics linearDamping="7.5f" speed="6.0f" category="enemy"/>
     <GameAttributes movementControllerPattern="chasing_player" health="4.0f" damage="1.0f"/>
 </ObjectDefinition>

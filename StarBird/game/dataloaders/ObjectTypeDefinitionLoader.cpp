@@ -61,16 +61,65 @@ resources::ResourceId LoadShader(const rapidxml::xml_node<>* node)
 
 ///------------------------------------------------------------------------------------------------
 
+glm::vec3 LoadScale(const rapidxml::xml_node<>* node)
+{
+    auto* scale = node->first_attribute("scale");
+    if (scale)
+    {
+        auto scaleComponents = strutils::StringSplit(std::string(scale->value()), ',');
+        if (scaleComponents.size() == 1)
+        {
+            return glm::vec3(std::stof(scaleComponents[0]), std::stof(scaleComponents[0]), 1.0f);
+        }
+        else
+        {
+            return glm::vec3(std::stof(scaleComponents[0]), std::stof(scaleComponents[1]), 1.0f);
+        }
+    }
+    else
+    {
+        return glm::vec3(1.0f, 1.0f, 1.0f);
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
 ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
 {
     BaseGameDataLoader::SetCallbackForNode(strutils::StringId("Physics"), [&](const void* n)
     {
         auto* node = static_cast<const rapidxml::xml_node<>*>(n);
         
-        auto* bodySize = node->first_attribute("bodySize");
-        if (bodySize)
+        auto* bodyScale = node->first_attribute("bodyScale");
+        if (bodyScale)
         {
-            mConstructedObjectTypeDef.mSize = std::stof(bodySize->value());
+            auto bodyScaleComponents = strutils::StringSplit(std::string(bodyScale->value()), ',');
+            if (bodyScaleComponents.size() == 1)
+            {
+                mConstructedObjectTypeDef.mBodyCustomScale.x = std::stof(bodyScaleComponents[0]);
+                mConstructedObjectTypeDef.mBodyCustomScale.y = std::stof(bodyScaleComponents[0]);
+            }
+            else
+            {
+                mConstructedObjectTypeDef.mBodyCustomScale.x = std::stof(bodyScaleComponents[0]);
+                mConstructedObjectTypeDef.mBodyCustomScale.y = std::stof(bodyScaleComponents[1]);
+            }
+        }
+        
+        auto* bodyOffset = node->first_attribute("bodyOffset");
+        if (bodyOffset)
+        {
+            auto bodyOffsetComponents = strutils::StringSplit(std::string(bodyOffset->value()), ',');
+            if (bodyOffsetComponents.size() == 1)
+            {
+                mConstructedObjectTypeDef.mBodyCustomOffset.x = std::stof(bodyOffsetComponents[0]);
+                mConstructedObjectTypeDef.mBodyCustomOffset.y = std::stof(bodyOffsetComponents[0]);
+            }
+            else
+            {
+                mConstructedObjectTypeDef.mBodyCustomOffset.x = std::stof(bodyOffsetComponents[0]);
+                mConstructedObjectTypeDef.mBodyCustomOffset.y = std::stof(bodyOffsetComponents[1]);
+            }
         }
         
         auto* linearDamping = node->first_attribute("linearDamping");
@@ -171,7 +220,6 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         {
             int textureSheetRow = std::stoi(textureSheetRowText->value());
             float duration = 0.0f;
-            float scale = 1.0f;
             
             auto* durationText = node->first_attribute("duration");
             if (durationText)
@@ -179,16 +227,10 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
                 duration = std::stof(durationText->value());
             }
             
-            auto* scaleText = node->first_attribute("scale");
-            if (scaleText)
-            {
-                scale = std::stof(scaleText->value());
-            }
-            
             auto* texture = node->first_attribute("texture");
             if (texture)
             {
-                animation = new MultiFrameAnimation(LoadTexture(node), LoadMesh(node), LoadShader(node), duration, scale, textureSheetRow);
+                animation = new MultiFrameAnimation(LoadTexture(node), LoadMesh(node), LoadShader(node), duration, textureSheetRow);
             }
         }
         
@@ -226,6 +268,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         if (state)
         {
             mConstructedObjectTypeDef.mAnimations[strutils::StringId(state->value())] = animation;
+            mConstructedObjectTypeDef.mAnimationNameToScale[strutils::StringId(state->value())] = LoadScale(node);
         }
     });
     
@@ -274,23 +317,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             mConstructedObjectTypeDef.mProjectileType = strutils::StringId(projectile->value());
             mSubObjectsFound->insert(mConstructedObjectTypeDef.mProjectileType);
         }
-        
-        auto* flipped = node->first_attribute("flipped");
-        if (flipped)
-        {
-            if (strcmp(flipped->value(), "x") == 0)
-            {
-                mConstructedObjectTypeDef.mFlippedDisplay = FlippedDisplay::FLIPPED_X;
-            }
-            else if (strcmp(flipped->value(), "y") == 0)
-            {
-                mConstructedObjectTypeDef.mFlippedDisplay = FlippedDisplay::FLIPPED_Y;
-            }
-            else if (strcmp(flipped->value(), "xy") == 0)
-            {
-                mConstructedObjectTypeDef.mFlippedDisplay = FlippedDisplay::FLIPPED_XY;
-            }
-        }
+
     });
 }
 

@@ -24,8 +24,8 @@ void WaveIntroGameState::VInitialize()
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
     SceneObject waveTextSO;
-    waveTextSO.mCustomPosition = game_object_constants::WAVE_INTRO_TEXT_INIT_POS;
-    waveTextSO.mCustomScale = game_object_constants::WAVE_INTRO_TEXT_SCALE;
+    waveTextSO.mPosition = game_object_constants::WAVE_INTRO_TEXT_INIT_POS;
+    waveTextSO.mScale = game_object_constants::WAVE_INTRO_TEXT_SCALE;
     waveTextSO.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(scene_object_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME));
     waveTextSO.mFontName = scene_object_constants::DEFAULT_FONT_NAME;
     waveTextSO.mSceneObjectType = SceneObjectType::GUIObject;

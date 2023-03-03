@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ObjectDefinition>
-    <Animation state="idle" texture="enemies/boss_1/flap" mesh="enemies/boss_1/middle_left_flap" shader="basic" duration="-1"/>
+    <Animation state="idle" texture="enemies/boss_1/flap" mesh="enemies/boss_1/middle_left_flap" shader="basic" scale="2.0f, 2.0f"/>
     <Animation state="dying" texture="explosion_sheet" mesh="quad" shader="basic" scale="2.0f" textureSheetRow="0" duration="150"/>
-    <Physics bodySize="1.0f" linearDamping="0.0f" constantVelocity="0.0f, -0.3f" speed="0.3f" category="boss"/>
+    <Physics bodyOffset="-4.0f, 0.0f" linearDamping="0.0f" constantVelocity="0.0f, -0.3f" speed="0.3f" category="boss"/>
     <GameAttributes movementControllerPattern="constant_velocity" health="100.0f" damage="2.0f"/>
 </ObjectDefinition>

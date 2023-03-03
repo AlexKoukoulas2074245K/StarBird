@@ -47,10 +47,11 @@ struct SceneObject // 456b
     std::unordered_map<strutils::StringId, glm::mat4, strutils::StringIdHasher> mShaderMat4UniformValues;
     std::unique_ptr<IAnimation> mAnimation = nullptr;
     b2Body* mBody = nullptr;
-    glm::vec3 mCustomPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 mCustomRotation = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 mCustomScale = glm::vec3(1.0f, 1.0f, 1.0f);
-    glm::vec2 mCustomBodyDimensions = glm::vec2(0.0f, 0.0f);
+    glm::vec3 mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 mRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 mScale = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 mBodyCustomScale = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 mBodyCustomOffset = glm::vec3(0.0f, 0.0f, 0.0f);
     resources::ResourceId mShaderEffectTextureResourceId = resources::ResourceId();
     SceneObjectType mSceneObjectType = SceneObjectType::WorldGameObject;
     float mHealth = 0;

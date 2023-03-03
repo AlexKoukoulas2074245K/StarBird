@@ -28,7 +28,7 @@ public:
     virtual resources::ResourceId VGetCurrentShaderResourceId() const = 0;
     virtual float VGetDuration() const = 0;
 };
-    
+
 ///------------------------------------------------------------------------------------------------
 
 class SingleFrameAnimation final: public IAnimation
@@ -54,7 +54,7 @@ private:
 class MultiFrameAnimation final: public IAnimation
 {
 public:
-    MultiFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float duration, const float scale, const int textureSheetRow);
+    MultiFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float duration, const int textureSheetRow);
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
@@ -68,7 +68,6 @@ private:
     resources::ResourceId mMeshResourceId;
     resources::ResourceId mShaderResourceId;
     float mDuration;
-    float mScale;
     float mAnimationTime;
     int mAnimationIndex;
     int mTextureSheetRow;

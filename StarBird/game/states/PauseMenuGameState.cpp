@@ -33,8 +33,8 @@ void PauseMenuGameState::VInitialize()
         SceneObject overlaySo;
         overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME));
         overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
-        overlaySo.mCustomScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
-        overlaySo.mCustomPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
+        overlaySo.mScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
+        overlaySo.mPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
         overlaySo.mName = scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
         overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
         
@@ -49,8 +49,8 @@ void PauseMenuGameState::VInitialize()
     {
         SceneObject guiSceneObject;
         guiSceneObject.mName = guiElement.mSceneObjectName;
-        guiSceneObject.mCustomPosition = guiElement.mPosition;
-        guiSceneObject.mCustomScale = guiElement.mScale;
+        guiSceneObject.mPosition = guiElement.mPosition;
+        guiSceneObject.mScale = guiElement.mScale;
         guiSceneObject.mText = guiElement.mText;
         guiSceneObject.mFontName = guiElement.mFontName;
         guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId);

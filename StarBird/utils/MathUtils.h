@@ -179,10 +179,11 @@ inline glm::vec3 Vec2ToVec3(const glm::vec2& vec)
 ///-----------------------------------------------------------------------------------------------
 /// Converts a box2d vec2 to glm::vec3
 /// @param[in] vec the vec2 to transform.
+/// @param[in] z the optional z component
 /// @returns a glm::vec3 holding both values of the input vector vec and a zeroed third element.
-inline glm::vec3 Box2dVec2ToGlmVec3(const b2Vec2& vec)
+inline glm::vec3 Box2dVec2ToGlmVec3(const b2Vec2& vec, const float z = 0.0f)
 {
-    return glm::vec3(vec.x, vec.y, 0.0f);
+    return glm::vec3(vec.x, vec.y, z);
 }
 
 ///-----------------------------------------------------------------------------------------------

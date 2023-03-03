@@ -85,7 +85,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
 
                     if (leftMirrorImageSoOpt)
                     {
-                        auto bulletPosition = leftMirrorImageSoOpt->get().mCustomPosition;
+                        auto bulletPosition = leftMirrorImageSoOpt->get().mPosition;
                         bulletPosition.x -= game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
                         CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
 
@@ -95,7 +95,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
 
                     if (rightMirrorImageSoOpt)
                     {
-                        auto bulletPosition = rightMirrorImageSoOpt->get().mCustomPosition;
+                        auto bulletPosition = rightMirrorImageSoOpt->get().mPosition;
                         bulletPosition.x -= game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
                         CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
 
@@ -115,12 +115,12 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
 
                     if (leftMirrorImageSoOpt)
                     {
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, leftMirrorImageSoOpt->get().mCustomPosition);
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, leftMirrorImageSoOpt->get().mPosition);
                     }
 
                     if (rightMirrorImageSoOpt)
                     {
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, rightMirrorImageSoOpt->get().mCustomPosition);
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, rightMirrorImageSoOpt->get().mPosition);
                     }
                 }
             }
@@ -152,8 +152,8 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             {
                 enemySO.mStateName = strutils::StringId("dying");
                 enemySO.mUseBodyForRendering = false;
-                enemySO.mCustomPosition.x = firstBody->GetWorldCenter().x;
-                enemySO.mCustomPosition.y = firstBody->GetWorldCenter().y;
+                enemySO.mPosition.x = firstBody->GetWorldCenter().x;
+                enemySO.mPosition.y = firstBody->GetWorldCenter().y;
                 
                 auto filter = firstBody->GetFixtureList()[0].GetFilterData();
                 filter.maskBits = 0;
@@ -167,7 +167,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
                 
                 mActiveLightNames.insert(enemyName);
-                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_object_constants::POINT_LIGHT_COLOR, enemySO.mCustomPosition, game_object_constants::EXPLOSION_LIGHT_POWER);
+                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_object_constants::POINT_LIGHT_COLOR, enemySO.mPosition, game_object_constants::EXPLOSION_LIGHT_POWER);
             }
             
             // Erase bullet collision mask so that it doesn't also contribute to other
@@ -218,8 +218,8 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             {
                 playerSO.mStateName = strutils::StringId("dying");
                 playerSO.mUseBodyForRendering = false;
-                playerSO.mCustomPosition.x = firstBody->GetWorldCenter().x;
-                playerSO.mCustomPosition.y = firstBody->GetWorldCenter().y;
+                playerSO.mPosition.x = firstBody->GetWorldCenter().x;
+                playerSO.mPosition.y = firstBody->GetWorldCenter().y;
                 
                 auto filter = firstBody->GetFixtureList()[0].GetFilterData();
                 filter.maskBits = 0;
@@ -231,7 +231,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 const auto& shape = dynamic_cast<const b2PolygonShape&>(*firstBody->GetFixtureList()->GetShape());
                 const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
                 const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
-                playerSO.mCustomScale = glm::vec3(scaleX, scaleY, 1.0f);
+                playerSO.mScale = glm::vec3(scaleX, scaleY, 1.0f);
                 
                 mFlows.emplace_back([=]()
                 {
@@ -281,8 +281,8 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             {
                 playerSO.mStateName = strutils::StringId("dying");
                 playerSO.mUseBodyForRendering = false;
-                playerSO.mCustomPosition.x = firstBody->GetWorldCenter().x;
-                playerSO.mCustomPosition.y = firstBody->GetWorldCenter().y;
+                playerSO.mPosition.x = firstBody->GetWorldCenter().x;
+                playerSO.mPosition.y = firstBody->GetWorldCenter().y;
                 
                 auto filter = firstBody->GetFixtureList()[0].GetFilterData();
                 filter.maskBits = 0;
@@ -294,7 +294,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 const auto& shape = dynamic_cast<const b2PolygonShape&>(*firstBody->GetFixtureList()->GetShape());
                 const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
                 const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
-                playerSO.mCustomScale = glm::vec3(scaleX, scaleY, 1.0f);
+                playerSO.mScale = glm::vec3(scaleX, scaleY, 1.0f);
                 
                 mFlows.emplace_back([=]()
                 {
@@ -562,11 +562,11 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
         {
              if (joystickBoundsSO && joystickSO)
              {
-                 joystickBoundsSO->get().mCustomPosition = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
-                 joystickBoundsSO->get().mCustomPosition.z = game_object_constants::JOYSTICK_Z;
+                 joystickBoundsSO->get().mPosition = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
+                 joystickBoundsSO->get().mPosition.z = game_object_constants::JOYSTICK_Z;
                  
-                 joystickSO->get().mCustomPosition = joystickBoundsSO->get().mCustomPosition;
-                 joystickSO->get().mCustomPosition.z = game_object_constants::JOYSTICK_BOUNDS_Z;
+                 joystickSO->get().mPosition = joystickBoundsSO->get().mPosition;
+                 joystickSO->get().mPosition.z = game_object_constants::JOYSTICK_BOUNDS_Z;
 
                  mAllowInputControl = true;
                  
@@ -584,7 +584,7 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
         {
             if (joystickBoundsSO && joystickSO && mAllowInputControl)
             {
-                auto motionVec = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix()) - joystickBoundsSO->get().mCustomPosition;
+                auto motionVec = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix()) - joystickBoundsSO->get().mPosition;
 
                 glm::vec3 norm = glm::normalize(motionVec);
                 if (glm::length(motionVec) > glm::length(norm))
@@ -592,8 +592,8 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                     motionVec = norm;
                 }
                 
-                joystickSO->get().mCustomPosition = joystickBoundsSO->get().mCustomPosition + motionVec;
-                joystickSO->get().mCustomPosition.z = game_object_constants::JOYSTICK_Z;
+                joystickSO->get().mPosition = joystickBoundsSO->get().mPosition + motionVec;
+                joystickSO->get().mPosition.z = game_object_constants::JOYSTICK_Z;
                 
                 motionVec.x *= sceneObjectTypeDef.mSpeed * dtMilis;
                 motionVec.y *= sceneObjectTypeDef.mSpeed * dtMilis;
@@ -670,16 +670,16 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
         
         auto& playerObjectDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSo.mObjectFamilyTypeName)->get();
         
-        healthBarSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
-        healthBarSo.mCustomPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
+        healthBarSo.mPosition = game_object_constants::HEALTH_BAR_POSITION;
+        healthBarSo.mPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
         
-        healthBarFrameSo.mCustomPosition = game_object_constants::HEALTH_BAR_POSITION;
-        healthBarFrameSo.mCustomPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
+        healthBarFrameSo.mPosition = game_object_constants::HEALTH_BAR_POSITION;
+        healthBarFrameSo.mPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
         
         float healthPerc = playerSo.mHealth/static_cast<float>(playerObjectDef.mHealth);
         
-        healthBarSo.mCustomScale.x = game_object_constants::HEALTH_BAR_SCALE.x * mAnimatedHealthBarPerc;
-        healthBarSo.mCustomPosition.x -= (1.0f - mAnimatedHealthBarPerc)/2.0f * game_object_constants::HEALTH_BAR_SCALE.x;
+        healthBarSo.mScale.x = game_object_constants::HEALTH_BAR_SCALE.x * mAnimatedHealthBarPerc;
+        healthBarSo.mPosition.x -= (1.0f - mAnimatedHealthBarPerc)/2.0f * game_object_constants::HEALTH_BAR_SCALE.x;
         
         if (healthPerc < mAnimatedHealthBarPerc)
         {

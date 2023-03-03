@@ -52,12 +52,11 @@ float SingleFrameAnimation::VGetDuration() const
 
 ///------------------------------------------------------------------------------------------------
 
-MultiFrameAnimation::MultiFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float duration, const float scale, const int textureSheetRow)
+MultiFrameAnimation::MultiFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float duration, const int textureSheetRow)
     : mTextureResourceId(textureResourceId)
     , mMeshResourceId(meshResourceId)
     , mShaderResourceId(shaderResourceId)
     , mDuration(duration)
-    , mScale(scale)
     , mAnimationTime(0.0f)
     , mTextureSheetRow(textureSheetRow)
     , mAnimationIndex(0)
@@ -90,7 +89,6 @@ void MultiFrameAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject
     sceneObject.mShaderFloatUniformValues[scene_object_constants::MIN_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).minV;
     sceneObject.mShaderFloatUniformValues[scene_object_constants::MAX_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).maxU;
     sceneObject.mShaderFloatUniformValues[scene_object_constants::MAX_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).maxV;
-    sceneObject.mCustomScale = glm::vec3(mScale, mScale, 1.0f);
 }
 
 resources::ResourceId MultiFrameAnimation::VGetCurrentTextureResourceId() const
@@ -174,7 +172,7 @@ std::unique_ptr<IAnimation> PulsingAnimation::VClone() const
 void PulsingAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
     mPulsingDtAccum += dtMillis * mPulsingSpeed;
-    sceneObject.mCustomScale += math::Sinf(mPulsingDtAccum) * mPulsingEnlargementFactor;
+    sceneObject.mScale += math::Sinf(mPulsingDtAccum) * mPulsingEnlargementFactor;
 }
 
 resources::ResourceId PulsingAnimation::VGetCurrentTextureResourceId() const
@@ -209,6 +207,7 @@ ShineAnimation::ShineAnimation(SceneObject* sceneObject, const resources::Resour
 {
     if (sceneObject)
     {
+        sceneObject->mShaderEffectTextureResourceId = mShineTextureResourceId;
         sceneObject->mShaderFloatUniformValues[scene_object_constants::SHINE_X_OFFSET_UNIFORM_NAME] = mShineXOffset;
     }
 }
@@ -257,6 +256,7 @@ DissolveAnimation::DissolveAnimation(SceneObject* sceneObject, const resources::
 {
     if (sceneObject)
     {
+        sceneObject->mShaderEffectTextureResourceId = mDissolveTextureResourceId;
         sceneObject->mShaderFloatUniformValues[scene_object_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] = mDissolveYOffset;
     }
 }
@@ -333,9 +333,9 @@ void RotationAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
     
     switch (mRotationAxis)
     {
-        case RotationAxis::X: sceneObject.mCustomRotation.x = mRotationDtAccum; break;
-        case RotationAxis::Y: sceneObject.mCustomRotation.y = mRotationDtAccum; break;
-        case RotationAxis::Z: sceneObject.mCustomRotation.z = mRotationDtAccum; break;
+        case RotationAxis::X: sceneObject.mRotation.x = mRotationDtAccum; break;
+        case RotationAxis::Y: sceneObject.mRotation.y = mRotationDtAccum; break;
+        case RotationAxis::Z: sceneObject.mRotation.z = mRotationDtAccum; break;
     }
 }
 

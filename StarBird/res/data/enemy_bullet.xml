@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ObjectDefinition>
-    <Animation state="idle" texture="enemies/enemy_bullet" mesh="quad" shader="basic" duration="-1"/>
-    <Physics bodySize="0.25f" linearDamping="0.0f" constantVelocity="0.0f, -8.0f" category="enemy_bullet"/>
+    <Animation state="idle" texture="enemies/enemy_bullet" mesh="quad" shader="basic" scale="0.5f, 1.0f"/>
+    <Physics linearDamping="0.0f" constantVelocity="0.0f, -8.0f" category="enemy_bullet"/>
     <GameAttributes movementControllerPattern="constant_velocity" damage="1.0f"/>
 </ObjectDefinition>

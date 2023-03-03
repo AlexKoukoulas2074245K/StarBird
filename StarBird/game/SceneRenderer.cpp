@@ -148,19 +148,19 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
                 assert(camOpt);
                 const auto& camera = camOpt->get();
                 
-                float xCursor = so.mCustomPosition.x;
-                float yCursor = so.mCustomPosition.y;
+                float xCursor = so.mPosition.x;
+                float yCursor = so.mPosition.y;
                 
                 for (size_t i = 0; i < so.mText.size(); ++i)
                 {
                     const auto& glyph = GetGlyphIter(so.mText[i], font)->second;
                     
                     float targetX = xCursor;
-                    float targetY = yCursor + glyph.mYOffsetPixels * so.mCustomScale.y * 0.5f;
+                    float targetY = yCursor + glyph.mYOffsetPixels * so.mScale.y * 0.5f;
                     
                     world = glm::mat4(1.0f);
-                    world = glm::translate(world, glm::vec3(targetX, targetY, so.mCustomPosition.z));
-                    world = glm::scale(world, glm::vec3(glyph.mWidthPixels * so.mCustomScale.x, glyph.mHeightPixels * so.mCustomScale.y, 1.0f));
+                    world = glm::translate(world, glm::vec3(targetX, targetY, so.mPosition.z));
+                    world = glm::scale(world, glm::vec3(glyph.mWidthPixels * so.mScale.x, glyph.mHeightPixels * so.mScale.y, 1.0f));
                     
                     so.mShaderBoolUniformValues[scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
                     so.mShaderFloatUniformValues[scene_object_constants::MIN_U_UNIFORM_NAME] = glyph.minU;
@@ -190,7 +190,7 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
                         // Since each glyph is rendered with its center as the origin, we advance
                         // half this glyph's width + half the next glyph's width ahead
                         const auto& nextGlyph = GetGlyphIter(so.mText[i + 1], font)->second;
-                        xCursor += (glyph.mWidthPixels * so.mCustomScale.x) * 0.5f + (nextGlyph.mWidthPixels * so.mCustomScale.x) * 0.5f;
+                        xCursor += (glyph.mWidthPixels * so.mScale.x) * 0.5f + (nextGlyph.mWidthPixels * so.mScale.x) * 0.5f;
                     }
                 }
             }
@@ -198,33 +198,22 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
         // If a b2Body is active then take its transform
         else if (so.mBody && so.mUseBodyForRendering)
         {
-            world = glm::translate(world, glm::vec3(so.mBody->GetWorldCenter().x, so.mBody->GetWorldCenter().y, so.mCustomPosition.z));
+            world = glm::translate(world, math::Box2dVec2ToGlmVec3(so.mBody->GetWorldCenter(), so.mPosition.z) - so.mBodyCustomOffset);
             
-            world = glm::rotate(world, so.mCustomRotation.x, math::X_AXIS);
-            world = glm::rotate(world, so.mCustomRotation.y, math::Y_AXIS);
-            world = glm::rotate(world, so.mCustomRotation.z, math::Z_AXIS);
-            
-            if (so.mCustomBodyDimensions.x > 0.0f || so.mCustomBodyDimensions.y > 0.0f)
-            {
-                world = glm::scale(world, glm::vec3(so.mCustomScale.x * currentMesh->GetDimensions().x * 2, so.mCustomScale.x * currentMesh->GetDimensions().y * 2, 1.0f));
-            }
-            else
-            {
-                const auto& shape = dynamic_cast<const b2PolygonShape&>(*so.mBody->GetFixtureList()->GetShape());
-                const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
-                const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
-                
-                world = glm::scale(world, glm::vec3(so.mCustomScale.x * scaleX, so.mCustomScale.y * scaleY, 1.0f));
-            }
+            world = glm::rotate(world, so.mRotation.x, math::X_AXIS);
+            world = glm::rotate(world, so.mRotation.y, math::Y_AXIS);
+            world = glm::rotate(world, so.mRotation.z, math::Z_AXIS);
+           
+            world = glm::scale(world, so.mScale);
         }
         // Otherwise from its custom set one
         else
         {
-            world = glm::translate(world, so.mCustomPosition);
-            world = glm::rotate(world, so.mCustomRotation.x, math::X_AXIS);
-            world = glm::rotate(world, so.mCustomRotation.y, math::Y_AXIS);
-            world = glm::rotate(world, so.mCustomRotation.z, math::Z_AXIS);
-            world = glm::scale(world, so.mCustomScale);
+            world = glm::translate(world, so.mPosition);
+            world = glm::rotate(world, so.mRotation.x, math::X_AXIS);
+            world = glm::rotate(world, so.mRotation.y, math::Y_AXIS);
+            world = glm::rotate(world, so.mRotation.z, math::Z_AXIS);
+            world = glm::scale(world, so.mScale);
         }
         
         const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(so.mSceneObjectType);

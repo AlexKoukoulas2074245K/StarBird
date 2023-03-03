@@ -43,8 +43,8 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
         
         const auto& font = fontOpt->get();
         
-        float xCursor = sceneObject.mCustomPosition.x;
-        float yCursor = sceneObject.mCustomPosition.y;
+        float xCursor = sceneObject.mPosition.x;
+        float yCursor = sceneObject.mPosition.y;
         float minX = xCursor;
         float minY = yCursor;
         float maxX = xCursor;
@@ -55,19 +55,19 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
             const auto& glyph = GetGlyphIter(sceneObject.mText[i], font)->second;
             
             float targetX = xCursor;
-            float targetY = yCursor + glyph.mYOffsetPixels * sceneObject.mCustomScale.y * 0.5f;
+            float targetY = yCursor + glyph.mYOffsetPixels * sceneObject.mScale.y * 0.5f;
             
-            if (targetX + glyph.mWidthPixels * sceneObject.mCustomScale.x/2 > maxX) maxX = targetX + glyph.mWidthPixels * sceneObject.mCustomScale.x/2;
-            if (targetX - glyph.mWidthPixels * sceneObject.mCustomScale.x/2 < minX) minX = targetX - glyph.mWidthPixels * sceneObject.mCustomScale.x/2;
-            if (targetY + glyph.mHeightPixels * sceneObject.mCustomScale.y/2 > maxY) maxY = targetY + glyph.mHeightPixels * sceneObject.mCustomScale.y/2;
-            if (targetY - glyph.mHeightPixels * sceneObject.mCustomScale.y/2 < minY) minY = targetY - glyph.mHeightPixels * sceneObject.mCustomScale.y/2;
+            if (targetX + glyph.mWidthPixels * sceneObject.mScale.x/2 > maxX) maxX = targetX + glyph.mWidthPixels * sceneObject.mScale.x/2;
+            if (targetX - glyph.mWidthPixels * sceneObject.mScale.x/2 < minX) minX = targetX - glyph.mWidthPixels * sceneObject.mScale.x/2;
+            if (targetY + glyph.mHeightPixels * sceneObject.mScale.y/2 > maxY) maxY = targetY + glyph.mHeightPixels * sceneObject.mScale.y/2;
+            if (targetY - glyph.mHeightPixels * sceneObject.mScale.y/2 < minY) minY = targetY - glyph.mHeightPixels * sceneObject.mScale.y/2;
             
             if (i != sceneObject.mText.size() - 1)
             {
                 // Since each glyph is rendered with its center as the origin, we advance
                 // half this glyph's width + half the next glyph's width ahead
                 const auto& nextGlyph = GetGlyphIter(sceneObject.mText[i + 1], font)->second;
-                xCursor += (glyph.mWidthPixels * sceneObject.mCustomScale.x) * 0.5f + (nextGlyph.mWidthPixels * sceneObject.mCustomScale.x) * 0.5f;
+                xCursor += (glyph.mWidthPixels * sceneObject.mScale.x) * 0.5f + (nextGlyph.mWidthPixels * sceneObject.mScale.x) * 0.5f;
             }
         }
         
@@ -83,7 +83,7 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
     {
         const auto& shape = dynamic_cast<const b2PolygonShape&>(*sceneObject.mBody->GetFixtureList()->GetShape());
         
-        auto soPosition = glm::vec3(sceneObject.mBody->GetWorldCenter().x, sceneObject.mBody->GetWorldCenter().y, sceneObject.mCustomPosition.z);
+        auto soPosition = glm::vec3(sceneObject.mBody->GetWorldCenter().x, sceneObject.mBody->GetWorldCenter().y, sceneObject.mPosition.z);
         auto soScale = glm::vec3(b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x), b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y), 1.0f);
         
         auto rectBottomLeft = glm::vec2(soPosition.x - soScale.x/2, soPosition.y - soScale.y/2);
@@ -94,8 +94,8 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
     // SO with custom position and scale
     else
     {
-        auto rectBottomLeft = glm::vec2(sceneObject.mCustomPosition.x - sceneObject.mCustomScale.x/2, sceneObject.mCustomPosition.y - sceneObject.mCustomScale.y/2);
-        auto rectTopRight = glm::vec2(sceneObject.mCustomPosition.x + sceneObject.mCustomScale.x/2, sceneObject.mCustomPosition.y + sceneObject.mCustomScale.y/2);
+        auto rectBottomLeft = glm::vec2(sceneObject.mPosition.x - sceneObject.mScale.x/2, sceneObject.mPosition.y - sceneObject.mScale.y/2);
+        auto rectTopRight = glm::vec2(sceneObject.mPosition.x + sceneObject.mScale.x/2, sceneObject.mPosition.y + sceneObject.mScale.y/2);
         
         return math::IsPointInsideRectangle(rectBottomLeft, rectTopRight, point);
     }
@@ -114,49 +114,40 @@ strutils::StringId GenerateSceneObjectName(const SceneObject& sceneObject)
 
 ///------------------------------------------------------------------------------------------------
 
-SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, const glm::vec3& position, b2World& box2dWorld, strutils::StringId sceneObjectName, glm::vec2 bodyCustomScaling)
+SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, const glm::vec3& position, b2World& box2dWorld, strutils::StringId sceneObjectName)
 {
     SceneObject so;
     so.mAnimation = objectDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)->VClone();
     
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(position.x, position.y);
+    
+    so.mBodyCustomOffset = objectDef.mBodyCustomOffset;
+    so.mBodyCustomScale = objectDef.mBodyCustomScale;
+    
+    bodyDef.position.Set(position.x + objectDef.mBodyCustomOffset.x, position.y + objectDef.mBodyCustomOffset.y);
+    
     b2Body* body = box2dWorld.CreateBody(&bodyDef);
     body->SetLinearDamping(objectDef.mLinearDamping);
     
     b2PolygonShape dynamicBox;
-    auto& texture = resources::ResourceLoadingService::GetInstance().GetResource<resources::TextureResource>(so.mAnimation->VGetCurrentTextureResourceId());
     auto& mesh = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(so.mAnimation->VGetCurrentMeshResourceId());
     
-    float textureAspect = texture.GetSingleTextureFrameDimensions().x/texture.GetSingleTextureFrameDimensions().y;
-    dynamicBox.SetAsBox(objectDef.mSize, objectDef.mSize/textureAspect);
-    
-    if (bodyCustomScaling.x > 0.0f || bodyCustomScaling.y > 0.0f)
-    {
-         so.mCustomBodyDimensions = glm::vec2(mesh.GetDimensions().x * bodyCustomScaling.x, bodyCustomScaling.y);
-         dynamicBox.SetAsBox(so.mCustomBodyDimensions.x, so.mCustomBodyDimensions.y);
-    }
-    
-    switch(objectDef.mFlippedDisplay)
-    {
-        case FlippedDisplay::FLIPPED_X: so.mCustomScale.x = -1.0f; break;
-        case FlippedDisplay::FLIPPED_Y: so.mCustomScale.y = -1.0f; break;
-        case FlippedDisplay::FLIPPED_XY: so.mCustomScale = glm::vec3(-1.0f, -1.0f, 0.0f); break;
-        default: break;
-    }
+    dynamicBox.SetAsBox((mesh.GetDimensions().x * math::Abs(objectDef.mAnimationNameToScale.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE).x) * math::Abs(objectDef.mBodyCustomScale.x))/2, (mesh.GetDimensions().y * math::Abs(objectDef.mAnimationNameToScale.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE).y) * math::Abs(objectDef.mBodyCustomScale.y))/2);
     
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
     fixtureDef.filter = objectDef.mContactFilter;
-    fixtureDef.density = objectDef.mSize * objectDef.mSize; // Density is size^2
+    fixtureDef.density = objectDef.mBodyCustomScale.x * objectDef.mBodyCustomScale.x; // Density is size^2
     body->CreateFixture(&fixtureDef);
     
     so.mObjectFamilyTypeName = objectDef.mName;
     so.mBody = body;
     so.mHealth = objectDef.mHealth;
     so.mSceneObjectType = SceneObjectType::WorldGameObject;
-    so.mCustomPosition.z = position.z;
+    so.mScale = objectDef.mAnimationNameToScale.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE);
+    
+    so.mPosition.z = position.z;
     so.mUseBodyForRendering = true;
     so.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = true;
     

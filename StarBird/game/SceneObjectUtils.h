@@ -44,9 +44,7 @@ strutils::StringId GenerateSceneObjectName(const SceneObject& sceneObject);
 /// @param[in] box2dWorld ref to the world, needed for body creation
 /// @param[in] sceneObjectName (optional) if this is supplied, the scene object wil be named this, rather than
 /// a generated name based on its body pointer.
-/// @param[in] bodyCustomScaling (optional) if this is supplied, the body will be sized based on mesh and these dimensions, rather than the texture dimensions alone
-/// @returns the constructed scene object
-SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, const glm::vec3& position, b2World& box2dWorld, const strutils::StringId sceneObjectName = strutils::StringId(), glm::vec2 bodyCustomScaling = glm::vec2(0.0f));
+SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, const glm::vec3& position, b2World& box2dWorld, const strutils::StringId sceneObjectName = strutils::StringId());
                                         
 ///------------------------------------------------------------------------------------------------
 

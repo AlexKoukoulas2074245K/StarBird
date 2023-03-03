@@ -91,8 +91,8 @@ void UpgradesLogicHandler::CreateMirrorImageSceneObjects()
         SceneObject leftMirrorImageSo;
         leftMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME));
         leftMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-        leftMirrorImageSo.mCustomPosition = game_object_constants::LEFT_MIRROR_IMAGE_POSITION_OFFSET;
-        leftMirrorImageSo.mCustomScale = game_object_constants::LEFT_MIRROR_IMAGE_SCALE;
+        leftMirrorImageSo.mPosition = game_object_constants::LEFT_MIRROR_IMAGE_POSITION_OFFSET;
+        leftMirrorImageSo.mScale = game_object_constants::LEFT_MIRROR_IMAGE_SCALE;
         leftMirrorImageSo.mName = scene_object_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
         leftMirrorImageSo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.5f;
         mScene.AddSceneObject(std::move(leftMirrorImageSo));
@@ -102,8 +102,8 @@ void UpgradesLogicHandler::CreateMirrorImageSceneObjects()
         SceneObject rightMirrorImageSo;
         rightMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME));
         rightMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-        rightMirrorImageSo.mCustomPosition = game_object_constants::RIGHT_MIRROR_IMAGE_POSITION_OFFSET;
-        rightMirrorImageSo.mCustomScale = game_object_constants::RIGHT_MIRROR_IMAGE_SCALE;
+        rightMirrorImageSo.mPosition = game_object_constants::RIGHT_MIRROR_IMAGE_POSITION_OFFSET;
+        rightMirrorImageSo.mScale = game_object_constants::RIGHT_MIRROR_IMAGE_SCALE;
         rightMirrorImageSo.mName = scene_object_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
         rightMirrorImageSo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.5f;
         mScene.AddSceneObject(std::move(rightMirrorImageSo));
@@ -122,8 +122,8 @@ void UpgradesLogicHandler::CreatePlayerShieldSceneObject()
         SceneObject playerShieldSo;
         playerShieldSo.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_SHIELD_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), game_object_constants::PLAYER_PULSE_SHIELD_ANIM_SPEED, game_object_constants::PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR);
         playerShieldSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-        playerShieldSo.mCustomPosition = math::Box2dVec2ToGlmVec3(playerSoOpt->get().mBody->GetWorldCenter()) + game_object_constants::PLAYER_SHIELD_POSITION_OFFSET;
-        playerShieldSo.mCustomScale = game_object_constants::PLAYER_SHIELD_SCALE;
+        playerShieldSo.mPosition = math::Box2dVec2ToGlmVec3(playerSoOpt->get().mBody->GetWorldCenter()) + game_object_constants::PLAYER_SHIELD_POSITION_OFFSET;
+        playerShieldSo.mScale = game_object_constants::PLAYER_SHIELD_SCALE;
         playerShieldSo.mName = scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(playerShieldSo));
     }
@@ -154,8 +154,8 @@ void UpgradesLogicHandler::UpdateMirrorImages(const float)
         auto& leftMirrorImageSo = leftMirrorImageSoOpt->get();
         auto& rightMirrorImageSo = rightMirrorImageSoOpt->get();
         
-        leftMirrorImageSo.mCustomPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + game_object_constants::LEFT_MIRROR_IMAGE_POSITION_OFFSET;
-        rightMirrorImageSo.mCustomPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + game_object_constants::RIGHT_MIRROR_IMAGE_POSITION_OFFSET;
+        leftMirrorImageSo.mPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + game_object_constants::LEFT_MIRROR_IMAGE_POSITION_OFFSET;
+        rightMirrorImageSo.mPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + game_object_constants::RIGHT_MIRROR_IMAGE_POSITION_OFFSET;
     }
 }
 
@@ -177,7 +177,7 @@ void UpgradesLogicHandler::UpdatePlayerShield(const float dtMillis)
     {
         auto& playerSo = playerSoOpt->get();
         auto& playerShieldSo = playerShieldSoOpt->get();
-        playerShieldSo.mCustomPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + game_object_constants::PLAYER_SHIELD_POSITION_OFFSET;
+        playerShieldSo.mPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + game_object_constants::PLAYER_SHIELD_POSITION_OFFSET;
     }
 }
 
