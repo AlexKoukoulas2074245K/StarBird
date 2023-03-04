@@ -32,6 +32,13 @@ namespace scene_object_utils
 bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& point);
 
 ///-----------------------------------------------------------------------------------------------
+/// Changes the state of a scene object and assigns the respective animation for that state.
+/// @param[in] sceneObject scene object to change its state.
+/// @param[in] objectDef the object definition to get the animation data from..
+/// @param[in] newStateName name of the new state to transition the object to.
+void ChangeSceneObjectState(SceneObject& sceneObject, const ObjectTypeDefinition& objectDef, const strutils::StringId newStateName);
+
+///-----------------------------------------------------------------------------------------------
 /// Generates and returns a string representation of the scene object body's pointer.
 /// @param[in] sceneObject the scene object (containing a body) to generate the name for
 /// @returns the string representation of the scene object body's pointer if it owns one, or an empty StringId otherwise.

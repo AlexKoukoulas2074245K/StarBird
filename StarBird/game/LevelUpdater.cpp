@@ -150,16 +150,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             
             if (enemySO.mHealth <= 0)
             {
-                enemySO.mStateName = strutils::StringId("dying");
-                enemySO.mUseBodyForRendering = false;
-                enemySO.mPosition.x = firstBody->GetWorldCenter().x;
-                enemySO.mPosition.y = firstBody->GetWorldCenter().y;
-                
-                auto filter = firstBody->GetFixtureList()[0].GetFilterData();
-                filter.maskBits = 0;
-                firstBody->GetFixtureList()[0].SetFilterData(filter);
-                
-                enemySO.mAnimation = enemySceneObjectTypeDef.mAnimations.at(enemySO.mStateName)->VClone();
+                scene_object_utils::ChangeSceneObjectState(enemySO, enemySceneObjectTypeDef, strutils::StringId("dying"));
                 
                 mFlows.emplace_back([=]()
                 {
@@ -197,7 +188,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         {
             auto& playerSO = playerSceneObjectOpt->get();
             auto& enemySO = enemySceneObjectOpt->get();
-            
+            auto& playerSODef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSO.mObjectFamilyTypeName)->get();
             auto enemySceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemySO.mObjectFamilyTypeName)->get();
             
             if (mScene.GetSceneObject(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
@@ -216,22 +207,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             
             if (playerSO.mHealth <= 0)
             {
-                playerSO.mStateName = strutils::StringId("dying");
-                playerSO.mUseBodyForRendering = false;
-                playerSO.mPosition.x = firstBody->GetWorldCenter().x;
-                playerSO.mPosition.y = firstBody->GetWorldCenter().y;
-                
-                auto filter = firstBody->GetFixtureList()[0].GetFilterData();
-                filter.maskBits = 0;
-                firstBody->GetFixtureList()[0].SetFilterData(filter);
-                
-                playerSO.mAnimation = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSO.mObjectFamilyTypeName)->get().mAnimations.at(playerSO.mStateName)->VClone();
-                
-                // Inherit body scale
-                const auto& shape = dynamic_cast<const b2PolygonShape&>(*firstBody->GetFixtureList()->GetShape());
-                const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
-                const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
-                playerSO.mScale = glm::vec3(scaleX, scaleY, 1.0f);
+                scene_object_utils::ChangeSceneObjectState(playerSO, playerSODef, strutils::StringId("dying"));
                 
                 mFlows.emplace_back([=]()
                 {
@@ -260,6 +236,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         {
             auto& playerSO = playerSceneObjectOpt->get();
             auto& enemyBulletSO = enemyBulletSceneObjectOpt->get();
+            auto& playerSODef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSO.mObjectFamilyTypeName)->get();
             
             auto enemyBulletSceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemyBulletSO.mObjectFamilyTypeName)->get();
             
@@ -279,22 +256,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             
             if (playerSO.mHealth <= 0)
             {
-                playerSO.mStateName = strutils::StringId("dying");
-                playerSO.mUseBodyForRendering = false;
-                playerSO.mPosition.x = firstBody->GetWorldCenter().x;
-                playerSO.mPosition.y = firstBody->GetWorldCenter().y;
-                
-                auto filter = firstBody->GetFixtureList()[0].GetFilterData();
-                filter.maskBits = 0;
-                firstBody->GetFixtureList()[0].SetFilterData(filter);
-                
-                playerSO.mAnimation = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSO.mObjectFamilyTypeName)->get().mAnimations.at(playerSO.mStateName)->VClone();
-                
-                // Inherit body scale
-                const auto& shape = dynamic_cast<const b2PolygonShape&>(*firstBody->GetFixtureList()->GetShape());
-                const auto scaleX = b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x);
-                const auto scaleY = b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y);
-                playerSO.mScale = glm::vec3(scaleX, scaleY, 1.0f);
+                scene_object_utils::ChangeSceneObjectState(playerSO, playerSODef, strutils::StringId("dying"));
                 
                 mFlows.emplace_back([=]()
                 {
@@ -602,7 +564,7 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                 {
                     if (math::RandomFloat() < game_object_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
                     {
-                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), RotationAnimation::RotationAxis::Y, game_object_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_object_constants::PLAYER_MOVEMENT_ROLL_SPEED);
+                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), RotationAnimation::RotationAxis::Y, game_object_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_object_constants::PLAYER_MOVEMENT_ROLL_SPEED, true);
                     }
                     
                     mMovementRotationAllowed = false;
@@ -611,7 +573,7 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                 {
                     if (math::RandomFloat() < game_object_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
                     {
-                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), RotationAnimation::RotationAxis::Y, -game_object_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_object_constants::PLAYER_MOVEMENT_ROLL_SPEED);
+                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), RotationAnimation::RotationAxis::Y, -game_object_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_object_constants::PLAYER_MOVEMENT_ROLL_SPEED, true);
                     }
                     
                     mMovementRotationAllowed = false;

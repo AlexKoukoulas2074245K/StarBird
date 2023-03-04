@@ -14,10 +14,11 @@
 
 ///------------------------------------------------------------------------------------------------
 
-SingleFrameAnimation::SingleFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId)
+SingleFrameAnimation::SingleFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const bool bodyRenderingEnabled)
     : mTextureResourceId(textureResourceId)
     , mMeshResourceId(meshResourceId)
     , mShaderResourceId(shaderResourceId)
+    , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
 }
 
@@ -50,9 +51,14 @@ float SingleFrameAnimation::VGetDuration() const
     return 0.0f;
 }
 
+bool SingleFrameAnimation::VGetBodyRenderingEnabled() const
+{
+    return mBodyRenderingEnabled;
+}
+
 ///------------------------------------------------------------------------------------------------
 
-MultiFrameAnimation::MultiFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float duration, const int textureSheetRow)
+MultiFrameAnimation::MultiFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float duration, const int textureSheetRow, const bool bodyRenderingEnabled)
     : mTextureResourceId(textureResourceId)
     , mMeshResourceId(meshResourceId)
     , mShaderResourceId(shaderResourceId)
@@ -60,6 +66,7 @@ MultiFrameAnimation::MultiFrameAnimation(const resources::ResourceId textureReso
     , mAnimationTime(0.0f)
     , mTextureSheetRow(textureSheetRow)
     , mAnimationIndex(0)
+    , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
 }
 
@@ -111,20 +118,25 @@ float MultiFrameAnimation::VGetDuration() const
     return mDuration;
 }
 
+bool MultiFrameAnimation::VGetBodyRenderingEnabled() const
+{
+    return mBodyRenderingEnabled;
+}
+
 ///------------------------------------------------------------------------------------------------
 
-VariableTexturedAnimation::VariableTexturedAnimation(const std::vector<resources::ResourceId>& potentialTextureResourceIds, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId)
+VariableTexturedAnimation::VariableTexturedAnimation(const std::vector<resources::ResourceId>& potentialTextureResourceIds, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const bool bodyRenderingEnabled)
     : mPotentialTextureResourceIds(potentialTextureResourceIds)
     , mTextureResourceId(potentialTextureResourceIds.at(math::RandomInt(0, static_cast<int>(potentialTextureResourceIds.size()) - 1)))
     , mMeshResourceId(meshResourceId)
     , mShaderResourceId(shaderResourceId)
-    
+    , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
 }
            
 std::unique_ptr<IAnimation> VariableTexturedAnimation::VClone() const
 {
-    return std::make_unique<VariableTexturedAnimation>(mPotentialTextureResourceIds, mMeshResourceId, mShaderResourceId);
+    return std::make_unique<VariableTexturedAnimation>(mPotentialTextureResourceIds, mMeshResourceId, mShaderResourceId, mBodyRenderingEnabled);
 }
 
 void VariableTexturedAnimation::VUpdate(const float, SceneObject& sceneObject)
@@ -151,16 +163,21 @@ float VariableTexturedAnimation::VGetDuration() const
     return 0.0f;
 }
 
+bool VariableTexturedAnimation::VGetBodyRenderingEnabled() const
+{
+    return mBodyRenderingEnabled;
+}
+
 ///------------------------------------------------------------------------------------------------
 
-PulsingAnimation::PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float pulsingSpeed, const float pulsingEnlargementFactor)
+PulsingAnimation::PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float pulsingSpeed, const float pulsingEnlargementFactor, const bool bodyRenderingEnabled)
     : mTextureResourceId(textureResourceId)
     , mMeshResourceId(meshResourceId)
     , mShaderResourceId(shaderResourceId)
     , mPulsingSpeed(pulsingSpeed)
     , mPulsingEnlargementFactor(pulsingEnlargementFactor)
     , mPulsingDtAccum(0.0f)
-
+    , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
 }
 
@@ -195,15 +212,21 @@ float PulsingAnimation::VGetDuration() const
     return mPulsingEnlargementFactor;
 }
 
+bool PulsingAnimation::VGetBodyRenderingEnabled() const
+{
+    return mBodyRenderingEnabled;
+}
+
 ///------------------------------------------------------------------------------------------------
 
-ShineAnimation::ShineAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId shineTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float shineSpeed)
+ShineAnimation::ShineAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId shineTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float shineSpeed, const bool bodyRenderingEnabled)
     : mTextureResourceId(textureResourceId)
     , mShineTextureResourceId(shineTextureResourceId)
     , mMeshResourceId(meshResourceId)
     , mShaderResourceId(shaderResourceId)
     , mShineSpeed(shineSpeed)
     , mShineXOffset(scene_object_constants::SHINE_EFFECT_X_OFFSET_INIT_VAL)
+    , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
     if (sceneObject)
     {
@@ -244,15 +267,21 @@ float ShineAnimation::VGetDuration() const
     return math::Abs(scene_object_constants::SHINE_EFFECT_X_OFFSET_END_VAL - scene_object_constants::SHINE_EFFECT_X_OFFSET_INIT_VAL)/mShineSpeed;
 }
 
+bool ShineAnimation::VGetBodyRenderingEnabled() const
+{
+    return mBodyRenderingEnabled;
+}
+
 ///------------------------------------------------------------------------------------------------
 
-DissolveAnimation::DissolveAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId dissolveTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float dissolveSpeed)
+DissolveAnimation::DissolveAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId dissolveTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float dissolveSpeed, const bool bodyRenderingEnabled)
     : mTextureResourceId(textureResourceId)
     , mDissolveTextureResourceId(dissolveTextureResourceId)
     , mMeshResourceId(meshResourceId)
     , mShaderResourceId(shaderResourceId)
     , mDissolveSpeed(dissolveSpeed)
     , mDissolveYOffset(scene_object_constants::DISSOLVE_EFFECT_Y_INIT_VAL)
+    , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
     if (sceneObject)
     {
@@ -293,9 +322,14 @@ float DissolveAnimation::VGetDuration() const
     return scene_object_constants::DISSOLVE_EFFECT_Y_INIT_VAL/mDissolveSpeed;
 }
 
+bool DissolveAnimation::VGetBodyRenderingEnabled() const
+{
+    return mBodyRenderingEnabled;
+}
+
 ///------------------------------------------------------------------------------------------------
 
-RotationAnimation::RotationAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed)
+RotationAnimation::RotationAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed, const bool bodyRenderingEnabled)
     : mTextureResourceId(textureResourceId)
     , mMeshResourceId(meshResourceId)
     , mShaderResourceId(shaderResourceId)
@@ -304,6 +338,7 @@ RotationAnimation::RotationAnimation(const resources::ResourceId textureResource
     , mRotationSpeed(rotationSpeed)
     , mRotationDtAccum(0.0f)
     , mLeftHandRotation(rotationDegrees < 0.0f)
+    , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
 }
 
@@ -357,6 +392,11 @@ resources::ResourceId RotationAnimation::VGetCurrentShaderResourceId() const
 float RotationAnimation::VGetDuration() const
 {
     return math::Abs(mRotationRadians)/mRotationSpeed;
+}
+
+bool RotationAnimation::VGetBodyRenderingEnabled() const
+{
+    return mBodyRenderingEnabled;
 }
 
 ///------------------------------------------------------------------------------------------------

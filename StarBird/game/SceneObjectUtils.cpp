@@ -11,7 +11,7 @@
 #include "definitions/ObjectTypeDefinition.h"
 #include "../resloading/TextureResource.h"
 #include "../resloading/MeshResource.h"
-
+#include "../utils/OSMessageBox.h"
 #include <Box2D/Box2D.h>
 
 ///------------------------------------------------------------------------------------------------
@@ -103,6 +103,33 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
 
 ///------------------------------------------------------------------------------------------------
 
+void ChangeSceneObjectState(SceneObject& sceneObject, const ObjectTypeDefinition& objectDef, const strutils::StringId newStateName)
+{
+    sceneObject.mStateName = newStateName;
+    
+    auto animationIter = objectDef.mAnimations.find(newStateName);
+    if (animationIter != objectDef.mAnimations.end())
+    {
+        sceneObject.mAnimation = animationIter->second->VClone();
+        
+        if (!sceneObject.mAnimation->VGetBodyRenderingEnabled() && sceneObject.mBody)
+        {
+            sceneObject.mPosition.x = sceneObject.mBody->GetWorldCenter().x;
+            sceneObject.mPosition.y = sceneObject.mBody->GetWorldCenter().y;
+            sceneObject.mScale = objectDef.mAnimationNameToScale.at(newStateName);
+            auto filter = sceneObject.mBody->GetFixtureList()[0].GetFilterData();
+            filter.maskBits = 0;
+            sceneObject.mBody->GetFixtureList()[0].SetFilterData(filter);
+        }
+    }
+    else
+    {
+        ospopups::ShowMessageBox(ospopups::MessageBoxType::ERROR, "Invalid state transition", ("State name " + newStateName.GetString() + " for object type" + objectDef.mName.GetString() + " was not found!").c_str());
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
 strutils::StringId GenerateSceneObjectName(const SceneObject& sceneObject)
 {
     if (!sceneObject.mBody) return strutils::StringId();
@@ -122,6 +149,7 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     
+    so.mStateName = scene_object_constants::DEFAULT_SCENE_OBJECT_STATE;
     so.mBodyCustomOffset = objectDef.mBodyCustomOffset;
     so.mBodyCustomScale = objectDef.mBodyCustomScale;
     
@@ -148,7 +176,6 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
     so.mScale = objectDef.mAnimationNameToScale.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE);
     
     so.mPosition.z = position.z;
-    so.mUseBodyForRendering = true;
     so.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = true;
     
     if (sceneObjectName.isEmpty())

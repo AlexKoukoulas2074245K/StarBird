@@ -45,7 +45,7 @@ void DebugConsoleGameState::VInitialize()
     // Overlay
     {
         SceneObject overlaySo;
-        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME));
+        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), false);
         overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
         overlaySo.mScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
         overlaySo.mPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
@@ -67,12 +67,12 @@ void DebugConsoleGameState::VInitialize()
         guiSceneObject.mScale = guiElement.mScale;
         guiSceneObject.mText = guiElement.mText;
         guiSceneObject.mFontName = guiElement.mFontName;
-        guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId);
+        guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId, false);
         guiSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
         
         if (guiSceneObject.mFontName != strutils::StringId())
         {
-            guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId);
+            guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId, false);
         }
         
         mSceneElementIds.push_back(guiSceneObject.mName);
@@ -535,7 +535,7 @@ void DebugConsoleGameState::SetCommandExecutionOutput(const CommandExecutionResu
             outputLineSceneObject.mText = executionResult.mOutputMessage[i];
             outputLineSceneObject.mFontName = commandOutputSo.mFontName;
             outputLineSceneObject.mShaderFloatVec4UniformValues[scene_object_constants::CUSTOM_COLOR_UNIFORM_NAME] = executionResult.mSuccess ? SUCCESS_COLOR : FAILURE_COLOR;
-            outputLineSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(commandOutputSo.mAnimation->VGetCurrentTextureResourceId(), commandOutputSo.mAnimation->VGetCurrentMeshResourceId(), resources::ResourceLoadingService::GetInstance().GetResourceIdFromPath(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::DEBUG_CONSOLE_FONT_SHADER_FILE_NAME));
+            outputLineSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(commandOutputSo.mAnimation->VGetCurrentTextureResourceId(), commandOutputSo.mAnimation->VGetCurrentMeshResourceId(), resources::ResourceLoadingService::GetInstance().GetResourceIdFromPath(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::DEBUG_CONSOLE_FONT_SHADER_FILE_NAME), false);
             outputLineSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
             mCommandOutputElementIds.push_back(outputLineSceneObject.mName);
             mScene->AddSceneObject(std::move(outputLineSceneObject));

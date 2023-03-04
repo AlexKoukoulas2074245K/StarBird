@@ -56,7 +56,6 @@ struct SceneObject // 456b
     SceneObjectType mSceneObjectType = SceneObjectType::WorldGameObject;
     float mHealth = 0;
     bool mInvisible = false;
-    bool mUseBodyForRendering = false;
 };
 
 ///------------------------------------------------------------------------------------------------

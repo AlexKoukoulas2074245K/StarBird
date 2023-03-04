@@ -26,6 +26,7 @@ public:
     virtual resources::ResourceId VGetCurrentTextureResourceId() const = 0;
     virtual resources::ResourceId VGetCurrentMeshResourceId() const = 0;
     virtual resources::ResourceId VGetCurrentShaderResourceId() const = 0;
+    virtual bool VGetBodyRenderingEnabled() const = 0;
     virtual float VGetDuration() const = 0;
 };
 
@@ -34,7 +35,7 @@ public:
 class SingleFrameAnimation final: public IAnimation
 {
 public:
-    SingleFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId);
+    SingleFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const bool bodyRenderingEnabled);
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
@@ -42,11 +43,13 @@ public:
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     float VGetDuration() const override;
+    bool VGetBodyRenderingEnabled() const override;
     
 private:
     resources::ResourceId mTextureResourceId;
     resources::ResourceId mMeshResourceId;
     resources::ResourceId mShaderResourceId;
+    bool mBodyRenderingEnabled;
 };
 
 ///------------------------------------------------------------------------------------------------
@@ -54,7 +57,7 @@ private:
 class MultiFrameAnimation final: public IAnimation
 {
 public:
-    MultiFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float duration, const int textureSheetRow);
+    MultiFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float duration, const int textureSheetRow, const bool bodyRenderingEnabled);
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
@@ -62,6 +65,7 @@ public:
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     float VGetDuration() const override;
+    bool VGetBodyRenderingEnabled() const override;
     
 private:
     resources::ResourceId mTextureResourceId;
@@ -71,6 +75,7 @@ private:
     float mAnimationTime;
     int mAnimationIndex;
     int mTextureSheetRow;
+    bool mBodyRenderingEnabled;
 };
 
 ///------------------------------------------------------------------------------------------------
@@ -78,7 +83,7 @@ private:
 class VariableTexturedAnimation final: public IAnimation
 {
 public:
-    VariableTexturedAnimation(const std::vector<resources::ResourceId>& potentialTextureResourceIds, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId);
+    VariableTexturedAnimation(const std::vector<resources::ResourceId>& potentialTextureResourceIds, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const bool bodyRenderingEnabled);
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
@@ -86,12 +91,14 @@ public:
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     float VGetDuration() const override;
+    bool VGetBodyRenderingEnabled() const override;
     
 private:
     std::vector<resources::ResourceId> mPotentialTextureResourceIds;
     resources::ResourceId mTextureResourceId;
     resources::ResourceId mMeshResourceId;
     resources::ResourceId mShaderResourceId;
+    bool mBodyRenderingEnabled;
 };
 
 ///------------------------------------------------------------------------------------------------
@@ -99,7 +106,7 @@ private:
 class PulsingAnimation final: public IAnimation
 {
 public:
-    PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float pulsingSpeed, const float pulsingEnlargementFactor);
+    PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float pulsingSpeed, const float pulsingEnlargementFactor, const bool bodyRenderingEnabled);
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
@@ -107,6 +114,7 @@ public:
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     float VGetDuration() const override;
+    bool VGetBodyRenderingEnabled() const override;
     
 private:
     resources::ResourceId mTextureResourceId;
@@ -115,6 +123,7 @@ private:
     float mPulsingSpeed;
     float mPulsingEnlargementFactor;
     float mPulsingDtAccum;
+    bool mBodyRenderingEnabled;
 };
 
 ///------------------------------------------------------------------------------------------------
@@ -122,7 +131,7 @@ private:
 class ShineAnimation final: public IAnimation
 {
 public:
-    ShineAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId shineTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float shineSpeed);
+    ShineAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId shineTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float shineSpeed, const bool bodyRenderingEnabled);
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
@@ -130,6 +139,7 @@ public:
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     float VGetDuration() const override;
+    bool VGetBodyRenderingEnabled() const override;
     
 private:
     resources::ResourceId mTextureResourceId;
@@ -138,6 +148,7 @@ private:
     resources::ResourceId mShaderResourceId;
     float mShineSpeed;
     float mShineXOffset;
+    bool mBodyRenderingEnabled;
 };
 
 ///------------------------------------------------------------------------------------------------
@@ -145,7 +156,7 @@ private:
 class DissolveAnimation final: public IAnimation
 {
 public:
-    DissolveAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId dissolveTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float dissolveSpeed);
+    DissolveAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId dissolveTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const float dissolveSpeed, const bool bodyRenderingEnabled);
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
@@ -153,6 +164,7 @@ public:
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     float VGetDuration() const override;
+    bool VGetBodyRenderingEnabled() const override;
     
 private:
     resources::ResourceId mTextureResourceId;
@@ -162,6 +174,7 @@ private:
     
     float mDissolveSpeed;
     float mDissolveYOffset;
+    bool mBodyRenderingEnabled;
 };
 
 ///------------------------------------------------------------------------------------------------
@@ -174,7 +187,7 @@ public:
         X, Y, Z
     };
     
-    RotationAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed);
+    RotationAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed, const bool bodyRenderingEnabled);
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
@@ -182,6 +195,7 @@ public:
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     float VGetDuration() const override;
+    bool VGetBodyRenderingEnabled() const override;
     
 private:
     resources::ResourceId mTextureResourceId;
@@ -192,6 +206,7 @@ private:
     float mRotationSpeed;
     float mRotationDtAccum;
     bool mLeftHandRotation;
+    bool mBodyRenderingEnabled;
 };
 
 ///------------------------------------------------------------------------------------------------

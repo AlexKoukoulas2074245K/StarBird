@@ -4,6 +4,12 @@
     <Camera type="gui_cam" lenseHeight="30.0f"/>
     
     <Wave>
+        <Enemy position="-5.0f, 20.0f" type="enemy_shooting"/>
+        <Enemy position=" 0.0f, 20.0f" type="enemy_shooting"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemy_shooting"/>
+    </Wave>
+    
+    <Wave>
         <Enemy position="0.0f, 20.0f" type="boss_1/body"/>
         <Enemy position="0.0f, 20.0f" type="boss_1/top_left_flap"/>
         <Enemy position="0.0f, 20.0f" type="boss_1/middle_left_flap"/>

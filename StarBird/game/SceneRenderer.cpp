@@ -196,7 +196,7 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
             }
         }
         // If a b2Body is active then take its transform
-        else if (so.mBody && so.mUseBodyForRendering)
+        else if (so.mBody && so.mAnimation->VGetBodyRenderingEnabled())
         {
             world = glm::translate(world, math::Box2dVec2ToGlmVec3(so.mBody->GetWorldCenter(), so.mPosition.z) - so.mBodyCustomOffset);
             
