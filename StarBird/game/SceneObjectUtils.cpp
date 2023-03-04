@@ -116,7 +116,7 @@ void ChangeSceneObjectState(SceneObject& sceneObject, const ObjectTypeDefinition
         {
             sceneObject.mPosition.x = sceneObject.mBody->GetWorldCenter().x;
             sceneObject.mPosition.y = sceneObject.mBody->GetWorldCenter().y;
-            sceneObject.mScale = objectDef.mAnimationNameToScale.at(newStateName);
+            sceneObject.mScale = sceneObject.mAnimation->VGetScale();
             auto filter = sceneObject.mBody->GetFixtureList()[0].GetFilterData();
             filter.maskBits = 0;
             sceneObject.mBody->GetFixtureList()[0].SetFilterData(filter);
@@ -161,7 +161,7 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
     b2PolygonShape dynamicBox;
     auto& mesh = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(so.mAnimation->VGetCurrentMeshResourceId());
     
-    dynamicBox.SetAsBox((mesh.GetDimensions().x * math::Abs(objectDef.mAnimationNameToScale.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE).x) * math::Abs(objectDef.mBodyCustomScale.x))/2, (mesh.GetDimensions().y * math::Abs(objectDef.mAnimationNameToScale.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE).y) * math::Abs(objectDef.mBodyCustomScale.y))/2);
+    dynamicBox.SetAsBox((mesh.GetDimensions().x * math::Abs(so.mAnimation->VGetScale().x) * math::Abs(objectDef.mBodyCustomScale.x))/2, (mesh.GetDimensions().y * math::Abs(so.mAnimation->VGetScale().y) * math::Abs(objectDef.mBodyCustomScale.y))/2);
     
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
@@ -173,7 +173,7 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
     so.mBody = body;
     so.mHealth = objectDef.mHealth;
     so.mSceneObjectType = SceneObjectType::WorldGameObject;
-    so.mScale = objectDef.mAnimationNameToScale.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE);
+    so.mScale = so.mAnimation->VGetScale();
     
     so.mPosition.z = position.z;
     so.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = true;

@@ -225,7 +225,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
                     potentialTextureResourceIds.push_back(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + textureNameSplitByLBrace[0] + std::to_string(i) + ".bmp"));
                 }
                 
-                animation = new VariableTexturedAnimation(potentialTextureResourceIds, LoadMesh(node), LoadShader(node), LoadBodyRenderingEnabled(node));
+                animation = new VariableTexturedAnimation(potentialTextureResourceIds, LoadMesh(node), LoadShader(node), LoadScale(node), LoadBodyRenderingEnabled(node));
             }
         }
             
@@ -245,7 +245,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             auto* texture = node->first_attribute("texture");
             if (texture)
             {
-                animation = new MultiFrameAnimation(LoadTexture(node), LoadMesh(node), LoadShader(node), duration, textureSheetRow, LoadBodyRenderingEnabled(node));
+                animation = new MultiFrameAnimation(LoadTexture(node), LoadMesh(node), LoadShader(node), LoadScale(node), duration, textureSheetRow, LoadBodyRenderingEnabled(node));
             }
         }
         
@@ -265,7 +265,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             auto* texture = node->first_attribute("texture");
             if (texture)
             {
-                animation = new DissolveAnimation(nullptr, LoadTexture(node), dissolveTextureResourceId, LoadMesh(node), LoadShader(node), dissolveSpeed, LoadBodyRenderingEnabled(node));
+                animation = new DissolveAnimation(nullptr, LoadTexture(node), dissolveTextureResourceId, LoadMesh(node), LoadShader(node), LoadScale(node), dissolveSpeed, LoadBodyRenderingEnabled(node));
             }
         }
         
@@ -275,7 +275,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             auto* texture = node->first_attribute("texture");
             if (texture)
             {
-                animation = new SingleFrameAnimation(LoadTexture(node), LoadMesh(node), LoadShader(node), LoadBodyRenderingEnabled(node));
+                animation = new SingleFrameAnimation(LoadTexture(node), LoadMesh(node), LoadShader(node), LoadScale(node), LoadBodyRenderingEnabled(node));
             }
         }
         
@@ -283,7 +283,6 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
         if (state)
         {
             mConstructedObjectTypeDef.mAnimations[strutils::StringId(state->value())] = animation;
-            mConstructedObjectTypeDef.mAnimationNameToScale[strutils::StringId(state->value())] = LoadScale(node);
         }
     });
     

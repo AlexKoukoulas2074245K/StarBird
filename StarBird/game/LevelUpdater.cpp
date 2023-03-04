@@ -564,7 +564,7 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                 {
                     if (math::RandomFloat() < game_object_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
                     {
-                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), RotationAnimation::RotationAxis::Y, game_object_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_object_constants::PLAYER_MOVEMENT_ROLL_SPEED, true);
+                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationAxis::Y, game_object_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_object_constants::PLAYER_MOVEMENT_ROLL_SPEED, true);
                     }
                     
                     mMovementRotationAllowed = false;
@@ -573,7 +573,7 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                 {
                     if (math::RandomFloat() < game_object_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
                     {
-                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), RotationAnimation::RotationAxis::Y, -game_object_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_object_constants::PLAYER_MOVEMENT_ROLL_SPEED, true);
+                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationAxis::Y, -game_object_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_object_constants::PLAYER_MOVEMENT_ROLL_SPEED, true);
                     }
                     
                     mMovementRotationAllowed = false;

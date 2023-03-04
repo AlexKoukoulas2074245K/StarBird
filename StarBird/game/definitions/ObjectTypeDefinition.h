@@ -34,7 +34,6 @@ struct ObjectTypeDefinition
     float mHealth = 0;
     float mDamage = 0;
     std::unordered_map<strutils::StringId, IAnimation*, strutils::StringIdHasher> mAnimations;
-    std::unordered_map<strutils::StringId, glm::vec3, strutils::StringIdHasher> mAnimationNameToScale;
     b2Filter mContactFilter;
     glm::vec2 mConstantLinearVelocity = glm::vec2(0.0f, 0.0f);
     glm::vec3 mBodyCustomScale = glm::vec3(1.0f, 1.0f, 1.0f);
