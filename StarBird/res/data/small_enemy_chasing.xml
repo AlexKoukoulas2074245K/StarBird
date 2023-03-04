@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ObjectDefinition>
-    <Animation state="idle" texture="enemies/mini_alien_mm" mesh="quad" shader="basic" scale="2.0f" duration="-1"/>
+    <Animation state="idle" texture="enemies/mini_alien_mm" mesh="quad" shader="basic" scale="2.0f"/>
     <Animation state="dying" texture="explosion_sheet" mesh="quad" shader="basic" scale="2.0f" textureSheetRow="0" duration="150" bodyRenderingEnabled="false"/>
     <Physics bodyScale="0.75f" linearDamping="5.0f" speed="4.0f" category="enemy"/>
     <GameAttributes movementControllerPattern="chasing_player" health="1.0f" damage="1.0f"/>

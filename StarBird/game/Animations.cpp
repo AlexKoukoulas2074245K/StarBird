@@ -364,17 +364,20 @@ bool DissolveAnimation::VGetBodyRenderingEnabled() const
 
 ///------------------------------------------------------------------------------------------------
 
-RotationAnimation::RotationAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed, const bool bodyRenderingEnabled)
+RotationAnimation::RotationAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const RotationMode rotationMode, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed, const bool bodyRenderingEnabled)
     : mTextureResourceId(textureResourceId)
     , mMeshResourceId(meshResourceId)
     , mShaderResourceId(shaderResourceId)
     , mScale(scale)
+    , mRotationMode(rotationMode)
     , mRotationAxis(rotationAxis)
     , mRotationRadians(glm::radians(rotationDegrees))
+    , mPreviousRotationRadians(0.0f)
     , mRotationSpeed(rotationSpeed)
     , mRotationDtAccum(0.0f)
     , mLeftHandRotation(rotationDegrees < 0.0f)
     , mBodyRenderingEnabled(bodyRenderingEnabled)
+    , mFinishedRotationOnce(false)
 {
 }
 
@@ -391,6 +394,7 @@ void RotationAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
         if (mRotationDtAccum < mRotationRadians)
         {
             mRotationDtAccum = mRotationRadians;
+            OnSingleRotationFinished();
         }
     }
     else
@@ -399,6 +403,7 @@ void RotationAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
         if (mRotationDtAccum > mRotationRadians)
         {
             mRotationDtAccum = mRotationRadians;
+            OnSingleRotationFinished();
         }
     }
     
@@ -432,12 +437,30 @@ const glm::vec3& RotationAnimation::VGetScale() const
 
 float RotationAnimation::VGetDuration() const
 {
-    return math::Abs(mRotationRadians)/mRotationSpeed;
+    return math::Abs(mRotationRadians)/mRotationSpeed * (mRotationMode == RotationMode::ROTATE_TO_TARGET_AND_BACK_ONCE ? 2.0f : 1.0f);
 }
 
 bool RotationAnimation::VGetBodyRenderingEnabled() const
 {
     return mBodyRenderingEnabled;
+}
+
+void RotationAnimation::OnSingleRotationFinished()
+{
+    if (mRotationMode == RotationMode::ROTATE_TO_TARGET_AND_BACK_ONCE && !mFinishedRotationOnce)
+    {
+        mLeftHandRotation = !mLeftHandRotation;
+        mRotationRadians = mPreviousRotationRadians;
+        mPreviousRotationRadians = mRotationDtAccum;
+    }
+    else if (mRotationMode == RotationMode::ROTATE_TO_TARGET_AND_BACK_CONTINUALLY)
+    {
+        mLeftHandRotation = !mLeftHandRotation;
+        mRotationRadians = mPreviousRotationRadians;
+        mPreviousRotationRadians = mRotationDtAccum;
+    }
+    
+    mFinishedRotationOnce = true;
 }
 
 ///------------------------------------------------------------------------------------------------

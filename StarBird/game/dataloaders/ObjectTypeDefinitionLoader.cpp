@@ -242,11 +242,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
                 duration = std::stof(durationText->value());
             }
             
-            auto* texture = node->first_attribute("texture");
-            if (texture)
-            {
-                animation = new MultiFrameAnimation(LoadTexture(node), LoadMesh(node), LoadShader(node), LoadScale(node), duration, textureSheetRow, LoadBodyRenderingEnabled(node));
-            }
+            animation = new MultiFrameAnimation(LoadTexture(node), LoadMesh(node), LoadShader(node), LoadScale(node), duration, textureSheetRow, LoadBodyRenderingEnabled(node));
         }
         
         // Dissolve Animation
@@ -262,11 +258,39 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
                 dissolveSpeed = std::stof(dissolveSpeedText->value());
             }
             
-            auto* texture = node->first_attribute("texture");
-            if (texture)
+            animation = new DissolveAnimation(nullptr, LoadTexture(node), dissolveTextureResourceId, LoadMesh(node), LoadShader(node), LoadScale(node), dissolveSpeed, LoadBodyRenderingEnabled(node));
+        }
+        
+        // Rotation Animation
+        auto* rotationMode = node->first_attribute("rotationMode");
+        if (rotationMode)
+        {
+            RotationAnimation::RotationMode rotationModeEnumValue = RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE;
+            
+            if (strcmp(rotationMode->value(), "rotateToTargetAndBackOnce") == 0)
             {
-                animation = new DissolveAnimation(nullptr, LoadTexture(node), dissolveTextureResourceId, LoadMesh(node), LoadShader(node), LoadScale(node), dissolveSpeed, LoadBodyRenderingEnabled(node));
+                rotationModeEnumValue = RotationAnimation::RotationMode::ROTATE_TO_TARGET_AND_BACK_ONCE;
             }
+            else if (strcmp(rotationMode->value(), "rotateToTargetAndBackContinually") == 0)
+            {
+                rotationModeEnumValue = RotationAnimation::RotationMode::ROTATE_TO_TARGET_AND_BACK_CONTINUALLY;
+            }
+            
+            auto* rotationAxis = node->first_attribute("rotationAxis");
+            RotationAnimation::RotationAxis rotationAxisEnumValue = RotationAnimation::RotationAxis::Z;
+            if (strcmp(rotationAxis->value(), "x") == 0)
+            {
+                rotationAxisEnumValue = RotationAnimation::RotationAxis::X;
+            }
+            else if (strcmp(rotationAxis->value(), "y") == 0)
+            {
+                rotationAxisEnumValue = RotationAnimation::RotationAxis::Y;
+            }
+            
+            auto rotationDegrees = std::stof(node->first_attribute("rotationDegrees")->value());
+            auto rotationSpeed = std::stof(node->first_attribute("rotationSpeed")->value());
+            
+            animation = new RotationAnimation(LoadTexture(node), LoadMesh(node), LoadShader(node), LoadScale(node), rotationModeEnumValue, rotationAxisEnumValue, rotationDegrees, rotationSpeed, LoadBodyRenderingEnabled(node));
         }
         
         // Single Frame Animation

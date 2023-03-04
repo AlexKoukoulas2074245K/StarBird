@@ -200,7 +200,12 @@ public:
         X, Y, Z
     };
     
-    RotationAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed, const bool bodyRenderingEnabled);
+    enum class RotationMode
+    {
+        ROTATE_TO_TARGET_ONCE, ROTATE_TO_TARGET_AND_BACK_ONCE, ROTATE_TO_TARGET_AND_BACK_CONTINUALLY
+    };
+    
+    RotationAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const RotationMode rotationMode, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed, const bool bodyRenderingEnabled);
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
@@ -212,16 +217,22 @@ public:
     bool VGetBodyRenderingEnabled() const override;
     
 private:
+    void OnSingleRotationFinished();
+    
+private:
     resources::ResourceId mTextureResourceId;
     resources::ResourceId mMeshResourceId;
     resources::ResourceId mShaderResourceId;
     glm::vec3 mScale;
+    RotationMode mRotationMode;
     RotationAxis mRotationAxis;
     float mRotationRadians;
+    float mPreviousRotationRadians;
     float mRotationSpeed;
     float mRotationDtAccum;
     bool mLeftHandRotation;
     bool mBodyRenderingEnabled;
+    bool mFinishedRotationOnce;
 };
 
 ///------------------------------------------------------------------------------------------------
