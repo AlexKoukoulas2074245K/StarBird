@@ -38,6 +38,17 @@ LevelDataLoader::LevelDataLoader()
     BaseGameDataLoader::SetCallbackForNode(strutils::StringId("Wave"), [&](const void* n)
     {
         mConstructedLevel.mWaves.emplace_back();
+        
+        auto* node = static_cast<const rapidxml::xml_node<>*>(n);
+        if (node->first_attribute("bossName"))
+        {
+            mConstructedLevel.mWaves.back().mBossName = strutils::StringId(node->first_attribute("bossName")->value());
+        }
+        
+        if (node->first_attribute("bossHealth"))
+        {
+            mConstructedLevel.mWaves.back().mBossHealth = std::stof(node->first_attribute("bossHealth")->value());
+        }
     });
     
     BaseGameDataLoader::SetCallbackForNode(strutils::StringId("Enemy"), [&](const void* n)

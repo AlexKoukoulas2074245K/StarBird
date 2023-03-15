@@ -18,6 +18,7 @@
 #include "SceneObjectUtils.h"
 
 #include "dataloaders/UpgradesLoader.h"
+#include "states/BossIntroGameState.h"
 #include "states/DebugConsoleGameState.h"
 #include "states/FightingWaveGameState.h"
 #include "states/WaveIntroGameState.h"
@@ -44,7 +45,8 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld)
     , mUpgradesLogicHandler(scene, *this)
     , mStateMachine(scene, *this, mUpgradesLogicHandler, mBox2dWorld)
     , mCurrentWaveNumber(0)
-    , mAnimatedHealthBarPerc(1.0f)
+    , mPlayerAnimatedHealthBarPerc(1.0f)
+    , mBossAnimatedHealthBarPerc(0.0f)
     , mAllowInputControl(false)
     , mMovementRotationAllowed(false)
 {
@@ -130,13 +132,8 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
     static PhysicsCollisionListener collisionListener;
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::PLAYER_BULLET_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-        strutils::StringId enemyName;
-        enemyName.fromAddress(firstBody);
-        auto enemySceneObjectOpt = mScene.GetSceneObject(enemyName);
-        
-        strutils::StringId bulletName;
-        bulletName.fromAddress(secondBody);
-        auto bulletSceneObjectOpt = mScene.GetSceneObject(bulletName);
+        auto enemySceneObjectOpt = mScene.GetSceneObject(*static_cast<strutils::StringId*>(firstBody->GetUserData()));
+        auto bulletSceneObjectOpt = mScene.GetSceneObject(*static_cast<strutils::StringId*>(secondBody->GetUserData()));
         
         if (enemySceneObjectOpt && bulletSceneObjectOpt)
         {
@@ -147,6 +144,10 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             auto bulletSceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(bulletSO.mObjectFamilyTypeName)->get();
             
             enemySO.mHealth -= bulletSceneObjectTypeDef.mDamage;
+            if (scene_object_utils::IsSceneObjectBossPart(enemySO))
+            {
+                GameSingletons::SetBossCurrentHealth(math::Max(0.0f, GameSingletons::GetBossCurrentHealth() - bulletSceneObjectTypeDef.mDamage));
+            }
             
             if (enemySO.mHealth <= 0)
             {
@@ -154,11 +155,11 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 
                 mFlows.emplace_back([=]()
                 {
-                    RemoveWaveEnemy(enemyName);
+                    RemoveWaveEnemy(*static_cast<strutils::StringId*>(firstBody->GetUserData()));
                 }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
                 
-                mActiveLightNames.insert(enemyName);
-                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_object_constants::POINT_LIGHT_COLOR, enemySO.mPosition, game_object_constants::EXPLOSION_LIGHT_POWER);
+                mActiveLightNames.insert(*static_cast<strutils::StringId*>(firstBody->GetUserData()));
+                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, *static_cast<strutils::StringId*>(firstBody->GetUserData()), game_object_constants::POINT_LIGHT_COLOR, enemySO.mPosition, game_object_constants::EXPLOSION_LIGHT_POWER);
             }
             
             // Erase bullet collision mask so that it doesn't also contribute to other
@@ -167,7 +168,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             bulletFilter.maskBits = 0;
             secondBody->GetFixtureList()[0].SetFilterData(bulletFilter);
 
-            mScene.RemoveAllSceneObjectsWithName(bulletName);
+            mScene.RemoveAllSceneObjectsWithName(*static_cast<strutils::StringId*>(secondBody->GetUserData()));
         }
     });
     
@@ -180,9 +181,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         if (iter != mFlows.end()) return;
         
         auto playerSceneObjectOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
-        strutils::StringId enemyName;
-        enemyName.fromAddress(secondBody);
-        auto enemySceneObjectOpt = mScene.GetSceneObject(enemyName);
+        auto enemySceneObjectOpt = mScene.GetSceneObject(*static_cast<strutils::StringId*>(secondBody->GetUserData()));
         
         if (playerSceneObjectOpt && enemySceneObjectOpt)
         {
@@ -226,11 +225,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         if (iter != mFlows.end()) return;
         
         auto playerSceneObjectOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
-        
-        
-        strutils::StringId enemyBulletName;
-        enemyBulletName.fromAddress(secondBody);
-        auto enemyBulletSceneObjectOpt = mScene.GetSceneObject(enemyBulletName);
+        auto enemyBulletSceneObjectOpt = mScene.GetSceneObject(*static_cast<strutils::StringId*>(secondBody->GetUserData()));
         
         if (playerSceneObjectOpt && enemyBulletSceneObjectOpt)
         {
@@ -270,29 +265,23 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             bulletFilter.maskBits = 0;
             secondBody->GetFixtureList()[0].SetFilterData(bulletFilter);
             
-            RemoveWaveEnemy(enemyBulletName);
+            RemoveWaveEnemy(*static_cast<strutils::StringId*>(secondBody->GetUserData()));
         }
     });
     
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::PLAYER_BULLET_CATEGORY_BIT, physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-        strutils::StringId bulletName;
-        bulletName.fromAddress(firstBody);
-        mScene.RemoveAllSceneObjectsWithName(bulletName);
+        RemoveWaveEnemy(*static_cast<strutils::StringId*>(firstBody->GetUserData()));
     });
 
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::ENEMY_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-        strutils::StringId enemyName;
-        enemyName.fromAddress(firstBody);
-        RemoveWaveEnemy(enemyName);
+        RemoveWaveEnemy(*static_cast<strutils::StringId*>(firstBody->GetUserData()));
     });
     
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_BULLET_CATEGORY_BIT, physics_constants::ENEMY_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-        strutils::StringId enemyBulletName;
-        enemyBulletName.fromAddress(firstBody);
-        RemoveWaveEnemy(enemyBulletName);
+        RemoveWaveEnemy(*static_cast<strutils::StringId*>(firstBody->GetUserData()));
     });
     
     mBox2dWorld.SetContactListener(&collisionListener);
@@ -304,6 +293,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
     mStateMachine.RegisterState<DebugConsoleGameState>();
 #endif
     
+    mStateMachine.RegisterState<BossIntroGameState>();
     mStateMachine.RegisterState<FightingWaveGameState>();
     mStateMachine.RegisterState<WaveIntroGameState>();
     mStateMachine.RegisterState<PauseMenuGameState>();
@@ -615,16 +605,12 @@ void LevelUpdater::UpdateBackground(const float dtMillis)
 
 void LevelUpdater::UpdateHealthBars(const float dtMillis)
 {
+    // Player health bar
     auto playerSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
     auto playerHealthBarFrameSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
     auto playerHealthBarSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME);
     
-    if (!playerHealthBarFrameSoOpt || !playerHealthBarSoOpt)
-    {
-        return;
-    }
-    
-    if (playerSoOpt)
+    if (playerSoOpt && playerHealthBarSoOpt && playerHealthBarFrameSoOpt)
     {
         auto& playerSo = playerSoOpt->get();
         auto& healthBarFrameSo = playerHealthBarFrameSoOpt->get();
@@ -632,31 +618,30 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
         
         auto& playerObjectDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSo.mObjectFamilyTypeName)->get();
         
-        healthBarSo.mPosition = game_object_constants::HEALTH_BAR_POSITION;
+        healthBarSo.mPosition = game_object_constants::PLAYER_HEALTH_BAR_POSITION;
         healthBarSo.mPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
         
-        healthBarFrameSo.mPosition = game_object_constants::HEALTH_BAR_POSITION;
-        healthBarFrameSo.mPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
+        healthBarFrameSo.mPosition = game_object_constants::PLAYER_HEALTH_BAR_POSITION;
         
         float healthPerc = playerSo.mHealth/static_cast<float>(playerObjectDef.mHealth);
         
-        healthBarSo.mScale.x = game_object_constants::HEALTH_BAR_SCALE.x * mAnimatedHealthBarPerc;
-        healthBarSo.mPosition.x -= (1.0f - mAnimatedHealthBarPerc)/2.0f * game_object_constants::HEALTH_BAR_SCALE.x;
+        healthBarSo.mScale.x = game_object_constants::PLAYER_HEALTH_BAR_SCALE.x * mPlayerAnimatedHealthBarPerc;
+        healthBarSo.mPosition.x -= (1.0f - mPlayerAnimatedHealthBarPerc)/game_object_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_object_constants::PLAYER_HEALTH_BAR_SCALE.x;
         
-        if (healthPerc < mAnimatedHealthBarPerc)
+        if (healthPerc < mPlayerAnimatedHealthBarPerc)
         {
-            mAnimatedHealthBarPerc -= game_object_constants::HEALTH_LOST_SPEED * dtMillis;
-            if (mAnimatedHealthBarPerc <= healthPerc)
+            mPlayerAnimatedHealthBarPerc -= game_object_constants::HEALTH_LOST_SPEED * dtMillis;
+            if (mPlayerAnimatedHealthBarPerc <= healthPerc)
             {
-                mAnimatedHealthBarPerc = healthPerc;
+                mPlayerAnimatedHealthBarPerc = healthPerc;
             }
         }
         else
         {
-            mAnimatedHealthBarPerc += game_object_constants::HEALTH_LOST_SPEED * dtMillis;
-            if (mAnimatedHealthBarPerc >= healthPerc)
+            mPlayerAnimatedHealthBarPerc += game_object_constants::HEALTH_LOST_SPEED * dtMillis;
+            if (mPlayerAnimatedHealthBarPerc >= healthPerc)
             {
-                mAnimatedHealthBarPerc = healthPerc;
+                mPlayerAnimatedHealthBarPerc = healthPerc;
             }
         }
     }
@@ -664,6 +649,46 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
     {
         playerHealthBarFrameSoOpt->get().mInvisible = true;
         playerHealthBarSoOpt->get().mInvisible = true;
+    }
+    
+    // Boss Health bar
+    auto bossHealthBarFrameSoOpt = mScene.GetSceneObject(scene_object_constants::BOSS_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
+    auto bossHealthBarSoOpt = mScene.GetSceneObject(scene_object_constants::BOSS_HEALTH_BAR_SCENE_OBJECT_NAME);
+    
+    if (bossHealthBarFrameSoOpt && bossHealthBarSoOpt)
+    {
+        auto& healthBarFrameSo = bossHealthBarFrameSoOpt->get();
+        auto& healthBarSo = bossHealthBarSoOpt->get();
+            
+        if (!healthBarSo.mInvisible && !healthBarFrameSo.mInvisible)
+        {
+            healthBarSo.mPosition = game_object_constants::BOSS_HEALTH_BAR_POSITION;
+            healthBarSo.mPosition.z = game_object_constants::BOSS_HEALTH_BAR_Z;
+            
+            healthBarFrameSo.mPosition = game_object_constants::BOSS_HEALTH_BAR_POSITION;
+            
+            double healthPerc = GameSingletons::GetBossCurrentHealth()/GameSingletons::GetBossMaxHealth();
+            
+            healthBarSo.mScale.x = game_object_constants::BOSS_HEALTH_BAR_SCALE.x * mBossAnimatedHealthBarPerc;
+            healthBarSo.mPosition.x -= (1.0f - mBossAnimatedHealthBarPerc)/game_object_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_object_constants::BOSS_HEALTH_BAR_SCALE.x;
+            
+            if (healthPerc < mBossAnimatedHealthBarPerc)
+            {
+                mBossAnimatedHealthBarPerc -= game_object_constants::HEALTH_LOST_SPEED * dtMillis;
+                if (mBossAnimatedHealthBarPerc <= healthPerc)
+                {
+                    mBossAnimatedHealthBarPerc = healthPerc;
+                }
+            }
+            else
+            {
+                mBossAnimatedHealthBarPerc += game_object_constants::HEALTH_LOST_SPEED * dtMillis;
+                if (mBossAnimatedHealthBarPerc >= healthPerc)
+                {
+                    mBossAnimatedHealthBarPerc = healthPerc;
+                }
+            }
+        }
     }
 }
 

@@ -39,6 +39,12 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
 void ChangeSceneObjectState(SceneObject& sceneObject, const ObjectTypeDefinition& objectDef, const strutils::StringId newStateName);
 
 ///-----------------------------------------------------------------------------------------------
+/// Tests the sceen object's name to assess whether it is part of a boss
+/// @param[in] sceneObject the scene object to check whether it is a boss part or not
+/// @returns whether or not the scene object is part of a boss
+bool IsSceneObjectBossPart(const SceneObject& sceneObject);
+
+///-----------------------------------------------------------------------------------------------
 /// Generates and returns a string representation of the scene object body's pointer.
 /// @param[in] sceneObject the scene object (containing a body) to generate the name for
 /// @returns the string representation of the scene object body's pointer if it owns one, or an empty StringId otherwise.

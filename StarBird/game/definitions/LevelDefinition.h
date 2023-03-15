@@ -36,6 +36,8 @@ struct LevelCamera
 
 struct LevelWave
 {
+    strutils::StringId mBossName = strutils::StringId();
+    float mBossHealth = 0.0f;
     std::vector<LevelEnemy> mEnemies;
 };
 

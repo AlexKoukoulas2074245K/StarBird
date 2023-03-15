@@ -23,6 +23,7 @@ namespace game_object_constants
 static const strutils::StringId PLAYER_BULLET_FLOW_NAME = strutils::StringId("PLAYER_BULLET_FLOW");
 static const strutils::StringId PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME = strutils::StringId("PLAYER_INVINCIBILITY_FLOW");
 static const strutils::StringId WAVE_INTRO_FLOW_NAME = strutils::StringId("WAVE_INTRO_FLOW");
+static const strutils::StringId BOSS_INTRO_FLOW_NAME = strutils::StringId("BOSS_INTRO_FLOW");
 
 static const strutils::StringId PLAYER_OBJECT_TYPE_DEF_NAME = strutils::StringId("player");
 
@@ -45,12 +46,14 @@ static const std::string ENEMY_PROJECTILE_FLOW_POSTFIX = std::string("_PROJECTIL
 static const float BACKGROUND_SPEED = 1.0f/4000.0f;
 
 static const float WAVE_INTRO_TEXT_SPEED = 0.01f;
+static const float BOSS_INTRO_TEXT_SPEED = 0.01f;
 
 static const float FULL_SCREEN_OVERLAY_DARKENING_SPEED = 1.0f/400.0f;
 
 static const float UPGRADE_MOVEMENT_SPEED = 1.0f/400.0f;
 
 static const float WAVE_INTRO_DURATION_MILLIS = 3000.0f;
+static const float BOSS_INTRO_DURATION_MILLIS = 3000.0f;
 
 static const float PLAYER_BULLET_FLOW_DELAY_MILLIS = 300.0f;
 static const float HASTENED_PLAYER_BULLET_FLOW_DELAY_MILLIS = 200.0f;
@@ -68,10 +71,12 @@ static const float WALL_Z = -0.5f;
 
 static const float BULLET_Z = -0.5f;
 
-static const float PLAYER_HEALTH_BAR_Z = 0.5f;
 static const float PLAYER_HEALTH_LOST_BAR_Z = 0.4f;
+static const float PLAYER_HEALTH_BAR_Z = 0.45f;
+static const float BOSS_HEALTH_BAR_Z = 2.45f;
 static const float HEALTH_LOST_SPEED = 0.001f;
-
+static const float BOSS_INTRO_ANIMATED_HEALTH_SPEED = 0.05f;
+static const float HEALTH_BAR_POSITION_DIVISOR_MAGIC = 2.15f;
 static const float FULL_SCREEN_OVERLAY_MAX_ALPHA = 0.8f;
 
 static const float PLAYER_BULLET_X_OFFSET = 0.48f;
@@ -102,6 +107,9 @@ static const glm::vec3 JOYSTICK_BOUNDS_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
 static const glm::vec3 WAVE_INTRO_TEXT_INIT_POS = glm::vec3(-3.0f, 0.0f, 2.0f);
 static const glm::vec3 WAVE_INTRO_TEXT_SCALE = glm::vec3(0.02f, 0.02f, 1.0f);
 
+static const glm::vec3 BOSS_INTRO_TEXT_INIT_POS = glm::vec3(-3.0f, 0.0f, 2.0f);
+static const glm::vec3 BOSS_INTRO_TEXT_SCALE = glm::vec3(0.02f, 0.02f, 1.0f);
+
 static const glm::vec3 LEFT_UPGRADE_INIT_POS = glm::vec3(-11.0f, 0.5f, 5.0f);
 static const glm::vec3 LEFT_UPGRADE_TARGET_POS = glm::vec3(-2.0f, 0.5f, 5.0f);
 static const glm::vec3 LEFT_UPGRADE_SCALE = glm::vec3(2.5f, 2.5f, 1.0f);
@@ -121,8 +129,11 @@ static const glm::vec3 RIGHT_UPGRADE_CONTAINER_SCALE = glm::vec3(-8.5f, 5.5f, 1.
 static const glm::vec3 FULL_SCREEN_OVERLAY_POSITION = glm::vec3(0.0f, 0.0f, 3.0f);
 static const glm::vec3 FULL_SCREEN_OVERLAY_SCALE = glm::vec3(80.0f, 80.0f, 1.0f);
 
-static const glm::vec3 HEALTH_BAR_POSITION = glm::vec3(0.0f, -12.0f, 0.5f);
-static const glm::vec3 HEALTH_BAR_SCALE = glm::vec3(8.0f, 1.0f, 1.0f);
+static const glm::vec3 PLAYER_HEALTH_BAR_POSITION = glm::vec3(0.0f, -12.0f, 0.5f);
+static const glm::vec3 PLAYER_HEALTH_BAR_SCALE = glm::vec3(5.0f, 1.0f, 1.0f);
+
+static const glm::vec3 BOSS_HEALTH_BAR_POSITION = glm::vec3(0.0f, 11.5f, 2.5f);
+static const glm::vec3 BOSS_HEALTH_BAR_SCALE = glm::vec3(10.0f, 1.0f, 1.0f);
 
 static const glm::vec3 LEFT_MIRROR_IMAGE_POSITION_OFFSET = glm::vec3(-2.0f, -0.5f, 0.0f);
 static const glm::vec3 LEFT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);

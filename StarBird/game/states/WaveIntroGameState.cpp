@@ -6,6 +6,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "WaveIntroGameState.h"
+#include "BossIntroGameState.h"
 #include "FightingWaveGameState.h"
 #include "../Scene.h"
 #include "../LevelUpdater.h"
@@ -36,7 +37,8 @@ void WaveIntroGameState::VInitialize()
     
     mLevelUpdater->AddFlow(RepeatableFlow([&]()
     {
-        Complete(FightingWaveGameState::STATE_NAME);
+        Complete(mLevelUpdater->GetCurrentLevelDefinition().mWaves[mLevelUpdater->GetCurrentWaveNumber()].mBossName.isEmpty() ? FightingWaveGameState::STATE_NAME : BossIntroGameState::STATE_NAME);
+        
     }, game_object_constants::WAVE_INTRO_DURATION_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_object_constants::WAVE_INTRO_FLOW_NAME));
 }
 

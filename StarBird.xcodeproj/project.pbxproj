@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9206BAA929AF8BF20013BE69 /* LightRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9206BAA729AF8BF20013BE69 /* LightRepository.cpp */; };
+		9208BE6129B3FD41007C5335 /* BossIntroGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9208BE5429B3FD41007C5335 /* BossIntroGameState.cpp */; };
 		9228C168299FD15A00410E49 /* GUISceneLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9228C166299FD15A00410E49 /* GUISceneLoader.cpp */; };
 		9228C16B299FDA5A00410E49 /* SceneObjectUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9228C169299FDA5900410E49 /* SceneObjectUtils.cpp */; };
 		9254CA512969B35800EFE0CC /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92C851A12969A8D00021923F /* SDL2.framework */; };
@@ -217,6 +218,8 @@
 /* Begin PBXFileReference section */
 		9206BAA729AF8BF20013BE69 /* LightRepository.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LightRepository.cpp; sourceTree = "<group>"; };
 		9206BAA829AF8BF20013BE69 /* LightRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LightRepository.h; sourceTree = "<group>"; };
+		9208BE5429B3FD41007C5335 /* BossIntroGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BossIntroGameState.cpp; sourceTree = "<group>"; };
+		9208BE6029B3FD41007C5335 /* BossIntroGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BossIntroGameState.h; sourceTree = "<group>"; };
 		9228C15A299FCE4F00410E49 /* GUISceneDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GUISceneDefinition.h; sourceTree = "<group>"; };
 		9228C166299FD15A00410E49 /* GUISceneLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUISceneLoader.cpp; sourceTree = "<group>"; };
 		9228C167299FD15A00410E49 /* GUISceneLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUISceneLoader.h; sourceTree = "<group>"; };
@@ -1638,6 +1641,8 @@
 		92F9EC77299E565500C263E8 /* states */ = {
 			isa = PBXGroup;
 			children = (
+				9208BE5429B3FD41007C5335 /* BossIntroGameState.cpp */,
+				9208BE6029B3FD41007C5335 /* BossIntroGameState.h */,
 				9285241429A8D5B9007EA0D9 /* DebugConsoleGameState.cpp */,
 				9285240829A8D5B9007EA0D9 /* DebugConsoleGameState.h */,
 				92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */,
@@ -1917,6 +1922,7 @@
 				9254CBE92969B79A00EFE0CC /* b2ContactSolver.cpp in Sources */,
 				925FD86F29892BE00058E747 /* LevelDataLoader.cpp in Sources */,
 				9228C16B299FDA5A00410E49 /* SceneObjectUtils.cpp in Sources */,
+				9208BE6129B3FD41007C5335 /* BossIntroGameState.cpp in Sources */,
 				92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */,
 				92C851BA2969A9D70021923F /* main.cpp in Sources */,
 				9254CBEA2969B79A00EFE0CC /* b2CircleContact.cpp in Sources */,

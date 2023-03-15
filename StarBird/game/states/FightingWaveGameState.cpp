@@ -31,13 +31,15 @@ const strutils::StringId FightingWaveGameState::STATE_NAME("FightingWaveGameStat
 void FightingWaveGameState::VInitialize()
 {
     auto& objectTypeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
-    for (const auto& enemy: mLevelUpdater->GetCurrentLevelDefinition().mWaves[mLevelUpdater->GetCurrentWaveNumber()].mEnemies)
+    const auto& currentWave = mLevelUpdater->GetCurrentLevelDefinition().mWaves[mLevelUpdater->GetCurrentWaveNumber()];
+    for (const auto& enemy: currentWave.mEnemies)
     {
         const auto& enemyDefOpt = objectTypeDefRepo.GetObjectTypeDefinition(enemy.mGameObjectEnemyType);
         if (!enemyDefOpt) continue;
         const auto& enemyDef = enemyDefOpt->get();
         
-        SceneObject so = scene_object_utils::CreateSceneObjectWithBody(enemyDef, enemy.mPosition, *mBox2dWorld);
+        SceneObject so = scene_object_utils::CreateSceneObjectWithBody(enemyDef, enemy.mPosition, *mBox2dWorld, currentWave.mBossName.isEmpty() ? strutils::StringId() : enemyDef.mName);
+        
         auto enemyName = so.mName;
         
         if (!enemyDef.mProjectileType.isEmpty())

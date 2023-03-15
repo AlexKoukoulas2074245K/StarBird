@@ -130,6 +130,13 @@ void ChangeSceneObjectState(SceneObject& sceneObject, const ObjectTypeDefinition
 
 ///------------------------------------------------------------------------------------------------
 
+bool IsSceneObjectBossPart(const SceneObject& sceneObject)
+{
+    return strutils::StringStartsWith(sceneObject.mName.GetString(), "boss");
+}
+
+///------------------------------------------------------------------------------------------------
+
 strutils::StringId GenerateSceneObjectName(const SceneObject& sceneObject)
 {
     if (!sceneObject.mBody) return strutils::StringId();
@@ -186,6 +193,8 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
     {
         so.mName = sceneObjectName;
     }
+    
+    so.mBody->SetUserData(new strutils::StringId(so.mName));
     
     return so;
 }

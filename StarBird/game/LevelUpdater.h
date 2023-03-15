@@ -77,7 +77,8 @@ private:
     
     glm::vec3 mPreviousMotionVec;
     size_t mCurrentWaveNumber;
-    float mAnimatedHealthBarPerc;
+    float mPlayerAnimatedHealthBarPerc;
+    float mBossAnimatedHealthBarPerc;
     bool mAllowInputControl;
     bool mMovementRotationAllowed;
 };

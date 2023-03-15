@@ -54,6 +54,12 @@ public:
     static float GetGameSpeedMultiplier();
     static void SetGameSpeedMultiplier(const float gameSpeedMultiplier);
     
+    static float GetBossMaxHealth();
+    static void SetBossMaxHealth(const float bossMaxHealth);
+    
+    static float GetBossCurrentHealth();
+    static void SetBossCurrentHealth(const float bossCurrentHealth);
+    
 private:
     static InputContext mInputContext;
     static SDL_Window* mWindow;
@@ -63,6 +69,8 @@ private:
     static UpgradeMap mAvailableUpgrades;
     static std::pair<UpgradeDefinition, UpgradeDefinition> mUpgradeSelection;
     static float mGameSpeedMultiplier;
+    static float mBossMaxHealth;
+    static float mBossCurrentHealth;
 };
 
 ///------------------------------------------------------------------------------------------------

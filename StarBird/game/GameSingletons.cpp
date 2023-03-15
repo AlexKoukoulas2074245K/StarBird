@@ -17,6 +17,8 @@ GameSingletons::UpgradeMap GameSingletons::mEquippedUpgrades = {};
 GameSingletons::UpgradeMap GameSingletons::mAvailableUpgrades = {};
 std::pair<UpgradeDefinition, UpgradeDefinition> GameSingletons::mUpgradeSelection = {};
 float GameSingletons::mGameSpeedMultiplier = 1.0f;
+float GameSingletons::mBossMaxHealth = 0.0f;
+float GameSingletons::mBossCurrentHealth = 1.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -155,6 +157,34 @@ float GameSingletons::GetGameSpeedMultiplier()
 void GameSingletons::SetGameSpeedMultiplier(const float gameSpeedMultiplier)
 {
     mGameSpeedMultiplier = gameSpeedMultiplier;
+}
+
+///------------------------------------------------------------------------------------------------
+
+float GameSingletons::GetBossMaxHealth()
+{
+    return mBossMaxHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetBossMaxHealth(const float bossMaxHealth)
+{
+    mBossMaxHealth = bossMaxHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+float GameSingletons::GetBossCurrentHealth()
+{
+    return mBossCurrentHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetBossCurrentHealth(const float bossCurrentHealth)
+{
+    mBossCurrentHealth = bossCurrentHealth;
 }
 
 ///------------------------------------------------------------------------------------------------

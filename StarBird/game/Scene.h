@@ -23,7 +23,6 @@
 
 ///------------------------------------------------------------------------------------------------
 
-class b2World;
 class Scene final
 {
 public:
@@ -31,6 +30,8 @@ public:
     
     std::string GetSceneStateDescription() const;
     
+    std::optional<std::reference_wrapper<SceneObject>> GetSceneObject(const b2Body* body);
+    std::optional<std::reference_wrapper<const SceneObject>> GetSceneObject(const b2Body* body) const;
     std::optional<std::reference_wrapper<SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectName);
     std::optional<std::reference_wrapper<const SceneObject>> GetSceneObject(const strutils::StringId& sceneObjectName) const;
     const std::vector<SceneObject>& GetSceneObjects() const;

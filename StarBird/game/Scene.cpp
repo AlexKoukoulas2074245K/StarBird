@@ -41,6 +41,60 @@ std::string Scene::GetSceneStateDescription() const
 
 ///------------------------------------------------------------------------------------------------
 
+std::optional<std::reference_wrapper<SceneObject>> Scene::GetSceneObject(const b2Body* body)
+{
+    auto findIter = std::find_if(mSceneObjects.begin(), mSceneObjects.end(), [&](SceneObject& so)
+    {
+        return so.mBody == body;
+    });
+    
+    if (findIter != mSceneObjects.end())
+    {
+        return std::optional<std::reference_wrapper<SceneObject>>{*findIter};
+    }
+    
+    findIter = std::find_if(mSceneObjectsToAdd.begin(), mSceneObjectsToAdd.end(), [&](SceneObject& so)
+    {
+        return so.mBody == body;
+    });
+    
+    if (findIter != mSceneObjectsToAdd.end())
+    {
+        return std::optional<std::reference_wrapper<SceneObject>>{*findIter};
+    }
+    
+    return std::nullopt;
+}
+
+///------------------------------------------------------------------------------------------------
+
+std::optional<std::reference_wrapper<const SceneObject>> Scene::GetSceneObject(const b2Body* body) const
+{
+    auto findIter = std::find_if(mSceneObjects.begin(), mSceneObjects.end(), [&](const SceneObject& so)
+    {
+        return so.mBody == body;
+    });
+    
+    if (findIter != mSceneObjects.end())
+    {
+        return std::optional<std::reference_wrapper<const SceneObject>>{*findIter};
+    }
+    
+    findIter = std::find_if(mSceneObjectsToAdd.begin(), mSceneObjectsToAdd.end(), [&](const SceneObject& so)
+    {
+        return so.mBody == body;
+    });
+    
+    if (findIter != mSceneObjectsToAdd.end())
+    {
+        return std::optional<std::reference_wrapper<const SceneObject>>{*findIter};
+    }
+    
+    return std::nullopt;
+}
+
+///------------------------------------------------------------------------------------------------
+
 std::optional<std::reference_wrapper<SceneObject>> Scene::GetSceneObject(const strutils::StringId& sceneObjectName)
 {
     auto findIter = std::find_if(mSceneObjects.begin(), mSceneObjects.end(), [&](SceneObject& so)
@@ -218,6 +272,7 @@ void Scene::UpdateScene(const float dtMillis)
             
             if (iter->mBody)
             {
+                delete static_cast<strutils::StringId*>(iter->mBody->GetUserData());
                 mBox2dWorld.DestroyBody(iter->mBody);
             }
             
@@ -261,8 +316,6 @@ void Scene::OpenDebugConsole()
 
 void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
 {
-    auto& resService = resources::ResourceLoadingService::GetInstance();
-    
     // L_WALL
     {
         b2BodyDef wallBodyDef;
@@ -375,7 +428,7 @@ void Scene::CreateLevelWalls(const Camera& cam, const bool invisible)
     {
         b2BodyDef wallBodyDef;
         wallBodyDef.type = b2_staticBody;
-        wallBodyDef.position.Set(0.0f, cam.GetCameraLenseHeight()/2 + 1.0f);
+        wallBodyDef.position.Set(0.0f, cam.GetCameraLenseHeight()/2);
         
         b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
 
@@ -467,8 +520,8 @@ void Scene::LoadLevelInvariantObjects()
         SceneObject healthBarSo;
         healthBarSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         healthBarSo.mSceneObjectType = SceneObjectType::GUIObject;
-        healthBarSo.mPosition = game_object_constants::HEALTH_BAR_POSITION;
-        healthBarSo.mScale = game_object_constants::HEALTH_BAR_SCALE;
+        healthBarSo.mPosition = game_object_constants::PLAYER_HEALTH_BAR_POSITION;
+        healthBarSo.mScale = game_object_constants::PLAYER_HEALTH_BAR_SCALE;
         healthBarSo.mName = scene_object_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(healthBarSo));
     }
@@ -478,8 +531,8 @@ void Scene::LoadLevelInvariantObjects()
         SceneObject healthBarFrameSo;
         healthBarFrameSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         healthBarFrameSo.mSceneObjectType = SceneObjectType::GUIObject;
-        healthBarFrameSo.mPosition = game_object_constants::HEALTH_BAR_POSITION;
-        healthBarFrameSo.mScale = game_object_constants::HEALTH_BAR_SCALE;
+        healthBarFrameSo.mPosition = game_object_constants::PLAYER_HEALTH_BAR_POSITION;
+        healthBarFrameSo.mScale = game_object_constants::PLAYER_HEALTH_BAR_SCALE;
         healthBarFrameSo.mName = scene_object_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
         AddSceneObject(std::move(healthBarFrameSo));
     }
