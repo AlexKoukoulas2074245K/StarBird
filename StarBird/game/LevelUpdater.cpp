@@ -132,8 +132,11 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
     static PhysicsCollisionListener collisionListener;
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::PLAYER_BULLET_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-        auto enemySceneObjectOpt = mScene.GetSceneObject(*static_cast<strutils::StringId*>(firstBody->GetUserData()));
-        auto bulletSceneObjectOpt = mScene.GetSceneObject(*static_cast<strutils::StringId*>(secondBody->GetUserData()));
+        const auto& enemyName = *static_cast<strutils::StringId*>(firstBody->GetUserData());
+        auto enemySceneObjectOpt = mScene.GetSceneObject(enemyName);
+        
+        const auto& bulletName = *static_cast<strutils::StringId*>(secondBody->GetUserData());
+        auto bulletSceneObjectOpt = mScene.GetSceneObject(bulletName);
         
         if (enemySceneObjectOpt && bulletSceneObjectOpt)
         {
@@ -155,11 +158,11 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
                 
                 mFlows.emplace_back([=]()
                 {
-                    RemoveWaveEnemy(*static_cast<strutils::StringId*>(firstBody->GetUserData()));
+                    RemoveWaveEnemy(enemyName);
                 }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
                 
-                mActiveLightNames.insert(*static_cast<strutils::StringId*>(firstBody->GetUserData()));
-                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, *static_cast<strutils::StringId*>(firstBody->GetUserData()), game_object_constants::POINT_LIGHT_COLOR, enemySO.mPosition, game_object_constants::EXPLOSION_LIGHT_POWER);
+                mActiveLightNames.insert(enemyName);
+                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_object_constants::POINT_LIGHT_COLOR, enemySO.mPosition, game_object_constants::EXPLOSION_LIGHT_POWER);
             }
             
             // Erase bullet collision mask so that it doesn't also contribute to other
@@ -168,7 +171,7 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             bulletFilter.maskBits = 0;
             secondBody->GetFixtureList()[0].SetFilterData(bulletFilter);
 
-            mScene.RemoveAllSceneObjectsWithName(*static_cast<strutils::StringId*>(secondBody->GetUserData()));
+            mScene.RemoveAllSceneObjectsWithName(bulletName);
         }
     });
     
@@ -181,7 +184,9 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         if (iter != mFlows.end()) return;
         
         auto playerSceneObjectOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
-        auto enemySceneObjectOpt = mScene.GetSceneObject(*static_cast<strutils::StringId*>(secondBody->GetUserData()));
+        
+        const auto& enemyName = *static_cast<strutils::StringId*>(secondBody->GetUserData());
+        auto enemySceneObjectOpt = mScene.GetSceneObject(enemyName);
         
         if (playerSceneObjectOpt && enemySceneObjectOpt)
         {
@@ -225,7 +230,9 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
         if (iter != mFlows.end()) return;
         
         auto playerSceneObjectOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
-        auto enemyBulletSceneObjectOpt = mScene.GetSceneObject(*static_cast<strutils::StringId*>(secondBody->GetUserData()));
+        
+        const auto& enemyBulletName = *static_cast<strutils::StringId*>(secondBody->GetUserData());
+        auto enemyBulletSceneObjectOpt = mScene.GetSceneObject(enemyBulletName);
         
         if (playerSceneObjectOpt && enemyBulletSceneObjectOpt)
         {
@@ -265,23 +272,26 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             bulletFilter.maskBits = 0;
             secondBody->GetFixtureList()[0].SetFilterData(bulletFilter);
             
-            RemoveWaveEnemy(*static_cast<strutils::StringId*>(secondBody->GetUserData()));
+            RemoveWaveEnemy(enemyBulletName);
         }
     });
     
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::PLAYER_BULLET_CATEGORY_BIT, physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-        RemoveWaveEnemy(*static_cast<strutils::StringId*>(firstBody->GetUserData()));
+        const auto& playerBulletName = *static_cast<strutils::StringId*>(firstBody->GetUserData());
+        RemoveWaveEnemy(playerBulletName);
     });
 
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::ENEMY_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-        RemoveWaveEnemy(*static_cast<strutils::StringId*>(firstBody->GetUserData()));
+        const auto& enemyName = *static_cast<strutils::StringId*>(firstBody->GetUserData());
+        RemoveWaveEnemy(enemyName);
     });
     
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_BULLET_CATEGORY_BIT, physics_constants::ENEMY_ONLY_WALL_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
-        RemoveWaveEnemy(*static_cast<strutils::StringId*>(firstBody->GetUserData()));
+        const auto& enemyBulletName = *static_cast<strutils::StringId*>(firstBody->GetUserData());
+        RemoveWaveEnemy(enemyBulletName);
     });
     
     mBox2dWorld.SetContactListener(&collisionListener);
