@@ -23,6 +23,8 @@ const strutils::StringId BossIntroGameState::STATE_NAME("BossIntroGameState");
 
 void BossIntroGameState::VInitialize()
 {
+    mSubState = SubState::BOSS_NAME_DISPLAY;
+    
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
     // Boss Text
@@ -101,11 +103,11 @@ PostStateUpdateDirective BossIntroGameState::VUpdate(const float dtMillis)
             mScene->GetSceneObject(scene_object_constants::BOSS_HEALTH_BAR_SCENE_OBJECT_NAME)->get().mInvisible = false;
             mScene->GetSceneObject(scene_object_constants::BOSS_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME)->get().mInvisible = false;
             
-            GameSingletons::SetBossCurrentHealth(GameSingletons::GetBossCurrentHealth() + game_object_constants::BOSS_INTRO_ANIMATED_HEALTH_SPEED * dtMillis);
+            GameSingletons::SetBossCurrentHealth(GameSingletons::GetBossCurrentHealth() + (GameSingletons::GetBossMaxHealth()/100.0f) * game_object_constants::BOSS_INTRO_ANIMATED_HEALTH_SPEED * dtMillis);
             if (GameSingletons::GetBossCurrentHealth() >= GameSingletons::GetBossMaxHealth())
             {
                 GameSingletons::SetBossCurrentHealth(GameSingletons::GetBossMaxHealth());
-                Complete(FightingWaveGameState::STATE_NAME);
+                Complete();
             }
         } break;
     }

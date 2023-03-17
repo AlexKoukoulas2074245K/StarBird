@@ -2,6 +2,6 @@
 <ObjectDefinition>
     <Animation state="idle" texture="enemies/boss_1/flap" mesh="enemies/boss_1/bottom_left_flap" shader="basic" scale="2.0f, 2.0f" rotationMode="rotateToTargetAndBackContinually" rotationAxis="z" rotationDegrees="-5" rotationSpeed="0.00005f"/>
     <Animation state="dying" texture="explosion_sheet" mesh="quad" shader="basic" scale="2.0f" textureSheetRow="0" duration="150" bodyRenderingEnabled="false"/>
-    <Physics bodyOffset="-4.0f, -4.0f" linearDamping="0.0f" constantVelocity="0.0f, -0.3f" speed="0.3f" category="boss"/>
-    <GameAttributes movementControllerPattern="constant_velocity" health="100.0f" damage="2.0f"/>
+    <Physics bodyOffset="-4.0f, 20.0f" bodyScale="0.5f, 1.0f" linearDamping="0.0f" constantVelocity="0.0f, -0.6f" category="boss"/>
+    <GameAttributes movementControllerPattern="constant_velocity" health="1000.0f" damage="2.0f"/>
 </ObjectDefinition>

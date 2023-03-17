@@ -144,7 +144,7 @@ static const glm::vec3 RIGHT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
 static const glm::vec3 PLAYER_SHIELD_POSITION_OFFSET = glm::vec3(0.0f, 0.5f, 0.5f);
 static const glm::vec3 PLAYER_SHIELD_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
 
-static const glm::vec4 AMBIENT_LIGHT_COLOR = glm::vec4(0.6f, 0.6f, 0.6f, 1.0f);
+static const glm::vec4 AMBIENT_LIGHT_COLOR = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
 static const glm::vec4 POINT_LIGHT_COLOR = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
 
 ///------------------------------------------------------------------------------------------------

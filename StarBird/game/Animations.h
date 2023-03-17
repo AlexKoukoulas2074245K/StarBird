@@ -207,6 +207,8 @@ public:
     
     RotationAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const RotationMode rotationMode, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed, const bool bodyRenderingEnabled);
     
+    void SetRotationMode(const RotationMode rotationMode);
+    
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentTextureResourceId() const override;

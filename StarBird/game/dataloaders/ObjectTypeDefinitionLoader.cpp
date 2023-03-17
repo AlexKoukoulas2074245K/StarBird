@@ -186,6 +186,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
                 mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::ENEMY_CATEGORY_BIT);
                 mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::PLAYER_BULLET_CATEGORY_BIT);
                 mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::ENEMY_BULLET_CATEGORY_BIT);
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= (~physics_constants::GLOBAL_WALL_CATEGORY_BIT);
             }
             else if (strcmp(category->value(), "boss") == 0)
             {

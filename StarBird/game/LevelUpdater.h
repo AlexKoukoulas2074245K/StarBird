@@ -10,6 +10,7 @@
 
 ///------------------------------------------------------------------------------------------------
 
+#include "BossAIController.h"
 #include "SceneObject.h"
 #include "LevelDefinition.h"
 #include "RepeatableFlow.h"
@@ -50,6 +51,7 @@ public:
 #ifdef DEBUG
     void OpenDebugConsole();
 #endif
+    void OnBossPositioned();
     
 private:
     void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMillis);
@@ -61,7 +63,7 @@ private:
     
     void OnPlayerDamaged();
     void OnBlockedUpdate();
-
+    
     void CreateBulletAtPosition(const strutils::StringId& bulletType, const glm::vec3& position);
     
 private:
@@ -70,6 +72,7 @@ private:
     LevelDefinition mLevel;
     UpgradesLogicHandler mUpgradesLogicHandler;
     StateMachine mStateMachine;
+    BossAIController mBossAIController;
     PostStateUpdateDirective mLastPostStateMachineUpdateDirective;
     std::vector<RepeatableFlow> mFlows;
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> mWaveEnemies;

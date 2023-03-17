@@ -37,8 +37,7 @@ void WaveIntroGameState::VInitialize()
     
     mLevelUpdater->AddFlow(RepeatableFlow([&]()
     {
-        Complete(mLevelUpdater->GetCurrentLevelDefinition().mWaves[mLevelUpdater->GetCurrentWaveNumber()].mBossName.isEmpty() ? FightingWaveGameState::STATE_NAME : BossIntroGameState::STATE_NAME);
-        
+        Complete(FightingWaveGameState::STATE_NAME);
     }, game_object_constants::WAVE_INTRO_DURATION_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_object_constants::WAVE_INTRO_FLOW_NAME));
 }
 

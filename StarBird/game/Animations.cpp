@@ -381,6 +381,11 @@ RotationAnimation::RotationAnimation(const resources::ResourceId textureResource
 {
 }
 
+void RotationAnimation::SetRotationMode(const RotationMode rotationMode)
+{
+    mRotationMode = rotationMode;
+}
+
 std::unique_ptr<IAnimation> RotationAnimation::VClone() const
 {
     return std::make_unique<RotationAnimation>(*this);

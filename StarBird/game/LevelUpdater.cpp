@@ -44,6 +44,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld)
     , mBox2dWorld(box2dWorld)
     , mUpgradesLogicHandler(scene, *this)
     , mStateMachine(scene, *this, mUpgradesLogicHandler, mBox2dWorld)
+    , mBossAIController(scene, *this, mStateMachine, mBox2dWorld)
     , mCurrentWaveNumber(0)
     , mPlayerAnimatedHealthBarPerc(1.0f)
     , mBossAnimatedHealthBarPerc(0.0f)
@@ -146,10 +147,16 @@ void LevelUpdater::InitLevel(LevelDefinition&& levelDef)
             auto enemySceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemySO.mObjectFamilyTypeName)->get();
             auto bulletSceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(bulletSO.mObjectFamilyTypeName)->get();
             
-            enemySO.mHealth -= bulletSceneObjectTypeDef.mDamage;
-            if (scene_object_utils::IsSceneObjectBossPart(enemySO))
+            if (!enemySO.mInvulnerable)
             {
-                GameSingletons::SetBossCurrentHealth(math::Max(0.0f, GameSingletons::GetBossCurrentHealth() - bulletSceneObjectTypeDef.mDamage));
+                if (scene_object_utils::IsSceneObjectBossPart(enemySO))
+                {
+                    GameSingletons::SetBossCurrentHealth(math::Max(0.0f, GameSingletons::GetBossCurrentHealth() - bulletSceneObjectTypeDef.mDamage));
+                }
+                else
+                {
+                    enemySO.mHealth -= bulletSceneObjectTypeDef.mDamage;
+                }
             }
             
             if (enemySO.mHealth <= 0)
@@ -376,7 +383,7 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
     {
         // Check if this scene object has a respective family object definition
         auto sceneObjectTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(sceneObject.mObjectFamilyTypeName);
-        if (sceneObjectTypeDefOpt)
+        if (sceneObjectTypeDefOpt && !sceneObject.mCustomDrivenMovement)
         {
             // Update movement
             auto& sceneObjectTypeDef = sceneObjectTypeDefOpt->get();
@@ -413,6 +420,12 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
         {
             sceneObject.mAnimation->VUpdate(dtMillis, sceneObject);
         }
+    }
+    
+    const auto& bossName = mLevel.mWaves.at(mCurrentWaveNumber).mBossName;
+    if (!bossName.isEmpty())
+    {
+        mBossAIController.UpdateBossAI(bossName, dtMillis);
     }
     
     mUpgradesLogicHandler.OnUpdate(dtMillis);
@@ -505,6 +518,13 @@ void LevelUpdater::OpenDebugConsole()
     }
 }
 #endif
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::OnBossPositioned()
+{
+    mStateMachine.PushState(BossIntroGameState::STATE_NAME);
+}
 
 ///------------------------------------------------------------------------------------------------
 

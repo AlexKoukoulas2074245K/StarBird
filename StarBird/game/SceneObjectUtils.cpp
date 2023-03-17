@@ -9,6 +9,7 @@
 #include "Scene.h"
 #include "datarepos/FontRepository.h"
 #include "definitions/ObjectTypeDefinition.h"
+#include "PhysicsConstants.h"
 #include "../resloading/TextureResource.h"
 #include "../resloading/MeshResource.h"
 #include "../utils/OSMessageBox.h"
@@ -18,6 +19,10 @@
 
 namespace scene_object_utils
 {
+
+///------------------------------------------------------------------------------------------------
+
+static const std::string BOSS_SCENE_OBJECT_NAME_PREFIX = "boss";
 
 ///------------------------------------------------------------------------------------------------
 
@@ -132,7 +137,7 @@ void ChangeSceneObjectState(SceneObject& sceneObject, const ObjectTypeDefinition
 
 bool IsSceneObjectBossPart(const SceneObject& sceneObject)
 {
-    return strutils::StringStartsWith(sceneObject.mName.GetString(), "boss");
+    return strutils::StringStartsWith(sceneObject.mName.GetString(), BOSS_SCENE_OBJECT_NAME_PREFIX);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -173,7 +178,7 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
     fixtureDef.filter = objectDef.mContactFilter;
-    fixtureDef.density = objectDef.mBodyCustomScale.x * objectDef.mBodyCustomScale.x; // Density is size^2
+    fixtureDef.density = strutils::StringStartsWith(sceneObjectName.GetString(), BOSS_SCENE_OBJECT_NAME_PREFIX) ? physics_constants::BOSS_DENSITY : objectDef.mBodyCustomScale.x * objectDef.mBodyCustomScale.x;
     body->CreateFixture(&fixtureDef);
     
     so.mObjectFamilyTypeName = objectDef.mName;
