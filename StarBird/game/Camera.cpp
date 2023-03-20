@@ -26,6 +26,14 @@ const float Camera::SHAKE_MIN_RADIUS = 0.001f;
 
 ///------------------------------------------------------------------------------------------------
 
+Camera::Camera()
+    : Camera(30.0f)
+{
+    
+}
+
+///------------------------------------------------------------------------------------------------
+
 Camera::Camera(const float cameraLenseHeight)
     : mPosition(DEFAULT_CAMERA_POSITION)
     , mZoomFactor(DEFAULT_CAMERA_ZOOM_FACTOR)

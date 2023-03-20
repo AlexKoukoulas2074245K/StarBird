@@ -11,22 +11,25 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "SceneObject.h"
-#include "LevelUpdater.h"
+#include "IUpdater.h"
 #include "SceneRenderer.h"
 
 #include "datarepos/LightRepository.h"
 #include "../utils/StringUtils.h"
 
+#include <memory>
 #include <optional>
 #include <vector>
 #include <Box2D/Box2D.h>
 
 ///------------------------------------------------------------------------------------------------
 
+class IUpdater;
 class Scene final
 {
 public:
     Scene();
+    ~Scene();
     
     std::string GetSceneStateDescription() const;
     
@@ -42,7 +45,6 @@ public:
     void AddSceneObject(SceneObject&& sceneObject);
     void RemoveAllSceneObjectsWithName(const strutils::StringId& name);
 
-    void FreezeAllPhysicsBodies();
     void LoadLevel(const std::string& levelName);
     
     void OnAppStateChange(Uint32 event);
@@ -55,18 +57,13 @@ public:
     void OpenDebugConsole();
 #endif
     
-    void CreateLevelWalls(const Camera& cam, const bool invisible);
-    
-private:
-    void LoadLevelInvariantObjects();
-    
 private:
     b2World mBox2dWorld;
     std::vector<SceneObject> mSceneObjects;
     std::vector<SceneObject> mSceneObjectsToAdd;
     std::vector<strutils::StringId> mNamesOfSceneObjectsToRemove;
     LightRepository mLightRepository;
-    LevelUpdater mLevelUpdater;
+    std::unique_ptr<IUpdater> mSceneUpdater;
     SceneRenderer mSceneRenderer;
     bool mPreFirstUpdate;
 };

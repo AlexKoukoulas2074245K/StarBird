@@ -11,8 +11,10 @@
 
 ///------------------------------------------------------------------------------------------------
 
-const strutils::StringId& StateMachine::GetActiveStateName() const
+const strutils::StringId StateMachine::GetActiveStateName() const
 {
+    if (mStateStack.empty()) return strutils::StringId();
+    
     for (const auto& entry: mStateNameToInstanceMap)
     {
         if (entry.second.get() == mStateStack.top())
@@ -42,6 +44,8 @@ void StateMachine::PushState(const strutils::StringId& stateName)
 
 PostStateUpdateDirective StateMachine::Update(const float dtMillis)
 {
+    if (mStateStack.empty()) return PostStateUpdateDirective::CONTINUE;
+    
     while (mStateStack.top()->IsComplete())
     {
         if (mStateStack.top()->GetNextStateName() == BaseGameState::POP_STATE_COMPLETION_NAME)
@@ -49,6 +53,11 @@ PostStateUpdateDirective StateMachine::Update(const float dtMillis)
             mStateStack.top()->VDestroy();
             mStateStack.top()->mNextStateName = strutils::StringId();
             mStateStack.pop();
+            
+            if (mStateStack.size() == 0)
+            {
+                return PostStateUpdateDirective::CONTINUE;
+            }
         }
         else
         {

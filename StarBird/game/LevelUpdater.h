@@ -10,6 +10,7 @@
 
 ///------------------------------------------------------------------------------------------------
 
+#include "IUpdater.h"
 #include "BossAIController.h"
 #include "SceneObject.h"
 #include "LevelDefinition.h"
@@ -30,14 +31,20 @@
 class ObjectTypeDefinition;
 class Scene;
 class b2World;
-class LevelUpdater final
+class Camera;
+class LevelUpdater final: public IUpdater
 {
 public:
-    LevelUpdater(Scene& scene, b2World& box2dWorld);
+    LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& levelDef);
     
-    void InitLevel(LevelDefinition&& levelDef);
-    void OnAppStateChange(Uint32 event);
-    void Update(std::vector<SceneObject>& sceneObjects, const float dtMillis);
+    void OnAppStateChange(Uint32 event) override;
+    void Update(std::vector<SceneObject>& sceneObjects, const float dtMillis) override;
+    std::string GetDescription() const override;
+    
+#ifdef DEBUG
+    void OpenDebugConsole() override;
+#endif
+    
     void AdvanceWave();
     void AddFlow(RepeatableFlow&& flow);
     void AddWaveEnemy(const strutils::StringId& enemyName);
@@ -47,13 +54,14 @@ public:
     size_t GetCurrentWaveNumber() const;
     size_t GetWaveEnemyCount() const;
     std::optional<std::reference_wrapper<RepeatableFlow>> GetFlow(const strutils::StringId& flowName);
-    
-#ifdef DEBUG
-    void OpenDebugConsole();
-#endif
+
     void OnBossPositioned();
     
+    void CreateLevelWalls(const Camera& cam, const bool invisible);
+    
 private:
+    void LoadLevelInvariantObjects();
+    
     void UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMillis);
     void UpdateBackground(const float dtMillis);
     void UpdateHealthBars(const float dtMillis);

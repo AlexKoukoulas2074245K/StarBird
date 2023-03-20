@@ -14,24 +14,8 @@
             filePath = "StarBird/game/states/UpgradeSelectionGameState.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "239"
-            endingLineNumber = "239"
-            landmarkName = "UpgradeSelectionGameState::UpdateUpgradeSelection(dtMillis)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "BCEB0407-A0F4-498B-8EB0-1EAFEC2C936E"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "StarBird/game/states/UpgradeSelectionGameState.cpp"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "226"
-            endingLineNumber = "226"
+            startingLineNumber = "241"
+            endingLineNumber = "241"
             landmarkName = "UpgradeSelectionGameState::UpdateUpgradeSelection(dtMillis)"
             landmarkType = "7">
          </BreakpointContent>
@@ -46,8 +30,8 @@
             filePath = "StarBird/game/states/UpgradeSelectionGameState.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "251"
-            endingLineNumber = "251"
+            startingLineNumber = "253"
+            endingLineNumber = "253"
             landmarkName = "UpgradeSelectionGameState::UpdateShineSelection(dtMillis)"
             landmarkType = "7">
          </BreakpointContent>

@@ -8,6 +8,7 @@
 #include "DebugConsoleGameState.h"
 #include "../GameObjectConstants.h"
 #include "../GameSingletons.h"
+#include "../LevelUpdater.h"
 #include "../PhysicsConstants.h"
 #include "../Scene.h"
 #include "../SceneObject.h"
@@ -272,12 +273,20 @@ void DebugConsoleGameState::RegisterCommands()
             mPreviousCameraLenseHeight = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject)->get().GetCameraLenseHeight();
             
             GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera(BIRDS_EYE_VIEW_CAMERA_LENSE_HEIGHT));
-            mScene->CreateLevelWalls(GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject)->get(), false);
+            
+            if (mLevelUpdater)
+            {
+                mLevelUpdater->CreateLevelWalls(GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject)->get(), false);
+            }
         }
         else if (mPreviousCameraLenseHeight > 0.0f)
         {
             GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera(mPreviousCameraLenseHeight));
-            mScene->CreateLevelWalls(GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject)->get(), true);
+            
+            if (mLevelUpdater)
+            {
+                mLevelUpdater->CreateLevelWalls(GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject)->get(), true);
+            }
         }
         
         return CommandExecutionResult(true, "Bird's Eye View turned " + commandComponents[1]);

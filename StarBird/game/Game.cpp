@@ -116,7 +116,7 @@ bool Game::InitSystems()
 void Game::Run()
 {
     Scene scene;
-    scene.LoadLevel("test_level");
+    //scene.LoadLevel("test_level");
     
     SDL_Event e;
     

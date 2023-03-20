@@ -67,6 +67,7 @@
 		925FD87B298AAF570058E747 /* GameSingletons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD879298AAF570058E747 /* GameSingletons.cpp */; };
 		925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */; };
 		925FD880298AD7D50058E747 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925FD87F298AD7D50058E747 /* AudioToolbox.framework */; };
+		92693B6829C87D2500157222 /* MapUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92693B5B29C87D2500157222 /* MapUpdater.cpp */; };
 		927FD9B529C35C750012C724 /* BossAIController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 927FD9B129C35C750012C724 /* BossAIController.cpp */; };
 		927FD9B629C35C750012C724 /* KathunBossAI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 927FD9B329C35C750012C724 /* KathunBossAI.cpp */; };
 		9285241529A8D5B9007EA0D9 /* DebugConsoleGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9285241429A8D5B9007EA0D9 /* DebugConsoleGameState.cpp */; };
@@ -343,6 +344,9 @@
 		925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ObjectiveCUtils.mm; sourceTree = "<group>"; };
 		925FD87D298AD7050058E747 /* ObjectiveCUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjectiveCUtils.h; sourceTree = "<group>"; };
 		925FD87F298AD7D50058E747 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		92693B5B29C87D2500157222 /* MapUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MapUpdater.cpp; sourceTree = "<group>"; };
+		92693B6729C87D2500157222 /* MapUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapUpdater.h; sourceTree = "<group>"; };
+		92693B6929C8821F00157222 /* IUpdater.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IUpdater.h; sourceTree = "<group>"; };
 		927FD9B129C35C750012C724 /* BossAIController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BossAIController.cpp; sourceTree = "<group>"; };
 		927FD9B229C35C750012C724 /* BossAIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BossAIController.h; sourceTree = "<group>"; };
 		927FD9B329C35C750012C724 /* KathunBossAI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KathunBossAI.cpp; sourceTree = "<group>"; };
@@ -1083,8 +1087,11 @@
 				925FD879298AAF570058E747 /* GameSingletons.cpp */,
 				925FD87A298AAF570058E747 /* GameSingletons.h */,
 				925FD873298976B20058E747 /* InputContext.h */,
+				92693B6929C8821F00157222 /* IUpdater.h */,
 				925FD83829883DD80058E747 /* LevelUpdater.cpp */,
 				925FD84429883DD80058E747 /* LevelUpdater.h */,
+				92693B5B29C87D2500157222 /* MapUpdater.cpp */,
+				92693B6729C87D2500157222 /* MapUpdater.h */,
 				925FD86729891C390058E747 /* PhysicsConstants.h */,
 				92E8DAE4298E940B00591968 /* PhysicsCollisionListener.cpp */,
 				92E8DAD8298E940B00591968 /* PhysicsCollisionListener.h */,
@@ -1916,6 +1923,7 @@
 				92894E16299D331200605302 /* FontRepository.cpp in Sources */,
 				92F9EC88299E85D500C263E8 /* UpgradeSelectionGameState.cpp in Sources */,
 				92F9EC7C299E6C1A00C263E8 /* StateMachine.cpp in Sources */,
+				92693B6829C87D2500157222 /* MapUpdater.cpp in Sources */,
 				92BF79BD29A39002002A52D8 /* Animations.cpp in Sources */,
 				92DAA4C129829A4C0062A438 /* TextureResource.cpp in Sources */,
 				9254CBFF2969B79A00EFE0CC /* b2Settings.cpp in Sources */,

@@ -28,7 +28,7 @@ class UpgradesLogicHandler;
 class StateMachine final
 {
 public:
-    StateMachine(Scene& scene, LevelUpdater& levelUpdater, UpgradesLogicHandler& upgradesLogicHandler, b2World& box2dWorld)
+    StateMachine(Scene* scene, LevelUpdater* levelUpdater, UpgradesLogicHandler* upgradesLogicHandler, b2World* box2dWorld)
         : mScene(scene)
         , mLevelUpdater(levelUpdater)
         , mUpgradesLogicHandler(upgradesLogicHandler)
@@ -41,11 +41,11 @@ public:
     {
         static_assert(std::is_base_of<BaseGameState, StateClass>::value);
         auto stateInstance = std::make_unique<StateClass>();
-        stateInstance->SetDependencies(&mScene, &mLevelUpdater, &mUpgradesLogicHandler, &mBox2dWorld);
+        stateInstance->SetDependencies(mScene, mLevelUpdater, mUpgradesLogicHandler, mBox2dWorld);
         mStateNameToInstanceMap[StateClass::STATE_NAME] = std::move(stateInstance);
     }
     
-    const strutils::StringId& GetActiveStateName() const;
+    const strutils::StringId GetActiveStateName() const;
     void InitStateMachine(const strutils::StringId& initStateName);
     void PushState(const strutils::StringId& stateName);
     PostStateUpdateDirective Update(const float dtMillis);
@@ -54,10 +54,10 @@ private:
     void SwitchToState(const strutils::StringId& nextStateName, const bool pushOnTop=false);
     
 private:
-    Scene& mScene;
-    LevelUpdater& mLevelUpdater;
-    UpgradesLogicHandler& mUpgradesLogicHandler;
-    b2World& mBox2dWorld;
+    Scene* mScene;
+    LevelUpdater* mLevelUpdater;
+    UpgradesLogicHandler* mUpgradesLogicHandler;
+    b2World* mBox2dWorld;
     
     std::unordered_map<strutils::StringId, std::unique_ptr<BaseGameState>, strutils::StringIdHasher> mStateNameToInstanceMap;
     std::stack<BaseGameState*> mStateStack;
