@@ -23,6 +23,8 @@ struct InputContext
     glm::vec2 mTouchPos;
     Uint32 mEventType;
     SDL_Scancode mKeyCode;
+    float mPinchDistance;
+    bool mMultiGestureActive;
 };
 
 ///------------------------------------------------------------------------------------------------

@@ -34,7 +34,7 @@ public:
     void SetZoomFactor(const float zoomFactor);
     void SetPosition(const glm::vec3& position);
     
-private:
+public:
     static const glm::vec3 DEFAULT_CAMERA_POSITION;
     static const glm::vec3 DEFAULT_CAMERA_FRONT_VECTOR;
     static const glm::vec3 DEFAULT_CAMERA_UP_VECTOR;

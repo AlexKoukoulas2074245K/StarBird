@@ -57,6 +57,20 @@ void GameSingletons::SetInputContextKey(const SDL_Scancode keyCode)
 
 ///------------------------------------------------------------------------------------------------
 
+void GameSingletons::SetInputContextPinchDistance(const float pinchDistance)
+{
+    mInputContext.mPinchDistance = pinchDistance;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetInputContextMultiGestureActive(const bool multiGestureActive)
+{
+    mInputContext.mMultiGestureActive = multiGestureActive;
+}
+
+///------------------------------------------------------------------------------------------------
+
 void GameSingletons::ConsumeInput()
 {
     SetInputContextEvent(SDL_FINGERUP);

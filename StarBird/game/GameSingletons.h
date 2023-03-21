@@ -32,6 +32,8 @@ public:
     static void SetInputContextTouchPos(const glm::vec2& touchPos);
     static void SetInputContextText(const std::string& text);
     static void SetInputContextKey(const SDL_Scancode keyCode);
+    static void SetInputContextPinchDistance(const float pinchDistance);
+    static void SetInputContextMultiGestureActive(const bool multiGestureActive);
     static void ConsumeInput();
     
     static SDL_Window* GetWindow();

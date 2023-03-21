@@ -19,6 +19,7 @@
 #include "../utils/OSMessageBox.h"
 
 #include <SDL.h>
+#include <unordered_map>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -126,6 +127,8 @@ void Game::Run()
     
     GameSingletons::SetInputContextEvent(SDL_FINGERUP);
     
+    std::unordered_map<SDL_FingerID, glm::vec2> multiTouchMotionframeFingerIDsToTouchPositions;
+    
     //While application is running
     while(!mIsFinished)
     {
@@ -139,6 +142,8 @@ void Game::Run()
         
         //Handle events on queue
         auto lastAppForegroundBackgroundEvent = 0;
+        
+        multiTouchMotionframeFingerIDsToTouchPositions.clear();
         while( SDL_PollEvent( &e ) != 0 )
         {
             //User requests quit
@@ -155,6 +160,15 @@ void Game::Run()
                 {
                     GameSingletons::SetInputContextEvent(e.type);
                     GameSingletons::SetInputContextTouchPos(glm::vec2(e.tfinger.x, e.tfinger.y));
+                    
+                    if (e.type == SDL_FINGERUP && GameSingletons::GetInputContext().mMultiGestureActive)
+                    {
+                        GameSingletons::SetInputContextMultiGestureActive(false);
+                    }
+                    else
+                    {
+                        multiTouchMotionframeFingerIDsToTouchPositions[e.tfinger.fingerId] = glm::vec2(e.tfinger.x, e.tfinger.y);
+                    }
                 } break;
                 
                 case SDL_KEYDOWN:
@@ -239,6 +253,27 @@ void Game::Run()
                 } break;
             }
         }
+//        
+        auto maxFoundPinchDistance = 0.0f;
+        if (multiTouchMotionframeFingerIDsToTouchPositions.size() > 1)
+        {
+            for (auto outerEntry: multiTouchMotionframeFingerIDsToTouchPositions)
+            {
+                for (auto innerEntry: multiTouchMotionframeFingerIDsToTouchPositions)
+                {
+                    if (outerEntry.first == innerEntry.first) continue;
+                    
+                    auto pointDistance = glm::distance(outerEntry.second, innerEntry.second);
+                    if (maxFoundPinchDistance < pointDistance)
+                    {
+                        maxFoundPinchDistance = pointDistance;
+                        GameSingletons::SetInputContextMultiGestureActive(true);
+                    }
+                }
+            }
+        }
+        
+        GameSingletons::SetInputContextPinchDistance(maxFoundPinchDistance);
         
         if (secsAccumulator > 1.0f)
         {
