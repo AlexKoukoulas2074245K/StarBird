@@ -187,11 +187,12 @@ bool VariableTexturedAnimation::VGetBodyRenderingEnabled() const
 
 ///------------------------------------------------------------------------------------------------
 
-PulsingAnimation::PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float pulsingSpeed, const float pulsingEnlargementFactor, const bool bodyRenderingEnabled)
+PulsingAnimation::PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float delayedStartMillis, const float pulsingSpeed, const float pulsingEnlargementFactor, const bool bodyRenderingEnabled)
     : mTextureResourceId(textureResourceId)
     , mMeshResourceId(meshResourceId)
     , mShaderResourceId(shaderResourceId)
     , mScale(scale)
+    , mDelayedStartMillis(delayedStartMillis)
     , mPulsingSpeed(pulsingSpeed)
     , mPulsingEnlargementFactor(pulsingEnlargementFactor)
     , mPulsingDtAccum(0.0f)
@@ -206,8 +207,16 @@ std::unique_ptr<IAnimation> PulsingAnimation::VClone() const
 
 void PulsingAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
-    mPulsingDtAccum += dtMillis * mPulsingSpeed;
-    sceneObject.mScale += math::Sinf(mPulsingDtAccum) * mPulsingEnlargementFactor;
+    if (mDelayedStartMillis > 0.0f)
+    {
+        mDelayedStartMillis -= dtMillis;
+    }
+    else
+    {
+        mDelayedStartMillis = 0.0f;
+        mPulsingDtAccum += dtMillis * mPulsingSpeed;
+        sceneObject.mScale += math::Sinf(mPulsingDtAccum) * mPulsingEnlargementFactor;
+    }
 }
 
 resources::ResourceId PulsingAnimation::VGetCurrentTextureResourceId() const

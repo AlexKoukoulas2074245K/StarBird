@@ -33,7 +33,7 @@ static const float MIN_CAMERA_VELOCITY_TO_START_MOVEMENT = 0.01f;
 MapUpdater::MapUpdater(Scene& scene)
     : mScene(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
-    , mMap(scene, glm::ivec2(9, 5), true)
+    , mMap(scene, glm::ivec2(9, 5), GameSingletons::GetCurrentMapCoord(), true)
 {
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
@@ -123,6 +123,12 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
         {
             sceneObject.mAnimation->VUpdate(dtMillis, sceneObject);
         }
+    }
+    
+    // Rotate planets
+    for (int i = 0; i < mMap.GetMapData().size(); ++i)
+    {
+        mScene.GetSceneObject(strutils::StringId("PLANET_" + std::to_string(i)))->get().mRotation.y += dtMillis * 0.001f;
     }
 }
 

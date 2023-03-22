@@ -60,6 +60,7 @@ static const strutils::StringId MAX_U_UNIFORM_NAME = strutils::StringId("max_u")
 static const strutils::StringId MAX_V_UNIFORM_NAME = strutils::StringId("max_v");
 static const strutils::StringId CUSTOM_ALPHA_UNIFORM_NAME = strutils::StringId("custom_alpha");
 static const strutils::StringId CUSTOM_COLOR_UNIFORM_NAME = strutils::StringId("custom_color");
+static const strutils::StringId HUE_SHIFT_UNIFORM_NAME = strutils::StringId("hue_shift");
 
 static const float SHINE_EFFECT_X_OFFSET_INIT_VAL = 1.0f;
 static const float SHINE_EFFECT_X_OFFSET_END_VAL = -1.0f;
@@ -73,6 +74,7 @@ static const float DISSOLVE_EFFECT_SPEED = 1.0f/1000.0f;
 
 static const char* QUAD_MESH_FILE_NAME = "quad.obj";
 static const char* BASIC_SHADER_FILE_NAME = "basic.vs";
+static const char* HUE_SHIFT_SHADER_FILE_NAME = "hue_shift.vs";
 static const char* DISSOLVE_SHADER_FILE_NAME = "dissolve.vs";
 static const char* SHINE_SHADER_FILE_NAME = "shine.vs";
 static const char* TEXTURE_OFFSET_SHADER_FILE_NAME = "tex_offset.vs";

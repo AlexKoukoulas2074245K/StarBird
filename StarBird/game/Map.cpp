@@ -13,9 +13,10 @@
 
 ///------------------------------------------------------------------------------------------------
 
-Map::Map(Scene& scene, const glm::ivec2& mapDimensions, const bool singleEntryPoint)
+Map::Map(Scene& scene, const glm::ivec2& mapDimensions, const MapCoord& currentMapCoord, const bool singleEntryPoint)
     : mScene(scene)
     , mMapDimensions(mapDimensions)
+    , mCurrentMapCoord(currentMapCoord)
     , mHasSingleEntryPoint(singleEntryPoint)
 {
     GenerateMapData();
@@ -80,19 +81,26 @@ void Map::CreateMapSceneObjects()
     auto positionCounter = 0;
     for (const auto& mapNodeEntry: mMapData)
     {
-        SceneObject starSO;
-
-        starSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + (mapNodeEntry.second.mNodeType == Map::NodeType::BOSS_ENCOUNTER ? "octo_star.bmp" : "quad_star.bmp")), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.5f), false);
-        starSO.mSceneObjectType = SceneObjectType::WorldGameObject;
-        starSO.mName = strutils::StringId("star_" + std::to_string(positionCounter));
-        starSO.mScale.x = 1.5f;
-        starSO.mScale.y = 1.5f;
-        starSO.mPosition = mapNodeEntry.second.mPosition;
-        starSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
-        mScene.AddSceneObject(std::move(starSO));
-        positionCounter++;
-    }
+        SceneObject planetSO;
+        planetSO.mName = strutils::StringId("star_" + std::to_string(positionCounter));
         
+        if (mMapData.at(mCurrentMapCoord).mNodeLinks.contains(mapNodeEntry.first))
+        {
+            planetSO.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "planet.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + "planet.obj"), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(0.75f), 0.0f, 0.005f, 1.0f/200.0f, false);
+        }
+        else
+        {
+            planetSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "planet.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + "planet.obj"), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(0.75f), false);
+        }
+        
+        planetSO.mShaderFloatUniformValues[scene_object_constants::HUE_SHIFT_UNIFORM_NAME] = math::RandomFloat(0, 2.0f * math::PI);
+        planetSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+        planetSO.mSceneObjectType = SceneObjectType::WorldGameObject;
+//        planetSO.mScale = glm::vec3(0.75f);
+        planetSO.mPosition = mapNodeEntry.second.mPosition;
+        planetSO.mName = strutils::StringId("PLANET_" + std::to_string(positionCounter++));
+        mScene.AddSceneObject(std::move(planetSO));
+    }
 
     for (const auto& mapNodeEntry: mMapData)
     {
@@ -105,10 +113,18 @@ void Map::CreateMapSceneObjects()
             {
                 SceneObject pathSO;
                 
-                pathSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "star_path.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), pathSO.mScale, false);
+                if (mapNodeEntry.first == mCurrentMapCoord)
+                {
+                    pathSO.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "star_path.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(0.3f, 0.3f, 1.0f), 100.0f * i, 0.01f, 1.0f/100.0f, false);
+                }
+                else
+                {
+                    pathSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "star_path.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), pathSO.mScale, false);
+                }
+                
                 pathSO.mSceneObjectType = SceneObjectType::WorldGameObject;
                 pathSO.mPosition = mMapData.at(mapNodeEntry.first).mPosition + dirToNext * (i/static_cast<float>(pathSegments));
-                pathSO.mScale = glm::vec3(0.25f, 0.25f, 1.0f);
+                pathSO.mScale = glm::vec3(0.3f, 0.3f, 1.0f);
                 pathSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
                 mScene.AddSceneObject(std::move(pathSO));
             }

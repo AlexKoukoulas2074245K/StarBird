@@ -114,7 +114,7 @@ private:
 class PulsingAnimation final: public IAnimation
 {
 public:
-    PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float pulsingSpeed, const float pulsingEnlargementFactor, const bool bodyRenderingEnabled);
+    PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float delayedStartMillis, const float pulsingSpeed, const float pulsingEnlargementFactor, const bool bodyRenderingEnabled);
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
@@ -130,6 +130,7 @@ private:
     resources::ResourceId mMeshResourceId;
     resources::ResourceId mShaderResourceId;
     glm::vec3 mScale;
+    float mDelayedStartMillis;
     float mPulsingSpeed;
     float mPulsingEnlargementFactor;
     float mPulsingDtAccum;

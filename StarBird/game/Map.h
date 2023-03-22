@@ -74,7 +74,7 @@ public:
     };
     
 public:
-    Map(Scene& scene, const glm::ivec2& mapDimensions, const bool singleEntryPoint);
+    Map(Scene& scene, const glm::ivec2& mapDimensions, const MapCoord& currentMapCoord, const bool singleEntryPoint);
     
     const std::map<MapCoord, Map::NodeData>& GetMapData() const;
     
@@ -88,6 +88,7 @@ private:
 private:
     Scene& mScene;
     const glm::ivec2 mMapDimensions;
+    const MapCoord mCurrentMapCoord;
     const bool mHasSingleEntryPoint;
     std::map<MapCoord, NodeData> mMapData;
 };
