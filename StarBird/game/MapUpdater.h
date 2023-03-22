@@ -11,11 +11,12 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "IUpdater.h"
+#include "Map.h"
 #include "SceneObject.h"
 #include "StateMachine.h"
 
 #include <SDL_events.h>
-#include <vector>
+#include <memory>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -36,6 +37,7 @@ public:
 private:
     Scene& mScene;
     StateMachine mStateMachine;
+    Map mMap;
 };
 
 ///------------------------------------------------------------------------------------------------

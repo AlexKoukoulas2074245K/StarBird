@@ -147,6 +147,9 @@ static const glm::vec3 PLAYER_SHIELD_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
 static const glm::vec4 AMBIENT_LIGHT_COLOR = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
 static const glm::vec4 POINT_LIGHT_COLOR = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
 
+static const glm::vec2 MAP_MAX_WORLD_BOUNDS = glm::vec2(17.0f, 13.0f);
+static const glm::vec2 MAP_MIN_WORLD_BOUNDS = glm::vec2(-17.0f, -13.0f);
+
 ///------------------------------------------------------------------------------------------------
 
 }

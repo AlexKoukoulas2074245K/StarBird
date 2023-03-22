@@ -202,3 +202,10 @@ void GameSingletons::SetBossCurrentHealth(const float bossCurrentHealth)
 }
 
 ///------------------------------------------------------------------------------------------------
+
+MapCoord GameSingletons::GetCurrentMapCoord()
+{
+    return MapCoord(0, 2);
+}
+
+///------------------------------------------------------------------------------------------------

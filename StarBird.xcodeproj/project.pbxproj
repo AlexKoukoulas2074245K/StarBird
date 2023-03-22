@@ -100,6 +100,7 @@
 		92DAA4CD29829A4C0062A438 /* ShaderLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92DAA4B429829A4C0062A438 /* ShaderLoader.cpp */; };
 		92DAA4CE29829A4C0062A438 /* DataFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92DAA4B529829A4C0062A438 /* DataFileLoader.cpp */; };
 		92DAA4DC29829B380062A438 /* MathUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92DAA4D829829B380062A438 /* MathUtils.cpp */; };
+		92E417D629CB5860002F016D /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92E417C929CB5860002F016D /* Map.cpp */; };
 		92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92E8DAE4298E940B00591968 /* PhysicsCollisionListener.cpp */; };
 		92E96A6B29803597004A3120 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92E96A5F29803597004A3120 /* OpenGLES.framework */; };
 		92F9EC7C299E6C1A00C263E8 /* StateMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */; };
@@ -421,6 +422,8 @@
 		92DAA4D829829B380062A438 /* MathUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathUtils.cpp; sourceTree = "<group>"; };
 		92DAA4DA29829B380062A438 /* MathUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathUtils.h; sourceTree = "<group>"; };
 		92DAA4DE29829CF90062A438 /* OpenGL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenGL.h; sourceTree = "<group>"; };
+		92E417C929CB5860002F016D /* Map.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Map.cpp; sourceTree = "<group>"; };
+		92E417D529CB5860002F016D /* Map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
 		92E8DAD8298E940B00591968 /* PhysicsCollisionListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhysicsCollisionListener.h; sourceTree = "<group>"; };
 		92E8DAE4298E940B00591968 /* PhysicsCollisionListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhysicsCollisionListener.cpp; sourceTree = "<group>"; };
 		92E96A5F29803597004A3120 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -1090,6 +1093,8 @@
 				92693B6929C8821F00157222 /* IUpdater.h */,
 				925FD83829883DD80058E747 /* LevelUpdater.cpp */,
 				925FD84429883DD80058E747 /* LevelUpdater.h */,
+				92E417C929CB5860002F016D /* Map.cpp */,
+				92E417D529CB5860002F016D /* Map.h */,
 				92693B5B29C87D2500157222 /* MapUpdater.cpp */,
 				92693B6729C87D2500157222 /* MapUpdater.h */,
 				925FD86729891C390058E747 /* PhysicsConstants.h */,
@@ -1974,6 +1979,7 @@
 				9254CBEC2969B79A00EFE0CC /* b2Contact.cpp in Sources */,
 				92F9EC90299E9BAA00C263E8 /* BaseGameState.cpp in Sources */,
 				92B44C07298D247E00191B22 /* FontLoader.cpp in Sources */,
+				92E417D629CB5860002F016D /* Map.cpp in Sources */,
 				9254CC042969B79A00EFE0CC /* b2CollideCircle.cpp in Sources */,
 				9254CBEF2969B79A00EFE0CC /* b2MouseJoint.cpp in Sources */,
 				9206BAA929AF8BF20013BE69 /* LightRepository.cpp in Sources */,

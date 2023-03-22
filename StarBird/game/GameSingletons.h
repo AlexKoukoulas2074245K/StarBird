@@ -12,6 +12,7 @@
 
 #include "Camera.h"
 #include "InputContext.h"
+#include "Map.h"
 #include "SceneObject.h"
 #include "UpgradeDefinition.h"
 #include "../utils/MathUtils.h"
@@ -61,6 +62,8 @@ public:
     
     static float GetBossCurrentHealth();
     static void SetBossCurrentHealth(const float bossCurrentHealth);
+    
+    static MapCoord GetCurrentMapCoord();
     
 private:
     static InputContext mInputContext;
