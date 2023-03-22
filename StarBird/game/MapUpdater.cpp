@@ -33,7 +33,7 @@ static const float MIN_CAMERA_VELOCITY_TO_START_MOVEMENT = 0.01f;
 MapUpdater::MapUpdater(Scene& scene)
     : mScene(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
-    , mMap(scene, glm::ivec2(10, 5), true)
+    , mMap(scene, glm::ivec2(9, 5), true)
 {
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();

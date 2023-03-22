@@ -40,13 +40,13 @@ void Map::GenerateMapData()
         auto currentCoordinate = mHasSingleEntryPoint ? MapCoord(0, mMapDimensions.y/2) : MapCoord(0, math::RandomInt(0, mMapDimensions.y - 1));
         mMapData[currentCoordinate].mPosition = GenerateNodePositionFromCoord(currentCoordinate);
         
-        for (int col = 1; col < mMapDimensions.x - 1; ++col)
+        for (int col = 1; col < mMapDimensions.x; ++col)
         {
-            MapCoord targetCoord = RandomlySelectNextMapCoord(currentCoordinate, col);
+            MapCoord targetCoord = RandomlySelectNextMapCoord(currentCoordinate);
             
             while (DetectedCrossedEdge(currentCoordinate, targetCoord))
             {
-                targetCoord = RandomlySelectNextMapCoord(currentCoordinate, col);
+                targetCoord = RandomlySelectNextMapCoord(currentCoordinate);
             }
             
             mMapData[currentCoordinate].mNodeLinks.insert(targetCoord);
@@ -160,10 +160,10 @@ glm::vec3 Map::GenerateNodePositionFromCoord(const MapCoord& mapCoord) const
 
 ///------------------------------------------------------------------------------------------------
 
-MapCoord Map::RandomlySelectNextMapCoord(const MapCoord& currentMapCoord, const int currentCol) const
+MapCoord Map::RandomlySelectNextMapCoord(const MapCoord& currentMapCoord) const
 {
     auto randRow = math::Max(math::Min(mMapDimensions.y - 1, currentMapCoord.mRow + math::RandomInt(-1, 1)), 0);
-    return currentCol == mMapDimensions.x - 2 ? MapCoord(mMapDimensions.x - 1, mMapDimensions.y/2) : MapCoord(currentCol + 1, randRow);
+    return currentMapCoord.mCol == mMapDimensions.x - 2 ? MapCoord(mMapDimensions.x - 1, mMapDimensions.y/2) : MapCoord(currentMapCoord.mCol + 1, randRow);
 }
 
 ///------------------------------------------------------------------------------------------------

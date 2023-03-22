@@ -83,7 +83,7 @@ private:
     void CreateMapSceneObjects();
     bool DetectedCrossedEdge(const MapCoord& currentCoord, const MapCoord& targetTestCoord) const;
     glm::vec3 GenerateNodePositionFromCoord(const MapCoord& mapCoord) const;
-    MapCoord RandomlySelectNextMapCoord(const MapCoord& currentMapCoord, const int currentCol) const;
+    MapCoord RandomlySelectNextMapCoord(const MapCoord& currentMapCoord) const;
     
 private:
     Scene& mScene;
