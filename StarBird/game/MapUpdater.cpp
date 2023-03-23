@@ -128,7 +128,11 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     // Rotate planets
     for (int i = 0; i < mMap.GetMapData().size(); ++i)
     {
-        mScene.GetSceneObject(strutils::StringId("PLANET_" + std::to_string(i)))->get().mRotation.y += dtMillis * 0.001f;
+        auto soOpt = mScene.GetSceneObject(strutils::StringId("PLANET_" + std::to_string(i)));
+        if (soOpt)
+        {
+            soOpt->get().mRotation.y += dtMillis * 0.001f;
+        }
     }
 }
 

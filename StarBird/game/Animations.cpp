@@ -373,6 +373,66 @@ bool DissolveAnimation::VGetBodyRenderingEnabled() const
 
 ///------------------------------------------------------------------------------------------------
 
+NebulaAnimation::NebulaAnimation(SceneObject* sceneObject, const resources::ResourceId noiseTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float noiseMovementSpeed, const bool bodyRenderingEnabled)
+    : mNoiseTextureResourceId(noiseTextureResourceId)
+    , mMeshResourceId(meshResourceId)
+    , mShaderResourceId(shaderResourceId)
+    , mScale(scale)
+    , mNoiseMovementSpeed(noiseMovementSpeed)
+    , mBodyRenderingEnabled(bodyRenderingEnabled)
+{
+    if (sceneObject)
+    {
+        sceneObject->mShaderFloatUniformValues[scene_object_constants::TEXTURE_OFFSET_X_UNIFORM_NAME] = 0.0f;
+    }
+    
+    mNoiseMovementDirection.x = math::RandomFloat(-1.0f, 1.0f);
+    mNoiseMovementDirection.y = math::RandomFloat(-1.0f, 1.0f);
+}
+
+std::unique_ptr<IAnimation> NebulaAnimation::VClone() const
+{
+    return std::make_unique<NebulaAnimation>(*this);
+}
+
+void NebulaAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
+{
+    sceneObject.mShaderFloatUniformValues[scene_object_constants::TEXTURE_OFFSET_X_UNIFORM_NAME] += dtMillis * mNoiseMovementDirection.x * scene_object_constants::NEBULA_ANIMATION_SPEED;
+    sceneObject.mShaderFloatUniformValues[scene_object_constants::TEXTURE_OFFSET_Y_UNIFORM_NAME] += dtMillis * mNoiseMovementDirection.y * scene_object_constants::NEBULA_ANIMATION_SPEED;
+}
+
+resources::ResourceId NebulaAnimation::VGetCurrentTextureResourceId() const
+{
+    return mNoiseTextureResourceId;
+}
+
+resources::ResourceId NebulaAnimation::VGetCurrentMeshResourceId() const
+{
+    return mMeshResourceId;
+}
+
+resources::ResourceId NebulaAnimation::VGetCurrentShaderResourceId() const
+{
+    return mShaderResourceId;
+}
+
+const glm::vec3& NebulaAnimation::VGetScale() const
+{
+    return mScale;
+}
+
+float NebulaAnimation::VGetDuration() const
+{
+    return 0.0f;
+}
+
+bool NebulaAnimation::VGetBodyRenderingEnabled() const
+{
+    return mBodyRenderingEnabled;
+}
+
+///------------------------------------------------------------------------------------------------
+
 RotationAnimation::RotationAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const RotationMode rotationMode, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed, const bool bodyRenderingEnabled)
     : mTextureResourceId(textureResourceId)
     , mMeshResourceId(meshResourceId)

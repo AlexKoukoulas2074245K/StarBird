@@ -855,7 +855,7 @@ void LevelUpdater::UpdateBackground(const float dtMillis)
     auto bgSO = mScene.GetSceneObject(scene_object_constants::BACKGROUND_SCENE_OBJECT_NAME);
     if (bgSO)
     {
-       bgSO->get().mShaderFloatUniformValues[scene_object_constants::TEXTURE_OFFSET_UNIFORM_NAME] = -msAccum;
+       bgSO->get().mShaderFloatUniformValues[scene_object_constants::GENERIC_TEXTURE_OFFSET_UNIFORM_NAME] = -msAccum;
     }
 }
 

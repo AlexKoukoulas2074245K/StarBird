@@ -49,7 +49,9 @@ static const strutils::StringId DEBUG_COMMAND_OUTPUT_SCENE_OBJECT_NAME = strutil
 static const strutils::StringId DEBUG_BACK_TO_GAME_SCENE_OBJECT_NAME = strutils::StringId("BACK_TO_GAME");
 
 
-static const strutils::StringId TEXTURE_OFFSET_UNIFORM_NAME = strutils::StringId("tex_offset");
+static const strutils::StringId TEXTURE_OFFSET_X_UNIFORM_NAME = strutils::StringId("tex_offset_x");
+static const strutils::StringId TEXTURE_OFFSET_Y_UNIFORM_NAME = strutils::StringId("tex_offset_y");
+static const strutils::StringId GENERIC_TEXTURE_OFFSET_UNIFORM_NAME = strutils::StringId("tex_offset");
 static const strutils::StringId SHINE_X_OFFSET_UNIFORM_NAME = strutils::StringId("shine_x_offset");
 static const strutils::StringId DISSOLVE_Y_OFFSET_UNIFORM_NAME = strutils::StringId("dissolve_y_offset");
 static const strutils::StringId IS_TEXTURE_SHEET_UNIFORM_NAME = strutils::StringId("texture_sheet");
@@ -72,11 +74,16 @@ static const float PLAYER_SHINE_EFFECT_SPEED = 1.0f/400.0f;
 static const float DISSOLVE_EFFECT_Y_INIT_VAL = 1.0f;
 static const float DISSOLVE_EFFECT_SPEED = 1.0f/1000.0f;
 
+static const float NEBULA_ANIMATION_SPEED = 1.0f/15000.0f;
+
 static const char* QUAD_MESH_FILE_NAME = "quad.obj";
+static const char* MAP_PLANET_MESH_FILE_NAME = "planet.obj";
+static const char* MAP_PLANET_RING_MESH_FILE_NAME = "planet_ring.obj";
 static const char* BASIC_SHADER_FILE_NAME = "basic.vs";
 static const char* HUE_SHIFT_SHADER_FILE_NAME = "hue_shift.vs";
 static const char* DISSOLVE_SHADER_FILE_NAME = "dissolve.vs";
 static const char* SHINE_SHADER_FILE_NAME = "shine.vs";
+static const char* NEBULA_SHADER_FILE_NAME = "nebula.vs";
 static const char* TEXTURE_OFFSET_SHADER_FILE_NAME = "tex_offset.vs";
 static const char* CUSTOM_ALPHA_SHADER_FILE_NAME = "custom_alpha.vs";
 static const char* CUSTOM_COLOR_SHADER_FILE_NAME = "custom_color.vs";
@@ -93,6 +100,10 @@ static const char* UPGRADE_CONTAINER_TEXTURE_FILE_NAME = "upgrade_container.bmp"
 static const char* FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME = "overlay.bmp";
 static const char* PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_frame_mm.bmp";
 static const char* PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME = "player_health_bar.bmp";
+static const char* MAP_PLANET_TEXTURE_FILE_NAME = "planet.bmp";
+static const char* MAP_PLANET_RING_TEXTURE_FILE_NAME = "planet_ring.bmp";
+static const char* NOISE_0_TEXTURE_FILE_NAME = "noise_0.bmp";
+static const char* NOISE_1_TEXTURE_FILE_NAME = "noise_1.bmp";
 static const char* BOSS_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_frame_mm.bmp";
 static const char* BOSS_HEALTH_BAR_TEXTURE_FILE_NAME = "enemy_health_bar.bmp";
 static const char* PLAYER_HEALTH_LOST_BAR_TEXTURE_FILE_NAME = "player_health_lost_bar.bmp";

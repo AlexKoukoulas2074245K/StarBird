@@ -82,24 +82,53 @@ void Map::CreateMapSceneObjects()
     for (const auto& mapNodeEntry: mMapData)
     {
         SceneObject planetSO;
-        planetSO.mName = strutils::StringId("star_" + std::to_string(positionCounter));
         
-        if (mMapData.at(mCurrentMapCoord).mNodeLinks.contains(mapNodeEntry.first))
+        if (mapNodeEntry.first == MapCoord(8, 2))
         {
-            planetSO.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "planet.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + "planet.obj"), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(0.75f), 0.0f, 0.005f, 1.0f/200.0f, false);
+            for (int i = 0; i < 2; ++i)
+            {
+                planetSO.mAnimation = std::make_unique<NebulaAnimation>(nullptr, resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "noise_" + std::to_string(i) + ".bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::NEBULA_SHADER_FILE_NAME), glm::vec3(3.0f), scene_object_constants::NEBULA_ANIMATION_SPEED, false);
+                
+                planetSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+                planetSO.mSceneObjectType = SceneObjectType::WorldGameObject;
+                planetSO.mScale = glm::vec3(3.0f);
+                planetSO.mPosition = mapNodeEntry.second.mPosition;
+                mScene.AddSceneObject(std::move(planetSO));
+            }
         }
         else
         {
-            planetSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "planet.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + "planet.obj"), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(0.75f), false);
+            if (mMapData.at(mCurrentMapCoord).mNodeLinks.contains(mapNodeEntry.first))
+            {
+                planetSO.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MAP_PLANET_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::MAP_PLANET_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(0.75f), 0.0f, 0.005f, 1.0f/200.0f, false);
+            }
+            else
+            {
+                planetSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MAP_PLANET_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::MAP_PLANET_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(0.75f), false);
+                
+                {
+                    SceneObject planetRingSO;
+                    
+                    planetRingSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MAP_PLANET_RING_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::MAP_PLANET_RING_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+                    planetRingSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+                    planetRingSO.mSceneObjectType = SceneObjectType::WorldGameObject;
+                    planetRingSO.mScale = glm::vec3(1.0f);
+                    planetRingSO.mRotation.x = -math::PI/4;
+                    planetRingSO.mPosition = mapNodeEntry.second.mPosition;
+                    mScene.AddSceneObject(std::move(planetRingSO));
+                }
+            }
+            
+            planetSO.mShaderFloatUniformValues[scene_object_constants::HUE_SHIFT_UNIFORM_NAME] = math::RandomFloat(0, 2.0f * math::PI);
+            planetSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+            planetSO.mSceneObjectType = SceneObjectType::WorldGameObject;
+            planetSO.mScale = glm::vec3(0.75f);
+            planetSO.mPosition = mapNodeEntry.second.mPosition;
+            planetSO.mName = strutils::StringId("PLANET_" + std::to_string(positionCounter++));
+            mScene.AddSceneObject(std::move(planetSO));
         }
         
-        planetSO.mShaderFloatUniformValues[scene_object_constants::HUE_SHIFT_UNIFORM_NAME] = math::RandomFloat(0, 2.0f * math::PI);
-        planetSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
-        planetSO.mSceneObjectType = SceneObjectType::WorldGameObject;
-//        planetSO.mScale = glm::vec3(0.75f);
-        planetSO.mPosition = mapNodeEntry.second.mPosition;
-        planetSO.mName = strutils::StringId("PLANET_" + std::to_string(positionCounter++));
-        mScene.AddSceneObject(std::move(planetSO));
+        
     }
 
     for (const auto& mapNodeEntry: mMapData)

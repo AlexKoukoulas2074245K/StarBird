@@ -193,6 +193,32 @@ private:
 
 ///------------------------------------------------------------------------------------------------
 
+class NebulaAnimation final: public IAnimation
+{
+public:
+    NebulaAnimation(SceneObject* sceneObject, const resources::ResourceId noiseTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float noiseMovementSpeed, const bool bodyRenderingEnabled);
+    
+    std::unique_ptr<IAnimation> VClone() const override;
+    void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    resources::ResourceId VGetCurrentTextureResourceId() const override;
+    resources::ResourceId VGetCurrentMeshResourceId() const override;
+    resources::ResourceId VGetCurrentShaderResourceId() const override;
+    const glm::vec3& VGetScale() const override;
+    float VGetDuration() const override;
+    bool VGetBodyRenderingEnabled() const override;
+    
+private:
+    resources::ResourceId mNoiseTextureResourceId;
+    resources::ResourceId mMeshResourceId;
+    resources::ResourceId mShaderResourceId;
+    glm::vec3 mScale;
+    glm::vec2 mNoiseMovementDirection;
+    float mNoiseMovementSpeed;
+    bool mBodyRenderingEnabled;
+};
+
+///------------------------------------------------------------------------------------------------
+
 class RotationAnimation final: public IAnimation
 {
 public:
