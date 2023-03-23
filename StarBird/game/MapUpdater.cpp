@@ -11,6 +11,7 @@
 #include "GameSingletons.h"
 #include "SceneObjectConstants.h"
 #include "Scene.h"
+#include "SceneObjectUtils.h"
 #include "states/DebugConsoleGameState.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../utils/Logging.h"
@@ -25,6 +26,7 @@ static const float MAX_MAP_VELOCITY_LENGTH = 2.0f;
 static const float MAP_VELOCITY_DAMPING = 0.9f;
 static const float MAP_VELOCITY_INTEGRATION_SPEED = 0.04f;
 static const float CAMERA_MAX_ZOOM_FACTOR = 2.4f;
+static const float CAMERA_MIN_ZOOM_FACTOR = 0.4f;
 static const float CAMERA_ZOOM_SPEED = 0.1f;
 static const float MIN_CAMERA_VELOCITY_TO_START_MOVEMENT = 0.01f;
 
@@ -34,6 +36,9 @@ MapUpdater::MapUpdater(Scene& scene)
     : mScene(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
     , mMap(scene, glm::ivec2(9, 5), GameSingletons::GetCurrentMapCoord(), true)
+    , mSelectedMapCoord(0, 0)
+    , mTransitioningToLevel(false)
+    
 {
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
@@ -47,6 +52,19 @@ MapUpdater::MapUpdater(Scene& scene)
 
 void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMillis)
 {
+    if (mTransitioningToLevel)
+    {
+        auto& overlayAlpha = mScene.GetSceneObject(scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME)->get().mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME];
+        overlayAlpha += dtMillis * game_object_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED/2;
+        if (overlayAlpha >= 1.0f)
+        {
+            overlayAlpha = 1.0f;
+            mScene.LoadLevel("test_level");
+        }
+        
+        return;
+    }
+    
     static glm::vec3 originTouchPos;
     static glm::vec3 cameraVelocity;
     static float previousPinchDistance = 0.0f;
@@ -66,6 +84,13 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     {
         originTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
         cameraVelocity = glm::vec3(0.0f);
+        
+        if (SelectedActiveLevel(originTouchPos))
+        {
+            CreateOverlay();
+            mTransitioningToLevel = true;
+            return;
+        }
     }
     // Map Position/Zoom flow on FingerMotion
     else if (inputContext.mEventType == SDL_FINGERMOTION)
@@ -110,7 +135,7 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     worldCamera.SetPosition(camPos);
     
     // Clamp and apply camera zoom
-    camZoom = math::Max(math::Min(CAMERA_MAX_ZOOM_FACTOR, camZoom), Camera::DEFAULT_CAMERA_ZOOM_FACTOR);
+    camZoom = math::Max(math::Min(CAMERA_MAX_ZOOM_FACTOR, camZoom), CAMERA_MIN_ZOOM_FACTOR);
     worldCamera.SetZoomFactor(camZoom);
     
     // Keep track of previous finger pinch distance
@@ -126,12 +151,12 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     }
     
     // Rotate planets
-    for (int i = 0; i < mMap.GetMapData().size(); ++i)
+    for (const auto& mapEntry: mMap.GetMapData())
     {
-        auto soOpt = mScene.GetSceneObject(strutils::StringId("PLANET_" + std::to_string(i)));
+        auto soOpt = mScene.GetSceneObject(strutils::StringId("PLANET_" + mapEntry.first.ToString()));
         if (soOpt)
         {
-            soOpt->get().mRotation.y += dtMillis * 0.001f;
+            soOpt->get().mRotation.y += dtMillis * 0.0001f;
         }
     }
 }
@@ -183,5 +208,37 @@ void MapUpdater::OpenDebugConsole()
     }
 }
 #endif
+
+///------------------------------------------------------------------------------------------------
+
+bool MapUpdater::SelectedActiveLevel(const glm::vec3& touchPos)
+{
+    const auto& currentMapCoord = GameSingletons::GetCurrentMapCoord();
+    for (const auto& linkedMapCoord: mMap.GetMapData().at(currentMapCoord).mNodeLinks)
+    {
+        if (scene_object_utils::IsPointInsideSceneObject(mScene.GetSceneObject(strutils::StringId("PLANET_" + linkedMapCoord.ToString()))->get(), glm::vec2(touchPos.x, touchPos.y)))
+        {
+            mSelectedMapCoord = linkedMapCoord;
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void MapUpdater::CreateOverlay()
+{
+    auto& resService = resources::ResourceLoadingService::GetInstance();
+    SceneObject overlaySo;
+    overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+    overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
+    overlaySo.mScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
+    overlaySo.mPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
+    overlaySo.mName = scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
+    overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+    mScene.AddSceneObject(std::move(overlaySo));
+}
 
 ///------------------------------------------------------------------------------------------------

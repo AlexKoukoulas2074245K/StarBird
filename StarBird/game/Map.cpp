@@ -68,8 +68,8 @@ void Map::CreateMapSceneObjects()
     {
         SceneObject bgSO;
         bgSO.mScale = game_object_constants::BACKGROUND_SCALE;
-        bgSO.mScale.x *= 2.0f;
-        bgSO.mScale.y *= 2.0f;
+        bgSO.mScale.x *= 4.0f;
+        bgSO.mScale.y *= 4.0f;
         bgSO.mPosition.z = game_object_constants::BACKGROUND_Z;
         bgSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::BACKGROUND_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         bgSO.mSceneObjectType = SceneObjectType::WorldGameObject;
@@ -78,7 +78,6 @@ void Map::CreateMapSceneObjects()
         mScene.AddSceneObject(std::move(bgSO));
     }
     
-    auto positionCounter = 0;
     for (const auto& mapNodeEntry: mMapData)
     {
         SceneObject planetSO;
@@ -113,7 +112,9 @@ void Map::CreateMapSceneObjects()
                     planetRingSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
                     planetRingSO.mSceneObjectType = SceneObjectType::WorldGameObject;
                     planetRingSO.mScale = glm::vec3(1.0f);
-                    planetRingSO.mRotation.x = -math::PI/4;
+                    planetRingSO.mRotation.x = math::RandomFloat(1.8f, 2.2f);
+                    //planetRingSO.mRotation.z = math::RandomFloat(-math::PI/5, math::PI/5);
+                    planetRingSO.mRotation.y += math::RandomFloat(-math::PI/10, math::PI/10);
                     planetRingSO.mPosition = mapNodeEntry.second.mPosition;
                     mScene.AddSceneObject(std::move(planetRingSO));
                 }
@@ -124,11 +125,9 @@ void Map::CreateMapSceneObjects()
             planetSO.mSceneObjectType = SceneObjectType::WorldGameObject;
             planetSO.mScale = glm::vec3(0.75f);
             planetSO.mPosition = mapNodeEntry.second.mPosition;
-            planetSO.mName = strutils::StringId("PLANET_" + std::to_string(positionCounter++));
+            planetSO.mName = strutils::StringId("PLANET_" + mapNodeEntry.first.ToString());
             mScene.AddSceneObject(std::move(planetSO));
         }
-        
-        
     }
 
     for (const auto& mapNodeEntry: mMapData)
@@ -199,7 +198,6 @@ glm::vec3 Map::GenerateNodePositionFromCoord(const MapCoord& mapCoord) const
     // Add noise
     result.x += math::RandomFloat(-1.0f, 1.0f);
     result.y += math::RandomFloat(-1.0f, 1.0f);
-    
     return result;
 }
 

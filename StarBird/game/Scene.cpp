@@ -207,6 +207,17 @@ void Scene::RemoveAllSceneObjectsWithName(const strutils::StringId& name)
 
 void Scene::LoadLevel(const std::string& levelName)
 {
+    for (const auto& so: mSceneObjects)
+    {
+        if (so.mBody)
+        {
+            delete static_cast<strutils::StringId*>(so.mBody->GetUserData());
+            mBox2dWorld.DestroyBody(so.mBody);
+        }
+    }
+    mSceneObjects.clear();
+    mSceneObjectsToAdd.clear();
+    
     LevelDataLoader levelDataLoader;
     auto levelDef = levelDataLoader.LoadLevel(levelName);
     auto& objectTypeDefRepo = ObjectTypeDefinitionRepository::GetInstance();

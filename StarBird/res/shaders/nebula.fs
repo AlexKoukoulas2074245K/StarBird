@@ -24,8 +24,8 @@ void main()
     vec4 noise_color = texture(noise_tex, vec2(final_uv_x + tex_offset_x, final_uv_y + tex_offset_y));
     
     float distanceFromCenter = distance(vec2(0.5f, 0.5f), vec2(final_uv_x, final_uv_y));
-
-    frag_color = vec4(0.2f * noise_color.r, 0.2f * noise_color.r, noise_color.r, noise_color.r * pow(1.0f - distanceFromCenter, 4.0f));
+    
+    frag_color = vec4(0.2f * noise_color.r, 0.2f * noise_color.r, noise_color.r, noise_color.r * pow(1.0f - distanceFromCenter, 5.0f));
         
     if (frag_color.a < 0.05f) discard;
     

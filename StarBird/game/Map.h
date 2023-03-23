@@ -26,6 +26,8 @@ struct MapCoord
     {
     }
     
+    std::string ToString() const { return std::to_string(mCol) + "," + std::to_string(mRow); }
+    
     int mCol;
     int mRow;
 };
@@ -51,7 +53,7 @@ struct MapCoordHasher
 {
     std::size_t operator()(const MapCoord& key) const
     {
-        return strutils::StringId(std::to_string(key.mCol) + "," + std::to_string(key.mRow)).GetStringId();
+        return strutils::StringId(key.ToString()).GetStringId();
     }
 };
 

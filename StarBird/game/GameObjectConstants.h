@@ -127,7 +127,7 @@ static const glm::vec3 RIGHT_UPGRADE_CONTAINER_TARGET_POS = glm::vec3(4.0f, 0.0f
 static const glm::vec3 RIGHT_UPGRADE_CONTAINER_SCALE = glm::vec3(-8.5f, 5.5f, 1.0f);
 
 static const glm::vec3 FULL_SCREEN_OVERLAY_POSITION = glm::vec3(0.0f, 0.0f, 3.0f);
-static const glm::vec3 FULL_SCREEN_OVERLAY_SCALE = glm::vec3(80.0f, 80.0f, 1.0f);
+static const glm::vec3 FULL_SCREEN_OVERLAY_SCALE = glm::vec3(200.0f, 200.0f, 1.0f);
 
 static const glm::vec3 PLAYER_HEALTH_BAR_POSITION = glm::vec3(0.0f, -12.0f, 0.5f);
 static const glm::vec3 PLAYER_HEALTH_BAR_SCALE = glm::vec3(5.0f, 1.0f, 1.0f);

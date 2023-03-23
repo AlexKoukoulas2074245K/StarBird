@@ -14,6 +14,7 @@
 #include "Map.h"
 #include "SceneObject.h"
 #include "StateMachine.h"
+#include "../utils/MathUtils.h"
 
 #include <SDL_events.h>
 #include <memory>
@@ -35,9 +36,15 @@ public:
 #endif
 
 private:
+    bool SelectedActiveLevel(const glm::vec3& touchPos);
+    void CreateOverlay();
+    
+private:
     Scene& mScene;
     StateMachine mStateMachine;
     Map mMap;
+    MapCoord mSelectedMapCoord;
+    bool mTransitioningToLevel;
 };
 
 ///------------------------------------------------------------------------------------------------
