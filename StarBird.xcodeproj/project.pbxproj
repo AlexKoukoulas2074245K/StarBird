@@ -11,6 +11,7 @@
 		9208BE6129B3FD41007C5335 /* BossIntroGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9208BE5429B3FD41007C5335 /* BossIntroGameState.cpp */; };
 		9228C168299FD15A00410E49 /* GUISceneLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9228C166299FD15A00410E49 /* GUISceneLoader.cpp */; };
 		9228C16B299FDA5A00410E49 /* SceneObjectUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9228C169299FDA5900410E49 /* SceneObjectUtils.cpp */; };
+		923F0D8929CE0BFD007750D4 /* FullScreenOverlayController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 923F0D8729CE0BFD007750D4 /* FullScreenOverlayController.cpp */; };
 		9254CA512969B35800EFE0CC /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92C851A12969A8D00021923F /* SDL2.framework */; };
 		9254CBE12969B79A00EFE0CC /* b2Body.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CB7E2969B79A00EFE0CC /* b2Body.cpp */; };
 		9254CBE22969B79A00EFE0CC /* b2World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CB7F2969B79A00EFE0CC /* b2World.cpp */; };
@@ -229,6 +230,8 @@
 		9228C167299FD15A00410E49 /* GUISceneLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUISceneLoader.h; sourceTree = "<group>"; };
 		9228C169299FDA5900410E49 /* SceneObjectUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneObjectUtils.cpp; sourceTree = "<group>"; };
 		9228C16A299FDA5900410E49 /* SceneObjectUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneObjectUtils.h; sourceTree = "<group>"; };
+		923F0D8729CE0BFD007750D4 /* FullScreenOverlayController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FullScreenOverlayController.cpp; sourceTree = "<group>"; };
+		923F0D8829CE0BFD007750D4 /* FullScreenOverlayController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FullScreenOverlayController.h; sourceTree = "<group>"; };
 		9254CB7E2969B79A00EFE0CC /* b2Body.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Body.cpp; sourceTree = "<group>"; };
 		9254CB7F2969B79A00EFE0CC /* b2World.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2World.cpp; sourceTree = "<group>"; };
 		9254CB802969B79A00EFE0CC /* b2Fixture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Fixture.cpp; sourceTree = "<group>"; };
@@ -1083,6 +1086,8 @@
 				92BF79BB29A39002002A52D8 /* Animations.h */,
 				92C2198B2984395800B2D2C6 /* Camera.cpp */,
 				92C2198C2984395800B2D2C6 /* Camera.h */,
+				923F0D8729CE0BFD007750D4 /* FullScreenOverlayController.cpp */,
+				923F0D8829CE0BFD007750D4 /* FullScreenOverlayController.h */,
 				92C2198829842E6A00B2D2C6 /* Game.cpp */,
 				92C2198929842E6A00B2D2C6 /* Game.h */,
 				925FD8752989AE4F0058E747 /* GameConstants.h */,
@@ -1939,6 +1944,7 @@
 				925FD84529883DD80058E747 /* LevelUpdater.cpp in Sources */,
 				92894E17299D331200605302 /* ObjectTypeDefinitionRepository.cpp in Sources */,
 				92DAA4DC29829B380062A438 /* MathUtils.cpp in Sources */,
+				923F0D8929CE0BFD007750D4 /* FullScreenOverlayController.cpp in Sources */,
 				9254CC0D2969B79A00EFE0CC /* b2CollideEdge.cpp in Sources */,
 				9254CC012969B79A00EFE0CC /* b2StackAllocator.cpp in Sources */,
 				9228C168299FD15A00410E49 /* GUISceneLoader.cpp in Sources */,

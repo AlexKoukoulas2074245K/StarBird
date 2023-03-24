@@ -22,10 +22,12 @@
 ///------------------------------------------------------------------------------------------------
 
 class Scene;
+class FullScreenOverlayController;
 class MapUpdater final: public IUpdater
 {
 public:
     MapUpdater(Scene& scene);
+    ~MapUpdater();
     
     void Update(std::vector<SceneObject>& sceneObjects, const float dtMillis) override;
     void OnAppStateChange(Uint32 event) override;
@@ -37,12 +39,11 @@ public:
 
 private:
     bool SelectedActiveLevel(const glm::vec3& touchPos);
-    void CreateOverlay();
     
 private:
     Scene& mScene;
     StateMachine mStateMachine;
-    Map mMap;
+    Map mMap;    
     MapCoord mSelectedMapCoord;
     bool mTransitioningToLevel;
 };

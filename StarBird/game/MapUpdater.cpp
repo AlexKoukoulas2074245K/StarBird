@@ -6,15 +6,14 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "Animations.h"
-#include "MapUpdater.h"
+#include "FullScreenOverlayController.h"
 #include "GameConstants.h"
 #include "GameSingletons.h"
+#include "MapUpdater.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
 #include "states/DebugConsoleGameState.h"
 #include "../resloading/ResourceLoadingService.h"
-#include "../utils/Logging.h"
-
 #include <vector>
 #include <map>
 #include <unordered_set>
@@ -49,18 +48,16 @@ MapUpdater::MapUpdater(Scene& scene)
 
 ///------------------------------------------------------------------------------------------------
 
+MapUpdater::~MapUpdater()
+{
+}
+
+///------------------------------------------------------------------------------------------------
+
 void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMillis)
 {
     if (mTransitioningToLevel)
     {
-        auto& overlayAlpha = mScene.GetSceneObject(game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME)->get().mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-        overlayAlpha += dtMillis * game_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED/2;
-        if (overlayAlpha >= 1.0f)
-        {
-            overlayAlpha = 1.0f;
-            mScene.LoadLevel("test_level");
-        }
-        
         return;
     }
     
@@ -86,7 +83,9 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
         
         if (SelectedActiveLevel(originTouchPos))
         {
-            CreateOverlay();
+            mScene.AddOverlayController(game_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED/2, 1.0f, [&](){
+                mScene.LoadLevel("test_level");
+            });
             mTransitioningToLevel = true;
             return;
         }
@@ -108,8 +107,6 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
             {
                 cameraVelocity = deltaMotion;
             }
-            
-            Log(LogType::INFO, "%.6f", glm::length(deltaMotion));
         }
     }
     // Reset touch pos on FingerUp
@@ -228,21 +225,6 @@ bool MapUpdater::SelectedActiveLevel(const glm::vec3& touchPos)
     }
     
     return false;
-}
-
-///------------------------------------------------------------------------------------------------
-
-void MapUpdater::CreateOverlay()
-{
-    auto& resService = resources::ResourceLoadingService::GetInstance();
-    SceneObject overlaySo;
-    overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
-    overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
-    overlaySo.mScale = game_constants::FULL_SCREEN_OVERLAY_SCALE;
-    overlaySo.mPosition = game_constants::FULL_SCREEN_OVERLAY_POSITION;
-    overlaySo.mName = game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
-    overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-    mScene.AddSceneObject(std::move(overlaySo));
 }
 
 ///------------------------------------------------------------------------------------------------

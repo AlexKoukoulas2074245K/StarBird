@@ -160,6 +160,13 @@ std::optional<std::reference_wrapper<const SceneObject>> Scene::GetSceneObject(c
 
 ///------------------------------------------------------------------------------------------------
 
+void Scene::AddOverlayController(const float darkeningSpeed, const float maxDarkeningValue, FullScreenOverlayController::CallbackType midwayCallback /* nullptr */, FullScreenOverlayController::CallbackType completionCallback /* nullptr */)
+{
+    mOverlayController = std::make_unique<FullScreenOverlayController>(*this, darkeningSpeed, maxDarkeningValue, midwayCallback, completionCallback);
+}
+
+///------------------------------------------------------------------------------------------------
+
 const std::vector<SceneObject>& Scene::GetSceneObjects() const
 {
     return mSceneObjects;
@@ -206,12 +213,20 @@ void Scene::RemoveAllSceneObjectsWithName(const strutils::StringId& name)
 
 void Scene::LoadLevel(const std::string& levelName)
 {
-    for (const auto& so: mSceneObjects)
+    std::vector<SceneObject> crossSceneSceneObjects;
+    for (auto& so: mSceneObjects)
     {
-        if (so.mBody)
+        if (so.mCrossSceneLifetime)
         {
-            delete static_cast<strutils::StringId*>(so.mBody->GetUserData());
-            mBox2dWorld.DestroyBody(so.mBody);
+            crossSceneSceneObjects.push_back(std::move(so));
+        }
+        else
+        {
+            if (so.mBody)
+            {
+                delete static_cast<strutils::StringId*>(so.mBody->GetUserData());
+                mBox2dWorld.DestroyBody(so.mBody);
+            }
         }
     }
     mSceneObjects.clear();
@@ -239,6 +254,11 @@ void Scene::LoadLevel(const std::string& levelName)
     }
     
     mSceneUpdater = std::make_unique<LevelUpdater>(*this, mBox2dWorld, std::move(levelDef));
+    
+    for (auto& so: crossSceneSceneObjects)
+    {
+        AddSceneObject(std::move(so));
+    }
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -253,6 +273,15 @@ void Scene::OnAppStateChange(Uint32 event)
 void Scene::UpdateScene(const float dtMillis)
 {
     mPreFirstUpdate = false;
+    
+    if (mOverlayController)
+    {
+        mOverlayController->Update(dtMillis);
+        if (mOverlayController->IsFinished())
+        {
+            mOverlayController = nullptr;
+        }
+    }
     
     mSceneUpdater->Update(mSceneObjects, dtMillis * GameSingletons::GetGameSpeedMultiplier());
     

@@ -58,6 +58,7 @@ struct SceneObject // 456b
     bool mInvisible = false;
     bool mInvulnerable = false;
     bool mCustomDrivenMovement = false;
+    bool mCrossSceneLifetime = false;
 };
 
 ///------------------------------------------------------------------------------------------------

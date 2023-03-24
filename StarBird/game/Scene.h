@@ -10,9 +10,11 @@
 
 ///------------------------------------------------------------------------------------------------
 
-#include "SceneObject.h"
+#include "FullScreenOverlayController.h"
 #include "IUpdater.h"
+#include "SceneObject.h"
 #include "SceneRenderer.h"
+
 
 #include "datarepos/LightRepository.h"
 #include "../utils/StringUtils.h"
@@ -42,6 +44,8 @@ public:
     const LightRepository& GetLightRepository() const;
     LightRepository& GetLightRepository();
     
+    void AddOverlayController(const float darkeningSpeed, const float maxDarkeningValue, FullScreenOverlayController::CallbackType midwayCallback = nullptr, FullScreenOverlayController::CallbackType completionCallback = nullptr);
+    
     void AddSceneObject(SceneObject&& sceneObject);
     void RemoveAllSceneObjectsWithName(const strutils::StringId& name);
 
@@ -64,6 +68,7 @@ private:
     std::vector<strutils::StringId> mNamesOfSceneObjectsToRemove;
     LightRepository mLightRepository;
     std::unique_ptr<IUpdater> mSceneUpdater;
+    std::unique_ptr<FullScreenOverlayController> mOverlayController;
     SceneRenderer mSceneRenderer;
     bool mPreFirstUpdate;
 };
