@@ -7,7 +7,7 @@
 
 #include "ObjectTypeDefinitionLoader.h"
 #include "../PhysicsConstants.h"
-#include "../SceneObjectConstants.h"
+#include "../GameConstants.h"
 #include "../../resloading/ResourceLoadingService.h"
 #include "../../utils/Logging.h"
 #include "../../utils/MathUtils.h"

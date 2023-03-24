@@ -161,7 +161,7 @@ void Game::Run()
                     GameSingletons::SetInputContextEvent(e.type);
                     GameSingletons::SetInputContextTouchPos(glm::vec2(e.tfinger.x, e.tfinger.y));
                     
-                    if (e.type == SDL_FINGERUP && GameSingletons::GetInputContext().mMultiGestureActive)
+                    if (e.type == SDL_FINGERUP)
                     {
                         GameSingletons::SetInputContextMultiGestureActive(false);
                     }

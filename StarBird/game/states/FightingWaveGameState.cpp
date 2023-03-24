@@ -11,7 +11,7 @@
 
 #include "../LevelUpdater.h"
 #include "../GameSingletons.h"
-#include "../GameObjectConstants.h"
+#include "../GameConstants.h"
 #include "../PhysicsConstants.h"
 #include "../Scene.h"
 #include "../SceneObjectUtils.h"
@@ -44,7 +44,7 @@ void FightingWaveGameState::VInitialize()
         
         if (!enemyDef.mProjectileType.isEmpty())
         {
-            auto projectileFlowName = strutils::StringId(so.mName.GetString() + game_object_constants::ENEMY_PROJECTILE_FLOW_POSTFIX);
+            auto projectileFlowName = strutils::StringId(so.mName.GetString() + game_constants::ENEMY_PROJECTILE_FLOW_POSTFIX);
             mLevelUpdater->AddFlow(RepeatableFlow([=]()
             {
                 auto bulletDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemyDef.mProjectileType);
@@ -56,7 +56,7 @@ void FightingWaveGameState::VInitialize()
                     auto& sourceEnemySo = sourceEnemySoOpt->get();
                     
                     auto bulletPosition = math::Box2dVec2ToGlmVec3(sourceEnemySo.mBody->GetWorldCenter());
-                    bulletPosition.z = game_object_constants::BULLET_Z;
+                    bulletPosition.z = game_constants::BULLET_Z;
                     SceneObject bulletSceneObject = scene_object_utils::CreateSceneObjectWithBody(bulletDef, bulletPosition, *mBox2dWorld);
                     
                     mLevelUpdater->AddWaveEnemy(bulletSceneObject.mName);

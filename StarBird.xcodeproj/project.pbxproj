@@ -338,8 +338,7 @@
 		925FD87029893CAF0058E747 /* ObjectTypeDefinitionLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectTypeDefinitionLoader.h; sourceTree = "<group>"; };
 		925FD87129893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectTypeDefinitionLoader.cpp; sourceTree = "<group>"; };
 		925FD873298976B20058E747 /* InputContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputContext.h; sourceTree = "<group>"; };
-		925FD874298981750058E747 /* SceneObjectConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneObjectConstants.h; sourceTree = "<group>"; };
-		925FD8752989AE4F0058E747 /* GameObjectConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameObjectConstants.h; sourceTree = "<group>"; };
+		925FD8752989AE4F0058E747 /* GameConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameConstants.h; sourceTree = "<group>"; };
 		925FD879298AAF570058E747 /* GameSingletons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameSingletons.cpp; sourceTree = "<group>"; };
 		925FD87A298AAF570058E747 /* GameSingletons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSingletons.h; sourceTree = "<group>"; };
 		925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ObjectiveCUtils.mm; sourceTree = "<group>"; };
@@ -1086,7 +1085,7 @@
 				92C2198C2984395800B2D2C6 /* Camera.h */,
 				92C2198829842E6A00B2D2C6 /* Game.cpp */,
 				92C2198929842E6A00B2D2C6 /* Game.h */,
-				925FD8752989AE4F0058E747 /* GameObjectConstants.h */,
+				925FD8752989AE4F0058E747 /* GameConstants.h */,
 				925FD879298AAF570058E747 /* GameSingletons.cpp */,
 				925FD87A298AAF570058E747 /* GameSingletons.h */,
 				925FD873298976B20058E747 /* InputContext.h */,
@@ -1104,7 +1103,6 @@
 				92C2198229842CF500B2D2C6 /* Scene.cpp */,
 				92C2198329842CF500B2D2C6 /* Scene.h */,
 				92A8517C298570D200C99B61 /* SceneObject.h */,
-				925FD874298981750058E747 /* SceneObjectConstants.h */,
 				9228C169299FDA5900410E49 /* SceneObjectUtils.cpp */,
 				9228C16A299FDA5900410E49 /* SceneObjectUtils.h */,
 				92A8516E2985704800C99B61 /* SceneRenderer.cpp */,

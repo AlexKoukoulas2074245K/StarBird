@@ -8,7 +8,7 @@
 #include "KathunBossAI.h"
 #include "../LevelUpdater.h"
 #include "../Scene.h"
-#include "../GameObjectConstants.h"
+#include "../GameConstants.h"
 #include "../GameSingletons.h"
 #include "../datarepos/ObjectTypeDefinitionRepository.h"
 #include "../SceneObjectUtils.h"
@@ -332,7 +332,7 @@ void KathunBossAI::OnStateChange(const bool shakeCamera)
                     static_cast<RotationAnimation*>(soOpt->get().mAnimation.get())->SetRotationMode(RotationAnimation::RotationMode::ROTATE_TO_TARGET_AND_BACK_CONTINUALLY);
                 }
             }
-        }, game_object_constants::BOSS_INTRO_DURATION_MILLIS/2, RepeatableFlow::RepeatPolicy::ONCE));
+        }, game_constants::BOSS_INTRO_DURATION_MILLIS/2, RepeatableFlow::RepeatPolicy::ONCE));
     }
 }
 

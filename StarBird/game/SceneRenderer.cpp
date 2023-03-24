@@ -7,7 +7,7 @@
 
 #include "FontRepository.h"
 #include "GameSingletons.h"
-#include "SceneObjectConstants.h"
+#include "GameConstants.h"
 #include "SceneRenderer.h"
 
 #include "datarepos/LightRepository.h"
@@ -55,7 +55,7 @@ SceneRenderer::SceneRenderer(b2World& box2dWorld)
 {
     mBox2dWorld.SetDebugDraw(this);
     SetFlags(b2Draw::e_aabbBit);
-    resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_COLOR_SHADER_FILE_NAME);
+    resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -110,14 +110,14 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
             currentShader->SetInt(currentShader->GetUniformSamplerNames().at(i), static_cast<int>(i));
         }
         
-        if (so.mShaderBoolUniformValues.count(scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME) == 0)
+        if (so.mShaderBoolUniformValues.count(game_constants::IS_TEXTURE_SHEET_UNIFORM_NAME) == 0)
         {
-            so.mShaderBoolUniformValues[scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = false;
+            so.mShaderBoolUniformValues[game_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = false;
         }
         
-        if (so.mShaderBoolUniformValues.count(scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME) == 0)
+        if (so.mShaderBoolUniformValues.count(game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME) == 0)
         {
-            so.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+            so.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
         }
         
         
@@ -162,11 +162,11 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
                     world = glm::translate(world, glm::vec3(targetX, targetY, so.mPosition.z));
                     world = glm::scale(world, glm::vec3(glyph.mWidthPixels * so.mScale.x, glyph.mHeightPixels * so.mScale.y, 1.0f));
                     
-                    so.mShaderBoolUniformValues[scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
-                    so.mShaderFloatUniformValues[scene_object_constants::MIN_U_UNIFORM_NAME] = glyph.minU;
-                    so.mShaderFloatUniformValues[scene_object_constants::MIN_V_UNIFORM_NAME] = glyph.minV;
-                    so.mShaderFloatUniformValues[scene_object_constants::MAX_U_UNIFORM_NAME] = glyph.maxU;
-                    so.mShaderFloatUniformValues[scene_object_constants::MAX_V_UNIFORM_NAME] = glyph.maxV;
+                    so.mShaderBoolUniformValues[game_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
+                    so.mShaderFloatUniformValues[game_constants::MIN_U_UNIFORM_NAME] = glyph.minU;
+                    so.mShaderFloatUniformValues[game_constants::MIN_V_UNIFORM_NAME] = glyph.minV;
+                    so.mShaderFloatUniformValues[game_constants::MAX_U_UNIFORM_NAME] = glyph.maxU;
+                    so.mShaderFloatUniformValues[game_constants::MAX_V_UNIFORM_NAME] = glyph.maxV;
                     
                     currentShader->SetMatrix4fv(WORLD_MATRIX_UNIFORM_NAME, world);
                     currentShader->SetMatrix4fv(VIEW_MATRIX_UNIFORM_NAME, camera.GetViewMatrix());
@@ -258,7 +258,7 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
             currentMesh = &(resService.GetResource<resources::MeshResource>(resources::ResourceLoadingService::FALLBACK_MESH_ID));
             GL_CALL(glBindVertexArray(currentMesh->GetVertexArrayObject()));
             
-            currentShader = &(resService.GetResource<resources::ShaderResource>(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_COLOR_SHADER_FILE_NAME));
+            currentShader = &(resService.GetResource<resources::ShaderResource>(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME));
             
             GL_CALL(glUseProgram(currentShader->GetProgramId()));
             
@@ -286,7 +286,7 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
             currentShader->SetMatrix4fv(VIEW_MATRIX_UNIFORM_NAME, camera.GetViewMatrix());
             currentShader->SetMatrix4fv(PROJ_MATRIX_UNIFORM_NAME, camera.GetProjMatrix());
             
-            currentShader->SetFloatVec4(scene_object_constants::CUSTOM_COLOR_UNIFORM_NAME, DEBUG_VERTEX_COLOR);
+            currentShader->SetFloatVec4(game_constants::CUSTOM_COLOR_UNIFORM_NAME, DEBUG_VERTEX_COLOR);
             
             GL_CALL(glDrawElements(GL_TRIANGLES, currentMesh->GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
         }

@@ -7,9 +7,8 @@
 
 #include "Animations.h"
 #include "MapUpdater.h"
-#include "GameObjectConstants.h"
+#include "GameConstants.h"
 #include "GameSingletons.h"
-#include "SceneObjectConstants.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
 #include "states/DebugConsoleGameState.h"
@@ -22,13 +21,13 @@
 
 ///------------------------------------------------------------------------------------------------
 
-static const float MAX_MAP_VELOCITY_LENGTH = 2.0f;
+static const float MAX_MAP_VELOCITY_LENGTH = 5.0f;
 static const float MAP_VELOCITY_DAMPING = 0.9f;
 static const float MAP_VELOCITY_INTEGRATION_SPEED = 0.04f;
 static const float CAMERA_MAX_ZOOM_FACTOR = 2.4f;
 static const float CAMERA_MIN_ZOOM_FACTOR = 0.4f;
 static const float CAMERA_ZOOM_SPEED = 0.1f;
-static const float MIN_CAMERA_VELOCITY_TO_START_MOVEMENT = 0.01f;
+static const float MIN_CAMERA_VELOCITY_TO_START_MOVEMENT = 0.0001f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -45,7 +44,7 @@ MapUpdater::MapUpdater(Scene& scene)
 #endif
 
     auto& worldCamera = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject)->get();
-    worldCamera.SetPosition(glm::vec3(game_object_constants::MAP_MIN_WORLD_BOUNDS.x, game_object_constants::MAP_MIN_WORLD_BOUNDS.y, 0.0f));
+    worldCamera.SetPosition(glm::vec3(game_constants::MAP_MIN_WORLD_BOUNDS.x, game_constants::MAP_MIN_WORLD_BOUNDS.y, 0.0f));
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -54,8 +53,8 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
 {
     if (mTransitioningToLevel)
     {
-        auto& overlayAlpha = mScene.GetSceneObject(scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME)->get().mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-        overlayAlpha += dtMillis * game_object_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED/2;
+        auto& overlayAlpha = mScene.GetSceneObject(game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME)->get().mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME];
+        overlayAlpha += dtMillis * game_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED/2;
         if (overlayAlpha >= 1.0f)
         {
             overlayAlpha = 1.0f;
@@ -109,6 +108,8 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
             {
                 cameraVelocity = deltaMotion;
             }
+            
+            Log(LogType::INFO, "%.6f", glm::length(deltaMotion));
         }
     }
     // Reset touch pos on FingerUp
@@ -120,7 +121,7 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     // Calculate potential new camera position
     if (glm::length(cameraVelocity) > MIN_CAMERA_VELOCITY_TO_START_MOVEMENT)
     {
-        camPos = worldCamera.GetPosition() - cameraVelocity * dtMillis * MAP_VELOCITY_INTEGRATION_SPEED;
+        camPos = worldCamera.GetPosition() - cameraVelocity * dtMillis * MAP_VELOCITY_INTEGRATION_SPEED *  1.0f/worldCamera.GetZoomFactor();
         cameraVelocity.x *= MAP_VELOCITY_DAMPING;
         cameraVelocity.y *= MAP_VELOCITY_DAMPING;
     }
@@ -130,8 +131,8 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     }
     
     // Clamp and apply camera position
-    camPos.x = math::Max(math::Min(game_object_constants::MAP_MAX_WORLD_BOUNDS.x, camPos.x), game_object_constants::MAP_MIN_WORLD_BOUNDS.x);
-    camPos.y = math::Max(math::Min(game_object_constants::MAP_MAX_WORLD_BOUNDS.y, camPos.y), game_object_constants::MAP_MIN_WORLD_BOUNDS.y);
+    camPos.x = math::Max(math::Min(game_constants::MAP_MAX_WORLD_BOUNDS.x, camPos.x), game_constants::MAP_MIN_WORLD_BOUNDS.x);
+    camPos.y = math::Max(math::Min(game_constants::MAP_MAX_WORLD_BOUNDS.y, camPos.y), game_constants::MAP_MIN_WORLD_BOUNDS.y);
     worldCamera.SetPosition(camPos);
     
     // Clamp and apply camera zoom
@@ -153,10 +154,13 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     // Rotate planets
     for (const auto& mapEntry: mMap.GetMapData())
     {
-        auto soOpt = mScene.GetSceneObject(strutils::StringId("PLANET_" + mapEntry.first.ToString()));
-        if (soOpt)
+        if (mapEntry.first != MapCoord(mMap.GetMapDimensions().x - 1, mMap.GetMapDimensions().y/2))
         {
-            soOpt->get().mRotation.y += dtMillis * 0.0001f;
+            auto soOpt = mScene.GetSceneObject(strutils::StringId(mapEntry.first.ToString()));
+            if (soOpt)
+            {
+                soOpt->get().mRotation.y += dtMillis * 0.0002f;
+            }
         }
     }
 }
@@ -216,7 +220,7 @@ bool MapUpdater::SelectedActiveLevel(const glm::vec3& touchPos)
     const auto& currentMapCoord = GameSingletons::GetCurrentMapCoord();
     for (const auto& linkedMapCoord: mMap.GetMapData().at(currentMapCoord).mNodeLinks)
     {
-        if (scene_object_utils::IsPointInsideSceneObject(mScene.GetSceneObject(strutils::StringId("PLANET_" + linkedMapCoord.ToString()))->get(), glm::vec2(touchPos.x, touchPos.y)))
+        if (scene_object_utils::IsPointInsideSceneObject(mScene.GetSceneObject(strutils::StringId(linkedMapCoord.ToString()))->get(), glm::vec2(touchPos.x, touchPos.y)))
         {
             mSelectedMapCoord = linkedMapCoord;
             return true;
@@ -232,12 +236,12 @@ void MapUpdater::CreateOverlay()
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     SceneObject overlaySo;
-    overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+    overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
     overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
-    overlaySo.mScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
-    overlaySo.mPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
-    overlaySo.mName = scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
-    overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+    overlaySo.mScale = game_constants::FULL_SCREEN_OVERLAY_SCALE;
+    overlaySo.mPosition = game_constants::FULL_SCREEN_OVERLAY_POSITION;
+    overlaySo.mName = game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
+    overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
     mScene.AddSceneObject(std::move(overlaySo));
 }
 

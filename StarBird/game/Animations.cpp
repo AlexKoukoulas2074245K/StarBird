@@ -97,11 +97,11 @@ void MultiFrameAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject
         }
     }
     
-    sceneObject.mShaderBoolUniformValues[scene_object_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
-    sceneObject.mShaderFloatUniformValues[scene_object_constants::MIN_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).minU;
-    sceneObject.mShaderFloatUniformValues[scene_object_constants::MIN_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).minV;
-    sceneObject.mShaderFloatUniformValues[scene_object_constants::MAX_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).maxU;
-    sceneObject.mShaderFloatUniformValues[scene_object_constants::MAX_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).maxV;
+    sceneObject.mShaderBoolUniformValues[game_constants::IS_TEXTURE_SHEET_UNIFORM_NAME] = true;
+    sceneObject.mShaderFloatUniformValues[game_constants::MIN_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).minU;
+    sceneObject.mShaderFloatUniformValues[game_constants::MIN_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).minV;
+    sceneObject.mShaderFloatUniformValues[game_constants::MAX_U_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).maxU;
+    sceneObject.mShaderFloatUniformValues[game_constants::MAX_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).maxV;
 }
 
 resources::ResourceId MultiFrameAnimation::VGetCurrentTextureResourceId() const
@@ -258,13 +258,13 @@ ShineAnimation::ShineAnimation(SceneObject* sceneObject, const resources::Resour
     , mShaderResourceId(shaderResourceId)
     , mScale(scale)
     , mShineSpeed(shineSpeed)
-    , mShineXOffset(scene_object_constants::SHINE_EFFECT_X_OFFSET_INIT_VAL)
+    , mShineXOffset(game_constants::SHINE_EFFECT_X_OFFSET_INIT_VAL)
     , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
     if (sceneObject)
     {
         sceneObject->mShaderEffectTextureResourceId = mShineTextureResourceId;
-        sceneObject->mShaderFloatUniformValues[scene_object_constants::SHINE_X_OFFSET_UNIFORM_NAME] = mShineXOffset;
+        sceneObject->mShaderFloatUniformValues[game_constants::SHINE_X_OFFSET_UNIFORM_NAME] = mShineXOffset;
     }
 }
 
@@ -277,7 +277,7 @@ void ShineAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
     sceneObject.mShaderEffectTextureResourceId = mShineTextureResourceId;
     mShineXOffset -= mShineSpeed * dtMillis;
-    sceneObject.mShaderFloatUniformValues[scene_object_constants::SHINE_X_OFFSET_UNIFORM_NAME] = mShineXOffset;
+    sceneObject.mShaderFloatUniformValues[game_constants::SHINE_X_OFFSET_UNIFORM_NAME] = mShineXOffset;
 }
 
 resources::ResourceId ShineAnimation::VGetCurrentTextureResourceId() const
@@ -302,7 +302,7 @@ const glm::vec3& ShineAnimation::VGetScale() const
 
 float ShineAnimation::VGetDuration() const
 {
-    return math::Abs(scene_object_constants::SHINE_EFFECT_X_OFFSET_END_VAL - scene_object_constants::SHINE_EFFECT_X_OFFSET_INIT_VAL)/mShineSpeed;
+    return math::Abs(game_constants::SHINE_EFFECT_X_OFFSET_END_VAL - game_constants::SHINE_EFFECT_X_OFFSET_INIT_VAL)/mShineSpeed;
 }
 
 bool ShineAnimation::VGetBodyRenderingEnabled() const
@@ -319,13 +319,13 @@ DissolveAnimation::DissolveAnimation(SceneObject* sceneObject, const resources::
     , mShaderResourceId(shaderResourceId)
     , mScale(scale)
     , mDissolveSpeed(dissolveSpeed)
-    , mDissolveYOffset(scene_object_constants::DISSOLVE_EFFECT_Y_INIT_VAL)
+    , mDissolveYOffset(game_constants::DISSOLVE_EFFECT_Y_INIT_VAL)
     , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
     if (sceneObject)
     {
         sceneObject->mShaderEffectTextureResourceId = mDissolveTextureResourceId;
-        sceneObject->mShaderFloatUniformValues[scene_object_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] = mDissolveYOffset;
+        sceneObject->mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] = mDissolveYOffset;
     }
 }
 
@@ -338,7 +338,7 @@ void DissolveAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
     sceneObject.mShaderEffectTextureResourceId = mDissolveTextureResourceId;
     mDissolveYOffset -= mDissolveSpeed * dtMillis;
-    sceneObject.mShaderFloatUniformValues[scene_object_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] = mDissolveYOffset;
+    sceneObject.mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] = mDissolveYOffset;
 }
 
 resources::ResourceId DissolveAnimation::VGetCurrentTextureResourceId() const
@@ -363,7 +363,7 @@ const glm::vec3& DissolveAnimation::VGetScale() const
 
 float DissolveAnimation::VGetDuration() const
 {
-    return scene_object_constants::DISSOLVE_EFFECT_Y_INIT_VAL/mDissolveSpeed;
+    return game_constants::DISSOLVE_EFFECT_Y_INIT_VAL/mDissolveSpeed;
 }
 
 bool DissolveAnimation::VGetBodyRenderingEnabled() const
@@ -383,7 +383,7 @@ NebulaAnimation::NebulaAnimation(SceneObject* sceneObject, const resources::Reso
 {
     if (sceneObject)
     {
-        sceneObject->mShaderFloatUniformValues[scene_object_constants::TEXTURE_OFFSET_X_UNIFORM_NAME] = 0.0f;
+        sceneObject->mShaderFloatUniformValues[game_constants::TEXTURE_OFFSET_X_UNIFORM_NAME] = 0.0f;
     }
     
     mNoiseMovementDirection.x = math::RandomFloat(-1.0f, 1.0f);
@@ -397,8 +397,8 @@ std::unique_ptr<IAnimation> NebulaAnimation::VClone() const
 
 void NebulaAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
-    sceneObject.mShaderFloatUniformValues[scene_object_constants::TEXTURE_OFFSET_X_UNIFORM_NAME] += dtMillis * mNoiseMovementDirection.x * scene_object_constants::NEBULA_ANIMATION_SPEED;
-    sceneObject.mShaderFloatUniformValues[scene_object_constants::TEXTURE_OFFSET_Y_UNIFORM_NAME] += dtMillis * mNoiseMovementDirection.y * scene_object_constants::NEBULA_ANIMATION_SPEED;
+    sceneObject.mShaderFloatUniformValues[game_constants::TEXTURE_OFFSET_X_UNIFORM_NAME] += dtMillis * mNoiseMovementDirection.x * game_constants::NEBULA_ANIMATION_SPEED;
+    sceneObject.mShaderFloatUniformValues[game_constants::TEXTURE_OFFSET_Y_UNIFORM_NAME] += dtMillis * mNoiseMovementDirection.y * game_constants::NEBULA_ANIMATION_SPEED;
 }
 
 resources::ResourceId NebulaAnimation::VGetCurrentTextureResourceId() const

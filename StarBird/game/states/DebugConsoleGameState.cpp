@@ -6,13 +6,12 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "DebugConsoleGameState.h"
-#include "../GameObjectConstants.h"
+#include "../GameConstants.h"
 #include "../GameSingletons.h"
 #include "../LevelUpdater.h"
 #include "../PhysicsConstants.h"
 #include "../Scene.h"
 #include "../SceneObject.h"
-#include "../SceneObjectConstants.h"
 #include "../SceneObjectUtils.h"
 #include "../datarepos/FontRepository.h"
 #include "../dataloaders/GUISceneLoader.h"
@@ -41,17 +40,17 @@ void DebugConsoleGameState::VInitialize()
     mLastEventType = 0;
     
     auto& resService = resources::ResourceLoadingService::GetInstance();
-    resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::DEBUG_CONSOLE_FONT_SHADER_FILE_NAME);
+    resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::DEBUG_CONSOLE_FONT_SHADER_FILE_NAME);
     
     // Overlay
     {
         SceneObject overlaySo;
-        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
-        overlaySo.mScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
-        overlaySo.mPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
-        overlaySo.mName = scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
-        overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+        overlaySo.mScale = game_constants::FULL_SCREEN_OVERLAY_SCALE;
+        overlaySo.mPosition = game_constants::FULL_SCREEN_OVERLAY_POSITION;
+        overlaySo.mName = game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
+        overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
         
         mSceneElementIds.push_back(overlaySo.mName);
         mScene->AddSceneObject(std::move(overlaySo));
@@ -68,12 +67,12 @@ void DebugConsoleGameState::VInitialize()
         guiSceneObject.mScale = guiElement.mScale;
         guiSceneObject.mText = guiElement.mText;
         guiSceneObject.mFontName = guiElement.mFontName;
-        guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId, glm::vec3(1.0f), false);
+        guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId, glm::vec3(1.0f), false);
         guiSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
         
         if (guiSceneObject.mFontName != strutils::StringId())
         {
-            guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId, glm::vec3(1.0f), false);
+            guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId, glm::vec3(1.0f), false);
         }
         
         mSceneElementIds.push_back(guiSceneObject.mName);
@@ -89,22 +88,22 @@ void DebugConsoleGameState::VInitialize()
 PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
 {
     // Overlay Alpha Update
-    auto overlaySoOpt = mScene->GetSceneObject(scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
+    auto overlaySoOpt = mScene->GetSceneObject(game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
     if (overlaySoOpt)
     {
         auto& overlaySo = overlaySoOpt->get();
-        auto& overlayAlpha = overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-        overlayAlpha += dtMillis * game_object_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED;
-        if (overlayAlpha >= game_object_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA)
+        auto& overlayAlpha = overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME];
+        overlayAlpha += dtMillis * game_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED;
+        if (overlayAlpha >= game_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA)
         {
-            overlayAlpha = game_object_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA;
+            overlayAlpha = game_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA;
         }
     }
     
     auto& inputContext = GameSingletons::GetInputContext();
     
     // Up/Down/Execute keys
-    auto commandTextSoOpt = mScene->GetSceneObject(scene_object_constants::DEBUG_COMMAND_TEXT_SCENE_OBJECT_NAME);
+    auto commandTextSoOpt = mScene->GetSceneObject(game_constants::DEBUG_COMMAND_TEXT_SCENE_OBJECT_NAME);
     if (commandTextSoOpt)
     {
         auto& commandTextSo = commandTextSoOpt->get();
@@ -140,7 +139,7 @@ PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
     {
         auto touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
         
-        auto continueButtonSoOpt = mScene->GetSceneObject(scene_object_constants::DEBUG_BACK_TO_GAME_SCENE_OBJECT_NAME);
+        auto continueButtonSoOpt = mScene->GetSceneObject(game_constants::DEBUG_BACK_TO_GAME_SCENE_OBJECT_NAME);
         if (continueButtonSoOpt && scene_object_utils::IsPointInsideSceneObject(continueButtonSoOpt->get(), touchPos))
         {
             completeButtonPressed = true;
@@ -266,7 +265,7 @@ void DebugConsoleGameState::RegisterCommands()
             return CommandExecutionResult(false, USAGE_TEXT);
         }
         
-        mScene->RemoveAllSceneObjectsWithName(scene_object_constants::WALL_SCENE_OBJECT_NAME);
+        mScene->RemoveAllSceneObjectsWithName(game_constants::WALL_SCENE_OBJECT_NAME);
         
         if (commandComponents[1] == "on")
         {
@@ -361,7 +360,7 @@ void DebugConsoleGameState::RegisterCommands()
     
     mCommandMap[strutils::StringId("getscale")] = [&](const std::vector<std::string>& commandComponents)
     {
-        static const std::string USAGE_TEXT("Usage: scale <scene_object_name>");
+        static const std::string USAGE_TEXT("Usage: getscale <scene_object_name>");
         
         if (commandComponents.size() != 2)
         {
@@ -417,6 +416,62 @@ void DebugConsoleGameState::RegisterCommands()
             return CommandExecutionResult(true, "New Scale: " + strutils::FloatToString(sceneObject.mScale.x, 4) + ", " +
                                                                strutils::FloatToString(sceneObject.mScale.y, 4) + ", " +
                                                                strutils::FloatToString(sceneObject.mScale.z, 4));
+        }
+    };
+    
+    mCommandMap[strutils::StringId("getrot")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: getrot <scene_object_name>");
+        
+        if (commandComponents.size() != 2)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        if (!mScene->GetSceneObject(strutils::StringId(commandComponents[1])))
+        {
+            return CommandExecutionResult(false, "Scene Object not found");
+        }
+        
+        auto& sceneObject = mScene->GetSceneObject(strutils::StringId(commandComponents[1]))->get();
+        
+        return CommandExecutionResult(true, "Rotation: " + strutils::FloatToString(sceneObject.mRotation.x, 4) + ", " +
+                                                           strutils::FloatToString(sceneObject.mRotation.y, 4) + ", " +
+                                                           strutils::FloatToString(sceneObject.mRotation.z, 4));
+    
+    };
+    
+    mCommandMap[strutils::StringId("addrot")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: addrot <scene_object_name> drx dry drz");
+        
+        if (commandComponents.size() != 5)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        if (!mScene->GetSceneObject(strutils::StringId(commandComponents[1])))
+        {
+            return CommandExecutionResult(false, "Scene Object not found");
+        }
+        
+        auto drx = std::stof(commandComponents[2]);
+        auto dry = std::stof(commandComponents[3]);
+        auto drz = std::stof(commandComponents[4]);
+        
+        auto& sceneObject = mScene->GetSceneObject(strutils::StringId(commandComponents[1]))->get();
+        if (sceneObject.mBody)
+        {
+            return CommandExecutionResult(false, "Scene Object has a body!");
+        }
+        else
+        {
+            sceneObject.mRotation.x += drx;
+            sceneObject.mRotation.y += dry;
+            sceneObject.mRotation.z += drz;
+            return CommandExecutionResult(true, "New Rotation: " + strutils::FloatToString(sceneObject.mRotation.x, 4) + ", " +
+                                                                   strutils::FloatToString(sceneObject.mRotation.y, 4) + ", " +
+                                                                   strutils::FloatToString(sceneObject.mRotation.z, 4));
         }
     };
     
@@ -530,21 +585,21 @@ void DebugConsoleGameState::SetCommandExecutionOutput(const CommandExecutionResu
     }
     mCommandOutputElementIds.clear();
     
-    auto commandOutputSoOpt = mScene->GetSceneObject(scene_object_constants::DEBUG_COMMAND_OUTPUT_SCENE_OBJECT_NAME);
+    auto commandOutputSoOpt = mScene->GetSceneObject(game_constants::DEBUG_COMMAND_OUTPUT_SCENE_OBJECT_NAME);
     if (commandOutputSoOpt)
     {
         auto& commandOutputSo = commandOutputSoOpt->get();
         for (size_t i = 0; i < executionResult.mOutputMessage.size(); ++i)
         {
             SceneObject outputLineSceneObject;
-            outputLineSceneObject.mName = strutils::StringId(scene_object_constants::DEBUG_COMMAND_OUTPUT_LINE_NAME_PREFIX.GetString() +  std::to_string(i));
+            outputLineSceneObject.mName = strutils::StringId(game_constants::DEBUG_COMMAND_OUTPUT_LINE_NAME_PREFIX.GetString() +  std::to_string(i));
             outputLineSceneObject.mPosition = commandOutputSo.mPosition;
             outputLineSceneObject.mPosition.y -= i * 1.0f;
             outputLineSceneObject.mScale = commandOutputSo.mScale;
             outputLineSceneObject.mText = executionResult.mOutputMessage[i];
             outputLineSceneObject.mFontName = commandOutputSo.mFontName;
-            outputLineSceneObject.mShaderFloatVec4UniformValues[scene_object_constants::CUSTOM_COLOR_UNIFORM_NAME] = executionResult.mSuccess ? SUCCESS_COLOR : FAILURE_COLOR;
-            outputLineSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(commandOutputSo.mAnimation->VGetCurrentTextureResourceId(), commandOutputSo.mAnimation->VGetCurrentMeshResourceId(), resources::ResourceLoadingService::GetInstance().GetResourceIdFromPath(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::DEBUG_CONSOLE_FONT_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+            outputLineSceneObject.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = executionResult.mSuccess ? SUCCESS_COLOR : FAILURE_COLOR;
+            outputLineSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(commandOutputSo.mAnimation->VGetCurrentTextureResourceId(), commandOutputSo.mAnimation->VGetCurrentMeshResourceId(), resources::ResourceLoadingService::GetInstance().GetResourceIdFromPath(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::DEBUG_CONSOLE_FONT_SHADER_FILE_NAME), glm::vec3(1.0f), false);
             outputLineSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
             mCommandOutputElementIds.push_back(outputLineSceneObject.mName);
             mScene->AddSceneObject(std::move(outputLineSceneObject));
@@ -559,9 +614,9 @@ void DebugConsoleGameState::PostCommandExecution(const std::string& command, con
     // Create a past command SO out of current executed command
     {
         SceneObject pastTextSceneObject;
-        pastTextSceneObject.mName = strutils::StringId(scene_object_constants::DEBUG_PAST_COMMAND_LINE_NAME_PREFIX.GetString() +  std::to_string(mPastCommandElementIds.size()));
+        pastTextSceneObject.mName = strutils::StringId(game_constants::DEBUG_PAST_COMMAND_LINE_NAME_PREFIX.GetString() +  std::to_string(mPastCommandElementIds.size()));
         pastTextSceneObject.mPosition = commandTextSo.mPosition;
-        pastTextSceneObject.mPosition.x += scene_object_constants::DEBUG_PAST_COMMAND_X_OFFSET;
+        pastTextSceneObject.mPosition.x += game_constants::DEBUG_PAST_COMMAND_X_OFFSET;
         pastTextSceneObject.mScale = commandTextSo.mScale;
         pastTextSceneObject.mText = commandTextSo.mText;
         pastTextSceneObject.mFontName = commandTextSo.mFontName;
@@ -577,7 +632,7 @@ void DebugConsoleGameState::PostCommandExecution(const std::string& command, con
         auto soOpt = mScene->GetSceneObject(id);
         if (soOpt)
         {
-            soOpt->get().mPosition.y += scene_object_constants::DEBUG_PAST_COMMAND_Y_OFFSET;
+            soOpt->get().mPosition.y += game_constants::DEBUG_PAST_COMMAND_Y_OFFSET;
         }
     }
     

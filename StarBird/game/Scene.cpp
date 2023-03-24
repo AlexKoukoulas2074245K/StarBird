@@ -8,11 +8,10 @@
 #include "FontRepository.h"
 #include "GameSingletons.h"
 #include "Scene.h"
-#include "GameObjectConstants.h"
+#include "GameConstants.h"
 #include "MapUpdater.h"
 #include "LevelUpdater.h"
 #include "PhysicsConstants.h"
-#include "SceneObjectConstants.h"
 #include "SceneObjectUtils.h"
 #include "ObjectTypeDefinitionRepository.h"
 #include "dataloaders/LevelDataLoader.h"
@@ -31,7 +30,7 @@ Scene::Scene()
     , mSceneRenderer(mBox2dWorld)
     , mPreFirstUpdate(true)
 {
-    FontRepository::GetInstance().LoadFont(scene_object_constants::DEFAULT_FONT_NAME);
+    FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_NAME);
     GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera());
     GameSingletons::SetCameraForSceneObjectType(SceneObjectType::GUIObject, Camera());
     mSceneUpdater = std::make_unique<MapUpdater>(*this);

@@ -6,7 +6,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "FontRepository.h"
-#include "GameObjectConstants.h"
+#include "GameConstants.h"
 #include "GameSingletons.h"
 #include "InputContext.h"
 #include "LevelUpdater.h"
@@ -14,7 +14,6 @@
 #include "PhysicsConstants.h"
 #include "PhysicsCollisionListener.h"
 #include "Scene.h"
-#include "SceneObjectConstants.h"
 #include "SceneObjectUtils.h"
 
 #include "dataloaders/UpgradesLoader.h"
@@ -56,73 +55,73 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
     mFlows.emplace_back([&]()
     {
         auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
-        bool hasBulletDamageUpgrade = equippedUpgrades.count(game_object_constants::BULLET_DAMAGE_UGPRADE_NAME) != 0;
-        bool hasDoubleBulletUpgrade = equippedUpgrades.count(game_object_constants::DOUBLE_BULLET_UGPRADE_NAME) != 0;
-        bool hasMirrorImageUpgrade = equippedUpgrades.count(game_object_constants::MIRROR_IMAGE_UGPRADE_NAME) != 0;
+        bool hasBulletDamageUpgrade = equippedUpgrades.count(game_constants::BULLET_DAMAGE_UGPRADE_NAME) != 0;
+        bool hasDoubleBulletUpgrade = equippedUpgrades.count(game_constants::DOUBLE_BULLET_UGPRADE_NAME) != 0;
+        bool hasMirrorImageUpgrade = equippedUpgrades.count(game_constants::MIRROR_IMAGE_UGPRADE_NAME) != 0;
 
-        auto playerOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
-        if (playerOpt && playerOpt->get().mStateName == scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)
+        auto playerOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
+        if (playerOpt && playerOpt->get().mStateName == game_constants::DEFAULT_SCENE_OBJECT_STATE)
         {
             if (hasDoubleBulletUpgrade)
             {
                 auto bulletPosition = math::Box2dVec2ToGlmVec3(playerOpt->get().mBody->GetWorldCenter());
 
                 // Left Bullet
-                bulletPosition.x -= game_object_constants::PLAYER_BULLET_X_OFFSET;
-                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_PLAYER_BULLET_TYPE : game_object_constants::PLAYER_BULLET_TYPE, bulletPosition);
+                bulletPosition.x -= game_constants::PLAYER_BULLET_X_OFFSET;
+                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_PLAYER_BULLET_TYPE : game_constants::PLAYER_BULLET_TYPE, bulletPosition);
 
                 // Right Bullet
-                bulletPosition.x += 2 * game_object_constants::PLAYER_BULLET_X_OFFSET;
-                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_PLAYER_BULLET_TYPE : game_object_constants::PLAYER_BULLET_TYPE, bulletPosition);
+                bulletPosition.x += 2 * game_constants::PLAYER_BULLET_X_OFFSET;
+                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_PLAYER_BULLET_TYPE : game_constants::PLAYER_BULLET_TYPE, bulletPosition);
 
                 if (hasMirrorImageUpgrade)
                 {
-                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(game_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(game_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
 
                     if (leftMirrorImageSoOpt)
                     {
                         auto bulletPosition = leftMirrorImageSoOpt->get().mPosition;
-                        bulletPosition.x -= game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                        bulletPosition.x -= game_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
 
-                        bulletPosition.x += 2 * game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                        bulletPosition.x += 2 * game_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
                     }
 
                     if (rightMirrorImageSoOpt)
                     {
                         auto bulletPosition = rightMirrorImageSoOpt->get().mPosition;
-                        bulletPosition.x -= game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                        bulletPosition.x -= game_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
 
-                        bulletPosition.x += 2 * game_object_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                        bulletPosition.x += 2 * game_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
                     }
                 }
             }
             else
             {
-                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_PLAYER_BULLET_TYPE : game_object_constants::PLAYER_BULLET_TYPE, math::Box2dVec2ToGlmVec3( playerOpt->get().mBody->GetWorldCenter()));
+                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_PLAYER_BULLET_TYPE : game_constants::PLAYER_BULLET_TYPE, math::Box2dVec2ToGlmVec3( playerOpt->get().mBody->GetWorldCenter()));
 
                 if (hasMirrorImageUpgrade)
                 {
-                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(scene_object_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(game_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(game_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
 
                     if (leftMirrorImageSoOpt)
                     {
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, leftMirrorImageSoOpt->get().mPosition);
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, leftMirrorImageSoOpt->get().mPosition);
                     }
 
                     if (rightMirrorImageSoOpt)
                     {
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_object_constants::MIRROR_IMAGE_BULLET_TYPE, rightMirrorImageSoOpt->get().mPosition);
+                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, rightMirrorImageSoOpt->get().mPosition);
                     }
                 }
             }
         }
-    }, game_object_constants::PLAYER_BULLET_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::REPEAT, game_object_constants::PLAYER_BULLET_FLOW_NAME);
+    }, game_constants::PLAYER_BULLET_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::REPEAT, game_constants::PLAYER_BULLET_FLOW_NAME);
 
     static PhysicsCollisionListener collisionListener;
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::PLAYER_BULLET_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
@@ -163,7 +162,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
                 
                 mActiveLightNames.insert(enemyName);
-                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_object_constants::POINT_LIGHT_COLOR, enemySO.mPosition, game_object_constants::EXPLOSION_LIGHT_POWER);
+                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_constants::POINT_LIGHT_COLOR, enemySO.mPosition, game_constants::EXPLOSION_LIGHT_POWER);
             }
             
             // Erase bullet collision mask so that it doesn't also contribute to other
@@ -180,11 +179,11 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
     {
         auto iter = std::find_if(mFlows.begin(), mFlows.end(), [](const RepeatableFlow& flow)
         {
-            return flow.GetName() == game_object_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME;
+            return flow.GetName() == game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME;
         });
         if (iter != mFlows.end()) return;
         
-        auto playerSceneObjectOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+        auto playerSceneObjectOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
         
         const auto& enemyName = *static_cast<strutils::StringId*>(secondBody->GetUserData());
         auto enemySceneObjectOpt = mScene.GetSceneObject(enemyName);
@@ -196,9 +195,9 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             auto& playerSODef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSO.mObjectFamilyTypeName)->get();
             auto enemySceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemySO.mObjectFamilyTypeName)->get();
             
-            if (mScene.GetSceneObject(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
+            if (mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
             {
-                mScene.RemoveAllSceneObjectsWithName(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+                mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
             }
             else
             {
@@ -208,7 +207,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             
             mFlows.emplace_back([]()
             {
-            }, game_object_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_object_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
+            }, game_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
             
             if (playerSO.mHealth <= 0)
             {
@@ -216,7 +215,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 
                 mFlows.emplace_back([=]()
                 {
-                    mScene.RemoveAllSceneObjectsWithName(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SCENE_OBJECT_NAME);
                 }, playerSO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
             }
         }
@@ -226,11 +225,11 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
     {
         auto iter = std::find_if(mFlows.begin(), mFlows.end(), [](const RepeatableFlow& flow)
         {
-            return flow.GetName() == game_object_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME;
+            return flow.GetName() == game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME;
         });
         if (iter != mFlows.end()) return;
         
-        auto playerSceneObjectOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+        auto playerSceneObjectOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
         
         const auto& enemyBulletName = *static_cast<strutils::StringId*>(secondBody->GetUserData());
         auto enemyBulletSceneObjectOpt = mScene.GetSceneObject(enemyBulletName);
@@ -243,9 +242,9 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             
             auto enemyBulletSceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemyBulletSO.mObjectFamilyTypeName)->get();
             
-            if (mScene.GetSceneObject(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
+            if (mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
             {
-                mScene.RemoveAllSceneObjectsWithName(scene_object_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+                mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
             }
             else
             {
@@ -255,7 +254,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             
             mFlows.emplace_back([]()
             {
-            }, game_object_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_object_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
+            }, game_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
             
             if (playerSO.mHealth <= 0)
             {
@@ -263,7 +262,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 
                 mFlows.emplace_back([=]()
                 {
-                    mScene.RemoveAllSceneObjectsWithName(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+                    mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SCENE_OBJECT_NAME);
                 }, playerSO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
             }
             
@@ -364,9 +363,9 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
     
     mBox2dWorld.Step(physics_constants::WORLD_STEP * GameSingletons::GetGameSpeedMultiplier(), physics_constants::WORLD_VELOCITY_ITERATIONS, physics_constants::WORLD_POSITION_ITERATIONS);
     
-    auto joystickSO = mScene.GetSceneObject(scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME);
-    auto joystickBoundsSO = mScene.GetSceneObject(scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
-    auto playerSO = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+    auto joystickSO = mScene.GetSceneObject(game_constants::JOYSTICK_SCENE_OBJECT_NAME);
+    auto joystickBoundsSO = mScene.GetSceneObject(game_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
+    auto playerSO = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
     
     if (joystickSO && joystickBoundsSO)
     {
@@ -466,7 +465,7 @@ void LevelUpdater::RemoveWaveEnemy(const strutils::StringId& enemyName)
     mWaveEnemies.erase(enemyName);
     mScene.RemoveAllSceneObjectsWithName(enemyName);
     
-    auto enemyBulletFlow = GetFlow(strutils::StringId(enemyName.GetString() + game_object_constants::ENEMY_PROJECTILE_FLOW_POSTFIX));
+    auto enemyBulletFlow = GetFlow(strutils::StringId(enemyName.GetString() + game_constants::ENEMY_PROJECTILE_FLOW_POSTFIX));
     if (enemyBulletFlow)
     {
         enemyBulletFlow->get().ForceFinish();
@@ -554,8 +553,8 @@ void LevelUpdater::CreateLevelWalls(const Camera& cam, const bool invisible)
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mAnimation = std::make_unique<SingleFrameAnimation>(resources::ResourceLoadingService::FALLBACK_TEXTURE_ID, resources::ResourceLoadingService::FALLBACK_MESH_ID, resources::ResourceLoadingService::FALLBACK_SHADER_ID, glm::vec3(1.0f), true);
         so.mInvisible = invisible;
-        so.mPosition.z = game_object_constants::WALL_Z;
-        so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        so.mPosition.z = game_constants::WALL_Z;
+        so.mName = game_constants::WALL_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(so));
     }
     
@@ -581,8 +580,8 @@ void LevelUpdater::CreateLevelWalls(const Camera& cam, const bool invisible)
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mAnimation = std::make_unique<SingleFrameAnimation>(resources::ResourceLoadingService::FALLBACK_TEXTURE_ID, resources::ResourceLoadingService::FALLBACK_MESH_ID, resources::ResourceLoadingService::FALLBACK_SHADER_ID, glm::vec3(1.0f), true);
         so.mInvisible = invisible;
-        so.mPosition.z = game_object_constants::WALL_Z;
-        so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        so.mPosition.z = game_constants::WALL_Z;
+        so.mName = game_constants::WALL_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(so));
     }
 
@@ -608,8 +607,8 @@ void LevelUpdater::CreateLevelWalls(const Camera& cam, const bool invisible)
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mAnimation = std::make_unique<SingleFrameAnimation>(resources::ResourceLoadingService::FALLBACK_TEXTURE_ID, resources::ResourceLoadingService::FALLBACK_MESH_ID, resources::ResourceLoadingService::FALLBACK_SHADER_ID, glm::vec3(1.0f), true);
         so.mInvisible = invisible;
-        so.mPosition.z = game_object_constants::WALL_Z;
-        so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        so.mPosition.z = game_constants::WALL_Z;
+        so.mName = game_constants::WALL_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(so));
     }
     
@@ -635,8 +634,8 @@ void LevelUpdater::CreateLevelWalls(const Camera& cam, const bool invisible)
         so.mAnimation = std::make_unique<SingleFrameAnimation>(resources::ResourceLoadingService::FALLBACK_TEXTURE_ID, resources::ResourceLoadingService::FALLBACK_MESH_ID, resources::ResourceLoadingService::FALLBACK_SHADER_ID, glm::vec3(1.0f), true);
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mInvisible = invisible;
-        so.mPosition.z = game_object_constants::WALL_Z;
-        so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        so.mPosition.z = game_constants::WALL_Z;
+        so.mName = game_constants::WALL_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(so));
     }
     
@@ -662,8 +661,8 @@ void LevelUpdater::CreateLevelWalls(const Camera& cam, const bool invisible)
         so.mSceneObjectType = SceneObjectType::WorldGameObject;
         so.mAnimation = std::make_unique<SingleFrameAnimation>(resources::ResourceLoadingService::FALLBACK_TEXTURE_ID, resources::ResourceLoadingService::FALLBACK_MESH_ID, resources::ResourceLoadingService::FALLBACK_SHADER_ID, glm::vec3(1.0f), true);
         so.mInvisible = invisible;
-        so.mPosition.z = game_object_constants::WALL_Z;
-        so.mName = scene_object_constants::WALL_SCENE_OBJECT_NAME;
+        so.mPosition.z = game_constants::WALL_Z;
+        so.mName = game_constants::WALL_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(so));
     }
 }
@@ -672,34 +671,34 @@ void LevelUpdater::CreateLevelWalls(const Camera& cam, const bool invisible)
 
 void LevelUpdater::LoadLevelInvariantObjects()
 {
-    mScene.GetLightRepository().AddLight(LightType::AMBIENT_LIGHT, strutils::StringId("AMBIENT_LIGHT"), game_object_constants::AMBIENT_LIGHT_COLOR, glm::vec3(0.0f), 0.0f);
+    mScene.GetLightRepository().AddLight(LightType::AMBIENT_LIGHT, strutils::StringId("AMBIENT_LIGHT"), game_constants::AMBIENT_LIGHT_COLOR, glm::vec3(0.0f), 0.0f);
     
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
     // Background
     {
         SceneObject bgSO;
-        bgSO.mScale = game_object_constants::BACKGROUND_SCALE;
-        bgSO.mPosition.z = game_object_constants::BACKGROUND_Z;
-        bgSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::BACKGROUND_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::TEXTURE_OFFSET_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        bgSO.mScale = game_constants::BACKGROUND_SCALE;
+        bgSO.mPosition.z = game_constants::BACKGROUND_Z;
+        bgSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::BACKGROUND_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::TEXTURE_OFFSET_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         bgSO.mSceneObjectType = SceneObjectType::GUIObject;
-        bgSO.mName = scene_object_constants::BACKGROUND_SCENE_OBJECT_NAME;
-        bgSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = true;
+        bgSO.mName = game_constants::BACKGROUND_SCENE_OBJECT_NAME;
+        bgSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = true;
         mScene.AddSceneObject(std::move(bgSO));
     }
     
     // Player
     {
         auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
-        typeDefRepo.LoadObjectTypeDefinition(game_object_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
-        typeDefRepo.LoadObjectTypeDefinition(game_object_constants::PLAYER_BULLET_TYPE);
-        typeDefRepo.LoadObjectTypeDefinition(game_object_constants::BETTER_PLAYER_BULLET_TYPE);
-        typeDefRepo.LoadObjectTypeDefinition(game_object_constants::MIRROR_IMAGE_BULLET_TYPE);
-        typeDefRepo.LoadObjectTypeDefinition(game_object_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE);
+        typeDefRepo.LoadObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
+        typeDefRepo.LoadObjectTypeDefinition(game_constants::PLAYER_BULLET_TYPE);
+        typeDefRepo.LoadObjectTypeDefinition(game_constants::BETTER_PLAYER_BULLET_TYPE);
+        typeDefRepo.LoadObjectTypeDefinition(game_constants::MIRROR_IMAGE_BULLET_TYPE);
+        typeDefRepo.LoadObjectTypeDefinition(game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE);
         
-        auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(game_object_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
+        auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
         
-        SceneObject playerSO = scene_object_utils::CreateSceneObjectWithBody(playerObjectDef, game_object_constants::PLAYER_INITIAL_POS, mBox2dWorld, scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+        SceneObject playerSO = scene_object_utils::CreateSceneObjectWithBody(playerObjectDef, game_constants::PLAYER_INITIAL_POS, mBox2dWorld, game_constants::PLAYER_SCENE_OBJECT_NAME);
         mScene.AddSceneObject(std::move(playerSO));
     }
     
@@ -712,10 +711,10 @@ void LevelUpdater::LoadLevelInvariantObjects()
     // Joystick
     {
         SceneObject joystickSO;
-        joystickSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::JOYSTICK_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        joystickSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::JOYSTICK_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         joystickSO.mSceneObjectType = SceneObjectType::GUIObject;
-        joystickSO.mScale = game_object_constants::JOYSTICK_SCALE;
-        joystickSO.mName = scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME;
+        joystickSO.mScale = game_constants::JOYSTICK_SCALE;
+        joystickSO.mName = game_constants::JOYSTICK_SCENE_OBJECT_NAME;
         joystickSO.mInvisible = true;
         mScene.AddSceneObject(std::move(joystickSO));
     }
@@ -723,10 +722,10 @@ void LevelUpdater::LoadLevelInvariantObjects()
     // Joystick Bounds
     {
         SceneObject joystickBoundsSO;
-        joystickBoundsSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::JOYSTICK_BOUNDS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        joystickBoundsSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::JOYSTICK_BOUNDS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         joystickBoundsSO.mSceneObjectType = SceneObjectType::GUIObject;
-        joystickBoundsSO.mScale = game_object_constants::JOYSTICK_BOUNDS_SCALE;
-        joystickBoundsSO.mName = scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME;
+        joystickBoundsSO.mScale = game_constants::JOYSTICK_BOUNDS_SCALE;
+        joystickBoundsSO.mName = game_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME;
         joystickBoundsSO.mInvisible = true;
         mScene.AddSceneObject(std::move(joystickBoundsSO));
     }
@@ -734,22 +733,22 @@ void LevelUpdater::LoadLevelInvariantObjects()
     // Player Health Bar
     {
         SceneObject healthBarSo;
-        healthBarSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        healthBarSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         healthBarSo.mSceneObjectType = SceneObjectType::GUIObject;
-        healthBarSo.mPosition = game_object_constants::PLAYER_HEALTH_BAR_POSITION;
-        healthBarSo.mScale = game_object_constants::PLAYER_HEALTH_BAR_SCALE;
-        healthBarSo.mName = scene_object_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME;
+        healthBarSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
+        healthBarSo.mScale = game_constants::PLAYER_HEALTH_BAR_SCALE;
+        healthBarSo.mName = game_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(healthBarSo));
     }
     
     // Player Health Bar Frame
     {
         SceneObject healthBarFrameSo;
-        healthBarFrameSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        healthBarFrameSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         healthBarFrameSo.mSceneObjectType = SceneObjectType::GUIObject;
-        healthBarFrameSo.mPosition = game_object_constants::PLAYER_HEALTH_BAR_POSITION;
-        healthBarFrameSo.mScale = game_object_constants::PLAYER_HEALTH_BAR_SCALE;
-        healthBarFrameSo.mName = scene_object_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
+        healthBarFrameSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
+        healthBarFrameSo.mScale = game_constants::PLAYER_HEALTH_BAR_SCALE;
+        healthBarFrameSo.mName = game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(healthBarFrameSo));
     }
 }
@@ -762,8 +761,8 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
     assert(camOpt);
     const auto& guiCamera = camOpt->get();
     
-    auto joystickSO = mScene.GetSceneObject(scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME);
-    auto joystickBoundsSO = mScene.GetSceneObject(scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
+    auto joystickSO = mScene.GetSceneObject(game_constants::JOYSTICK_SCENE_OBJECT_NAME);
+    auto joystickBoundsSO = mScene.GetSceneObject(game_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
     const auto& inputContext = GameSingletons::GetInputContext();
     
     switch (inputContext.mEventType)
@@ -773,10 +772,10 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
              if (joystickBoundsSO && joystickSO)
              {
                  joystickBoundsSO->get().mPosition = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
-                 joystickBoundsSO->get().mPosition.z = game_object_constants::JOYSTICK_Z;
+                 joystickBoundsSO->get().mPosition.z = game_constants::JOYSTICK_Z;
                  
                  joystickSO->get().mPosition = joystickBoundsSO->get().mPosition;
-                 joystickSO->get().mPosition.z = game_object_constants::JOYSTICK_BOUNDS_Z;
+                 joystickSO->get().mPosition.z = game_constants::JOYSTICK_BOUNDS_Z;
 
                  mAllowInputControl = true;
                  
@@ -803,25 +802,25 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                 }
                 
                 joystickSO->get().mPosition = joystickBoundsSO->get().mPosition + motionVec;
-                joystickSO->get().mPosition.z = game_object_constants::JOYSTICK_Z;
+                joystickSO->get().mPosition.z = game_constants::JOYSTICK_Z;
                 
                 motionVec.x *= sceneObjectTypeDef.mSpeed * dtMilis;
                 motionVec.y *= sceneObjectTypeDef.mSpeed * dtMilis;
                 
                 if (motionVec.x > 0.0f && mPreviousMotionVec.x <= 0.0f && mMovementRotationAllowed)
                 {
-                    if (math::RandomFloat() < game_object_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
+                    if (math::RandomFloat() < game_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
                     {
-                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, game_object_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_object_constants::PLAYER_MOVEMENT_ROLL_SPEED, true);
+                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, game_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_constants::PLAYER_MOVEMENT_ROLL_SPEED, true);
                     }
                     
                     mMovementRotationAllowed = false;
                 }
                 else if (motionVec.x < 0.0f && mPreviousMotionVec.x >= 0.0f && mMovementRotationAllowed)
                 {
-                    if (math::RandomFloat() < game_object_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
+                    if (math::RandomFloat() < game_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
                     {
-                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, -game_object_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_object_constants::PLAYER_MOVEMENT_ROLL_SPEED, true);
+                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, -game_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_constants::PLAYER_MOVEMENT_ROLL_SPEED, true);
                     }
                     
                     mMovementRotationAllowed = false;
@@ -849,13 +848,13 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
 void LevelUpdater::UpdateBackground(const float dtMillis)
 {
     static float msAccum = 0.0f;
-    msAccum += dtMillis * game_object_constants::BACKGROUND_SPEED;
+    msAccum += dtMillis * game_constants::BACKGROUND_SPEED;
     msAccum = std::fmod(msAccum, 1.0f);
     
-    auto bgSO = mScene.GetSceneObject(scene_object_constants::BACKGROUND_SCENE_OBJECT_NAME);
+    auto bgSO = mScene.GetSceneObject(game_constants::BACKGROUND_SCENE_OBJECT_NAME);
     if (bgSO)
     {
-       bgSO->get().mShaderFloatUniformValues[scene_object_constants::GENERIC_TEXTURE_OFFSET_UNIFORM_NAME] = -msAccum;
+       bgSO->get().mShaderFloatUniformValues[game_constants::GENERIC_TEXTURE_OFFSET_UNIFORM_NAME] = -msAccum;
     }
 }
 
@@ -864,9 +863,9 @@ void LevelUpdater::UpdateBackground(const float dtMillis)
 void LevelUpdater::UpdateHealthBars(const float dtMillis)
 {
     // Player health bar
-    auto playerSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
-    auto playerHealthBarFrameSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
-    auto playerHealthBarSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME);
+    auto playerSoOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
+    auto playerHealthBarFrameSoOpt = mScene.GetSceneObject(game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
+    auto playerHealthBarSoOpt = mScene.GetSceneObject(game_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME);
     
     if (playerSoOpt && playerHealthBarSoOpt && playerHealthBarFrameSoOpt)
     {
@@ -876,19 +875,19 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
         
         auto& playerObjectDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSo.mObjectFamilyTypeName)->get();
         
-        healthBarSo.mPosition = game_object_constants::PLAYER_HEALTH_BAR_POSITION;
-        healthBarSo.mPosition.z = game_object_constants::PLAYER_HEALTH_BAR_Z;
+        healthBarSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
+        healthBarSo.mPosition.z = game_constants::PLAYER_HEALTH_BAR_Z;
         
-        healthBarFrameSo.mPosition = game_object_constants::PLAYER_HEALTH_BAR_POSITION;
+        healthBarFrameSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
         
         float healthPerc = playerSo.mHealth/static_cast<float>(playerObjectDef.mHealth);
         
-        healthBarSo.mScale.x = game_object_constants::PLAYER_HEALTH_BAR_SCALE.x * mPlayerAnimatedHealthBarPerc;
-        healthBarSo.mPosition.x -= (1.0f - mPlayerAnimatedHealthBarPerc)/game_object_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_object_constants::PLAYER_HEALTH_BAR_SCALE.x;
+        healthBarSo.mScale.x = game_constants::PLAYER_HEALTH_BAR_SCALE.x * mPlayerAnimatedHealthBarPerc;
+        healthBarSo.mPosition.x -= (1.0f - mPlayerAnimatedHealthBarPerc)/game_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_constants::PLAYER_HEALTH_BAR_SCALE.x;
         
         if (healthPerc < mPlayerAnimatedHealthBarPerc)
         {
-            mPlayerAnimatedHealthBarPerc -= game_object_constants::HEALTH_LOST_SPEED * dtMillis;
+            mPlayerAnimatedHealthBarPerc -= game_constants::HEALTH_LOST_SPEED * dtMillis;
             if (mPlayerAnimatedHealthBarPerc <= healthPerc)
             {
                 mPlayerAnimatedHealthBarPerc = healthPerc;
@@ -896,7 +895,7 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
         }
         else
         {
-            mPlayerAnimatedHealthBarPerc += game_object_constants::HEALTH_LOST_SPEED * dtMillis;
+            mPlayerAnimatedHealthBarPerc += game_constants::HEALTH_LOST_SPEED * dtMillis;
             if (mPlayerAnimatedHealthBarPerc >= healthPerc)
             {
                 mPlayerAnimatedHealthBarPerc = healthPerc;
@@ -910,8 +909,8 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
     }
     
     // Boss Health bar
-    auto bossHealthBarFrameSoOpt = mScene.GetSceneObject(scene_object_constants::BOSS_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
-    auto bossHealthBarSoOpt = mScene.GetSceneObject(scene_object_constants::BOSS_HEALTH_BAR_SCENE_OBJECT_NAME);
+    auto bossHealthBarFrameSoOpt = mScene.GetSceneObject(game_constants::BOSS_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
+    auto bossHealthBarSoOpt = mScene.GetSceneObject(game_constants::BOSS_HEALTH_BAR_SCENE_OBJECT_NAME);
     
     if (bossHealthBarFrameSoOpt && bossHealthBarSoOpt)
     {
@@ -920,19 +919,19 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
             
         if (!healthBarSo.mInvisible && !healthBarFrameSo.mInvisible)
         {
-            healthBarSo.mPosition = game_object_constants::BOSS_HEALTH_BAR_POSITION;
-            healthBarSo.mPosition.z = game_object_constants::BOSS_HEALTH_BAR_Z;
+            healthBarSo.mPosition = game_constants::BOSS_HEALTH_BAR_POSITION;
+            healthBarSo.mPosition.z = game_constants::BOSS_HEALTH_BAR_Z;
             
-            healthBarFrameSo.mPosition = game_object_constants::BOSS_HEALTH_BAR_POSITION;
+            healthBarFrameSo.mPosition = game_constants::BOSS_HEALTH_BAR_POSITION;
             
             double healthPerc = GameSingletons::GetBossCurrentHealth()/GameSingletons::GetBossMaxHealth();
             
-            healthBarSo.mScale.x = game_object_constants::BOSS_HEALTH_BAR_SCALE.x * mBossAnimatedHealthBarPerc;
-            healthBarSo.mPosition.x -= (1.0f - mBossAnimatedHealthBarPerc)/game_object_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_object_constants::BOSS_HEALTH_BAR_SCALE.x;
+            healthBarSo.mScale.x = game_constants::BOSS_HEALTH_BAR_SCALE.x * mBossAnimatedHealthBarPerc;
+            healthBarSo.mPosition.x -= (1.0f - mBossAnimatedHealthBarPerc)/game_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_constants::BOSS_HEALTH_BAR_SCALE.x;
             
             if (healthPerc < mBossAnimatedHealthBarPerc)
             {
-                mBossAnimatedHealthBarPerc -= game_object_constants::HEALTH_LOST_SPEED * dtMillis;
+                mBossAnimatedHealthBarPerc -= game_constants::HEALTH_LOST_SPEED * dtMillis;
                 if (mBossAnimatedHealthBarPerc <= healthPerc)
                 {
                     mBossAnimatedHealthBarPerc = healthPerc;
@@ -940,7 +939,7 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
             }
             else
             {
-                mBossAnimatedHealthBarPerc += game_object_constants::HEALTH_LOST_SPEED * dtMillis;
+                mBossAnimatedHealthBarPerc += game_constants::HEALTH_LOST_SPEED * dtMillis;
                 if (mBossAnimatedHealthBarPerc >= healthPerc)
                 {
                     mBossAnimatedHealthBarPerc = healthPerc;
@@ -995,7 +994,7 @@ void LevelUpdater::UpdateLights(const float dtMillis)
         }
         else
         {
-            lightPower -= dtMillis * game_object_constants::EXPLOSION_LIGHT_FADE_SPEED;
+            lightPower -= dtMillis * game_constants::EXPLOSION_LIGHT_FADE_SPEED;
             lightRepository.SetLightPower(lightIndex, lightPower);
             lightIter++;
         }
@@ -1020,9 +1019,9 @@ void LevelUpdater::OnPlayerDamaged()
 void LevelUpdater::OnBlockedUpdate()
 {
     mAllowInputControl = false;
-    auto joystickSoOpt = mScene.GetSceneObject(scene_object_constants::JOYSTICK_SCENE_OBJECT_NAME);
-    auto joystickBoundsSOopt = mScene.GetSceneObject(scene_object_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
-    auto playerSoOpt = mScene.GetSceneObject(scene_object_constants::PLAYER_SCENE_OBJECT_NAME);
+    auto joystickSoOpt = mScene.GetSceneObject(game_constants::JOYSTICK_SCENE_OBJECT_NAME);
+    auto joystickBoundsSOopt = mScene.GetSceneObject(game_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
+    auto playerSoOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
     
     if (playerSoOpt)
     {
@@ -1049,7 +1048,7 @@ void LevelUpdater::CreateBulletAtPosition(const strutils::StringId& bulletType, 
     {
         auto& bulletDef = bulletDefOpt->get();
         auto bulletPos = position;
-        bulletPos.z = game_object_constants::BULLET_Z;
+        bulletPos.z = game_constants::BULLET_Z;
         mScene.AddSceneObject(scene_object_utils::CreateSceneObjectWithBody(bulletDef, position, mBox2dWorld));
     }
 }

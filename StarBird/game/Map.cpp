@@ -6,10 +6,12 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "Map.h"
-#include "GameObjectConstants.h"
+#include "GameConstants.h"
 #include "SceneObject.h"
 #include "Scene.h"
 #include "../resloading/ResourceLoadingService.h"
+
+#include <unordered_set>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -32,6 +34,13 @@ const std::map<MapCoord, Map::NodeData>& Map::GetMapData() const
 
 ///------------------------------------------------------------------------------------------------
 
+const glm::ivec2& Map::GetMapDimensions() const
+{
+    return mMapDimensions;
+}
+
+///------------------------------------------------------------------------------------------------
+
 void Map::GenerateMapData()
 {
     const int iterations = 4;
@@ -39,7 +48,8 @@ void Map::GenerateMapData()
     for (int i = 0; i < iterations; ++i)
     {
         auto currentCoordinate = mHasSingleEntryPoint ? MapCoord(0, mMapDimensions.y/2) : MapCoord(0, math::RandomInt(0, mMapDimensions.y - 1));
-        mMapData[currentCoordinate].mPosition = GenerateNodePositionFromCoord(currentCoordinate);
+        mMapData[currentCoordinate].mPosition = GenerateNodePositionForCoord(currentCoordinate);
+        mMapData[currentCoordinate].mNodeType = SelectNodeTypeForCoord(currentCoordinate);
         
         for (int col = 1; col < mMapDimensions.x; ++col)
         {
@@ -52,8 +62,8 @@ void Map::GenerateMapData()
             
             mMapData[currentCoordinate].mNodeLinks.insert(targetCoord);
             currentCoordinate = targetCoord;
-            mMapData[currentCoordinate].mPosition = GenerateNodePositionFromCoord(currentCoordinate);
-            mMapData[currentCoordinate].mNodeType = math::RandomSign() == -1 ? NodeType::NORMAL_ENCOUNTER : NodeType::BOSS_ENCOUNTER;
+            mMapData[currentCoordinate].mPosition = GenerateNodePositionForCoord(currentCoordinate);
+            mMapData[currentCoordinate].mNodeType = SelectNodeTypeForCoord(currentCoordinate);
         }
     }
 }
@@ -67,67 +77,69 @@ void Map::CreateMapSceneObjects()
     // Background
     {
         SceneObject bgSO;
-        bgSO.mScale = game_object_constants::BACKGROUND_SCALE;
-        bgSO.mScale.x *= 4.0f;
-        bgSO.mScale.y *= 4.0f;
-        bgSO.mPosition.z = game_object_constants::BACKGROUND_Z;
-        bgSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::BACKGROUND_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        bgSO.mScale = game_constants::MAP_BACKGROUND_SCALE;
+        bgSO.mPosition.z = game_constants::BACKGROUND_Z;
+        bgSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::BACKGROUND_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         bgSO.mSceneObjectType = SceneObjectType::WorldGameObject;
-        bgSO.mName = scene_object_constants::BACKGROUND_SCENE_OBJECT_NAME;
-        bgSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+        bgSO.mName = game_constants::BACKGROUND_SCENE_OBJECT_NAME;
+        bgSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
         mScene.AddSceneObject(std::move(bgSO));
     }
     
+    // All node meshes
     for (const auto& mapNodeEntry: mMapData)
     {
-        SceneObject planetSO;
+        SceneObject nodeSo;
+        nodeSo.mName = strutils::StringId(mapNodeEntry.first.ToString());
+        nodeSo.mPosition = mapNodeEntry.second.mPosition;
         
-        if (mapNodeEntry.first == MapCoord(8, 2))
+        switch (mapNodeEntry.second.mNodeType)
         {
-            for (int i = 0; i < 2; ++i)
+            case NodeType::HARD_COUNTER:
             {
-                planetSO.mAnimation = std::make_unique<NebulaAnimation>(nullptr, resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "noise_" + std::to_string(i) + ".bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::NEBULA_SHADER_FILE_NAME), glm::vec3(3.0f), scene_object_constants::NEBULA_ANIMATION_SPEED, false);
+                SceneObject planetRingSO;
                 
-                planetSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
-                planetSO.mSceneObjectType = SceneObjectType::WorldGameObject;
-                planetSO.mScale = glm::vec3(3.0f);
-                planetSO.mPosition = mapNodeEntry.second.mPosition;
-                mScene.AddSceneObject(std::move(planetSO));
-            }
-        }
-        else
-        {
-            if (mMapData.at(mCurrentMapCoord).mNodeLinks.contains(mapNodeEntry.first))
+                planetRingSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_RING_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::MAP_PLANET_RING_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+                planetRingSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+                planetRingSO.mSceneObjectType = SceneObjectType::WorldGameObject;
+                planetRingSO.mScale = glm::vec3(1.0f);
+                planetRingSO.mRotation.x = math::RandomFloat(game_constants::MAP_PLANET_RING_MIN_X_ROTATION, game_constants::MAP_PLANET_RING_MAX_X_ROTATION);
+                planetRingSO.mRotation.y += math::RandomFloat(game_constants::MAP_PLANET_RING_MIN_Y_ROTATION, game_constants::MAP_PLANET_RING_MAX_Y_ROTATION);
+                planetRingSO.mPosition = mapNodeEntry.second.mPosition;
+                mScene.AddSceneObject(std::move(planetRingSO));
+            } // Intentional Fallthrough
+            case NodeType::NORMAL_ENCOUNTER:
             {
-                planetSO.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MAP_PLANET_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::MAP_PLANET_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(0.75f), 0.0f, 0.005f, 1.0f/200.0f, false);
-            }
-            else
-            {
-                planetSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MAP_PLANET_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::MAP_PLANET_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(0.75f), false);
+                nodeSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::MAP_PLANET_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(1.0f), false);
                 
+                nodeSo.mShaderFloatUniformValues[game_constants::HUE_SHIFT_UNIFORM_NAME] = math::RandomFloat(0, 2.0f * math::PI);
+                nodeSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+            } break;
+               
+            case NodeType::BASE:
+            {
+                nodeSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_BASE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::MAP_BASE_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), game_constants::MAP_BASE_SCALE, false);
+                nodeSo.mRotation.x = game_constants::MAP_BASE_X_ROTATION;
+                nodeSo.mScale = game_constants::MAP_BASE_SCALE;
+            } break;
+                
+            case NodeType::BOSS_ENCOUNTER:
+            {
+                // Nebula
+                for (int i = 0; i < 2; ++i)
                 {
-                    SceneObject planetRingSO;
+                    nodeSo.mAnimation = std::make_unique<NebulaAnimation>(nullptr, resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::NOISE_PREFIX_TEXTURE_FILE_NAME + std::to_string(i) + ".bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BLACK_NEBULA_SHADER_FILE_NAME), game_constants::MAP_NEBULA_NODE_SCALE, game_constants::NEBULA_ANIMATION_SPEED, false);
                     
-                    planetRingSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::MAP_PLANET_RING_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::MAP_PLANET_RING_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
-                    planetRingSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
-                    planetRingSO.mSceneObjectType = SceneObjectType::WorldGameObject;
-                    planetRingSO.mScale = glm::vec3(1.0f);
-                    planetRingSO.mRotation.x = math::RandomFloat(1.8f, 2.2f);
-                    //planetRingSO.mRotation.z = math::RandomFloat(-math::PI/5, math::PI/5);
-                    planetRingSO.mRotation.y += math::RandomFloat(-math::PI/10, math::PI/10);
-                    planetRingSO.mPosition = mapNodeEntry.second.mPosition;
-                    mScene.AddSceneObject(std::move(planetRingSO));
+                    nodeSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+                    nodeSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+                    nodeSo.mScale = game_constants::MAP_NEBULA_NODE_SCALE;
                 }
-            }
-            
-            planetSO.mShaderFloatUniformValues[scene_object_constants::HUE_SHIFT_UNIFORM_NAME] = math::RandomFloat(0, 2.0f * math::PI);
-            planetSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
-            planetSO.mSceneObjectType = SceneObjectType::WorldGameObject;
-            planetSO.mScale = glm::vec3(0.75f);
-            planetSO.mPosition = mapNodeEntry.second.mPosition;
-            planetSO.mName = strutils::StringId("PLANET_" + mapNodeEntry.first.ToString());
-            mScene.AddSceneObject(std::move(planetSO));
+            } break;
+                
+            default: break;
         }
+        
+        mScene.AddSceneObject(std::move(nodeSo));
     }
 
     for (const auto& mapNodeEntry: mMapData)
@@ -143,17 +155,17 @@ void Map::CreateMapSceneObjects()
                 
                 if (mapNodeEntry.first == mCurrentMapCoord)
                 {
-                    pathSO.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "star_path.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), glm::vec3(0.3f, 0.3f, 1.0f), 100.0f * i, 0.01f, 1.0f/100.0f, false);
+                    pathSO.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_STAR_PATH_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), game_constants::MAP_STAR_PATH_SCALE, game_constants::MAP_STAR_PATH_PULSING_DELAY_MILLIS * i, game_constants::MAP_STAR_PATH_PULSING_SPEED, game_constants::MAP_STAR_PATH_PULSING_ENLARGEMENT_FACTOR, false);
                 }
                 else
                 {
-                    pathSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "star_path.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::BASIC_SHADER_FILE_NAME), pathSO.mScale, false);
+                    pathSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_STAR_PATH_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), pathSO.mScale, false);
                 }
                 
                 pathSO.mSceneObjectType = SceneObjectType::WorldGameObject;
                 pathSO.mPosition = mMapData.at(mapNodeEntry.first).mPosition + dirToNext * (i/static_cast<float>(pathSegments));
-                pathSO.mScale = glm::vec3(0.3f, 0.3f, 1.0f);
-                pathSO.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+                pathSO.mScale = game_constants::MAP_STAR_PATH_SCALE;
+                pathSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
                 mScene.AddSceneObject(std::move(pathSO));
             }
         }
@@ -185,13 +197,13 @@ bool Map::DetectedCrossedEdge(const MapCoord& currentCoord, const MapCoord& targ
 
 ///------------------------------------------------------------------------------------------------
 
-glm::vec3 Map::GenerateNodePositionFromCoord(const MapCoord& mapCoord) const
+glm::vec3 Map::GenerateNodePositionForCoord(const MapCoord& currentMapCoord) const
 {
     // Base calculation
     glm::vec3 result = glm::vec3
     (
-        game_object_constants::MAP_MIN_WORLD_BOUNDS.x + 4.0f * mapCoord.mCol, // Base horizontal spacing
-        game_object_constants::MAP_MIN_WORLD_BOUNDS.y + 10.0f - mapCoord.mRow * 5.0f + mapCoord.mCol * 2.0f, // Base vertical alignment + staircase increment
+        game_constants::MAP_MIN_WORLD_BOUNDS.x + 7.0f * currentMapCoord.mCol, // Base horizontal spacing
+        game_constants::MAP_MIN_WORLD_BOUNDS.y + 10.0f - currentMapCoord.mRow * 5.0f + currentMapCoord.mCol * 4.0f, // Base vertical alignment + staircase increment
         0.0f
      );
     
@@ -199,6 +211,56 @@ glm::vec3 Map::GenerateNodePositionFromCoord(const MapCoord& mapCoord) const
     result.x += math::RandomFloat(-1.0f, 1.0f);
     result.y += math::RandomFloat(-1.0f, 1.0f);
     return result;
+}
+
+///------------------------------------------------------------------------------------------------
+
+Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
+{
+    // Forced single entry point and starting coord case
+    if (mHasSingleEntryPoint && currentMapCoord == MapCoord(0, mMapDimensions.y/2))
+    {
+        return NodeType::NORMAL_ENCOUNTER;
+    }
+    // Last map coord
+    else if (currentMapCoord == MapCoord(mMapDimensions.x - 1, mMapDimensions.y/2))
+    {
+        return NodeType::BOSS_ENCOUNTER;
+    }
+    else
+    {
+        // Generate list of node types to pick from
+        std::unordered_set<NodeType> availableNodeTypes;
+        for (int i = 0; i < static_cast<int>(NodeType::COUNT); ++i)
+        {
+            availableNodeTypes.insert(static_cast<NodeType>(i));
+        }
+        
+        // Only last node can have a boss encounter
+        availableNodeTypes.erase(NodeType::BOSS_ENCOUNTER);
+        
+        // Remove any node types from the immediate previous links except if there are
+        // normal encounters
+        for (const auto& mapEntry: mMapData)
+        {
+            if (mapEntry.second.mNodeType == NodeType::NORMAL_ENCOUNTER) continue;
+            
+            if (mapEntry.second.mNodeLinks.contains(currentMapCoord))
+            {
+                availableNodeTypes.erase(mapEntry.second.mNodeType);
+            }
+        }
+        
+        // Select at random from the remaining node types.
+        // Unfortunately because it's a set I can't just pick begin() + random index
+        auto randomIndex = math::RandomInt(0, static_cast<int>(availableNodeTypes.size()) - 1);
+        for (const auto& nodeType: availableNodeTypes)
+        {
+            if (randomIndex-- == 0) return nodeType;
+        }
+    }
+    
+    return NodeType::NORMAL_ENCOUNTER;
 }
 
 ///------------------------------------------------------------------------------------------------

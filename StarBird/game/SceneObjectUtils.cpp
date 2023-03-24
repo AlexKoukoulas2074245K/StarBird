@@ -156,12 +156,12 @@ strutils::StringId GenerateSceneObjectName(const SceneObject& sceneObject)
 SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, const glm::vec3& position, b2World& box2dWorld, strutils::StringId sceneObjectName)
 {
     SceneObject so;
-    so.mAnimation = objectDef.mAnimations.at(scene_object_constants::DEFAULT_SCENE_OBJECT_STATE)->VClone();
+    so.mAnimation = objectDef.mAnimations.at(game_constants::DEFAULT_SCENE_OBJECT_STATE)->VClone();
     
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     
-    so.mStateName = scene_object_constants::DEFAULT_SCENE_OBJECT_STATE;
+    so.mStateName = game_constants::DEFAULT_SCENE_OBJECT_STATE;
     so.mBodyCustomOffset = objectDef.mBodyCustomOffset;
     so.mBodyCustomScale = objectDef.mBodyCustomScale;
     
@@ -188,7 +188,7 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
     so.mScale = so.mAnimation->VGetScale();
     
     so.mPosition.z = position.z;
-    so.mShaderBoolUniformValues[scene_object_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = true;
+    so.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = true;
     
     if (sceneObjectName.isEmpty())
     {

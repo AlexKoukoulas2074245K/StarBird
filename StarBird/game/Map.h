@@ -65,7 +65,11 @@ class Map final
 public:
     enum class NodeType
     {
-        NORMAL_ENCOUNTER, BOSS_ENCOUNTER
+        NORMAL_ENCOUNTER = 0,
+        HARD_COUNTER = 1,
+        BOSS_ENCOUNTER = 2,
+        BASE = 3,
+        COUNT = 4
     };
     
     struct NodeData
@@ -79,12 +83,14 @@ public:
     Map(Scene& scene, const glm::ivec2& mapDimensions, const MapCoord& currentMapCoord, const bool singleEntryPoint);
     
     const std::map<MapCoord, Map::NodeData>& GetMapData() const;
+    const glm::ivec2& GetMapDimensions() const;
     
 private:
     void GenerateMapData();
     void CreateMapSceneObjects();
     bool DetectedCrossedEdge(const MapCoord& currentCoord, const MapCoord& targetTestCoord) const;
-    glm::vec3 GenerateNodePositionFromCoord(const MapCoord& mapCoord) const;
+    glm::vec3 GenerateNodePositionForCoord(const MapCoord& currentMapCoord) const;
+    NodeType SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const;
     MapCoord RandomlySelectNextMapCoord(const MapCoord& currentMapCoord) const;
     
 private:

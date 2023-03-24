@@ -11,7 +11,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "Animations.h"
-#include "SceneObjectConstants.h"
+#include "GameConstants.h"
 #include "../utils/MathUtils.h"
 #include "../utils/StringUtils.h"
 #include "../resloading/ResourceLoadingService.h"
@@ -37,7 +37,7 @@ struct SceneObject // 456b
 {
     strutils::StringId mObjectFamilyTypeName = strutils::StringId();
     strutils::StringId mName = strutils::StringId();
-    strutils::StringId mStateName = scene_object_constants::DEFAULT_SCENE_OBJECT_STATE;
+    strutils::StringId mStateName = game_constants::DEFAULT_SCENE_OBJECT_STATE;
     strutils::StringId mFontName = strutils::StringId();
     std::string mText;
     std::unordered_map<strutils::StringId, bool, strutils::StringIdHasher> mShaderBoolUniformValues;

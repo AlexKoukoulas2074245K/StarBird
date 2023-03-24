@@ -6,11 +6,10 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "PauseMenuGameState.h"
-#include "../GameObjectConstants.h"
+#include "../GameConstants.h"
 #include "../GameSingletons.h"
 #include "../Scene.h"
 #include "../SceneObject.h"
-#include "../SceneObjectConstants.h"
 #include "../SceneObjectUtils.h"
 #include "../datarepos/FontRepository.h"
 #include "../dataloaders/GUISceneLoader.h"
@@ -31,12 +30,12 @@ void PauseMenuGameState::VInitialize()
     // Overlay
     {
         SceneObject overlaySo;
-        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + scene_object_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + scene_object_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
-        overlaySo.mScale = game_object_constants::FULL_SCREEN_OVERLAY_SCALE;
-        overlaySo.mPosition = game_object_constants::FULL_SCREEN_OVERLAY_POSITION;
-        overlaySo.mName = scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
-        overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+        overlaySo.mScale = game_constants::FULL_SCREEN_OVERLAY_SCALE;
+        overlaySo.mPosition = game_constants::FULL_SCREEN_OVERLAY_POSITION;
+        overlaySo.mName = game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
+        overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
         
         mSceneElementIds.push_back(overlaySo.mName);
         mScene->AddSceneObject(std::move(overlaySo));
@@ -53,12 +52,12 @@ void PauseMenuGameState::VInitialize()
         guiSceneObject.mScale = guiElement.mScale;
         guiSceneObject.mText = guiElement.mText;
         guiSceneObject.mFontName = guiElement.mFontName;
-        guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId, glm::vec3(1.0f), false);
+        guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId, glm::vec3(1.0f), false);
         guiSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
         
         if (guiSceneObject.mFontName != strutils::StringId())
         {
-            guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + scene_object_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId, glm::vec3(1.0f), false);
+            guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(guiSceneObject.mFontName)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId, glm::vec3(1.0f), false);
         }
         
         mSceneElementIds.push_back(guiSceneObject.mName);
@@ -70,15 +69,15 @@ void PauseMenuGameState::VInitialize()
 
 PostStateUpdateDirective PauseMenuGameState::VUpdate(const float dtMillis)
 {
-    auto overlaySoOpt = mScene->GetSceneObject(scene_object_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
+    auto overlaySoOpt = mScene->GetSceneObject(game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
     if (overlaySoOpt)
     {
         auto& overlaySo = overlaySoOpt->get();
-        auto& overlayAlpha = overlaySo.mShaderFloatUniformValues[scene_object_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-        overlayAlpha += dtMillis * game_object_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED;
-        if (overlayAlpha >= game_object_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA)
+        auto& overlayAlpha = overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME];
+        overlayAlpha += dtMillis * game_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED;
+        if (overlayAlpha >= game_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA)
         {
-            overlayAlpha = game_object_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA;
+            overlayAlpha = game_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA;
         }
     }
     
