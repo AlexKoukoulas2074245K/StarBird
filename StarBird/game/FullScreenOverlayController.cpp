@@ -12,15 +12,17 @@
 
 ///------------------------------------------------------------------------------------------------
 
-FullScreenOverlayController::FullScreenOverlayController(Scene& scene, const float darkeningSpeed, const float maxDarkeningValue, CallbackType midwayCallback /* nullptr */, CallbackType completionCallback /* nullptr */)
+FullScreenOverlayController::FullScreenOverlayController(Scene& scene, const float darkeningSpeed, const float maxDarkeningValue, const bool pauseAtMidPoint, CallbackType midwayCallback /* nullptr */, CallbackType completionCallback /* nullptr */)
     : mScene(scene)
     , mDarkeningSpeed(darkeningSpeed)
     , mMaxDarkeningValue(maxDarkeningValue)
+    , mPauseAtMidPoint(pauseAtMidPoint)
     , mDarkeningValue(0.0f)
     , mMidwayCallback(midwayCallback)
     , mCompletionCallback(completionCallback)
     , mDarkening(true)
     , mFinished(false)
+    , mPaused(false)
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     SceneObject overlaySo;
@@ -47,6 +49,11 @@ void FullScreenOverlayController::Update(const float dtMillis)
             mDarkeningValue = mMaxDarkeningValue;
             mDarkening = false;
             
+            if (mPauseAtMidPoint)
+            {
+                mPaused = true;
+            }
+            
             if (mMidwayCallback != nullptr)
             {
                 mMidwayCallback();
@@ -54,7 +61,7 @@ void FullScreenOverlayController::Update(const float dtMillis)
             }
         }
     }
-    else
+    else if (!mPaused)
     {
         mDarkeningValue -= dtMillis * mDarkeningSpeed;
         
@@ -77,6 +84,13 @@ void FullScreenOverlayController::Update(const float dtMillis)
     {
         overlaySceneObjectOpt->get().mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = mDarkeningValue;
     }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void FullScreenOverlayController::Resume()
+{
+    mPaused = false;
 }
 
 ///------------------------------------------------------------------------------------------------

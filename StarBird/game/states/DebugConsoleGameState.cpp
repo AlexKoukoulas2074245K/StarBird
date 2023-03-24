@@ -42,19 +42,7 @@ void DebugConsoleGameState::VInitialize()
     auto& resService = resources::ResourceLoadingService::GetInstance();
     resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::DEBUG_CONSOLE_FONT_SHADER_FILE_NAME);
     
-    // Overlay
-    {
-        SceneObject overlaySo;
-        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
-        overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
-        overlaySo.mScale = game_constants::FULL_SCREEN_OVERLAY_SCALE;
-        overlaySo.mPosition = game_constants::FULL_SCREEN_OVERLAY_POSITION;
-        overlaySo.mName = game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
-        overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-        
-        mSceneElementIds.push_back(overlaySo.mName);
-        mScene->AddSceneObject(std::move(overlaySo));
-    }
+    mScene->AddOverlayController(game_constants::FULL_SCREEN_OVERLAY_MENU_DARKENING_SPEED, game_constants::FULL_SCREEN_OVERLAY_MENU_MAX_ALPHA, true);
     
     GUISceneLoader loader;
     const auto& sceneDefinition = loader.LoadGUIScene("debug_console");
@@ -87,19 +75,6 @@ void DebugConsoleGameState::VInitialize()
 
 PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
 {
-    // Overlay Alpha Update
-    auto overlaySoOpt = mScene->GetSceneObject(game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
-    if (overlaySoOpt)
-    {
-        auto& overlaySo = overlaySoOpt->get();
-        auto& overlayAlpha = overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-        overlayAlpha += dtMillis * game_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED;
-        if (overlayAlpha >= game_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA)
-        {
-            overlayAlpha = game_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA;
-        }
-    }
-    
     auto& inputContext = GameSingletons::GetInputContext();
     
     // Up/Down/Execute keys
@@ -186,6 +161,7 @@ PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
     {
         SDL_StopTextInput();
         GameSingletons::ConsumeInput();
+        mScene->ResumeOverlayController();
         Complete();
     }
     

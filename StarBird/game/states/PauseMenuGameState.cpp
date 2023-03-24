@@ -27,19 +27,7 @@ void PauseMenuGameState::VInitialize()
     mSceneElementIds.clear();
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
-    // Overlay
-    {
-        SceneObject overlaySo;
-        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
-        overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
-        overlaySo.mScale = game_constants::FULL_SCREEN_OVERLAY_SCALE;
-        overlaySo.mPosition = game_constants::FULL_SCREEN_OVERLAY_POSITION;
-        overlaySo.mName = game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
-        overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-        
-        mSceneElementIds.push_back(overlaySo.mName);
-        mScene->AddSceneObject(std::move(overlaySo));
-    }
+    mScene->AddOverlayController(game_constants::FULL_SCREEN_OVERLAY_MENU_DARKENING_SPEED, game_constants::FULL_SCREEN_OVERLAY_MENU_MAX_ALPHA, true);
     
     GUISceneLoader loader;
     const auto& sceneDefinition = loader.LoadGUIScene("pause_menu_scene");
@@ -69,18 +57,6 @@ void PauseMenuGameState::VInitialize()
 
 PostStateUpdateDirective PauseMenuGameState::VUpdate(const float dtMillis)
 {
-    auto overlaySoOpt = mScene->GetSceneObject(game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
-    if (overlaySoOpt)
-    {
-        auto& overlaySo = overlaySoOpt->get();
-        auto& overlayAlpha = overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-        overlayAlpha += dtMillis * game_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED;
-        if (overlayAlpha >= game_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA)
-        {
-            overlayAlpha = game_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA;
-        }
-    }
-    
     const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
     const auto& guiCamera = camOpt->get();
     const auto& inputContext = GameSingletons::GetInputContext();
@@ -92,6 +68,7 @@ PostStateUpdateDirective PauseMenuGameState::VUpdate(const float dtMillis)
         auto continueButtonSoOpt = mScene->GetSceneObject(strutils::StringId("continue_button"));
         if (continueButtonSoOpt && scene_object_utils::IsPointInsideSceneObject(continueButtonSoOpt->get(), touchPos))
         {
+            mScene->ResumeOverlayController();
             GameSingletons::ConsumeInput();
             Complete();
         }

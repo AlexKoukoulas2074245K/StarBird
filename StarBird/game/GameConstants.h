@@ -128,8 +128,6 @@ static const float BACKGROUND_SPEED = 1.0f/4000.0f;
 static const float WAVE_INTRO_TEXT_SPEED = 0.01f;
 static const float BOSS_INTRO_TEXT_SPEED = 0.01f;
 
-static const float FULL_SCREEN_OVERLAY_DARKENING_SPEED = 1.0f/400.0f;
-
 static const float UPGRADE_MOVEMENT_SPEED = 1.0f/400.0f;
 
 static const float WAVE_INTRO_DURATION_MILLIS = 3000.0f;
@@ -157,7 +155,11 @@ static const float BOSS_HEALTH_BAR_Z = 2.45f;
 static const float HEALTH_LOST_SPEED = 0.001f;
 static const float BOSS_INTRO_ANIMATED_HEALTH_SPEED = 0.05f;
 static const float HEALTH_BAR_POSITION_DIVISOR_MAGIC = 2.15f;
-static const float FULL_SCREEN_OVERLAY_MAX_ALPHA = 0.8f;
+
+static const float FULL_SCREEN_OVERLAY_TRANSITION_DARKENING_SPEED = 1.0f/800.0f;
+static const float FULL_SCREEN_OVERLAY_TRANSITION_MAX_ALPHA = 1.0f;
+static const float FULL_SCREEN_OVERLAY_MENU_MAX_ALPHA = 0.8f;
+static const float FULL_SCREEN_OVERLAY_MENU_DARKENING_SPEED = 1.0f/400.0f;
 
 static const float PLAYER_BULLET_X_OFFSET = 0.48f;
 

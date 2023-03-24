@@ -83,7 +83,7 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
         
         if (SelectedActiveLevel(originTouchPos))
         {
-            mScene.AddOverlayController(game_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED/2, 1.0f, [&](){
+            mScene.AddOverlayController(game_constants::FULL_SCREEN_OVERLAY_TRANSITION_DARKENING_SPEED, game_constants::FULL_SCREEN_OVERLAY_TRANSITION_MAX_ALPHA, false, [&](){
                 mScene.LoadLevel("test_level");
             });
             mTransitioningToLevel = true;

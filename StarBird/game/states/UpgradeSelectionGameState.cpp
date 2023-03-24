@@ -72,7 +72,6 @@ PostStateUpdateDirective UpgradeSelectionGameState::VUpdate(const float dtMillis
 
 void UpgradeSelectionGameState::VDestroy()
 {
-    mScene->RemoveAllSceneObjectsWithName(game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
     mScene->RemoveAllSceneObjectsWithName(game_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
     mScene->RemoveAllSceneObjectsWithName(game_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
     mScene->RemoveAllSceneObjectsWithName(game_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
@@ -85,17 +84,23 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
-    // Overlay
+    mScene->AddOverlayController(game_constants::FULL_SCREEN_OVERLAY_MENU_DARKENING_SPEED, game_constants::FULL_SCREEN_OVERLAY_MENU_MAX_ALPHA, true,
+    [&]()
     {
-        SceneObject overlaySo;
-        overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
-        overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
-        overlaySo.mScale = game_constants::FULL_SCREEN_OVERLAY_SCALE;
-        overlaySo.mPosition = game_constants::FULL_SCREEN_OVERLAY_POSITION;
-        overlaySo.mName = game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
-        overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-        mScene->AddSceneObject(std::move(overlaySo));
-    }
+        mState = SubState::UPGRADE_SELECTION; },
+    [&]()
+    {
+        auto playerSoOpt = mScene->GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
+        if (playerSoOpt)
+        {
+            // Override roll effect animation
+            playerSoOpt->get().mRotation.y = 0.0f;
+            playerSoOpt->get().mAnimation = std::make_unique<ShineAnimation>(&playerSoOpt->get(), playerSoOpt->get().mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, playerSoOpt->get().mAnimation->VGetCurrentMeshResourceId(), mShineShaderFileResourceId,
+                playerSoOpt->get().mAnimation->VGetScale(),
+                game_constants::UPGRADE_SHINE_EFFECT_SPEED, true);
+        }
+        Complete(WaveIntroGameState::STATE_NAME);
+    });
     
     // Left Upgrade Container
     {
@@ -162,18 +167,6 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
 
 void UpgradeSelectionGameState::UpdateOverlayIn(const float dtMillis)
 {
-    auto upgradeOverlaySoOpt = mScene->GetSceneObject(game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
-    if (upgradeOverlaySoOpt)
-    {
-        auto& upgradeOverlaySo = upgradeOverlaySoOpt->get();
-        auto& upgradeOverlayAlpha = upgradeOverlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-        upgradeOverlayAlpha += dtMillis * game_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED;
-        if (upgradeOverlayAlpha >= game_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA)
-        {
-            upgradeOverlayAlpha = game_constants::FULL_SCREEN_OVERLAY_MAX_ALPHA;
-            mState = SubState::UPGRADE_SELECTION;
-        }
-    }
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -262,6 +255,7 @@ void UpgradeSelectionGameState::UpdateShineSelection(const float dtMillis)
             
             if (leftUgpradeSo.mShaderFloatUniformValues[game_constants::SHINE_X_OFFSET_UNIFORM_NAME] < game_constants::SHINE_EFFECT_X_OFFSET_END_VAL)
             {
+                mScene->ResumeOverlayController();
                 mState = SubState::OVERLAY_OUT;
             }
         }
@@ -278,6 +272,7 @@ void UpgradeSelectionGameState::UpdateShineSelection(const float dtMillis)
             
             if (rightUgpradeSo.mShaderFloatUniformValues[game_constants::SHINE_X_OFFSET_UNIFORM_NAME] < game_constants::SHINE_EFFECT_X_OFFSET_END_VAL)
             {
+                mScene->ResumeOverlayController();
                 mState = SubState::OVERLAY_OUT;
             }
         }
@@ -295,12 +290,10 @@ void UpgradeSelectionGameState::UpdateOverlayOut(const float dtMillis)
     mAnimationTween = math::Max(0.0f, mAnimationTween - dtMillis * game_constants::UPGRADE_MOVEMENT_SPEED);
     float perc = math::Max(0.0f, math::TweenValue(mAnimationTween, math::QuadFunction, math::TweeningMode::EASE_OUT));
     
-    auto upgradeOverlaySoOpt = mScene->GetSceneObject(game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
     auto leftUpgradeContainerSoOpt = mScene->GetSceneObject(game_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
     auto rightUpgradeContainerSoOpt = mScene->GetSceneObject(game_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME);
     auto leftUpgradeSoOpt = mScene->GetSceneObject(game_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME);
     auto rightUpgradeSoOpt = mScene->GetSceneObject(game_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME);
-    auto playerSoOpt = mScene->GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
 
     if (leftUpgradeContainerSoOpt)
     {
@@ -320,27 +313,6 @@ void UpgradeSelectionGameState::UpdateOverlayOut(const float dtMillis)
     if (rightUpgradeSoOpt)
     {
         rightUpgradeSoOpt->get().mPosition.x = (1.0f - perc) * game_constants::RIGHT_UPGRADE_INIT_POS.x + perc * game_constants::RIGHT_UPGRADE_TARGET_POS.x;
-    }
-    
-    if (upgradeOverlaySoOpt)
-    {
-        auto& upgradeOverlaySo = upgradeOverlaySoOpt->get();
-        auto& upgradeOverlayAlpha = upgradeOverlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME];
-        upgradeOverlayAlpha -= dtMillis * game_constants::FULL_SCREEN_OVERLAY_DARKENING_SPEED;
-        if (upgradeOverlayAlpha <= 0)
-        {
-            upgradeOverlayAlpha = 0.0f;
-            
-            if (playerSoOpt)
-            {
-                // Override roll effect animation
-                playerSoOpt->get().mRotation.y = 0.0f;
-                playerSoOpt->get().mAnimation = std::make_unique<ShineAnimation>(&playerSoOpt->get(), playerSoOpt->get().mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, playerSoOpt->get().mAnimation->VGetCurrentMeshResourceId(), mShineShaderFileResourceId,
-                    playerSoOpt->get().mAnimation->VGetScale(),
-                    game_constants::UPGRADE_SHINE_EFFECT_SPEED, true);
-            }
-            Complete(WaveIntroGameState::STATE_NAME);
-        }
     }
 }
 

@@ -160,9 +160,19 @@ std::optional<std::reference_wrapper<const SceneObject>> Scene::GetSceneObject(c
 
 ///------------------------------------------------------------------------------------------------
 
-void Scene::AddOverlayController(const float darkeningSpeed, const float maxDarkeningValue, FullScreenOverlayController::CallbackType midwayCallback /* nullptr */, FullScreenOverlayController::CallbackType completionCallback /* nullptr */)
+void Scene::AddOverlayController(const float darkeningSpeed, const float maxDarkeningValue, const bool pauseAtMidPoint, FullScreenOverlayController::CallbackType midwayCallback /* nullptr */, FullScreenOverlayController::CallbackType completionCallback /* nullptr */)
 {
-    mOverlayController = std::make_unique<FullScreenOverlayController>(*this, darkeningSpeed, maxDarkeningValue, midwayCallback, completionCallback);
+    mOverlayController = std::make_unique<FullScreenOverlayController>(*this, darkeningSpeed, maxDarkeningValue, pauseAtMidPoint, midwayCallback, completionCallback);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void Scene::ResumeOverlayController()
+{
+    if (mOverlayController)
+    {
+        mOverlayController->Resume();
+    }
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -279,6 +289,7 @@ void Scene::UpdateScene(const float dtMillis)
         mOverlayController->Update(dtMillis);
         if (mOverlayController->IsFinished())
         {
+            RemoveAllSceneObjectsWithName(game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME);
             mOverlayController = nullptr;
         }
     }

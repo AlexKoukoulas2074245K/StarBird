@@ -44,7 +44,8 @@ public:
     const LightRepository& GetLightRepository() const;
     LightRepository& GetLightRepository();
     
-    void AddOverlayController(const float darkeningSpeed, const float maxDarkeningValue, FullScreenOverlayController::CallbackType midwayCallback = nullptr, FullScreenOverlayController::CallbackType completionCallback = nullptr);
+    void AddOverlayController(const float darkeningSpeed, const float maxDarkeningValue, const bool pauseAtMidPoint, FullScreenOverlayController::CallbackType midwayCallback = nullptr, FullScreenOverlayController::CallbackType completionCallback = nullptr);
+    void ResumeOverlayController();
     
     void AddSceneObject(SceneObject&& sceneObject);
     void RemoveAllSceneObjectsWithName(const strutils::StringId& name);
