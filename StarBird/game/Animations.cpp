@@ -251,6 +251,61 @@ bool PulsingAnimation::VGetBodyRenderingEnabled() const
 
 ///------------------------------------------------------------------------------------------------
 
+BezierCurvePathAnimation::BezierCurvePathAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const math::BezierCurve& pathCurve, const float curveTraversalSpeed, const bool bodyRenderingEnabled)
+    : mTextureResourceId(textureResourceId)
+    , mMeshResourceId(meshResourceId)
+    , mShaderResourceId(shaderResourceId)
+    , mScale(scale)
+    , mPathCurve(pathCurve)
+    , mCurveTraversalSpeed(curveTraversalSpeed)
+    , mCurveTraversalProgress(0.0f)
+    , mBodyRenderingEnabled(bodyRenderingEnabled)
+{
+}
+
+std::unique_ptr<IAnimation> BezierCurvePathAnimation::VClone() const
+{
+    return std::make_unique<BezierCurvePathAnimation>(*this);
+}
+
+void BezierCurvePathAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
+{
+    mCurveTraversalProgress += dtMillis * mCurveTraversalSpeed;
+    sceneObject.mPosition = mPathCurve.ComputePointForT(mCurveTraversalProgress);
+}
+
+resources::ResourceId BezierCurvePathAnimation::VGetCurrentTextureResourceId() const
+{
+    return mTextureResourceId;
+}
+
+resources::ResourceId BezierCurvePathAnimation::VGetCurrentMeshResourceId() const
+{
+    return mMeshResourceId;
+}
+
+resources::ResourceId BezierCurvePathAnimation::VGetCurrentShaderResourceId() const
+{
+    return mShaderResourceId;
+}
+
+const glm::vec3& BezierCurvePathAnimation::VGetScale() const
+{
+    return mScale;
+}
+
+float BezierCurvePathAnimation::VGetDuration() const
+{
+    return mCurveTraversalSpeed;
+}
+
+bool BezierCurvePathAnimation::VGetBodyRenderingEnabled() const
+{
+    return mBodyRenderingEnabled;
+}
+
+///------------------------------------------------------------------------------------------------
+
 ShineAnimation::ShineAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId shineTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float shineSpeed, const bool bodyRenderingEnabled)
     : mTextureResourceId(textureResourceId)
     , mShineTextureResourceId(shineTextureResourceId)

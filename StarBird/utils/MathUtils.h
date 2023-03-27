@@ -22,6 +22,7 @@
 #include <glm/ext/quaternion_float.hpp> // for quat
 #include <glm/gtc/matrix_transform.hpp> // mat helpers
 #include <glm/gtc/matrix_access.hpp>    // mat helpers
+#include <vector>
 #include <random>
 #include <array>
 
@@ -93,7 +94,7 @@ inline T Abs(const T val)
 {
     return val < 0 ? -val : val;
 }
-    
+
 ///-----------------------------------------------------------------------------------------------
 /// Returns the interpolated value between two values and the parametric argument
 /// @tparam T type class of the arguments given (can be inferred from the parameters passed in).
@@ -314,7 +315,7 @@ std::mt19937& GetRandomEngine();
 /// @returns a random integer that respects the given bounds.
 inline int RandomInt(const int min = 0, const int max = RAND_MAX)
 {
-    std::uniform_int_distribution<> distr(min, max);    
+    std::uniform_int_distribution<> distr(min, max);
     return distr(GetRandomEngine());
 }
 
@@ -327,7 +328,7 @@ inline float RandomFloat(const float min = 0.0f, const float max = 1.0f)
 {
     return min + static_cast <float> (RandomInt()) / (static_cast <float> (RAND_MAX / (max - min)));
 }
-                          
+
 ///-----------------------------------------------------------------------------------------------
 /// Computes a random sign, 1 or -1.
 /// @returns a random sign (either -1 or 1).
@@ -454,6 +455,22 @@ bool IsPointInsideRectangle(const glm::vec2& rectangleBottomLeft, const glm::vec
 /// @param[in] touchPosition touch position (x, y) in the [0..1] range where 0,0 is the top-left corner.
 /// @returns the touch position in world space.
 glm::vec3 ComputeTouchCoordsInWorldSpace(const glm::vec2& windowDimensions, const glm::vec2& touchPosition, const glm::mat4& viewMatrix, const glm::mat4& projMatrix);
+
+///------------------------------------------------------------------------------------------------
+
+class BezierCurve
+{
+public:
+    BezierCurve(const std::vector<glm::vec3> controlPoints)
+        : mControlPoints(controlPoints)
+    {
+    }
+    
+    glm::vec3 ComputePointForT(const float t);
+    
+private:
+    std::vector<glm::vec3> mControlPoints;
+};
 
 ///------------------------------------------------------------------------------------------------
 

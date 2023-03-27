@@ -14,6 +14,7 @@
 #include "SceneObjectUtils.h"
 #include "states/DebugConsoleGameState.h"
 #include "../resloading/ResourceLoadingService.h"
+#include "../utils/Logging.h"
 #include <vector>
 #include <map>
 #include <unordered_set>
@@ -217,7 +218,7 @@ bool MapUpdater::SelectedActiveLevel(const glm::vec3& touchPos)
     const auto& currentMapCoord = GameSingletons::GetCurrentMapCoord();
     for (const auto& linkedMapCoord: mMap.GetMapData().at(currentMapCoord).mNodeLinks)
     {
-        if (scene_object_utils::IsPointInsideSceneObject(mScene.GetSceneObject(strutils::StringId(linkedMapCoord.ToString()))->get(), glm::vec2(touchPos.x, touchPos.y)))
+        if (scene_object_utils::IsPointInsideSceneObject(mScene.GetSceneObject(strutils::StringId(linkedMapCoord.ToString()))->get(), glm::vec2(touchPos.x, touchPos.y), glm::vec2(game_constants::MAP_NODE_CLICK_BIAS)))
         {
             mSelectedMapCoord = linkedMapCoord;
             return true;

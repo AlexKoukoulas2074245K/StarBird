@@ -139,6 +139,33 @@ private:
 
 ///------------------------------------------------------------------------------------------------
 
+class BezierCurvePathAnimation final: public IAnimation
+{
+public:
+    BezierCurvePathAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const math::BezierCurve& pathCurve, const float curveTraversalSpeed, const bool bodyRenderingEnabled);
+    
+    std::unique_ptr<IAnimation> VClone() const override;
+    void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    resources::ResourceId VGetCurrentTextureResourceId() const override;
+    resources::ResourceId VGetCurrentMeshResourceId() const override;
+    resources::ResourceId VGetCurrentShaderResourceId() const override;
+    const glm::vec3& VGetScale() const override;
+    float VGetDuration() const override;
+    bool VGetBodyRenderingEnabled() const override;
+    
+private:
+    resources::ResourceId mTextureResourceId;
+    resources::ResourceId mMeshResourceId;
+    resources::ResourceId mShaderResourceId;
+    glm::vec3 mScale;
+    math::BezierCurve mPathCurve;
+    float mCurveTraversalSpeed;
+    float mCurveTraversalProgress;
+    bool mBodyRenderingEnabled;
+};
+
+///------------------------------------------------------------------------------------------------
+
 class ShineAnimation final: public IAnimation
 {
 public:

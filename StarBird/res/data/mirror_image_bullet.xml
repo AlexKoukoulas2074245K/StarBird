@@ -2,5 +2,5 @@
 <ObjectDefinition>
     <Animation state="idle" texture="bullet_sheet" mesh="quad" shader="basic" scale="0.3f, 0.6f" textureSheetRow="0" duration="600"/>
     <Physics linearDamping="0.0f" constantVelocity="0.0f, 16.0f" category="player_bullet"/>
-    <GameAttributes movementControllerPattern="constant_velocity" damage="0.25f"/>
+    <GameAttributes movementControllerPattern="constant_velocity" damage="3.0f"/>
 </ObjectDefinition>

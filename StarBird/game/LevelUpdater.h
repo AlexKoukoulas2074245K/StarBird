@@ -68,7 +68,9 @@ private:
     void UpdateFlows(const float dtMillis);
     void UpdateCameras(const float dtMillis);
     void UpdateLights(const float dtMillis);
+    void UpdateTextDamage(const float dtMillis);
     
+    void CreateTextOnDamage(const glm::vec3& textOriginPos, const int damage, const bool playerDamaged);
     void OnPlayerDamaged();
     void OnBlockedUpdate();
     
@@ -83,6 +85,7 @@ private:
     BossAIController mBossAIController;
     PostStateUpdateDirective mLastPostStateMachineUpdateDirective;
     std::vector<RepeatableFlow> mFlows;
+    std::unordered_set<strutils::StringId, strutils::StringIdHasher> mDamageTextSceneObjects;
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> mWaveEnemies;
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> mActiveLightNames;
     

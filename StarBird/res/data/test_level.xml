@@ -96,7 +96,7 @@
         
     </Wave>
     
-    <Wave bossName="Ka'thun" bossHealth="1000.0f">
+    <Wave bossName="Ka'thun" bossHealth="10000.0f">
         <Enemy position="0.0f, 20.0f" type="boss_1/body"/>
         <Enemy position="0.0f, 20.0f" type="boss_1/top_left_flap"/>
         <Enemy position="0.0f, 20.0f" type="boss_1/middle_left_flap"/>

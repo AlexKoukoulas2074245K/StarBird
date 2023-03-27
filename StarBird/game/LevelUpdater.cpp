@@ -35,6 +35,7 @@
 #include <algorithm>
 #include <Box2D/Box2D.h>
 #include <map>
+#include <SDL.h>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -150,6 +151,8 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 {
                     enemySO.mHealth -= bulletSceneObjectTypeDef.mDamage;
                 }
+                
+                CreateTextOnDamage(math::Box2dVec2ToGlmVec3(enemySO.mBody->GetWorldCenter()), bulletSceneObjectTypeDef.mDamage, false);
             }
             
             if (enemySO.mHealth <= 0)
@@ -203,6 +206,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             {
                 playerSO.mHealth -= enemySceneObjectTypeDef.mDamage;
                 OnPlayerDamaged();
+                CreateTextOnDamage(math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemySceneObjectTypeDef.mDamage, true);
             }
             
             mFlows.emplace_back([]()
@@ -250,6 +254,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             {
                 playerSO.mHealth -= enemyBulletSceneObjectTypeDef.mDamage;
                 OnPlayerDamaged();
+                CreateTextOnDamage(math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemyBulletSceneObjectTypeDef.mDamage, true);
             }
             
             mFlows.emplace_back([]()
@@ -428,6 +433,7 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
     UpdateFlows(dtMillis);
     UpdateCameras(dtMillis);
     UpdateLights(dtMillis);
+    UpdateTextDamage(dtMillis);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -999,6 +1005,59 @@ void LevelUpdater::UpdateLights(const float dtMillis)
             lightIter++;
         }
     }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::UpdateTextDamage(const float dtMillis)
+{
+    auto sceneObjectNameIter = mDamageTextSceneObjects.begin();
+    while (sceneObjectNameIter != mDamageTextSceneObjects.end())
+    {
+        auto sceneObjectOpt = mScene.GetSceneObject(*sceneObjectNameIter);
+        if (sceneObjectOpt)
+        {
+            auto& sceneObject = sceneObjectOpt->get();
+            auto& sceneObjectAlpha = sceneObject.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME].w;
+            
+            sceneObjectAlpha -= game_constants::TEXT_DAMAGE_ALPHA_SPEED * dtMillis;
+            if (sceneObjectAlpha <= 0.0f)
+            {
+                sceneObjectAlpha = 0.0f;
+                mScene.RemoveAllSceneObjectsWithName(*sceneObjectNameIter);
+                sceneObjectNameIter = mDamageTextSceneObjects.erase(sceneObjectNameIter);
+                continue;
+            }
+        }
+        sceneObjectNameIter++;
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::CreateTextOnDamage(const glm::vec3& textOriginPos, const int damage, const bool playerDamaged)
+{
+    auto& resService = resources::ResourceLoadingService::GetInstance();
+    
+    float randX = math::RandomFloat(-0.5f, 0.5f);
+    
+    glm::vec3 firstControlPoint = glm::vec3(textOriginPos.x + randX, textOriginPos.y, game_constants::DAMAGE_TEXT_Z);
+    glm::vec3 secondControlPoint = glm::vec3(textOriginPos.x + randX, textOriginPos.y + (playerDamaged ? game_constants::TEXT_DAMAGE_PLAYER_Y_MAX_DISPLACEMENT : game_constants::TEXT_DAMAGE_ENEMY_Y_MAX_DISPLACEMENT), game_constants::DAMAGE_TEXT_Z);
+    
+    math::BezierCurve curve({ firstControlPoint, secondControlPoint });
+    
+    SceneObject damageTextSO;
+    damageTextSO.mPosition = textOriginPos;
+    damageTextSO.mScale = game_constants::DAMAGE_TEXT_SCALE;
+    damageTextSO.mAnimation = std::make_unique<BezierCurvePathAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME), glm::vec3(1.0f), curve, game_constants::TEXT_DAMAGE_CURVE_TRAVERSAL_SPEED, false);
+    damageTextSO.mFontName = game_constants::DEFAULT_FONT_NAME;
+    damageTextSO.mSceneObjectType = SceneObjectType::GUIObject;
+    damageTextSO.mName = strutils::StringId(std::to_string(SDL_GetTicks64()));
+    damageTextSO.mText = std::to_string(damage);
+    damageTextSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = playerDamaged ? glm::vec4(1.0f, 0.0f, 0.0f, 0.8f) : glm::vec4(1.0f, 1.0f, 1.0f, 0.8f);
+    
+    mDamageTextSceneObjects.insert(damageTextSO.mName);
+    mScene.AddSceneObject(std::move(damageTextSO));
 }
 
 ///------------------------------------------------------------------------------------------------

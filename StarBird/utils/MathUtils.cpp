@@ -42,7 +42,7 @@ glm::vec2 ComputeMouseCoordsInNDC(const float windowWidth, const float windowHei
 glm::vec3 ComputeMouseRayDirection(const glm::mat4& viewMatrix, const glm::mat4& projMatrix, const float windowWidth, const float windowHeight)
 {
     const auto mousePosInNDC = ComputeMouseCoordsInNDC(windowWidth, windowHeight);
-
+    
     const auto& invVP = glm::inverse(projMatrix * viewMatrix);
     const auto& screenPos = glm::vec4(mousePosInNDC.x, mousePosInNDC.y, 1.0f, 1.0f);
     const auto& worldPos = invVP * screenPos;
@@ -86,14 +86,14 @@ bool RayToSphereIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayDir
     const auto& thc = Sqrt(radius2 - d2);
     auto t0 = tca - thc;
     auto t1 = tca + thc;
-
+    
     if (t0 > t1) std::swap(t0, t1);
-
+    
     if (t0 < 0) {
         t0 = t1; // if t0 is negative, let's use t1 instead
         if (t0 < 0) return false; // both t0 and t1 are negative
     }
-
+    
     t = t0;
     return true;
 }
@@ -122,18 +122,18 @@ bool IsMeshInsideFrustum(const glm::vec3& meshPosition, const glm::vec3& meshSca
 {
     const auto scaledMeshDimensions = meshDimensions * meshScale;
     const auto frustumCheckSphereRadius = math::Max(scaledMeshDimensions.x, math::Max(scaledMeshDimensions.y, scaledMeshDimensions.z)) * 0.5f;
-
+    
     for (auto i = 0U; i < 6U; ++i)
     {
         float dist =
-            frustum[i].x * meshPosition.x +
-            frustum[i].y * meshPosition.y +
-            frustum[i].z * meshPosition.z +
-            frustum[i].w - frustumCheckSphereRadius;
-
+        frustum[i].x * meshPosition.x +
+        frustum[i].y * meshPosition.y +
+        frustum[i].z * meshPosition.z +
+        frustum[i].w - frustumCheckSphereRadius;
+        
         if (dist > 0) return false;
     }
-
+    
     return true;
 }
 
@@ -155,6 +155,23 @@ glm::vec3 ComputeTouchCoordsInWorldSpace(const glm::vec2& windowDimensions, cons
     const auto& screenPos = glm::vec4(normalizedTouchX, normalizedTouchY, 1.0f, 1.0f);
     const auto& worldPos = invVP * screenPos;
     return glm::vec3(worldPos.x, worldPos.y, 0.0f);
+}
+
+///------------------------------------------------------------------------------------------------
+
+glm::vec3 BezierCurve::ComputePointForT(const float t)
+{
+    auto workingPoints = mControlPoints;
+    
+    for (int j = 1; j < mControlPoints.size(); ++j)
+    {
+        for (int k = 0; k < mControlPoints.size() - j; ++k)
+        {
+            workingPoints[k] = workingPoints[k] * (1 - t) + workingPoints[k + 1] * t;
+        }
+    }
+    
+    return workingPoints[0];
 }
 
 ///------------------------------------------------------------------------------------------------

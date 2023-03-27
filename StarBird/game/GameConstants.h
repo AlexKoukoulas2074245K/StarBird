@@ -148,6 +148,7 @@ static const float BACKGROUND_Z = -1.0f;
 static const float WALL_Z = -0.5f;
 
 static const float BULLET_Z = -0.5f;
+static const float DAMAGE_TEXT_Z = 2.0f;
 
 static const float PLAYER_HEALTH_LOST_BAR_Z = 0.4f;
 static const float PLAYER_HEALTH_BAR_Z = 0.45f;
@@ -165,7 +166,7 @@ static const float PLAYER_BULLET_X_OFFSET = 0.48f;
 
 static const float MIRROR_IMAGE_BULLET_X_OFFSET = 0.38f;
 
-static const float HEALTH_POTION_HEALTH_GAIN = 5.0f;
+static const float HEALTH_POTION_HEALTH_GAIN = 100.0f;
 
 static const float PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR = 1.0f/50.0f;
 static const float PLAYER_PULSE_SHIELD_ANIM_SPEED = 0.01f;
@@ -188,6 +189,7 @@ static const float MAP_PLANET_RING_MIN_X_ROTATION = 1.8f;
 static const float MAP_PLANET_RING_MAX_X_ROTATION = 2.2f;
 static const float MAP_PLANET_RING_MIN_Y_ROTATION = -math::PI/10;
 static const float MAP_PLANET_RING_MAX_Y_ROTATION = +math::PI/10;
+static const float MAP_NODE_CLICK_BIAS = 1.8f;
 
 static const float SHINE_EFFECT_X_OFFSET_INIT_VAL = 1.0f;
 static const float SHINE_EFFECT_X_OFFSET_END_VAL = -1.0f;
@@ -201,6 +203,11 @@ static const float DISSOLVE_EFFECT_SPEED = 1.0f/1000.0f;
 
 static const float NEBULA_ANIMATION_SPEED = 1.0f/15000.0f;
 
+static const float TEXT_DAMAGE_ALPHA_SPEED = 0.001f;
+static const float TEXT_DAMAGE_PLAYER_Y_MAX_DISPLACEMENT = 3.0f;
+static const float TEXT_DAMAGE_ENEMY_Y_MAX_DISPLACEMENT = 1.0f;
+static const float TEXT_DAMAGE_CURVE_TRAVERSAL_SPEED = 0.002f;
+
 static const glm::vec3 PLAYER_INITIAL_POS = glm::vec3(0.0f, -10.0f, 0.0f);
 static const glm::vec3 BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
 static const glm::vec3 MAP_BACKGROUND_SCALE = glm::vec3(120.0f, 120.0f, 1.0f);
@@ -210,6 +217,8 @@ static const glm::vec3 JOYSTICK_BOUNDS_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
 
 static const glm::vec3 WAVE_INTRO_TEXT_INIT_POS = glm::vec3(-3.0f, 0.0f, 2.0f);
 static const glm::vec3 WAVE_INTRO_TEXT_SCALE = glm::vec3(0.02f, 0.02f, 1.0f);
+
+static const glm::vec3 DAMAGE_TEXT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
 
 static const glm::vec3 BOSS_INTRO_TEXT_INIT_POS = glm::vec3(-3.0f, 0.0f, 2.0f);
 static const glm::vec3 BOSS_INTRO_TEXT_SCALE = glm::vec3(0.02f, 0.02f, 1.0f);

@@ -38,7 +38,7 @@ static std::unordered_map<char, Glyph>::const_iterator GetGlyphIter(char c, cons
 
 ///------------------------------------------------------------------------------------------------
 
-bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& point)
+bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& point, const glm::vec2 xyBias /* glm::vec2(1.0f, 1.0f) */)
 {
     // Text SO
     if (!sceneObject.mText.empty())
@@ -76,8 +76,8 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
             }
         }
         
-        auto rectBottomLeft = glm::vec2(minX, minY);
-        auto rectTopRight = glm::vec2(maxX, maxY);
+        auto rectBottomLeft = glm::vec2(minX, minY) * xyBias;
+        auto rectTopRight = glm::vec2(maxX, maxY) * xyBias;
         
         return math::IsPointInsideRectangle(rectBottomLeft, rectTopRight, point);
         
@@ -91,16 +91,16 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
         auto soPosition = glm::vec3(sceneObject.mBody->GetWorldCenter().x, sceneObject.mBody->GetWorldCenter().y, sceneObject.mPosition.z);
         auto soScale = glm::vec3(b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x), b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y), 1.0f);
         
-        auto rectBottomLeft = glm::vec2(soPosition.x - soScale.x/2, soPosition.y - soScale.y/2);
-        auto rectTopRight = glm::vec2(soPosition.x + soScale.x/2, soPosition.y + soScale.y/2);
+        auto rectBottomLeft = glm::vec2(soPosition.x - (soScale.x/2 * xyBias.x), soPosition.y - (soScale.y/2 * xyBias.y));
+        auto rectTopRight = glm::vec2(soPosition.x + (soScale.x/2 * xyBias.x), soPosition.y + (soScale.y/2 * xyBias.y));
         
         return math::IsPointInsideRectangle(rectBottomLeft, rectTopRight, point);
     }
     // SO with custom position and scale
     else
     {
-        auto rectBottomLeft = glm::vec2(sceneObject.mPosition.x - sceneObject.mScale.x/2, sceneObject.mPosition.y - sceneObject.mScale.y/2);
-        auto rectTopRight = glm::vec2(sceneObject.mPosition.x + sceneObject.mScale.x/2, sceneObject.mPosition.y + sceneObject.mScale.y/2);
+        auto rectBottomLeft = glm::vec2(sceneObject.mPosition.x - (sceneObject.mScale.x/2 * xyBias.x), sceneObject.mPosition.y - (sceneObject.mScale.y/2 * xyBias.y));
+        auto rectTopRight = glm::vec2(sceneObject.mPosition.x + (sceneObject.mScale.x/2 * xyBias.x), sceneObject.mPosition.y + (sceneObject.mScale.y/2 * xyBias.y));
         
         return math::IsPointInsideRectangle(rectBottomLeft, rectTopRight, point);
     }
