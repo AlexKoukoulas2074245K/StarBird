@@ -157,7 +157,7 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
             auto soOpt = mScene.GetSceneObject(strutils::StringId(mapEntry.first.ToString()));
             if (soOpt)
             {
-                soOpt->get().mRotation.y += dtMillis * 0.0002f;
+                soOpt->get().mRotation.y += dtMillis * game_constants::MAP_NODE_ROTATION_SPEED;
             }
         }
     }

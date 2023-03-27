@@ -190,7 +190,7 @@ static const float MAP_PLANET_RING_MAX_X_ROTATION = 2.2f;
 static const float MAP_PLANET_RING_MIN_Y_ROTATION = -math::PI/10;
 static const float MAP_PLANET_RING_MAX_Y_ROTATION = +math::PI/10;
 static const float MAP_NODE_CLICK_BIAS = 1.8f;
-
+static const float MAP_NODE_ROTATION_SPEED = 0.0002f;
 static const float SHINE_EFFECT_X_OFFSET_INIT_VAL = 1.0f;
 static const float SHINE_EFFECT_X_OFFSET_END_VAL = -1.0f;
 static const float DEBUG_PAST_COMMAND_X_OFFSET = -1.0f;
