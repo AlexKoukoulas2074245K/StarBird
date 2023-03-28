@@ -1020,16 +1020,16 @@ void LevelUpdater::UpdateTextDamage(const float dtMillis)
 {
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> sceneObjectEntriesToRemove;
     
-    for (auto& damagedSceneObjectToTextEntry: mDamageTextSceneObjects)
+    for (auto& damagedSceneObjectToTextEntry: mDamagedSceneObjectNameToTextSceneObject)
     {
         auto sceneObjectOpt = mScene.GetSceneObject(damagedSceneObjectToTextEntry.second);
         if (sceneObjectOpt)
         {
             auto& sceneObject = sceneObjectOpt->get();
             
-            if (mDamageTextSceneObjectsFreezeTimers[damagedSceneObjectToTextEntry.first] > 0.0f)
+            if (mDamagedSceneObjectNameToTextSceneObjectFreezeTimer[damagedSceneObjectToTextEntry.first] > 0.0f)
             {
-                mDamageTextSceneObjectsFreezeTimers[damagedSceneObjectToTextEntry.first] -= dtMillis;
+                mDamagedSceneObjectNameToTextSceneObjectFreezeTimer[damagedSceneObjectToTextEntry.first] -= dtMillis;
                 sceneObject.mAnimation->VPause();
             }
             else
@@ -1050,8 +1050,8 @@ void LevelUpdater::UpdateTextDamage(const float dtMillis)
     
     for (auto& sceneObjectEntryToRemove: sceneObjectEntriesToRemove)
     {
-        mDamageTextSceneObjects.erase(sceneObjectEntryToRemove);
-        mDamageTextSceneObjectsFreezeTimers.erase(sceneObjectEntryToRemove);
+        mDamagedSceneObjectNameToTextSceneObject.erase(sceneObjectEntryToRemove);
+        mDamagedSceneObjectNameToTextSceneObjectFreezeTimer.erase(sceneObjectEntryToRemove);
     }
 }
 
@@ -1061,17 +1061,19 @@ void LevelUpdater::CreateTextOnDamage(const strutils::StringId& damagedSceneObje
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
-    auto existingDamageTextForSceneObjectIter = mDamageTextSceneObjects.find(damagedSceneObjectName);
-    if (existingDamageTextForSceneObjectIter != mDamageTextSceneObjects.cend())
+    // Update damage count of existing text scene object
+    auto existingDamageTextForSceneObjectIter = mDamagedSceneObjectNameToTextSceneObject.find(damagedSceneObjectName);
+    if (existingDamageTextForSceneObjectIter != mDamagedSceneObjectNameToTextSceneObject.cend())
     {
         auto existingDamageTextSceneObjectOpt = mScene.GetSceneObject(existingDamageTextForSceneObjectIter->second);
         if (existingDamageTextSceneObjectOpt)
         {
             existingDamageTextSceneObjectOpt->get().mText = std::to_string(std::stoi(existingDamageTextSceneObjectOpt->get().mText) + damage);
             
-            mDamageTextSceneObjectsFreezeTimers[damagedSceneObjectName] = 300.0f;
+            mDamagedSceneObjectNameToTextSceneObjectFreezeTimer[damagedSceneObjectName] = game_constants::TEXT_DAMAGE_FREEZE_MILLIS;
         }
     }
+    // Otherwise create a new text scene object
     else
     {
         bool enemyDamaged = damagedSceneObjectName != game_constants::PLAYER_SCENE_OBJECT_NAME;
@@ -1089,10 +1091,10 @@ void LevelUpdater::CreateTextOnDamage(const strutils::StringId& damagedSceneObje
         damageTextSO.mSceneObjectType = SceneObjectType::GUIObject;
         damageTextSO.mName = strutils::StringId(std::to_string(SDL_GetTicks64()));
         damageTextSO.mText = std::to_string(damage);
-        damageTextSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = enemyDamaged ? glm::vec4(1.0f, 1.0f, 1.0f, 0.8f) : glm::vec4(1.0f, 0.0f, 0.0f, 0.8f);
+        damageTextSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = enemyDamaged ? game_constants::ENEMY_TEXT_DAMAGE_COLOR : game_constants::PLAYER_TEXT_DAMAGE_COLOR;
         
-        mDamageTextSceneObjects[damagedSceneObjectName] = damageTextSO.mName;
-        mDamageTextSceneObjectsFreezeTimers[damagedSceneObjectName] = 300.0f;
+        mDamagedSceneObjectNameToTextSceneObject[damagedSceneObjectName] = damageTextSO.mName;
+        mDamagedSceneObjectNameToTextSceneObjectFreezeTimer[damagedSceneObjectName] = game_constants::TEXT_DAMAGE_FREEZE_MILLIS;
         mScene.AddSceneObject(std::move(damageTextSO));
     }
 }

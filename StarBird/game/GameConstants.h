@@ -174,7 +174,7 @@ static const float PLAYER_PULSE_SHIELD_ANIM_SPEED = 0.01f;
 static const float SELECTED_UPGRADE_PULSE_ENLARGEMENT_FACTOR = 1.0f/5.0f;
 static const float SELECTED_UPGRADE_PULSE_ANIM_SPEED = 0.03f;
 
-static const float PLAYER_MOVEMENT_ROLL_CHANCE = 1.333f;
+static const float PLAYER_MOVEMENT_ROLL_CHANCE = 0.333f;
 static const float PLAYER_MOVEMENT_ROLL_SPEED = 0.008f;
 static const float PLAYER_MOVEMENT_ROLL_ANGLE = 180.0f;
 
@@ -209,6 +209,7 @@ static const float TEXT_DAMAGE_ALPHA_SPEED = 0.002f;
 static const float TEXT_DAMAGE_PLAYER_Y_MAX_DISPLACEMENT = 3.0f;
 static const float TEXT_DAMAGE_ENEMY_Y_MAX_DISPLACEMENT = 1.0f;
 static const float TEXT_DAMAGE_CURVE_TRAVERSAL_SPEED = 0.002f;
+static const float TEXT_DAMAGE_FREEZE_MILLIS = 300.0f;
 
 static const glm::vec3 PLAYER_INITIAL_POS = glm::vec3(0.0f, -10.0f, 0.0f);
 static const glm::vec3 BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
@@ -261,6 +262,9 @@ static const glm::vec3 PLAYER_SHIELD_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
 
 static const glm::vec4 AMBIENT_LIGHT_COLOR = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
 static const glm::vec4 POINT_LIGHT_COLOR = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+
+static const glm::vec4 ENEMY_TEXT_DAMAGE_COLOR = glm::vec4(1.0f, 1.0f, 1.0f, 0.8f);
+static const glm::vec4 PLAYER_TEXT_DAMAGE_COLOR = glm::vec4(1.0f, 0.3f, 0.3f, 0.8f);
 
 static const glm::vec2 MAP_MAX_WORLD_BOUNDS = glm::vec2(40.0f, 20.0f);
 static const glm::vec2 MAP_MIN_WORLD_BOUNDS = glm::vec2(-17.0f, -13.0f);

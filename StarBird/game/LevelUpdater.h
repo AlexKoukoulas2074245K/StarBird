@@ -86,8 +86,8 @@ private:
     BossAIController mBossAIController;
     PostStateUpdateDirective mLastPostStateMachineUpdateDirective;
     std::vector<RepeatableFlow> mFlows;
-    std::unordered_map<strutils::StringId, strutils::StringId, strutils::StringIdHasher> mDamageTextSceneObjects;
-    std::unordered_map<strutils::StringId, float, strutils::StringIdHasher> mDamageTextSceneObjectsFreezeTimers;
+    std::unordered_map<strutils::StringId, strutils::StringId, strutils::StringIdHasher> mDamagedSceneObjectNameToTextSceneObject;
+    std::unordered_map<strutils::StringId, float, strutils::StringIdHasher> mDamagedSceneObjectNameToTextSceneObjectFreezeTimer;
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> mWaveEnemies;
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> mActiveLightNames;
     
