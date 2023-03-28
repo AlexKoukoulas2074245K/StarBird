@@ -280,6 +280,7 @@ BezierCurvePathAnimation::BezierCurvePathAnimation(const resources::ResourceId t
     , mCurveTraversalSpeed(curveTraversalSpeed)
     , mCurveTraversalProgress(0.0f)
     , mBodyRenderingEnabled(bodyRenderingEnabled)
+    , mPaused(false)
 {
 }
 
@@ -290,8 +291,21 @@ std::unique_ptr<IAnimation> BezierCurvePathAnimation::VClone() const
 
 void BezierCurvePathAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
-    mCurveTraversalProgress += dtMillis * mCurveTraversalSpeed;
-    sceneObject.mPosition = mPathCurve.ComputePointForT(mCurveTraversalProgress);
+    if (!mPaused)
+    {
+        mCurveTraversalProgress += dtMillis * mCurveTraversalSpeed;
+        sceneObject.mPosition = mPathCurve.ComputePointForT(mCurveTraversalProgress);
+    }
+}
+
+void BezierCurvePathAnimation::VPause()
+{
+    mPaused = true;
+}
+
+void BezierCurvePathAnimation::VResume()
+{
+    mPaused = false;
 }
 
 resources::ResourceId BezierCurvePathAnimation::VGetCurrentTextureResourceId() const

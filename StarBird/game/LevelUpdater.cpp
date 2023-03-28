@@ -152,7 +152,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                     enemySO.mHealth -= bulletSceneObjectTypeDef.mDamage;
                 }
                 
-                CreateTextOnDamage(math::Box2dVec2ToGlmVec3(enemySO.mBody->GetWorldCenter()), bulletSceneObjectTypeDef.mDamage, false);
+                CreateTextOnDamage(enemySO.mName, math::Box2dVec2ToGlmVec3(enemySO.mBody->GetWorldCenter()), bulletSceneObjectTypeDef.mDamage);
             }
             
             if (enemySO.mHealth <= 0)
@@ -206,7 +206,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             {
                 playerSO.mHealth -= enemySceneObjectTypeDef.mDamage;
                 OnPlayerDamaged();
-                CreateTextOnDamage(math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemySceneObjectTypeDef.mDamage, true);
+                CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemySceneObjectTypeDef.mDamage);
             }
             
             mFlows.emplace_back([]()
@@ -254,7 +254,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             {
                 playerSO.mHealth -= enemyBulletSceneObjectTypeDef.mDamage;
                 OnPlayerDamaged();
-                CreateTextOnDamage(math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemyBulletSceneObjectTypeDef.mDamage, true);
+                CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemyBulletSceneObjectTypeDef.mDamage);
             }
             
             mFlows.emplace_back([]()
@@ -1018,63 +1018,83 @@ void LevelUpdater::UpdateLights(const float dtMillis)
 
 void LevelUpdater::UpdateTextDamage(const float dtMillis)
 {
-    auto sceneObjectNameIter = mDamageTextSceneObjects.begin();
-    while (sceneObjectNameIter != mDamageTextSceneObjects.end())
+    std::unordered_set<strutils::StringId, strutils::StringIdHasher> sceneObjectEntriesToRemove;
+    
+    for (auto& damagedSceneObjectToTextEntry: mDamageTextSceneObjects)
     {
-        auto sceneObjectOpt = mScene.GetSceneObject(*sceneObjectNameIter);
+        auto sceneObjectOpt = mScene.GetSceneObject(damagedSceneObjectToTextEntry.second);
         if (sceneObjectOpt)
         {
             auto& sceneObject = sceneObjectOpt->get();
-            auto& sceneObjectAlpha = sceneObject.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME].w;
             
-            sceneObjectAlpha -= game_constants::TEXT_DAMAGE_ALPHA_SPEED * dtMillis;
-            if (sceneObjectAlpha <= 0.0f)
+            if (mDamageTextSceneObjectsFreezeTimers[damagedSceneObjectToTextEntry.first] > 0.0f)
             {
-                sceneObjectAlpha = 0.0f;
-                mScene.RemoveAllSceneObjectsWithName(*sceneObjectNameIter);
-                sceneObjectNameIter = mDamageTextSceneObjects.erase(sceneObjectNameIter);
-                continue;
+                mDamageTextSceneObjectsFreezeTimers[damagedSceneObjectToTextEntry.first] -= dtMillis;
+                sceneObject.mAnimation->VPause();
+            }
+            else
+            {
+                sceneObject.mAnimation->VResume();
+                auto& sceneObjectAlpha = sceneObject.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME].w;
+                
+                sceneObjectAlpha -= game_constants::TEXT_DAMAGE_ALPHA_SPEED * dtMillis;
+                if (sceneObjectAlpha <= 0.0f)
+                {
+                    sceneObjectAlpha = 0.0f;
+                    mScene.RemoveAllSceneObjectsWithName(damagedSceneObjectToTextEntry.second);
+                    sceneObjectEntriesToRemove.insert(damagedSceneObjectToTextEntry.first);
+                }
             }
         }
-        sceneObjectNameIter++;
+    }
+    
+    for (auto& sceneObjectEntryToRemove: sceneObjectEntriesToRemove)
+    {
+        mDamageTextSceneObjects.erase(sceneObjectEntryToRemove);
+        mDamageTextSceneObjectsFreezeTimers.erase(sceneObjectEntryToRemove);
     }
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void LevelUpdater::CreateTextOnDamage(const glm::vec3& textOriginPos, const int damage, const bool playerDamaged)
+void LevelUpdater::CreateTextOnDamage(const strutils::StringId& damagedSceneObjectName, const glm::vec3& textOriginPos, const int damage)
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
-    glm::vec3 firstControlPoint = glm::vec3(textOriginPos.x, textOriginPos.y, game_constants::DAMAGE_TEXT_Z);
-    glm::vec3 secondControlPoint = glm::vec3(textOriginPos.x, textOriginPos.y + (playerDamaged ? game_constants::TEXT_DAMAGE_PLAYER_Y_MAX_DISPLACEMENT : game_constants::TEXT_DAMAGE_ENEMY_Y_MAX_DISPLACEMENT), game_constants::DAMAGE_TEXT_Z);
-    
-    
-    auto closeEnoughTextSceneObjectNameIter = std::find_if(mDamageTextSceneObjects.cbegin(), mDamageTextSceneObjects.cend(), [&](const strutils::StringId& damageTextSceneObjectName)
+    auto existingDamageTextForSceneObjectIter = mDamageTextSceneObjects.find(damagedSceneObjectName);
+    if (existingDamageTextForSceneObjectIter != mDamageTextSceneObjects.cend())
     {
-        auto sceneObjectOpt = mScene.GetSceneObject(damageTextSceneObjectName);
-        return sceneObjectOpt && glm::distance(sceneObjectOpt->get().mPosition, firstControlPoint) < game_constants::TEXT_DAMAGE_PROXIMITY_THRESHOLD;
-    });
-    
-    // Don't spawn text if it's going to overlap too much with other existing text
-    if (closeEnoughTextSceneObjectNameIter == mDamageTextSceneObjects.cend())
+        auto existingDamageTextSceneObjectOpt = mScene.GetSceneObject(existingDamageTextForSceneObjectIter->second);
+        if (existingDamageTextSceneObjectOpt)
+        {
+            existingDamageTextSceneObjectOpt->get().mText = std::to_string(std::stoi(existingDamageTextSceneObjectOpt->get().mText) + damage);
+            
+            mDamageTextSceneObjectsFreezeTimers[damagedSceneObjectName] = 300.0f;
+        }
+    }
+    else
     {
+        bool enemyDamaged = damagedSceneObjectName != game_constants::PLAYER_SCENE_OBJECT_NAME;
+        glm::vec3 firstControlPoint = glm::vec3(textOriginPos.x, textOriginPos.y, game_constants::DAMAGE_TEXT_Z);
+        glm::vec3 secondControlPoint = glm::vec3(textOriginPos.x, textOriginPos.y + (enemyDamaged ? game_constants::TEXT_DAMAGE_ENEMY_Y_MAX_DISPLACEMENT : game_constants::TEXT_DAMAGE_PLAYER_Y_MAX_DISPLACEMENT), game_constants::DAMAGE_TEXT_Z);
+        
         math::BezierCurve curve({ firstControlPoint, secondControlPoint });
         
         SceneObject damageTextSO;
         damageTextSO.mPosition = textOriginPos;
+        damageTextSO.mPosition.z = game_constants::DAMAGE_TEXT_Z;
         damageTextSO.mScale = game_constants::TEXT_DAMAGE_SCALE;
         damageTextSO.mAnimation = std::make_unique<BezierCurvePathAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME), glm::vec3(1.0f), curve, game_constants::TEXT_DAMAGE_CURVE_TRAVERSAL_SPEED, false);
         damageTextSO.mFontName = game_constants::DEFAULT_FONT_NAME;
         damageTextSO.mSceneObjectType = SceneObjectType::GUIObject;
         damageTextSO.mName = strutils::StringId(std::to_string(SDL_GetTicks64()));
         damageTextSO.mText = std::to_string(damage);
-        damageTextSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = playerDamaged ? glm::vec4(1.0f, 0.0f, 0.0f, 0.8f) : glm::vec4(1.0f, 1.0f, 1.0f, 0.8f);
+        damageTextSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = enemyDamaged ? glm::vec4(1.0f, 1.0f, 1.0f, 0.8f) : glm::vec4(1.0f, 0.0f, 0.0f, 0.8f);
         
-        mDamageTextSceneObjects.insert(damageTextSO.mName);
+        mDamageTextSceneObjects[damagedSceneObjectName] = damageTextSO.mName;
+        mDamageTextSceneObjectsFreezeTimers[damagedSceneObjectName] = 300.0f;
         mScene.AddSceneObject(std::move(damageTextSO));
     }
-    
 }
 
 ///------------------------------------------------------------------------------------------------

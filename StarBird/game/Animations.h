@@ -24,6 +24,8 @@ public:
     virtual ~IAnimation() = default;
     virtual std::unique_ptr<IAnimation> VClone() const = 0;
     virtual void VUpdate(const float dtMillis, SceneObject& sceneObject) = 0;
+    virtual void VPause() = 0;
+    virtual void VResume() = 0;
     virtual resources::ResourceId VGetCurrentTextureResourceId() const = 0;
     virtual resources::ResourceId VGetCurrentEffectTextureResourceId() const = 0;
     virtual resources::ResourceId VGetCurrentMeshResourceId() const = 0;
@@ -42,6 +44,8 @@ public:
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    void VPause() override {};
+    void VResume() override {};
     resources::ResourceId VGetCurrentTextureResourceId() const override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
@@ -67,6 +71,8 @@ public:
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    void VPause() override {};
+    void VResume() override {};
     resources::ResourceId VGetCurrentTextureResourceId() const override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
@@ -96,6 +102,8 @@ public:
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    void VPause() override {};
+    void VResume() override {};
     resources::ResourceId VGetCurrentTextureResourceId() const override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
@@ -122,6 +130,8 @@ public:
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    void VPause() override {};
+    void VResume() override {};
     resources::ResourceId VGetCurrentTextureResourceId() const override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
@@ -151,6 +161,8 @@ public:
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    void VPause() override;
+    void VResume() override;
     resources::ResourceId VGetCurrentTextureResourceId() const override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
@@ -167,7 +179,9 @@ private:
     math::BezierCurve mPathCurve;
     float mCurveTraversalSpeed;
     float mCurveTraversalProgress;
+  
     bool mBodyRenderingEnabled;
+    bool mPaused;
 };
 
 ///------------------------------------------------------------------------------------------------
@@ -179,6 +193,8 @@ public:
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    void VPause() override {};
+    void VResume() override {};
     resources::ResourceId VGetCurrentTextureResourceId() const override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
@@ -207,6 +223,8 @@ public:
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    void VPause() override {};
+    void VResume() override {};
     resources::ResourceId VGetCurrentTextureResourceId() const override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
@@ -235,6 +253,8 @@ public:
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    void VPause() override {};
+    void VResume() override {};
     resources::ResourceId VGetCurrentTextureResourceId() const override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
@@ -274,6 +294,8 @@ public:
     
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    void VPause() override {};
+    void VResume() override {};
     resources::ResourceId VGetCurrentTextureResourceId() const override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;

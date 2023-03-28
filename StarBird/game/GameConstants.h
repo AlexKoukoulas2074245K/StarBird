@@ -205,8 +205,7 @@ static const float DISSOLVE_EFFECT_SPEED = 1.0f/1000.0f;
 
 static const float NEBULA_ANIMATION_SPEED = 1.0f/15000.0f;
 
-static const float TEXT_DAMAGE_PROXIMITY_THRESHOLD = 0.02f;
-static const float TEXT_DAMAGE_ALPHA_SPEED = 0.001f;
+static const float TEXT_DAMAGE_ALPHA_SPEED = 0.002f;
 static const float TEXT_DAMAGE_PLAYER_Y_MAX_DISPLACEMENT = 3.0f;
 static const float TEXT_DAMAGE_ENEMY_Y_MAX_DISPLACEMENT = 1.0f;
 static const float TEXT_DAMAGE_CURVE_TRAVERSAL_SPEED = 0.002f;
