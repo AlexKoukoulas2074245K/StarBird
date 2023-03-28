@@ -520,19 +520,25 @@ void RotationAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
     if (mLeftHandRotation)
     {
         mRotationDtAccum -= dtMillis * mRotationSpeed;
-        if (mRotationDtAccum < mRotationRadians)
+        if (mRotationMode != RotationMode::ROTATE_CONTINUALLY)
         {
-            mRotationDtAccum = mRotationRadians;
-            OnSingleRotationFinished();
+            if (mRotationDtAccum < mRotationRadians)
+            {
+                mRotationDtAccum = mRotationRadians;
+                OnSingleRotationFinished();
+            }
         }
     }
     else
     {
         mRotationDtAccum += dtMillis * mRotationSpeed;
-        if (mRotationDtAccum > mRotationRadians)
+        if (mRotationMode != RotationMode::ROTATE_CONTINUALLY)
         {
-            mRotationDtAccum = mRotationRadians;
-            OnSingleRotationFinished();
+            if (mRotationDtAccum > mRotationRadians)
+            {
+                mRotationDtAccum = mRotationRadians;
+                OnSingleRotationFinished();
+            }
         }
     }
     

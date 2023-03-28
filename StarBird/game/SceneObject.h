@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -46,6 +47,7 @@ struct SceneObject // 456b
     std::unordered_map<strutils::StringId, glm::vec4, strutils::StringIdHasher> mShaderFloatVec4UniformValues;
     std::unordered_map<strutils::StringId, glm::mat4, strutils::StringIdHasher> mShaderMat4UniformValues;
     std::unique_ptr<IAnimation> mAnimation = nullptr;
+    std::vector<std::unique_ptr<IAnimation>> mExtraCompoundingAnimations;
     b2Body* mBody = nullptr;
     glm::vec3 mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 mRotation = glm::vec3(0.0f, 0.0f, 0.0f);

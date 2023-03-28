@@ -106,11 +106,19 @@ void Map::CreateMapSceneObjects()
                 planetRingSO.mRotation.x = math::RandomFloat(game_constants::MAP_PLANET_RING_MIN_X_ROTATION, game_constants::MAP_PLANET_RING_MAX_X_ROTATION);
                 planetRingSO.mRotation.y += math::RandomFloat(game_constants::MAP_PLANET_RING_MIN_Y_ROTATION, game_constants::MAP_PLANET_RING_MAX_Y_ROTATION);
                 planetRingSO.mPosition = mapNodeEntry.second.mPosition;
+                planetRingSO.mName = strutils::StringId("PLANET_RING_" + mapNodeEntry.first.ToString());
+                
+                // Add also pulsing animation if node is active
+                if (mMapData.at(mCurrentMapCoord).mNodeLinks.contains(mapNodeEntry.first))
+                {
+                    planetRingSO.mExtraCompoundingAnimations.push_back( std::make_unique<PulsingAnimation>(planetRingSO.mAnimation->VGetCurrentTextureResourceId(), planetRingSO.mAnimation->VGetCurrentMeshResourceId(), planetRingSO.mAnimation->VGetCurrentShaderResourceId(), planetRingSO.mAnimation->VGetScale(), 0.0f, game_constants::MAP_NODE_PULSING_SPEED, game_constants::MAP_NODE_PULSING_ENLARGEMENT_FACTOR, false));
+                }
+                
                 mScene.AddSceneObject(std::move(planetRingSO));
             } // Intentional Fallthrough
             case NodeType::NORMAL_ENCOUNTER:
             {
-                nodeSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::MAP_PLANET_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+                nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::MAP_PLANET_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f,  game_constants::MAP_NODE_ROTATION_SPEED, false);
                 
                 nodeSo.mShaderFloatUniformValues[game_constants::HUE_SHIFT_UNIFORM_NAME] = math::RandomFloat(0, 2.0f * math::PI);
                 nodeSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
@@ -118,7 +126,7 @@ void Map::CreateMapSceneObjects()
                
             case NodeType::BASE:
             {
-                nodeSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_BASE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::MAP_BASE_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), game_constants::MAP_BASE_SCALE, false);
+                nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_BASE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::MAP_BASE_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), game_constants::MAP_BASE_SCALE, RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f,  game_constants::MAP_NODE_ROTATION_SPEED, false);
                 nodeSo.mRotation.x = game_constants::MAP_BASE_X_ROTATION;
                 nodeSo.mScale = game_constants::MAP_BASE_SCALE;
             } break;
@@ -137,6 +145,12 @@ void Map::CreateMapSceneObjects()
             } break;
                 
             default: break;
+        }
+        
+        // Add also pulsing animation if node is active
+        if (mMapData.at(mCurrentMapCoord).mNodeLinks.contains(mapNodeEntry.first))
+        {
+            nodeSo.mExtraCompoundingAnimations.push_back( std::make_unique<PulsingAnimation>(nodeSo.mAnimation->VGetCurrentTextureResourceId(), nodeSo.mAnimation->VGetCurrentMeshResourceId(), nodeSo.mAnimation->VGetCurrentShaderResourceId(), nodeSo.mAnimation->VGetScale(), 0.0f, game_constants::MAP_NODE_PULSING_SPEED, game_constants::MAP_NODE_PULSING_ENLARGEMENT_FACTOR, false));
         }
         
         mScene.AddSceneObject(std::move(nodeSo));
@@ -238,6 +252,12 @@ Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
         
         // Only last node can have a boss encounter
         availableNodeTypes.erase(NodeType::BOSS_ENCOUNTER);
+        
+        // Second node can not have base
+        if (currentMapCoord.mCol == 1)
+        {
+            availableNodeTypes.erase(NodeType::BASE);
+        }
         
         // Remove any node types from the immediate previous links except if there are
         // normal encounters

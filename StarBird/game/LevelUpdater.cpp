@@ -419,6 +419,11 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
         {
             sceneObject.mAnimation->VUpdate(dtMillis, sceneObject);
         }
+        
+        for (auto& extraAnimation: sceneObject.mExtraCompoundingAnimations)
+        {
+            extraAnimation->VUpdate(dtMillis, sceneObject);
+        }
     }
     
     const auto& bossName = mLevel.mWaves.at(mCurrentWaveNumber).mBossName;

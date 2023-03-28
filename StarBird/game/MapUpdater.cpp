@@ -147,18 +147,10 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
         {
             sceneObject.mAnimation->VUpdate(dtMillis, sceneObject);
         }
-    }
-    
-    // Rotate planets
-    for (const auto& mapEntry: mMap.GetMapData())
-    {
-        if (mapEntry.first != MapCoord(mMap.GetMapDimensions().x - 1, mMap.GetMapDimensions().y/2))
+        
+        for (auto& extraAnimation: sceneObject.mExtraCompoundingAnimations)
         {
-            auto soOpt = mScene.GetSceneObject(strutils::StringId(mapEntry.first.ToString()));
-            if (soOpt)
-            {
-                soOpt->get().mRotation.y += dtMillis * game_constants::MAP_NODE_ROTATION_SPEED;
-            }
+            extraAnimation->VUpdate(dtMillis, sceneObject);
         }
     }
 }

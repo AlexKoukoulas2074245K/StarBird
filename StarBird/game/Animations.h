@@ -256,7 +256,7 @@ public:
     
     enum class RotationMode
     {
-        ROTATE_TO_TARGET_ONCE, ROTATE_TO_TARGET_AND_BACK_ONCE, ROTATE_TO_TARGET_AND_BACK_CONTINUALLY
+        ROTATE_CONTINUALLY, ROTATE_TO_TARGET_ONCE, ROTATE_TO_TARGET_AND_BACK_ONCE, ROTATE_TO_TARGET_AND_BACK_CONTINUALLY
     };
     
     RotationAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const RotationMode rotationMode, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed, const bool bodyRenderingEnabled);
