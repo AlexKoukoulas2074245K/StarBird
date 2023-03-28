@@ -36,6 +36,11 @@ resources::ResourceId SingleFrameAnimation::VGetCurrentTextureResourceId() const
     return mTextureResourceId;
 }
 
+resources::ResourceId SingleFrameAnimation::VGetCurrentEffectTextureResourceId() const
+{
+    return 0;
+}
+
 resources::ResourceId SingleFrameAnimation::VGetCurrentMeshResourceId() const
 {
     return mMeshResourceId;
@@ -109,6 +114,11 @@ resources::ResourceId MultiFrameAnimation::VGetCurrentTextureResourceId() const
     return mTextureResourceId;
 }
 
+resources::ResourceId MultiFrameAnimation::VGetCurrentEffectTextureResourceId() const
+{
+    return 0;
+}
+
 resources::ResourceId MultiFrameAnimation::VGetCurrentMeshResourceId() const
 {
     return mMeshResourceId;
@@ -158,6 +168,11 @@ void VariableTexturedAnimation::VUpdate(const float, SceneObject& sceneObject)
 resources::ResourceId VariableTexturedAnimation::VGetCurrentTextureResourceId() const
 {
     return mTextureResourceId;
+}
+
+resources::ResourceId VariableTexturedAnimation::VGetCurrentEffectTextureResourceId() const
+{
+    return 0;
 }
 
 resources::ResourceId VariableTexturedAnimation::VGetCurrentMeshResourceId() const
@@ -224,6 +239,11 @@ resources::ResourceId PulsingAnimation::VGetCurrentTextureResourceId() const
     return mTextureResourceId;
 }
 
+resources::ResourceId PulsingAnimation::VGetCurrentEffectTextureResourceId() const
+{
+    return 0;
+}
+
 resources::ResourceId PulsingAnimation::VGetCurrentMeshResourceId() const
 {
     return mMeshResourceId;
@@ -279,6 +299,11 @@ resources::ResourceId BezierCurvePathAnimation::VGetCurrentTextureResourceId() c
     return mTextureResourceId;
 }
 
+resources::ResourceId BezierCurvePathAnimation::VGetCurrentEffectTextureResourceId() const
+{
+    return 0;
+}
+
 resources::ResourceId BezierCurvePathAnimation::VGetCurrentMeshResourceId() const
 {
     return mMeshResourceId;
@@ -318,7 +343,6 @@ ShineAnimation::ShineAnimation(SceneObject* sceneObject, const resources::Resour
 {
     if (sceneObject)
     {
-        sceneObject->mShaderEffectTextureResourceId = mShineTextureResourceId;
         sceneObject->mShaderFloatUniformValues[game_constants::SHINE_X_OFFSET_UNIFORM_NAME] = mShineXOffset;
     }
 }
@@ -330,7 +354,6 @@ std::unique_ptr<IAnimation> ShineAnimation::VClone() const
 
 void ShineAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
-    sceneObject.mShaderEffectTextureResourceId = mShineTextureResourceId;
     mShineXOffset -= mShineSpeed * dtMillis;
     sceneObject.mShaderFloatUniformValues[game_constants::SHINE_X_OFFSET_UNIFORM_NAME] = mShineXOffset;
 }
@@ -338,6 +361,11 @@ void ShineAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 resources::ResourceId ShineAnimation::VGetCurrentTextureResourceId() const
 {
     return mTextureResourceId;
+}
+
+resources::ResourceId ShineAnimation::VGetCurrentEffectTextureResourceId() const
+{
+    return mShineTextureResourceId;
 }
 
 resources::ResourceId ShineAnimation::VGetCurrentMeshResourceId() const
@@ -379,7 +407,6 @@ DissolveAnimation::DissolveAnimation(SceneObject* sceneObject, const resources::
 {
     if (sceneObject)
     {
-        sceneObject->mShaderEffectTextureResourceId = mDissolveTextureResourceId;
         sceneObject->mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] = mDissolveYOffset;
     }
 }
@@ -391,7 +418,6 @@ std::unique_ptr<IAnimation> DissolveAnimation::VClone() const
 
 void DissolveAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
-    sceneObject.mShaderEffectTextureResourceId = mDissolveTextureResourceId;
     mDissolveYOffset -= mDissolveSpeed * dtMillis;
     sceneObject.mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] = mDissolveYOffset;
 }
@@ -399,6 +425,11 @@ void DissolveAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 resources::ResourceId DissolveAnimation::VGetCurrentTextureResourceId() const
 {
     return mTextureResourceId;
+}
+
+resources::ResourceId DissolveAnimation::VGetCurrentEffectTextureResourceId() const
+{
+    return mDissolveTextureResourceId;
 }
 
 resources::ResourceId DissolveAnimation::VGetCurrentMeshResourceId() const
@@ -459,6 +490,11 @@ void NebulaAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 resources::ResourceId NebulaAnimation::VGetCurrentTextureResourceId() const
 {
     return mNoiseTextureResourceId;
+}
+
+resources::ResourceId NebulaAnimation::VGetCurrentEffectTextureResourceId() const
+{
+    return 0;
 }
 
 resources::ResourceId NebulaAnimation::VGetCurrentMeshResourceId() const
@@ -553,6 +589,11 @@ void RotationAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 resources::ResourceId RotationAnimation::VGetCurrentTextureResourceId() const
 {
     return mTextureResourceId;
+}
+
+resources::ResourceId RotationAnimation::VGetCurrentEffectTextureResourceId() const
+{
+    return 0;
 }
 
 resources::ResourceId RotationAnimation::VGetCurrentMeshResourceId() const

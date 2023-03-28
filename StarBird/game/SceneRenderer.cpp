@@ -128,10 +128,10 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
             GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>(currentTextureResourceId).GetGLTextureId()));
         }
         
-        if (so.mShaderEffectTextureResourceId != 0)
+        if (so.mAnimation->VGetCurrentEffectTextureResourceId() != 0)
         {
             GL_CALL(glActiveTexture(GL_TEXTURE1));
-            GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>(so.mShaderEffectTextureResourceId).GetGLTextureId()));
+            GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>(so.mAnimation->VGetCurrentEffectTextureResourceId()).GetGLTextureId()));
         }
         
         glm::mat4 world(1.0f);

@@ -25,6 +25,7 @@ public:
     virtual std::unique_ptr<IAnimation> VClone() const = 0;
     virtual void VUpdate(const float dtMillis, SceneObject& sceneObject) = 0;
     virtual resources::ResourceId VGetCurrentTextureResourceId() const = 0;
+    virtual resources::ResourceId VGetCurrentEffectTextureResourceId() const = 0;
     virtual resources::ResourceId VGetCurrentMeshResourceId() const = 0;
     virtual resources::ResourceId VGetCurrentShaderResourceId() const = 0;
     virtual const glm::vec3& VGetScale() const = 0;
@@ -42,6 +43,7 @@ public:
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentTextureResourceId() const override;
+    resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     const glm::vec3& VGetScale() const override;
@@ -66,6 +68,7 @@ public:
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentTextureResourceId() const override;
+    resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     const glm::vec3& VGetScale() const override;
@@ -94,6 +97,7 @@ public:
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentTextureResourceId() const override;
+    resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     const glm::vec3& VGetScale() const override;
@@ -119,6 +123,7 @@ public:
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentTextureResourceId() const override;
+    resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     const glm::vec3& VGetScale() const override;
@@ -147,6 +152,7 @@ public:
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentTextureResourceId() const override;
+    resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     const glm::vec3& VGetScale() const override;
@@ -174,6 +180,7 @@ public:
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentTextureResourceId() const override;
+    resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     const glm::vec3& VGetScale() const override;
@@ -201,6 +208,7 @@ public:
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentTextureResourceId() const override;
+    resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     const glm::vec3& VGetScale() const override;
@@ -228,6 +236,7 @@ public:
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentTextureResourceId() const override;
+    resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     const glm::vec3& VGetScale() const override;
@@ -266,6 +275,7 @@ public:
     std::unique_ptr<IAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentTextureResourceId() const override;
+    resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     resources::ResourceId VGetCurrentMeshResourceId() const override;
     resources::ResourceId VGetCurrentShaderResourceId() const override;
     const glm::vec3& VGetScale() const override;
