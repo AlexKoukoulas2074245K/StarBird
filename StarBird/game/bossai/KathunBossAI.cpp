@@ -203,7 +203,7 @@ void KathunBossAI::OnAbilityTrigger(const Ability ability)
             {
                 case Ability::SPAWN_CHASER:
                 {
-                    SpawnEnemyAt(bossPosition + glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(0.0f, 0.0f, 0.0f), KATHUN_SLOW_CHASER_ENEMY_TYPE);
+                    SpawnEnemyAt(bossPosition + glm::vec3(0.0f, 0.0f, -0.5f) + glm::vec3(math::RandomFloat(-5.0f, 5.0f), 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), KATHUN_SLOW_CHASER_ENEMY_TYPE);
                 } break;
                 
                 case Ability::VERTICAL_BULLET:
@@ -223,8 +223,8 @@ void KathunBossAI::OnAbilityTrigger(const Ability ability)
             {
                 case Ability::SPAWN_CHASER:
                 {
-                    SpawnEnemyAt(bossPosition + glm::vec3(-2.0f, 0.0f, -0.5f), glm::vec3(0.0f, 0.0f, 0.0f), KATHUN_FAST_CHASER_ENEMY_TYPE);
-                    SpawnEnemyAt(bossPosition + glm::vec3(+2.0f, 0.0f, -0.5f), glm::vec3(0.0f, 0.0f, 0.0f), KATHUN_FAST_CHASER_ENEMY_TYPE);
+                    SpawnEnemyAt(bossPosition + glm::vec3(-2.0f, 0.0f, -0.5f) + glm::vec3(math::RandomFloat(-5.0f, 5.0f), 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), KATHUN_FAST_CHASER_ENEMY_TYPE);
+                    SpawnEnemyAt(bossPosition + glm::vec3(+2.0f, 0.0f, -0.5f) + glm::vec3(math::RandomFloat(-5.0f, 5.0f), 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), KATHUN_FAST_CHASER_ENEMY_TYPE);
                 } break;
                 
                 case Ability::VERTICAL_BULLET:
@@ -252,9 +252,9 @@ void KathunBossAI::OnAbilityTrigger(const Ability ability)
             {
                 case Ability::SPAWN_CHASER:
                 {
-                    SpawnEnemyAt(bossPosition + glm::vec3(0.0f, 0.0f, -0.5f),  glm::vec3(0.0f, 0.0f, 0.0f), KATHUN_SLOW_CHASER_ENEMY_TYPE);
-                    SpawnEnemyAt(bossPosition + glm::vec3(-2.0f, 0.0f, -0.5f), glm::vec3(0.0f, 0.0f, 0.0f), KATHUN_FAST_CHASER_ENEMY_TYPE);
-                    SpawnEnemyAt(bossPosition + glm::vec3(+2.0f, 0.0f, -0.5f), glm::vec3(0.0f, 0.0f, 0.0f), KATHUN_FAST_CHASER_ENEMY_TYPE);
+                    SpawnEnemyAt(bossPosition + glm::vec3(0.0f, 0.0f, -0.5f) + glm::vec3(math::RandomFloat(-5.0f, 5.0f), 0.0f, 0.0f),  glm::vec3(0.0f, 0.0f, 0.0f), KATHUN_SLOW_CHASER_ENEMY_TYPE);
+                    SpawnEnemyAt(bossPosition + glm::vec3(-2.0f, 0.0f, -0.5f) + glm::vec3(math::RandomFloat(-5.0f, 5.0f), 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), KATHUN_FAST_CHASER_ENEMY_TYPE);
+                    SpawnEnemyAt(bossPosition + glm::vec3(+2.0f, 0.0f, -0.5f) + glm::vec3(math::RandomFloat(-5.0f, 5.0f), 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), KATHUN_FAST_CHASER_ENEMY_TYPE);
                 } break;
                 
                 case Ability::VERTICAL_BULLET:

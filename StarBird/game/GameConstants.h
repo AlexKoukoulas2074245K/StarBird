@@ -174,7 +174,7 @@ static const float PLAYER_PULSE_SHIELD_ANIM_SPEED = 0.01f;
 static const float SELECTED_UPGRADE_PULSE_ENLARGEMENT_FACTOR = 1.0f/5.0f;
 static const float SELECTED_UPGRADE_PULSE_ANIM_SPEED = 0.03f;
 
-static const float PLAYER_MOVEMENT_ROLL_CHANCE = 0.333f;
+static const float PLAYER_MOVEMENT_ROLL_CHANCE = 1.333f;
 static const float PLAYER_MOVEMENT_ROLL_SPEED = 0.008f;
 static const float PLAYER_MOVEMENT_ROLL_ANGLE = 180.0f;
 
@@ -205,6 +205,7 @@ static const float DISSOLVE_EFFECT_SPEED = 1.0f/1000.0f;
 
 static const float NEBULA_ANIMATION_SPEED = 1.0f/15000.0f;
 
+static const float TEXT_DAMAGE_PROXIMITY_THRESHOLD = 0.02f;
 static const float TEXT_DAMAGE_ALPHA_SPEED = 0.001f;
 static const float TEXT_DAMAGE_PLAYER_Y_MAX_DISPLACEMENT = 3.0f;
 static const float TEXT_DAMAGE_ENEMY_Y_MAX_DISPLACEMENT = 1.0f;
@@ -220,7 +221,7 @@ static const glm::vec3 JOYSTICK_BOUNDS_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
 static const glm::vec3 WAVE_INTRO_TEXT_INIT_POS = glm::vec3(-3.0f, 0.0f, 2.0f);
 static const glm::vec3 WAVE_INTRO_TEXT_SCALE = glm::vec3(0.02f, 0.02f, 1.0f);
 
-static const glm::vec3 DAMAGE_TEXT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
+static const glm::vec3 TEXT_DAMAGE_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
 
 static const glm::vec3 BOSS_INTRO_TEXT_INIT_POS = glm::vec3(-3.0f, 0.0f, 2.0f);
 static const glm::vec3 BOSS_INTRO_TEXT_SCALE = glm::vec3(0.02f, 0.02f, 1.0f);

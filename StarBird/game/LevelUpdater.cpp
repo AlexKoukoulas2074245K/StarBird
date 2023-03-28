@@ -822,7 +822,8 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                 {
                     if (math::RandomFloat() < game_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
                     {
-                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, game_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_constants::PLAYER_MOVEMENT_ROLL_SPEED, true);
+                        sceneObject.mExtraCompoundingAnimations.clear();
+                        sceneObject.mExtraCompoundingAnimations.push_back( std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, game_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_constants::PLAYER_MOVEMENT_ROLL_SPEED, true));
                     }
                     
                     mMovementRotationAllowed = false;
@@ -831,7 +832,8 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                 {
                     if (math::RandomFloat() < game_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
                     {
-                        sceneObject.mAnimation = std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, -game_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_constants::PLAYER_MOVEMENT_ROLL_SPEED, true);
+                        sceneObject.mExtraCompoundingAnimations.clear();
+                        sceneObject.mExtraCompoundingAnimations.push_back( std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, -game_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_constants::PLAYER_MOVEMENT_ROLL_SPEED, true));
                     }
                     
                     mMovementRotationAllowed = false;
@@ -1044,25 +1046,35 @@ void LevelUpdater::CreateTextOnDamage(const glm::vec3& textOriginPos, const int 
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
-    float randX = math::RandomFloat(-0.5f, 0.5f);
+    glm::vec3 firstControlPoint = glm::vec3(textOriginPos.x, textOriginPos.y, game_constants::DAMAGE_TEXT_Z);
+    glm::vec3 secondControlPoint = glm::vec3(textOriginPos.x, textOriginPos.y + (playerDamaged ? game_constants::TEXT_DAMAGE_PLAYER_Y_MAX_DISPLACEMENT : game_constants::TEXT_DAMAGE_ENEMY_Y_MAX_DISPLACEMENT), game_constants::DAMAGE_TEXT_Z);
     
-    glm::vec3 firstControlPoint = glm::vec3(textOriginPos.x + randX, textOriginPos.y, game_constants::DAMAGE_TEXT_Z);
-    glm::vec3 secondControlPoint = glm::vec3(textOriginPos.x + randX, textOriginPos.y + (playerDamaged ? game_constants::TEXT_DAMAGE_PLAYER_Y_MAX_DISPLACEMENT : game_constants::TEXT_DAMAGE_ENEMY_Y_MAX_DISPLACEMENT), game_constants::DAMAGE_TEXT_Z);
     
-    math::BezierCurve curve({ firstControlPoint, secondControlPoint });
+    auto closeEnoughTextSceneObjectNameIter = std::find_if(mDamageTextSceneObjects.cbegin(), mDamageTextSceneObjects.cend(), [&](const strutils::StringId& damageTextSceneObjectName)
+    {
+        auto sceneObjectOpt = mScene.GetSceneObject(damageTextSceneObjectName);
+        return sceneObjectOpt && glm::distance(sceneObjectOpt->get().mPosition, firstControlPoint) < game_constants::TEXT_DAMAGE_PROXIMITY_THRESHOLD;
+    });
     
-    SceneObject damageTextSO;
-    damageTextSO.mPosition = textOriginPos;
-    damageTextSO.mScale = game_constants::DAMAGE_TEXT_SCALE;
-    damageTextSO.mAnimation = std::make_unique<BezierCurvePathAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME), glm::vec3(1.0f), curve, game_constants::TEXT_DAMAGE_CURVE_TRAVERSAL_SPEED, false);
-    damageTextSO.mFontName = game_constants::DEFAULT_FONT_NAME;
-    damageTextSO.mSceneObjectType = SceneObjectType::GUIObject;
-    damageTextSO.mName = strutils::StringId(std::to_string(SDL_GetTicks64()));
-    damageTextSO.mText = std::to_string(damage);
-    damageTextSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = playerDamaged ? glm::vec4(1.0f, 0.0f, 0.0f, 0.8f) : glm::vec4(1.0f, 1.0f, 1.0f, 0.8f);
+    // Don't spawn text if it's going to overlap too much with other existing text
+    if (closeEnoughTextSceneObjectNameIter == mDamageTextSceneObjects.cend())
+    {
+        math::BezierCurve curve({ firstControlPoint, secondControlPoint });
+        
+        SceneObject damageTextSO;
+        damageTextSO.mPosition = textOriginPos;
+        damageTextSO.mScale = game_constants::TEXT_DAMAGE_SCALE;
+        damageTextSO.mAnimation = std::make_unique<BezierCurvePathAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME), glm::vec3(1.0f), curve, game_constants::TEXT_DAMAGE_CURVE_TRAVERSAL_SPEED, false);
+        damageTextSO.mFontName = game_constants::DEFAULT_FONT_NAME;
+        damageTextSO.mSceneObjectType = SceneObjectType::GUIObject;
+        damageTextSO.mName = strutils::StringId(std::to_string(SDL_GetTicks64()));
+        damageTextSO.mText = std::to_string(damage);
+        damageTextSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = playerDamaged ? glm::vec4(1.0f, 0.0f, 0.0f, 0.8f) : glm::vec4(1.0f, 1.0f, 1.0f, 0.8f);
+        
+        mDamageTextSceneObjects.insert(damageTextSO.mName);
+        mScene.AddSceneObject(std::move(damageTextSO));
+    }
     
-    mDamageTextSceneObjects.insert(damageTextSO.mName);
-    mScene.AddSceneObject(std::move(damageTextSO));
 }
 
 ///------------------------------------------------------------------------------------------------
