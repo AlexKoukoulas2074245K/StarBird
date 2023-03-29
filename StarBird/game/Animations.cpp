@@ -13,75 +13,94 @@
 
 ///------------------------------------------------------------------------------------------------
 
-SingleFrameAnimation::SingleFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled)
+BaseAnimation::BaseAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled)
     : mTextureResourceId(textureResourceId)
     , mMeshResourceId(meshResourceId)
     , mShaderResourceId(shaderResourceId)
     , mScale(scale)
     , mBodyRenderingEnabled(bodyRenderingEnabled)
+    , mPaused(false)
 {
 }
 
-std::unique_ptr<IAnimation> SingleFrameAnimation::VClone() const
-{
-    return std::make_unique<SingleFrameAnimation>(*this);
-}
-
-void SingleFrameAnimation::VUpdate(const float, SceneObject&)
+void BaseAnimation::VUpdate(const float, SceneObject&)
 {
 }
 
-resources::ResourceId SingleFrameAnimation::VGetCurrentTextureResourceId() const
+bool BaseAnimation::VIsPaused() const
+{
+    return mPaused;
+}
+
+void BaseAnimation::VPause()
+{
+    mPaused = true;
+}
+
+void BaseAnimation::VResume()
+{
+    mPaused = false;
+}
+
+resources::ResourceId BaseAnimation::VGetCurrentTextureResourceId() const
 {
     return mTextureResourceId;
 }
 
-resources::ResourceId SingleFrameAnimation::VGetCurrentEffectTextureResourceId() const
+resources::ResourceId BaseAnimation::VGetCurrentEffectTextureResourceId() const
 {
     return 0;
 }
 
-resources::ResourceId SingleFrameAnimation::VGetCurrentMeshResourceId() const
+resources::ResourceId BaseAnimation::VGetCurrentMeshResourceId() const
 {
     return mMeshResourceId;
 }
 
-resources::ResourceId SingleFrameAnimation::VGetCurrentShaderResourceId() const
+resources::ResourceId BaseAnimation::VGetCurrentShaderResourceId() const
 {
     return mShaderResourceId;
 }
 
-const glm::vec3& SingleFrameAnimation::VGetScale() const
+const glm::vec3& BaseAnimation::VGetScale() const
 {
     return mScale;
 }
 
-float SingleFrameAnimation::VGetDuration() const
+float BaseAnimation::VGetDuration() const
 {
     return 0.0f;
 }
 
-bool SingleFrameAnimation::VGetBodyRenderingEnabled() const
+bool BaseAnimation::VGetBodyRenderingEnabled() const
 {
     return mBodyRenderingEnabled;
 }
 
 ///------------------------------------------------------------------------------------------------
 
+SingleFrameAnimation::SingleFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled)
+    : BaseAnimation(textureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
+{
+}
+
+std::unique_ptr<BaseAnimation> SingleFrameAnimation::VClone() const
+{
+    return std::make_unique<SingleFrameAnimation>(*this);
+}
+
+///------------------------------------------------------------------------------------------------
+
 MultiFrameAnimation::MultiFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float duration, const int textureSheetRow, const bool bodyRenderingEnabled)
-    : mTextureResourceId(textureResourceId)
-    , mMeshResourceId(meshResourceId)
-    , mShaderResourceId(shaderResourceId)
-    , mScale(scale)
+    : BaseAnimation(textureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
     , mDuration(duration)
     , mAnimationTime(0.0f)
     , mTextureSheetRow(textureSheetRow)
     , mAnimationIndex(0)
-    , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
 }
 
-std::unique_ptr<IAnimation> MultiFrameAnimation::VClone() const
+std::unique_ptr<BaseAnimation> MultiFrameAnimation::VClone() const
 {
     return std::make_unique<MultiFrameAnimation>(*this);
 }
@@ -109,113 +128,36 @@ void MultiFrameAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject
     sceneObject.mShaderFloatUniformValues[game_constants::MAX_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).maxV;
 }
 
-resources::ResourceId MultiFrameAnimation::VGetCurrentTextureResourceId() const
-{
-    return mTextureResourceId;
-}
-
-resources::ResourceId MultiFrameAnimation::VGetCurrentEffectTextureResourceId() const
-{
-    return 0;
-}
-
-resources::ResourceId MultiFrameAnimation::VGetCurrentMeshResourceId() const
-{
-    return mMeshResourceId;
-}
-
-resources::ResourceId MultiFrameAnimation::VGetCurrentShaderResourceId() const
-{
-    return mShaderResourceId;
-}
-
-const glm::vec3& MultiFrameAnimation::VGetScale() const
-{
-    return mScale;
-}
-
 float MultiFrameAnimation::VGetDuration() const
 {
     return mDuration;
 }
 
-bool MultiFrameAnimation::VGetBodyRenderingEnabled() const
-{
-    return mBodyRenderingEnabled;
-}
-
 ///------------------------------------------------------------------------------------------------
 
 VariableTexturedAnimation::VariableTexturedAnimation(const std::vector<resources::ResourceId>& potentialTextureResourceIds, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled)
-    : mPotentialTextureResourceIds(potentialTextureResourceIds)
-    , mTextureResourceId(potentialTextureResourceIds.at(math::RandomInt(0, static_cast<int>(potentialTextureResourceIds.size()) - 1)))
-    , mMeshResourceId(meshResourceId)
-    , mShaderResourceId(shaderResourceId)
-    , mScale(scale)
-    , mBodyRenderingEnabled(bodyRenderingEnabled)
+    : BaseAnimation(potentialTextureResourceIds.at(math::RandomInt(0, static_cast<int>(potentialTextureResourceIds.size()) - 1)), meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
+    , mPotentialTextureResourceIds(potentialTextureResourceIds)
 {
 }
            
-std::unique_ptr<IAnimation> VariableTexturedAnimation::VClone() const
+std::unique_ptr<BaseAnimation> VariableTexturedAnimation::VClone() const
 {
     return std::make_unique<VariableTexturedAnimation>(mPotentialTextureResourceIds, mMeshResourceId, mShaderResourceId, mScale, mBodyRenderingEnabled);
-}
-
-void VariableTexturedAnimation::VUpdate(const float, SceneObject& sceneObject)
-{
-}
-
-resources::ResourceId VariableTexturedAnimation::VGetCurrentTextureResourceId() const
-{
-    return mTextureResourceId;
-}
-
-resources::ResourceId VariableTexturedAnimation::VGetCurrentEffectTextureResourceId() const
-{
-    return 0;
-}
-
-resources::ResourceId VariableTexturedAnimation::VGetCurrentMeshResourceId() const
-{
-    return mMeshResourceId;
-}
-
-resources::ResourceId VariableTexturedAnimation::VGetCurrentShaderResourceId() const
-{
-    return mShaderResourceId;
-}
-
-const glm::vec3& VariableTexturedAnimation::VGetScale() const
-{
-    return mScale;
-}
-
-float VariableTexturedAnimation::VGetDuration() const
-{
-    return 0.0f;
-}
-
-bool VariableTexturedAnimation::VGetBodyRenderingEnabled() const
-{
-    return mBodyRenderingEnabled;
 }
 
 ///------------------------------------------------------------------------------------------------
 
 PulsingAnimation::PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float delayedStartMillis, const float pulsingSpeed, const float pulsingEnlargementFactor, const bool bodyRenderingEnabled)
-    : mTextureResourceId(textureResourceId)
-    , mMeshResourceId(meshResourceId)
-    , mShaderResourceId(shaderResourceId)
-    , mScale(scale)
+    : BaseAnimation(textureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
     , mDelayedStartMillis(delayedStartMillis)
     , mPulsingSpeed(pulsingSpeed)
     , mPulsingEnlargementFactor(pulsingEnlargementFactor)
     , mPulsingDtAccum(0.0f)
-    , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
 }
 
-std::unique_ptr<IAnimation> PulsingAnimation::VClone() const
+std::unique_ptr<BaseAnimation> PulsingAnimation::VClone() const
 {
     return std::make_unique<PulsingAnimation>(*this);
 }
@@ -234,103 +176,30 @@ void PulsingAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
     }
 }
 
-resources::ResourceId PulsingAnimation::VGetCurrentTextureResourceId() const
-{
-    return mTextureResourceId;
-}
-
-resources::ResourceId PulsingAnimation::VGetCurrentEffectTextureResourceId() const
-{
-    return 0;
-}
-
-resources::ResourceId PulsingAnimation::VGetCurrentMeshResourceId() const
-{
-    return mMeshResourceId;
-}
-
-resources::ResourceId PulsingAnimation::VGetCurrentShaderResourceId() const
-{
-    return mShaderResourceId;
-}
-
-const glm::vec3& PulsingAnimation::VGetScale() const
-{
-    return mScale;
-}
-
 float PulsingAnimation::VGetDuration() const
 {
     return mPulsingEnlargementFactor;
 }
 
-bool PulsingAnimation::VGetBodyRenderingEnabled() const
-{
-    return mBodyRenderingEnabled;
-}
-
 ///------------------------------------------------------------------------------------------------
 
 BezierCurvePathAnimation::BezierCurvePathAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const math::BezierCurve& pathCurve, const float curveTraversalSpeed, const bool bodyRenderingEnabled)
-    : mTextureResourceId(textureResourceId)
-    , mMeshResourceId(meshResourceId)
-    , mShaderResourceId(shaderResourceId)
-    , mScale(scale)
+    : BaseAnimation(textureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
     , mPathCurve(pathCurve)
     , mCurveTraversalSpeed(curveTraversalSpeed)
     , mCurveTraversalProgress(0.0f)
-    , mBodyRenderingEnabled(bodyRenderingEnabled)
-    , mPaused(false)
 {
 }
 
-std::unique_ptr<IAnimation> BezierCurvePathAnimation::VClone() const
+std::unique_ptr<BaseAnimation> BezierCurvePathAnimation::VClone() const
 {
     return std::make_unique<BezierCurvePathAnimation>(*this);
 }
 
 void BezierCurvePathAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
-    if (!mPaused)
-    {
-        mCurveTraversalProgress += dtMillis * mCurveTraversalSpeed;
-        sceneObject.mPosition = mPathCurve.ComputePointForT(mCurveTraversalProgress);
-    }
-}
-
-void BezierCurvePathAnimation::VPause()
-{
-    mPaused = true;
-}
-
-void BezierCurvePathAnimation::VResume()
-{
-    mPaused = false;
-}
-
-resources::ResourceId BezierCurvePathAnimation::VGetCurrentTextureResourceId() const
-{
-    return mTextureResourceId;
-}
-
-resources::ResourceId BezierCurvePathAnimation::VGetCurrentEffectTextureResourceId() const
-{
-    return 0;
-}
-
-resources::ResourceId BezierCurvePathAnimation::VGetCurrentMeshResourceId() const
-{
-    return mMeshResourceId;
-}
-
-resources::ResourceId BezierCurvePathAnimation::VGetCurrentShaderResourceId() const
-{
-    return mShaderResourceId;
-}
-
-const glm::vec3& BezierCurvePathAnimation::VGetScale() const
-{
-    return mScale;
+    mCurveTraversalProgress += dtMillis * mCurveTraversalSpeed;
+    sceneObject.mPosition = mPathCurve.ComputePointForT(mCurveTraversalProgress);
 }
 
 float BezierCurvePathAnimation::VGetDuration() const
@@ -338,22 +207,13 @@ float BezierCurvePathAnimation::VGetDuration() const
     return mCurveTraversalSpeed;
 }
 
-bool BezierCurvePathAnimation::VGetBodyRenderingEnabled() const
-{
-    return mBodyRenderingEnabled;
-}
-
 ///------------------------------------------------------------------------------------------------
 
 ShineAnimation::ShineAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId shineTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float shineSpeed, const bool bodyRenderingEnabled)
-    : mTextureResourceId(textureResourceId)
+    : BaseAnimation(textureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
     , mShineTextureResourceId(shineTextureResourceId)
-    , mMeshResourceId(meshResourceId)
-    , mShaderResourceId(shaderResourceId)
-    , mScale(scale)
     , mShineSpeed(shineSpeed)
     , mShineXOffset(game_constants::SHINE_EFFECT_X_OFFSET_INIT_VAL)
-    , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
     if (sceneObject)
     {
@@ -361,7 +221,7 @@ ShineAnimation::ShineAnimation(SceneObject* sceneObject, const resources::Resour
     }
 }
 
-std::unique_ptr<IAnimation> ShineAnimation::VClone() const
+std::unique_ptr<BaseAnimation> ShineAnimation::VClone() const
 {
     return std::make_unique<ShineAnimation>(*this);
 }
@@ -372,29 +232,9 @@ void ShineAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
     sceneObject.mShaderFloatUniformValues[game_constants::SHINE_X_OFFSET_UNIFORM_NAME] = mShineXOffset;
 }
 
-resources::ResourceId ShineAnimation::VGetCurrentTextureResourceId() const
-{
-    return mTextureResourceId;
-}
-
 resources::ResourceId ShineAnimation::VGetCurrentEffectTextureResourceId() const
 {
     return mShineTextureResourceId;
-}
-
-resources::ResourceId ShineAnimation::VGetCurrentMeshResourceId() const
-{
-    return mMeshResourceId;
-}
-
-resources::ResourceId ShineAnimation::VGetCurrentShaderResourceId() const
-{
-    return mShaderResourceId;
-}
-
-const glm::vec3& ShineAnimation::VGetScale() const
-{
-    return mScale;
 }
 
 float ShineAnimation::VGetDuration() const
@@ -402,22 +242,13 @@ float ShineAnimation::VGetDuration() const
     return math::Abs(game_constants::SHINE_EFFECT_X_OFFSET_END_VAL - game_constants::SHINE_EFFECT_X_OFFSET_INIT_VAL)/mShineSpeed;
 }
 
-bool ShineAnimation::VGetBodyRenderingEnabled() const
-{
-    return mBodyRenderingEnabled;
-}
-
 ///------------------------------------------------------------------------------------------------
 
 DissolveAnimation::DissolveAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId dissolveTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float dissolveSpeed, const bool bodyRenderingEnabled)
-    : mTextureResourceId(textureResourceId)
+    : BaseAnimation(textureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
     , mDissolveTextureResourceId(dissolveTextureResourceId)
-    , mMeshResourceId(meshResourceId)
-    , mShaderResourceId(shaderResourceId)
-    , mScale(scale)
     , mDissolveSpeed(dissolveSpeed)
     , mDissolveYOffset(game_constants::DISSOLVE_EFFECT_Y_INIT_VAL)
-    , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
     if (sceneObject)
     {
@@ -425,7 +256,7 @@ DissolveAnimation::DissolveAnimation(SceneObject* sceneObject, const resources::
     }
 }
 
-std::unique_ptr<IAnimation> DissolveAnimation::VClone() const
+std::unique_ptr<BaseAnimation> DissolveAnimation::VClone() const
 {
     return std::make_unique<DissolveAnimation>(*this);
 }
@@ -436,29 +267,9 @@ void DissolveAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
     sceneObject.mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] = mDissolveYOffset;
 }
 
-resources::ResourceId DissolveAnimation::VGetCurrentTextureResourceId() const
-{
-    return mTextureResourceId;
-}
-
 resources::ResourceId DissolveAnimation::VGetCurrentEffectTextureResourceId() const
 {
     return mDissolveTextureResourceId;
-}
-
-resources::ResourceId DissolveAnimation::VGetCurrentMeshResourceId() const
-{
-    return mMeshResourceId;
-}
-
-resources::ResourceId DissolveAnimation::VGetCurrentShaderResourceId() const
-{
-    return mShaderResourceId;
-}
-
-const glm::vec3& DissolveAnimation::VGetScale() const
-{
-    return mScale;
 }
 
 float DissolveAnimation::VGetDuration() const
@@ -466,20 +277,11 @@ float DissolveAnimation::VGetDuration() const
     return game_constants::DISSOLVE_EFFECT_Y_INIT_VAL/mDissolveSpeed;
 }
 
-bool DissolveAnimation::VGetBodyRenderingEnabled() const
-{
-    return mBodyRenderingEnabled;
-}
-
 ///------------------------------------------------------------------------------------------------
 
 NebulaAnimation::NebulaAnimation(SceneObject* sceneObject, const resources::ResourceId noiseTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float noiseMovementSpeed, const bool bodyRenderingEnabled)
-    : mNoiseTextureResourceId(noiseTextureResourceId)
-    , mMeshResourceId(meshResourceId)
-    , mShaderResourceId(shaderResourceId)
-    , mScale(scale)
+    : BaseAnimation(noiseTextureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
     , mNoiseMovementSpeed(noiseMovementSpeed)
-    , mBodyRenderingEnabled(bodyRenderingEnabled)
 {
     if (sceneObject)
     {
@@ -490,7 +292,7 @@ NebulaAnimation::NebulaAnimation(SceneObject* sceneObject, const resources::Reso
     mNoiseMovementDirection.y = math::RandomFloat(-1.0f, 1.0f);
 }
 
-std::unique_ptr<IAnimation> NebulaAnimation::VClone() const
+std::unique_ptr<BaseAnimation> NebulaAnimation::VClone() const
 {
     return std::make_unique<NebulaAnimation>(*this);
 }
@@ -501,48 +303,10 @@ void NebulaAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
     sceneObject.mShaderFloatUniformValues[game_constants::TEXTURE_OFFSET_Y_UNIFORM_NAME] += dtMillis * mNoiseMovementDirection.y * game_constants::NEBULA_ANIMATION_SPEED;
 }
 
-resources::ResourceId NebulaAnimation::VGetCurrentTextureResourceId() const
-{
-    return mNoiseTextureResourceId;
-}
-
-resources::ResourceId NebulaAnimation::VGetCurrentEffectTextureResourceId() const
-{
-    return 0;
-}
-
-resources::ResourceId NebulaAnimation::VGetCurrentMeshResourceId() const
-{
-    return mMeshResourceId;
-}
-
-resources::ResourceId NebulaAnimation::VGetCurrentShaderResourceId() const
-{
-    return mShaderResourceId;
-}
-
-const glm::vec3& NebulaAnimation::VGetScale() const
-{
-    return mScale;
-}
-
-float NebulaAnimation::VGetDuration() const
-{
-    return 0.0f;
-}
-
-bool NebulaAnimation::VGetBodyRenderingEnabled() const
-{
-    return mBodyRenderingEnabled;
-}
-
 ///------------------------------------------------------------------------------------------------
 
 RotationAnimation::RotationAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const RotationMode rotationMode, const RotationAxis rotationAxis, const float rotationDegrees, const float rotationSpeed, const bool bodyRenderingEnabled)
-    : mTextureResourceId(textureResourceId)
-    , mMeshResourceId(meshResourceId)
-    , mShaderResourceId(shaderResourceId)
-    , mScale(scale)
+    : BaseAnimation(textureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
     , mRotationMode(rotationMode)
     , mRotationAxis(rotationAxis)
     , mRotationRadians(glm::radians(rotationDegrees))
@@ -550,7 +314,6 @@ RotationAnimation::RotationAnimation(const resources::ResourceId textureResource
     , mRotationSpeed(rotationSpeed)
     , mRotationDtAccum(0.0f)
     , mLeftHandRotation(rotationDegrees < 0.0f)
-    , mBodyRenderingEnabled(bodyRenderingEnabled)
     , mFinishedRotationOnce(false)
 {
 }
@@ -560,7 +323,7 @@ void RotationAnimation::SetRotationMode(const RotationMode rotationMode)
     mRotationMode = rotationMode;
 }
 
-std::unique_ptr<IAnimation> RotationAnimation::VClone() const
+std::unique_ptr<BaseAnimation> RotationAnimation::VClone() const
 {
     return std::make_unique<RotationAnimation>(*this);
 }
@@ -600,39 +363,9 @@ void RotationAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
     }
 }
 
-resources::ResourceId RotationAnimation::VGetCurrentTextureResourceId() const
-{
-    return mTextureResourceId;
-}
-
-resources::ResourceId RotationAnimation::VGetCurrentEffectTextureResourceId() const
-{
-    return 0;
-}
-
-resources::ResourceId RotationAnimation::VGetCurrentMeshResourceId() const
-{
-    return mMeshResourceId;
-}
-
-resources::ResourceId RotationAnimation::VGetCurrentShaderResourceId() const
-{
-    return mShaderResourceId;
-}
-
-const glm::vec3& RotationAnimation::VGetScale() const
-{
-    return mScale;
-}
-
 float RotationAnimation::VGetDuration() const
 {
     return math::Abs(mRotationRadians)/mRotationSpeed * (mRotationMode == RotationMode::ROTATE_TO_TARGET_AND_BACK_ONCE ? 2.0f : 1.0f);
-}
-
-bool RotationAnimation::VGetBodyRenderingEnabled() const
-{
-    return mBodyRenderingEnabled;
 }
 
 void RotationAnimation::OnSingleRotationFinished()

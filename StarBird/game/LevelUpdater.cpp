@@ -415,14 +415,17 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
             }
         }
         
-        if (sceneObject.mAnimation)
+        if (sceneObject.mAnimation && !sceneObject.mAnimation->VIsPaused())
         {
             sceneObject.mAnimation->VUpdate(dtMillis, sceneObject);
         }
         
         for (auto& extraAnimation: sceneObject.mExtraCompoundingAnimations)
         {
-            extraAnimation->VUpdate(dtMillis, sceneObject);
+            if (extraAnimation->VIsPaused())
+            {
+                extraAnimation->VUpdate(dtMillis, sceneObject);
+            }
         }
     }
     
@@ -1031,6 +1034,15 @@ void LevelUpdater::UpdateTextDamage(const float dtMillis)
             {
                 mDamagedSceneObjectNameToTextSceneObjectFreezeTimer[damagedSceneObjectToTextEntry.first] -= dtMillis;
                 sceneObject.mAnimation->VPause();
+                
+                auto damagedSceneObjectOpt = mScene.GetSceneObject(damagedSceneObjectToTextEntry.first);
+                if (damagedSceneObjectOpt)
+                {
+                    sceneObject.mPosition = math::Box2dVec2ToGlmVec3(damagedSceneObjectOpt->get().mBody->GetWorldCenter());
+                    sceneObject.mPosition.x += game_constants::TEXT_DAMAGE_X_OFFSET;
+                    sceneObject.mPosition.y += game_constants::TEXT_DAMAGE_Y_OFFSET;
+                    sceneObject.mPosition.z = game_constants::TEXT_DAMAGE_Z;
+                }
             }
             else
             {
@@ -1044,6 +1056,8 @@ void LevelUpdater::UpdateTextDamage(const float dtMillis)
                     mScene.RemoveAllSceneObjectsWithName(damagedSceneObjectToTextEntry.second);
                     sceneObjectEntriesToRemove.insert(damagedSceneObjectToTextEntry.first);
                 }
+                
+                sceneObject.mPosition.y += game_constants::TEXT_DAMAGE_MOVEMENT_SPEED * dtMillis;
             }
         }
     }
@@ -1077,16 +1091,13 @@ void LevelUpdater::CreateTextOnDamage(const strutils::StringId& damagedSceneObje
     else
     {
         bool enemyDamaged = damagedSceneObjectName != game_constants::PLAYER_SCENE_OBJECT_NAME;
-        glm::vec3 firstControlPoint = glm::vec3(textOriginPos.x, textOriginPos.y, game_constants::DAMAGE_TEXT_Z);
-        glm::vec3 secondControlPoint = glm::vec3(textOriginPos.x, textOriginPos.y + (enemyDamaged ? game_constants::TEXT_DAMAGE_ENEMY_Y_MAX_DISPLACEMENT : game_constants::TEXT_DAMAGE_PLAYER_Y_MAX_DISPLACEMENT), game_constants::DAMAGE_TEXT_Z);
-        
-        math::BezierCurve curve({ firstControlPoint, secondControlPoint });
-        
         SceneObject damageTextSO;
         damageTextSO.mPosition = textOriginPos;
-        damageTextSO.mPosition.z = game_constants::DAMAGE_TEXT_Z;
+        damageTextSO.mPosition.x += game_constants::TEXT_DAMAGE_X_OFFSET;
+        damageTextSO.mPosition.y += game_constants::TEXT_DAMAGE_Y_OFFSET;
+        damageTextSO.mPosition.z = game_constants::TEXT_DAMAGE_Z;
         damageTextSO.mScale = game_constants::TEXT_DAMAGE_SCALE;
-        damageTextSO.mAnimation = std::make_unique<BezierCurvePathAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME), glm::vec3(1.0f), curve, game_constants::TEXT_DAMAGE_CURVE_TRAVERSAL_SPEED, false);
+        damageTextSO.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         damageTextSO.mFontName = game_constants::DEFAULT_FONT_NAME;
         damageTextSO.mSceneObjectType = SceneObjectType::GUIObject;
         damageTextSO.mName = strutils::StringId(std::to_string(SDL_GetTicks64()));

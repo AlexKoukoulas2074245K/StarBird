@@ -157,14 +157,17 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     // Animate all SOs
     for (auto& sceneObject: sceneObjects)
     {
-        if (sceneObject.mAnimation)
+        if (sceneObject.mAnimation && !sceneObject.mAnimation->VIsPaused())
         {
             sceneObject.mAnimation->VUpdate(dtMillis, sceneObject);
         }
         
         for (auto& extraAnimation: sceneObject.mExtraCompoundingAnimations)
         {
-            extraAnimation->VUpdate(dtMillis, sceneObject);
+            if (!extraAnimation->VIsPaused())
+            {
+                extraAnimation->VUpdate(dtMillis, sceneObject);
+            }
         }
     }
 }

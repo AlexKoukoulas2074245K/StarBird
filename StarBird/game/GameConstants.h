@@ -148,7 +148,6 @@ static const float BACKGROUND_Z = -1.0f;
 static const float WALL_Z = -0.5f;
 
 static const float BULLET_Z = -0.5f;
-static const float DAMAGE_TEXT_Z = 2.0f;
 
 static const float PLAYER_HEALTH_LOST_BAR_Z = 0.4f;
 static const float PLAYER_HEALTH_BAR_Z = 0.45f;
@@ -206,10 +205,11 @@ static const float DISSOLVE_EFFECT_SPEED = 1.0f/1000.0f;
 static const float NEBULA_ANIMATION_SPEED = 1.0f/15000.0f;
 
 static const float TEXT_DAMAGE_ALPHA_SPEED = 0.002f;
-static const float TEXT_DAMAGE_PLAYER_Y_MAX_DISPLACEMENT = 3.0f;
-static const float TEXT_DAMAGE_ENEMY_Y_MAX_DISPLACEMENT = 1.0f;
-static const float TEXT_DAMAGE_CURVE_TRAVERSAL_SPEED = 0.002f;
+static const float TEXT_DAMAGE_Y_OFFSET = 1.5f;
+static const float TEXT_DAMAGE_X_OFFSET = -0.2f;
+static const float TEXT_DAMAGE_MOVEMENT_SPEED = 0.002f;
 static const float TEXT_DAMAGE_FREEZE_MILLIS = 300.0f;
+static const float TEXT_DAMAGE_Z = 2.0f;
 
 static const glm::vec3 PLAYER_INITIAL_POS = glm::vec3(0.0f, -10.0f, 0.0f);
 static const glm::vec3 BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);

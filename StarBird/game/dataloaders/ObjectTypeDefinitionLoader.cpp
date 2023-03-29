@@ -202,7 +202,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
     {
         auto* node = static_cast<const rapidxml::xml_node<>*>(n);
         
-        IAnimation* animation = nullptr;
+        BaseAnimation* animation = nullptr;
         
         // Variable Textured Animation
         auto* textureText = node->first_attribute("texture");

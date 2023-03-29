@@ -23,7 +23,7 @@
 ///------------------------------------------------------------------------------------------------
 
 class b2Body;
-class IAnimation;
+class BaseAnimation;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -60,11 +60,11 @@ struct SceneObject // 464b
     
     // Current animation of the scene object. Current texture, mesh and shader will be checked by the Renderer
     // from this animation
-    std::unique_ptr<IAnimation> mAnimation = nullptr;
+    std::unique_ptr<BaseAnimation> mAnimation = nullptr;
     
     // Extra animations that are used in conjunction with the above to provide more than one transformations
     // to the scene object. E.g. Pulsing + Rotation animations
-    std::vector<std::unique_ptr<IAnimation>> mExtraCompoundingAnimations;
+    std::vector<std::unique_ptr<BaseAnimation>> mExtraCompoundingAnimations;
     
     // Box2D physical body
     b2Body* mBody = nullptr;
