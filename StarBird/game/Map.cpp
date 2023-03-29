@@ -95,7 +95,7 @@ void Map::CreateMapSceneObjects()
         
         switch (mapNodeEntry.second.mNodeType)
         {
-            case NodeType::HARD_COUNTER:
+            case NodeType::HARD_ENCOUNTER:
             {
                 SceneObject planetRingSO;
                 
@@ -124,7 +124,7 @@ void Map::CreateMapSceneObjects()
                 nodeSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
             } break;
                
-            case NodeType::BASE:
+            case NodeType::LAB:
             {
                 nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_BASE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::MAP_BASE_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), game_constants::MAP_BASE_SCALE, RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f,  game_constants::MAP_NODE_ROTATION_SPEED, false);
                 nodeSo.mRotation.x = game_constants::MAP_BASE_X_ROTATION;
@@ -256,7 +256,7 @@ Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
         // Second node can not have base
         if (currentMapCoord.mCol == 1)
         {
-            availableNodeTypes.erase(NodeType::BASE);
+            availableNodeTypes.erase(NodeType::LAB);
         }
         
         // Remove any node types from the immediate previous links except if there are

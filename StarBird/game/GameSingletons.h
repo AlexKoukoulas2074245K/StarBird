@@ -64,6 +64,7 @@ public:
     static void SetBossCurrentHealth(const float bossCurrentHealth);
     
     static MapCoord GetCurrentMapCoord();
+    static void SetCurrentMapCoord(const MapCoord& mapCoord);
     
 private:
     static InputContext mInputContext;
@@ -73,6 +74,7 @@ private:
     static UpgradeMap mEquippedUpgrades;
     static UpgradeMap mAvailableUpgrades;
     static std::pair<UpgradeDefinition, UpgradeDefinition> mUpgradeSelection;
+    static MapCoord mCurrentMapCoord;
     static float mGameSpeedMultiplier;
     static float mBossMaxHealth;
     static float mBossCurrentHealth;

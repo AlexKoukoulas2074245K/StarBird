@@ -27,13 +27,14 @@
 
 Scene::Scene()
     : mBox2dWorld(b2Vec2(0.0f, 0.0f))
+    , mSceneUpdater(nullptr)
+    , mTransitionParameters(nullptr)
     , mSceneRenderer(mBox2dWorld)
     , mPreFirstUpdate(true)
 {
     FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_NAME);
     GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera());
     GameSingletons::SetCameraForSceneObjectType(SceneObjectType::GUIObject, Camera());
-    mSceneUpdater = std::make_unique<MapUpdater>(*this);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -47,7 +48,7 @@ Scene::~Scene()
 
 std::string Scene::GetSceneStateDescription() const
 {
-    return "SOs: " + std::to_string(mSceneObjects.size()) + " bodies: " + std::to_string(mBox2dWorld.GetBodyCount()) + " enemies: " + mSceneUpdater->GetDescription();
+    return "SOs: " + std::to_string(mSceneObjects.size()) + " bodies: " + std::to_string(mBox2dWorld.GetBodyCount()) + " enemies: " + (mSceneUpdater ? mSceneUpdater->GetDescription() : "");
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -221,53 +222,87 @@ void Scene::RemoveAllSceneObjectsWithName(const strutils::StringId& name)
 
 ///------------------------------------------------------------------------------------------------
 
-void Scene::LoadLevel(const std::string& levelName)
+void Scene::ChangeScene(const TransitionParameters& transitionParameters)
 {
-    std::vector<SceneObject> crossSceneSceneObjects;
-    for (auto& so: mSceneObjects)
+    // Need to hold a copy of the transition parameters as in the use case of an overlay
+    // the scene creation needs to be deferred, and we don't want the stored lambda
+    // to have an invalid reference to this temporary
+    mTransitionParameters = std::make_unique<TransitionParameters>(transitionParameters.mSceneType, transitionParameters.mSceneNameToTransitionTo, transitionParameters.mUseOverlay);
+    
+    auto sceneCreationLambda = [&]()
     {
-        if (so.mCrossSceneLifetime)
+        std::vector<SceneObject> crossSceneSceneObjects;
+        for (auto& so: mSceneObjects)
         {
-            crossSceneSceneObjects.push_back(std::move(so));
-        }
-        else
-        {
-            if (so.mBody)
+            if (so.mCrossSceneLifetime)
             {
-                delete static_cast<strutils::StringId*>(so.mBody->GetUserData());
-                mBox2dWorld.DestroyBody(so.mBody);
+                crossSceneSceneObjects.push_back(std::move(so));
+            }
+            else
+            {
+                if (so.mBody)
+                {
+                    delete static_cast<strutils::StringId*>(so.mBody->GetUserData());
+                    mBox2dWorld.DestroyBody(so.mBody);
+                }
             }
         }
-    }
-    mSceneObjects.clear();
-    mSceneObjectsToAdd.clear();
-    
-    LevelDataLoader levelDataLoader;
-    auto levelDef = levelDataLoader.LoadLevel(levelName);
-    auto& objectTypeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
-    
-    for (auto& enemyType: levelDef.mEnemyTypes)
-    {
-        objectTypeDefRepo.LoadObjectTypeDefinition(enemyType);
-    }
-    
-    for (const auto& camera: levelDef.mCameras)
-    {
-        if (camera.mType == strutils::StringId("world_cam"))
+        mSceneObjects.clear();
+        mSceneObjectsToAdd.clear();
+        
+        switch (mTransitionParameters->mSceneType)
         {
-            GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera(camera.mLenseHeight));
+            case SceneType::MAP:
+            {
+                mSceneUpdater = std::make_unique<MapUpdater>(*this);
+            } break;
+                
+            case SceneType::LAB:
+            {
+                
+            } break;
+                
+            case SceneType::LEVEL:
+            {
+                LevelDataLoader levelDataLoader;
+                auto levelDef = levelDataLoader.LoadLevel(mTransitionParameters->mSceneNameToTransitionTo);
+                auto& objectTypeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
+                
+                for (auto& enemyType: levelDef.mEnemyTypes)
+                {
+                    objectTypeDefRepo.LoadObjectTypeDefinition(enemyType);
+                }
+                
+                for (const auto& camera: levelDef.mCameras)
+                {
+                    if (camera.mType == strutils::StringId("world_cam"))
+                    {
+                        GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera(camera.mLenseHeight));
+                    }
+                    else if (camera.mType == strutils::StringId("gui_cam"))
+                    {
+                        GameSingletons::SetCameraForSceneObjectType(SceneObjectType::GUIObject, Camera(camera.mLenseHeight));
+                    }
+                }
+                
+                mSceneUpdater = std::make_unique<LevelUpdater>(*this, mBox2dWorld, std::move(levelDef));
+            } break;
         }
-        else if (camera.mType == strutils::StringId("gui_cam"))
+        
+        
+        for (auto& so: crossSceneSceneObjects)
         {
-            GameSingletons::SetCameraForSceneObjectType(SceneObjectType::GUIObject, Camera(camera.mLenseHeight));
+            AddSceneObject(std::move(so));
         }
-    }
+    };
     
-    mSceneUpdater = std::make_unique<LevelUpdater>(*this, mBox2dWorld, std::move(levelDef));
-    
-    for (auto& so: crossSceneSceneObjects)
+    if (mTransitionParameters->mUseOverlay)
     {
-        AddSceneObject(std::move(so));
+        AddOverlayController(game_constants::FULL_SCREEN_OVERLAY_TRANSITION_DARKENING_SPEED, game_constants::FULL_SCREEN_OVERLAY_TRANSITION_MAX_ALPHA, false, sceneCreationLambda);
+    }
+    else
+    {
+        sceneCreationLambda();
     }
 }
 
@@ -275,7 +310,10 @@ void Scene::LoadLevel(const std::string& levelName)
 
 void Scene::OnAppStateChange(Uint32 event)
 {
-    mSceneUpdater->OnAppStateChange(event);
+    if (mSceneUpdater)
+    {
+        mSceneUpdater->OnAppStateChange(event);
+    }
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -294,7 +332,10 @@ void Scene::UpdateScene(const float dtMillis)
         }
     }
     
-    mSceneUpdater->Update(mSceneObjects, dtMillis * GameSingletons::GetGameSpeedMultiplier());
+    if (mSceneUpdater)
+    {
+        mSceneUpdater->Update(mSceneObjects, dtMillis * GameSingletons::GetGameSpeedMultiplier());
+    }
     
     for (const auto& name: mNamesOfSceneObjectsToRemove)
     {
@@ -348,7 +389,10 @@ void Scene::SetSceneRendererPhysicsDebugMode(const bool debugMode)
 #ifdef DEBUG
 void Scene::OpenDebugConsole()
 {
-    mSceneUpdater->OpenDebugConsole();
+    if (mSceneUpdater)
+    {
+        mSceneUpdater->OpenDebugConsole();
+    }
 }
 #endif
 

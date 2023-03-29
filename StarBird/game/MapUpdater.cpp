@@ -15,9 +15,11 @@
 #include "states/DebugConsoleGameState.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../utils/Logging.h"
+
 #include <vector>
 #include <map>
 #include <unordered_set>
+#include <unordered_map>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -29,6 +31,14 @@ static const float CAMERA_MIN_ZOOM_FACTOR = 0.4f;
 static const float CAMERA_ZOOM_SPEED = 0.1f;
 static const float MIN_CAMERA_VELOCITY_TO_START_MOVEMENT = 0.0001f;
 
+static const std::unordered_map<Map::NodeType, Scene::SceneType> NODE_TYPE_TO_SCENE_TYPE =
+{
+    { Map::NodeType::NORMAL_ENCOUNTER, Scene::SceneType::LEVEL },
+    { Map::NodeType::HARD_ENCOUNTER, Scene::SceneType::LEVEL },
+    { Map::NodeType::BOSS_ENCOUNTER, Scene::SceneType::LEVEL },
+    { Map::NodeType::LAB, Scene::SceneType::LAB }
+};
+
 ///------------------------------------------------------------------------------------------------
 
 MapUpdater::MapUpdater(Scene& scene)
@@ -36,7 +46,7 @@ MapUpdater::MapUpdater(Scene& scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
     , mMap(scene, glm::ivec2(9, 5), GameSingletons::GetCurrentMapCoord(), true)
     , mSelectedMapCoord(0, 0)
-    , mTransitioningToLevel(false)
+    , mTransitioning(false)
     
 {
 #ifdef DEBUG
@@ -57,7 +67,7 @@ MapUpdater::~MapUpdater()
 
 void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMillis)
 {
-    if (mTransitioningToLevel)
+    if (mTransitioning)
     {
         return;
     }
@@ -84,10 +94,14 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
         
         if (SelectedActiveLevel(originTouchPos))
         {
-            mScene.AddOverlayController(game_constants::FULL_SCREEN_OVERLAY_TRANSITION_DARKENING_SPEED, game_constants::FULL_SCREEN_OVERLAY_TRANSITION_MAX_ALPHA, false, [&](){
-                mScene.LoadLevel("test_level");
-            });
-            mTransitioningToLevel = true;
+            GameSingletons::SetCurrentMapCoord(mSelectedMapCoord);
+            mTransitioning = true;
+            
+            assert(NODE_TYPE_TO_SCENE_TYPE.contains(mMap.GetMapData().at(mSelectedMapCoord).mNodeType));
+            auto nextSceneType = NODE_TYPE_TO_SCENE_TYPE.at(mMap.GetMapData().at(mSelectedMapCoord).mNodeType);
+            
+            mScene.ChangeScene(Scene::TransitionParameters(nextSceneType, nextSceneType == Scene::SceneType::LEVEL ? "test_level" : "", true));
+            
             return;
         }
     }

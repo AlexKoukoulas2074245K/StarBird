@@ -45,7 +45,7 @@ private:
     StateMachine mStateMachine;
     Map mMap;    
     MapCoord mSelectedMapCoord;
-    bool mTransitioningToLevel;
+    bool mTransitioning;
 };
 
 ///------------------------------------------------------------------------------------------------

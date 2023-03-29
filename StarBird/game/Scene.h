@@ -30,6 +30,28 @@ class IUpdater;
 class Scene final
 {
 public:
+    enum class SceneType
+    {
+        MAP, LAB, LEVEL
+    };
+    
+    class TransitionParameters
+    {
+    public:
+        TransitionParameters(const SceneType sceneType, const std::string& sceneNameToTransitionTo, const bool useOverlay)
+            : mSceneType(sceneType)
+            , mSceneNameToTransitionTo(sceneNameToTransitionTo)
+            , mUseOverlay(useOverlay)
+        {
+            
+        }
+        
+        const SceneType mSceneType;
+        const std::string mSceneNameToTransitionTo;
+        const bool mUseOverlay;
+    };
+    
+public:
     Scene();
     ~Scene();
     
@@ -50,7 +72,7 @@ public:
     void AddSceneObject(SceneObject&& sceneObject);
     void RemoveAllSceneObjectsWithName(const strutils::StringId& name);
 
-    void LoadLevel(const std::string& levelName);
+    void ChangeScene(const TransitionParameters& transitionParameters);
     
     void OnAppStateChange(Uint32 event);
     void UpdateScene(const float dtMillis);
@@ -70,6 +92,7 @@ private:
     LightRepository mLightRepository;
     std::unique_ptr<IUpdater> mSceneUpdater;
     std::unique_ptr<FullScreenOverlayController> mOverlayController;
+    std::unique_ptr<TransitionParameters> mTransitionParameters;
     SceneRenderer mSceneRenderer;
     bool mPreFirstUpdate;
 };

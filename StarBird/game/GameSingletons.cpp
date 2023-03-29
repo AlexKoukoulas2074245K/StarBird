@@ -16,6 +16,7 @@ std::unordered_map<SceneObjectType, Camera> GameSingletons::mSceneObjectTypeToCa
 GameSingletons::UpgradeMap GameSingletons::mEquippedUpgrades = {};
 GameSingletons::UpgradeMap GameSingletons::mAvailableUpgrades = {};
 std::pair<UpgradeDefinition, UpgradeDefinition> GameSingletons::mUpgradeSelection = {};
+MapCoord GameSingletons::mCurrentMapCoord = MapCoord(0, 2);
 float GameSingletons::mGameSpeedMultiplier = 1.0f;
 float GameSingletons::mBossMaxHealth = 0.0f;
 float GameSingletons::mBossCurrentHealth = 1.0f;
@@ -205,7 +206,14 @@ void GameSingletons::SetBossCurrentHealth(const float bossCurrentHealth)
 
 MapCoord GameSingletons::GetCurrentMapCoord()
 {
-    return MapCoord(0, 2);
+    return mCurrentMapCoord;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetCurrentMapCoord(const MapCoord &mapCoord)
+{
+    mCurrentMapCoord = mapCoord;
 }
 
 ///------------------------------------------------------------------------------------------------

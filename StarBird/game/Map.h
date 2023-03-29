@@ -66,9 +66,9 @@ public:
     enum class NodeType
     {
         NORMAL_ENCOUNTER = 0,
-        HARD_COUNTER = 1,
+        HARD_ENCOUNTER = 1,
         BOSS_ENCOUNTER = 2,
-        BASE = 3,
+        LAB = 3,
         COUNT = 4
     };
     

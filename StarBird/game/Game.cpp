@@ -117,7 +117,7 @@ bool Game::InitSystems()
 void Game::Run()
 {
     Scene scene;
-    //scene.LoadLevel("test_level");
+    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", false));
     
     SDL_Event e;
     
