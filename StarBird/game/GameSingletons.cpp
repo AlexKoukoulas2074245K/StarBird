@@ -13,6 +13,7 @@ InputContext GameSingletons::mInputContext = {};
 SDL_Window* GameSingletons::mWindow = nullptr;
 glm::vec2 GameSingletons::mWindowDimensions = glm::vec2();
 std::unordered_map<SceneObjectType, Camera> GameSingletons::mSceneObjectTypeToCameraMap = {};
+std::map<MapCoord, Map::NodeData> GameSingletons::mMapData = {};
 GameSingletons::UpgradeMap GameSingletons::mEquippedUpgrades = {};
 GameSingletons::UpgradeMap GameSingletons::mAvailableUpgrades = {};
 std::pair<UpgradeDefinition, UpgradeDefinition> GameSingletons::mUpgradeSelection = {};
@@ -214,6 +215,21 @@ MapCoord GameSingletons::GetCurrentMapCoord()
 void GameSingletons::SetCurrentMapCoord(const MapCoord &mapCoord)
 {
     mCurrentMapCoord = mapCoord;
+}
+
+///------------------------------------------------------------------------------------------------
+
+const std::map<MapCoord, Map::NodeData>& GameSingletons::GetMapData()
+{
+    return mMapData;
+}
+
+///------------------------------------------------------------------------------------------------
+
+
+void GameSingletons::SetMapData(const std::map<MapCoord, Map::NodeData>& mapData)
+{
+    mMapData = mapData;
 }
 
 ///------------------------------------------------------------------------------------------------

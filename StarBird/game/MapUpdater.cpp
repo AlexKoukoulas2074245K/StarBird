@@ -44,17 +44,31 @@ static const std::unordered_map<Map::NodeType, Scene::SceneType> NODE_TYPE_TO_SC
 MapUpdater::MapUpdater(Scene& scene)
     : mScene(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
-    , mMap(scene, glm::ivec2(9, 5), GameSingletons::GetCurrentMapCoord(), true)
+    , mMap(scene, GameSingletons::GetMapData(), glm::ivec2(9, 5), GameSingletons::GetCurrentMapCoord(), true)
     , mSelectedMapCoord(0, 0)
     , mTransitioning(false)
     
 {
+    if (GameSingletons::GetMapData().empty())
+    {
+        GameSingletons::SetMapData(mMap.GetMapData());
+    }
+    
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
 #endif
 
     auto& worldCamera = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject)->get();
-    worldCamera.SetPosition(glm::vec3(game_constants::MAP_MIN_WORLD_BOUNDS.x, game_constants::MAP_MIN_WORLD_BOUNDS.y, 0.0f));
+    
+    // Center camera to the midpoint of all available nodes
+    glm::vec3 positionAccum(0.0f);
+    const auto& activeCoords = mMap.GetMapData().at(GameSingletons::GetCurrentMapCoord()).mNodeLinks;
+    for (auto& linkedCoord: activeCoords)
+    {
+        positionAccum += mMap.GetMapData().at(linkedCoord).mPosition;
+    }
+    
+    worldCamera.SetPosition(glm::vec3(positionAccum.x/activeCoords.size(), positionAccum.y/activeCoords.size(), 0.0f));
 }
 
 ///------------------------------------------------------------------------------------------------

@@ -37,6 +37,8 @@ static const char* DEBUG_CONSOLE_FONT_SHADER_FILE_NAME = "debug_console_font.vs"
 static const char* UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME = "shine_effect_fxx.bmp";
 static const char* DISSOLVE_EFFECT_TEXTURE_FILE_NAME = "dissolve_line_fxy_mm.bmp";
 static const char* BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/blue/0.bmp";
+static const char* LAB_BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/lab/lab0.bmp";
+static const char* LAB_OPTIONS_TEXTURE_FILE_NAME_PREFIX = "backgrounds/lab/lab";
 static const char* MIRROR_IMAGE_TEXTURE_FILE_NAME = "player_mirror_image_mm.bmp";
 static const char* BULLET_TEXTURE_FILE_NAME = "bullet.bmp";
 static const char* BETTER_BULLET_TEXTURE_FILE_NAME = "better_bullet.bmp";
@@ -55,7 +57,8 @@ static const char* BOSS_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_
 static const char* BOSS_HEALTH_BAR_TEXTURE_FILE_NAME = "enemy_health_bar.bmp";
 static const char* PLAYER_HEALTH_LOST_BAR_TEXTURE_FILE_NAME = "player_health_lost_bar.bmp";
 static const char* PLAYER_SHIELD_TEXTURE_FILE_NAME = "player_shield.bmp";
-
+static const char* RIGHT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "right_navigation_arrow_mm.bmp";
+static const char* LEFT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "left_navigation_arrow_mm.bmp";
 static const strutils::StringId DEFAULT_SCENE_OBJECT_STATE = strutils::StringId("idle");
 static const strutils::StringId DEFAULT_FONT_NAME = strutils::StringId("font");
 
@@ -63,6 +66,7 @@ static const strutils::StringId WALL_SCENE_OBJECT_NAME = strutils::StringId("WAL
 static const strutils::StringId PLAYER_SCENE_OBJECT_NAME = strutils::StringId("PLAYER");
 static const strutils::StringId PLAYER_SHIELD_SCENE_OBJECT_NAME = strutils::StringId("PLAYER_SHIELD");
 static const strutils::StringId BACKGROUND_SCENE_OBJECT_NAME = strutils::StringId("BG");
+static const strutils::StringId NAVIGATION_ARROW_SCENE_OBJECT_NAME = strutils::StringId("NAVIGATION_ARROW");
 static const strutils::StringId JOYSTICK_SCENE_OBJECT_NAME = strutils::StringId("JOYSTICK");
 static const strutils::StringId JOYSTICK_BOUNDS_SCENE_OBJECT_NAME = strutils::StringId("JOYSTICK_BOUNDS");
 static const strutils::StringId WAVE_INTRO_TEXT_SCENE_OBJECT_NAME = strutils::StringId("WAVE_INTRO_TEXT");
@@ -145,8 +149,8 @@ static const float JOYSTICK_Z = 1.0f;
 static const float JOYSTICK_BOUNDS_Z = 2.0f;
 
 static const float BACKGROUND_Z = -1.0f;
+static const float LAB_OPTIONS_Z = -0.5f;
 static const float WALL_Z = -0.5f;
-
 static const float BULLET_Z = -0.5f;
 
 static const float PLAYER_HEALTH_LOST_BAR_Z = 0.4f;
@@ -188,7 +192,7 @@ static const float MAP_PLANET_RING_MIN_X_ROTATION = 1.8f;
 static const float MAP_PLANET_RING_MAX_X_ROTATION = 2.2f;
 static const float MAP_PLANET_RING_MIN_Y_ROTATION = -math::PI/10;
 static const float MAP_PLANET_RING_MAX_Y_ROTATION = +math::PI/10;
-static const float MAP_NODE_CLICK_BIAS = 1.8f;
+static const float MAP_NODE_CLICK_BIAS = 2.0f;
 static const float MAP_NODE_ROTATION_SPEED = 0.0002f;
 static const float MAP_NODE_PULSING_SPEED = 0.005f;
 static const float MAP_NODE_PULSING_ENLARGEMENT_FACTOR = 1.0f/200.0f;
@@ -214,6 +218,8 @@ static const float TEXT_DAMAGE_Z = 2.0f;
 static const glm::vec3 PLAYER_INITIAL_POS = glm::vec3(0.0f, -10.0f, 0.0f);
 static const glm::vec3 BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
 static const glm::vec3 MAP_BACKGROUND_SCALE = glm::vec3(120.0f, 120.0f, 1.0f);
+static const glm::vec3 LAB_BACKGROUND_POS = glm::vec3(-1.8f, 0.0f, -1.0f);
+static const glm::vec3 LAB_BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
 
 static const glm::vec3 JOYSTICK_SCALE = glm::vec3(2.0f, 2.0f, 1.0f);
 static const glm::vec3 JOYSTICK_BOUNDS_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);

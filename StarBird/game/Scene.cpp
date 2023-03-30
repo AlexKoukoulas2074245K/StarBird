@@ -9,6 +9,7 @@
 #include "GameSingletons.h"
 #include "Scene.h"
 #include "GameConstants.h"
+#include "LabUpdater.h"
 #include "MapUpdater.h"
 #include "LevelUpdater.h"
 #include "PhysicsConstants.h"
@@ -259,7 +260,7 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
                 
             case SceneType::LAB:
             {
-                
+                mSceneUpdater = std::make_unique<LabUpdater>(*this);
             } break;
                 
             case SceneType::LEVEL:

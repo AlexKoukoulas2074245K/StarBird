@@ -59,6 +59,7 @@
 		9254CC0C2969B79A00EFE0CC /* b2BroadPhase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CBDC2969B79A00EFE0CC /* b2BroadPhase.cpp */; };
 		9254CC0D2969B79A00EFE0CC /* b2CollideEdge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CBDF2969B79A00EFE0CC /* b2CollideEdge.cpp */; };
 		9254CC0E2969B79A00EFE0CC /* b2Collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9254CBE02969B79A00EFE0CC /* b2Collision.cpp */; };
+		9259F35529D4866700850744 /* LabUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9259F35429D4866700850744 /* LabUpdater.cpp */; };
 		925FD84529883DD80058E747 /* LevelUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD83829883DD80058E747 /* LevelUpdater.cpp */; };
 		925FD85F298916F50058E747 /* license.txt in Resources */ = {isa = PBXBuildFile; fileRef = 925FD85D298916F50058E747 /* license.txt */; };
 		925FD860298916F50058E747 /* manual.html in Resources */ = {isa = PBXBuildFile; fileRef = 925FD85E298916F50058E747 /* manual.html */; };
@@ -325,6 +326,8 @@
 		9254CBDE2969B79A00EFE0CC /* b2Distance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2Distance.h; sourceTree = "<group>"; };
 		9254CBDF2969B79A00EFE0CC /* b2CollideEdge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2CollideEdge.cpp; sourceTree = "<group>"; };
 		9254CBE02969B79A00EFE0CC /* b2Collision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Collision.cpp; sourceTree = "<group>"; };
+		9259F34829D4866700850744 /* LabUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabUpdater.h; sourceTree = "<group>"; };
+		9259F35429D4866700850744 /* LabUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LabUpdater.cpp; sourceTree = "<group>"; };
 		925FD83829883DD80058E747 /* LevelUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LevelUpdater.cpp; sourceTree = "<group>"; };
 		925FD84429883DD80058E747 /* LevelUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelUpdater.h; sourceTree = "<group>"; };
 		925FD859298916F50058E747 /* rapidxml_iterators.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_iterators.hpp; sourceTree = "<group>"; };
@@ -1095,6 +1098,8 @@
 				925FD87A298AAF570058E747 /* GameSingletons.h */,
 				925FD873298976B20058E747 /* InputContext.h */,
 				92693B6929C8821F00157222 /* IUpdater.h */,
+				9259F35429D4866700850744 /* LabUpdater.cpp */,
+				9259F34829D4866700850744 /* LabUpdater.h */,
 				925FD83829883DD80058E747 /* LevelUpdater.cpp */,
 				925FD84429883DD80058E747 /* LevelUpdater.h */,
 				92E417C929CB5860002F016D /* Map.cpp */,
@@ -1959,6 +1964,7 @@
 				9254CC0A2969B79A00EFE0CC /* b2PolygonShape.cpp in Sources */,
 				9254CBF92969B79A00EFE0CC /* b2RopeJoint.cpp in Sources */,
 				9254CBE92969B79A00EFE0CC /* b2ContactSolver.cpp in Sources */,
+				9259F35529D4866700850744 /* LabUpdater.cpp in Sources */,
 				925FD86F29892BE00058E747 /* LevelDataLoader.cpp in Sources */,
 				9228C16B299FDA5A00410E49 /* SceneObjectUtils.cpp in Sources */,
 				9208BE6129B3FD41007C5335 /* BossIntroGameState.cpp in Sources */,
