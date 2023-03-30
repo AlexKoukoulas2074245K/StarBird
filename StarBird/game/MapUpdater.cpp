@@ -61,14 +61,14 @@ MapUpdater::MapUpdater(Scene& scene)
     auto& worldCamera = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject)->get();
     
     // Center camera to the midpoint of all available nodes
-    glm::vec3 positionAccum(0.0f);
+    glm::vec3 positionAccum = mMap.GetMapData().at(GameSingletons::GetCurrentMapCoord()).mPosition;
     const auto& activeCoords = mMap.GetMapData().at(GameSingletons::GetCurrentMapCoord()).mNodeLinks;
     for (auto& linkedCoord: activeCoords)
     {
         positionAccum += mMap.GetMapData().at(linkedCoord).mPosition;
     }
     
-    worldCamera.SetPosition(glm::vec3(positionAccum.x/activeCoords.size(), positionAccum.y/activeCoords.size(), 0.0f));
+    worldCamera.SetPosition(glm::vec3(positionAccum.x/(activeCoords.size() + 1), positionAccum.y/(activeCoords.size() + 1), 0.0f));
 }
 
 ///------------------------------------------------------------------------------------------------

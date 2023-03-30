@@ -35,10 +35,20 @@ public:
     
 private:
     void CreateSceneObjects();
+    void PositionCarouselObject(SceneObject& carouselObject, const int objectIndex) const;
     
 private:
+    enum class CarouselState
+    {
+        STATIONARY, MOVING_LEFT, MOVING_RIGHT
+    };
+    
     Scene& mScene;
     StateMachine mStateMachine;
+    std::vector<strutils::StringId> mLabOptionSoNames;
+    CarouselState mCarouselState;
+    float mCarouselRads;
+    float mCarouselTargetRads;
     bool mTransitioning;
 };
 

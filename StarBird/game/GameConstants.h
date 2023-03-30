@@ -37,8 +37,8 @@ static const char* DEBUG_CONSOLE_FONT_SHADER_FILE_NAME = "debug_console_font.vs"
 static const char* UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME = "shine_effect_fxx.bmp";
 static const char* DISSOLVE_EFFECT_TEXTURE_FILE_NAME = "dissolve_line_fxy_mm.bmp";
 static const char* BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/blue/0.bmp";
-static const char* LAB_BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/lab/lab0.bmp";
-static const char* LAB_OPTIONS_TEXTURE_FILE_NAME_PREFIX = "backgrounds/lab/lab";
+static const char* LAB_BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/lab/lab_bg.bmp";
+static const char* LAB_OPTIONS_TEXTURE_FILE_NAME_PREFIX = "backgrounds/lab/lab_option_";
 static const char* MIRROR_IMAGE_TEXTURE_FILE_NAME = "player_mirror_image_mm.bmp";
 static const char* BULLET_TEXTURE_FILE_NAME = "bullet.bmp";
 static const char* BETTER_BULLET_TEXTURE_FILE_NAME = "better_bullet.bmp";
@@ -85,6 +85,7 @@ static const strutils::StringId LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME = strutils::
 static const strutils::StringId RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME = strutils::StringId("RIGHT_MIRROR_IMAGE");
 static const strutils::StringId DEBUG_PAST_COMMAND_LINE_NAME_PREFIX = strutils::StringId("PAST_COMMAND_");
 static const strutils::StringId DEBUG_COMMAND_OUTPUT_LINE_NAME_PREFIX = strutils::StringId("OUTPUT_LINE_");
+static const strutils::StringId LAB_OPTION_NAME_PREFIX = strutils::StringId("LAB_OPTION_");
 static const strutils::StringId DEBUG_COMMAND_TEXT_SCENE_OBJECT_NAME = strutils::StringId("COMMAND_TEXT");
 static const strutils::StringId DEBUG_COMMAND_OUTPUT_SCENE_OBJECT_NAME = strutils::StringId("COMMAND_OUTPUT");
 static const strutils::StringId DEBUG_BACK_TO_GAME_SCENE_OBJECT_NAME = strutils::StringId("BACK_TO_GAME");
@@ -149,7 +150,7 @@ static const float JOYSTICK_Z = 1.0f;
 static const float JOYSTICK_BOUNDS_Z = 2.0f;
 
 static const float BACKGROUND_Z = -1.0f;
-static const float LAB_OPTIONS_Z = -0.5f;
+static const float LAB_OPTIONS_Z = 2.0f;
 static const float WALL_Z = -0.5f;
 static const float BULLET_Z = -0.5f;
 
@@ -192,7 +193,7 @@ static const float MAP_PLANET_RING_MIN_X_ROTATION = 1.8f;
 static const float MAP_PLANET_RING_MAX_X_ROTATION = 2.2f;
 static const float MAP_PLANET_RING_MIN_Y_ROTATION = -math::PI/10;
 static const float MAP_PLANET_RING_MAX_Y_ROTATION = +math::PI/10;
-static const float MAP_NODE_CLICK_BIAS = 2.0f;
+static const float MAP_NODE_CLICK_BIAS = 3.0f;
 static const float MAP_NODE_ROTATION_SPEED = 0.0002f;
 static const float MAP_NODE_PULSING_SPEED = 0.005f;
 static const float MAP_NODE_PULSING_ENLARGEMENT_FACTOR = 1.0f/200.0f;
@@ -214,6 +215,14 @@ static const float TEXT_DAMAGE_X_OFFSET = -0.2f;
 static const float TEXT_DAMAGE_MOVEMENT_SPEED = 0.002f;
 static const float TEXT_DAMAGE_FREEZE_MILLIS = 300.0f;
 static const float TEXT_DAMAGE_Z = 2.0f;
+
+static const float LAB_ARROW_PULSING_SPEED = 0.01f;
+static const float LAB_ARROW_PULSING_ENLARGEMENT_FACTOR = 1.0f/100.0f;
+static const float LAB_CAROUSEL_OBJECT_X_MULTIPLIER = 4.2f;
+static const float LAB_CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT = 1.5f;
+
+static const glm::vec3 LAB_NAVIGATION_ARROW_SCALE = glm::vec3(3.0f, 2.0f, 0.0f);
+static const glm::vec3 LAB_NAVIGATION_ARROW_POSITION = glm::vec3(-4.0f, 10.0f, 0.0f);
 
 static const glm::vec3 PLAYER_INITIAL_POS = glm::vec3(0.0f, -10.0f, 0.0f);
 static const glm::vec3 BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
