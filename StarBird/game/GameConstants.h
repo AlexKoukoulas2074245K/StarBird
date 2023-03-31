@@ -13,6 +13,8 @@
 #include "../utils/MathUtils.h"
 #include "../utils/StringUtils.h"
 
+#include <unordered_map>
+
 ///------------------------------------------------------------------------------------------------
 
 namespace game_constants
@@ -38,7 +40,6 @@ static const char* UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME = "shine_effect_fxx.bm
 static const char* DISSOLVE_EFFECT_TEXTURE_FILE_NAME = "dissolve_line_fxy_mm.bmp";
 static const char* BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/blue/0.bmp";
 static const char* LAB_BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/lab/lab_bg.bmp";
-static const char* LAB_OPTIONS_TEXTURE_FILE_NAME_PREFIX = "backgrounds/lab/lab_option_";
 static const char* MIRROR_IMAGE_TEXTURE_FILE_NAME = "player_mirror_image_mm.bmp";
 static const char* BULLET_TEXTURE_FILE_NAME = "bullet.bmp";
 static const char* BETTER_BULLET_TEXTURE_FILE_NAME = "better_bullet.bmp";
@@ -59,8 +60,11 @@ static const char* PLAYER_HEALTH_LOST_BAR_TEXTURE_FILE_NAME = "player_health_los
 static const char* PLAYER_SHIELD_TEXTURE_FILE_NAME = "player_shield.bmp";
 static const char* RIGHT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "right_navigation_arrow_mm.bmp";
 static const char* LEFT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "left_navigation_arrow_mm.bmp";
+static const char* CONFIRMATION_BUTTON_TEXTURE_FILE_NAME = "confirmation_button_mm.bmp";
+static const char* TEXT_PROMPT_TEXTURE_FILE_NAME = "text_prompt_mm.bmp";
+
 static const strutils::StringId DEFAULT_SCENE_OBJECT_STATE = strutils::StringId("idle");
-static const strutils::StringId DEFAULT_FONT_NAME = strutils::StringId("font");
+static const strutils::StringId DEFAULT_FONT_NAME = strutils::StringId("font_mm");
 
 static const strutils::StringId WALL_SCENE_OBJECT_NAME = strutils::StringId("WALL");
 static const strutils::StringId PLAYER_SCENE_OBJECT_NAME = strutils::StringId("PLAYER");
@@ -125,6 +129,11 @@ static const strutils::StringId BETTER_PLAYER_BULLET_TYPE = strutils::StringId("
 
 static const strutils::StringId MIRROR_IMAGE_BULLET_TYPE = strutils::StringId("mirror_image_bullet");
 static const strutils::StringId BETTER_MIRROR_IMAGE_BULLET_TYPE = strutils::StringId("mirror_image_better_bullet");
+
+static const strutils::StringId CONFIRMATION_BUTTON_NAME = strutils::StringId("CONFIRMATION_BUTTON");
+static const strutils::StringId CONFIRMATION_BUTTON_TEXT_NAME = strutils::StringId("CONFIRMATION_BUTTON_TEXT");
+
+static const strutils::StringId TEXT_PROMPT_NAME = strutils::StringId("TEXT_PROMPT");
 
 static const std::string ENEMY_PROJECTILE_FLOW_POSTFIX = std::string("_PROJECTILE_FLOW");
 
@@ -219,7 +228,10 @@ static const float TEXT_DAMAGE_Z = 2.0f;
 static const float LAB_ARROW_PULSING_SPEED = 0.01f;
 static const float LAB_ARROW_PULSING_ENLARGEMENT_FACTOR = 1.0f/100.0f;
 static const float LAB_CAROUSEL_OBJECT_X_MULTIPLIER = 4.2f;
-static const float LAB_CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT = 1.5f;
+static const float LAB_CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT = 3.5f;
+static const float LAB_CAROUSEL_ROTATION_THRESHOLD = 0.5f;
+static const float LAB_CAROUSEL_ROTATION_SPEED = 0.006f;
+static const float LAB_CONFIRMATION_BUTTON_ROTATION_SPEED = 0.0002f;
 
 static const glm::vec3 LAB_NAVIGATION_ARROW_SCALE = glm::vec3(3.0f, 2.0f, 0.0f);
 static const glm::vec3 LAB_NAVIGATION_ARROW_POSITION = glm::vec3(-4.0f, 10.0f, 0.0f);
@@ -287,6 +299,27 @@ static const glm::vec2 MAP_MIN_WORLD_BOUNDS = glm::vec2(-17.0f, -13.0f);
 static const glm::vec3 MAP_NEBULA_NODE_SCALE = glm::vec3(3.0f, 3.0f, 1.0f);
 static const glm::vec3 MAP_STAR_PATH_SCALE = glm::vec3(0.3f, 0.3f, 1.0f);
 static const glm::vec3 MAP_BASE_SCALE = glm::vec3(0.9, 0.5f, 0.9f);
+
+static const glm::vec3 LAB_CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -6.0f, 0.0f);
+static const glm::vec3 LAB_CONFIRMATION_BTUTON_SCALE = glm::vec3(5.13f, 5.13f, 0.0f);
+
+static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-1.6f, -6.3f, 0.5f);
+static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_SCALE = glm::vec3(0.01f, 0.01f, 1.0f);
+
+static const glm::vec3 TEXT_PROMPT_POSITION = glm::vec3(0.0f, 7.2f, 0.5f);
+static const glm::vec3 TEXT_PROMPT_SCALE = glm::vec3(12.0f, 8.0f, 1.0f);
+
+enum class LabOptionType
+{
+    Repair, CrystalTransfer, Research
+};
+
+static const std::unordered_map<game_constants::LabOptionType, std::string> LAB_OPTION_TYPE_TO_TEXTURE =
+{
+    { LabOptionType::Repair, "backgrounds/lab/lab_option_repair.bmp" },
+    { LabOptionType::CrystalTransfer, "backgrounds/lab/lab_option_crystal_transfer.bmp" },
+    { LabOptionType::Research, "backgrounds/lab/lab_option_research.bmp" }
+};
 
 ///------------------------------------------------------------------------------------------------
 

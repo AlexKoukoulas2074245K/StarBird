@@ -36,6 +36,8 @@ public:
 private:
     void CreateSceneObjects();
     void PositionCarouselObject(SceneObject& carouselObject, const int objectIndex) const;
+    void OnCarouselMovementStart();
+    void OnCarouselStationary();
     
 private:
     enum class CarouselState
@@ -45,8 +47,9 @@ private:
     
     Scene& mScene;
     StateMachine mStateMachine;
-    std::vector<strutils::StringId> mLabOptionSoNames;
+    std::vector<game_constants::LabOptionType> mLabOptions;
     CarouselState mCarouselState;
+    game_constants::LabOptionType mSelectedLabOption;
     float mCarouselRads;
     float mCarouselTargetRads;
     bool mTransitioning;

@@ -12,8 +12,20 @@
 #include "Scene.h"
 #include "SceneObjectUtils.h"
 #include "states/DebugConsoleGameState.h"
+#include "datarepos/FontRepository.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../utils/Logging.h"
+
+#include <vector>
+
+///------------------------------------------------------------------------------------------------
+
+static const std::vector<game_constants::LabOptionType> DEFAULT_LAB_OPTIONS =
+{
+    game_constants::LabOptionType::Repair,
+    game_constants::LabOptionType::CrystalTransfer,
+    game_constants::LabOptionType::Research,
+};
 
 ///------------------------------------------------------------------------------------------------
 
@@ -21,6 +33,7 @@ LabUpdater::LabUpdater(Scene& scene)
     : mScene(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
     , mCarouselState(CarouselState::STATIONARY)
+    , mSelectedLabOption(game_constants::LabOptionType::Repair)
     , mCarouselRads(0.0f)
     , mCarouselTargetRads(0.0f)
     , mTransitioning(false)
@@ -33,6 +46,7 @@ LabUpdater::LabUpdater(Scene& scene)
     worldCamera.SetPosition(glm::vec3(0.0f));
     
     CreateSceneObjects();
+    OnCarouselStationary();
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -53,7 +67,7 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     auto camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
     auto& worldCamera = camOpt->get();
     
-    // Touch Position and Map velocity reset on FingerDown
+    // Input flow
     auto& inputContext = GameSingletons::GetInputContext();
     static glm::vec3 touchPos(0.0f);
     static bool exhaustedMove = false;
@@ -62,7 +76,9 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     {
         touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
         
-        if (scene_object_utils::IsPointInsideSceneObject(mScene.GetSceneObject(game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME)->get(), glm::vec2(touchPos.x, touchPos.y)))
+        auto navigationArrowSoOpt = mScene.GetSceneObject(game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME);
+        
+        if (navigationArrowSoOpt && scene_object_utils::IsPointInsideSceneObject(navigationArrowSoOpt->get(), glm::vec2(touchPos.x, touchPos.y)))
         {
             mTransitioning = true;
             mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
@@ -73,17 +89,19 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     {
         auto currentTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
         
-        if (mCarouselState == CarouselState::STATIONARY)
+        if (mCarouselState == CarouselState::STATIONARY && math::Abs(touchPos.x - currentTouchPos.x) > game_constants::LAB_CAROUSEL_ROTATION_THRESHOLD)
         {
             if (currentTouchPos.x > touchPos.x)
             {
                 mCarouselState = CarouselState::MOVING_LEFT;
-                mCarouselTargetRads = mCarouselRads + (math::PI * 2.0f / (mLabOptionSoNames.size()));
+                mCarouselTargetRads = mCarouselRads + (math::PI * 2.0f / (mLabOptions.size()));
+                OnCarouselMovementStart();
             }
             else
             {
                 mCarouselState = CarouselState::MOVING_RIGHT;
-                mCarouselTargetRads = mCarouselRads - (math::PI * 2.0f / (mLabOptionSoNames.size()));
+                mCarouselTargetRads = mCarouselRads - (math::PI * 2.0f / (mLabOptions.size()));
+                OnCarouselMovementStart();
             }
             
             exhaustedMove = true;
@@ -94,35 +112,73 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
         exhaustedMove = false;
     }
     
-    
     // Rotate lab options
     if (mCarouselState == CarouselState::MOVING_LEFT)
     {
-        mCarouselRads += dtMillis * game_constants::MAP_NODE_ROTATION_SPEED * 30.0f;
+        mCarouselRads += dtMillis * game_constants::LAB_CAROUSEL_ROTATION_SPEED;
         if (mCarouselRads >= mCarouselTargetRads)
         {
             mCarouselRads = mCarouselTargetRads;
             mCarouselState = CarouselState::STATIONARY;
+            OnCarouselStationary();
         }
     }
     else if (mCarouselState == CarouselState::MOVING_RIGHT)
     {
-        mCarouselRads -= dtMillis * game_constants::MAP_NODE_ROTATION_SPEED * 30.0f;
+        mCarouselRads -= dtMillis * game_constants::LAB_CAROUSEL_ROTATION_SPEED;
         if (mCarouselRads <= mCarouselTargetRads)
         {
             mCarouselRads = mCarouselTargetRads;
             mCarouselState = CarouselState::STATIONARY;
+            OnCarouselStationary();
         }
     }
     
     // Give fake perspective to all Lab options
-    for (int i = 0; i < static_cast<int>(mLabOptionSoNames.size()); ++i)
+    for (int i = 0; i < static_cast<int>(mLabOptions.size()); ++i)
     {
-        auto labOptionSoOpt = mScene.GetSceneObject(mLabOptionSoNames[i]);
+        auto labOptionSoOpt = mScene.GetSceneObject(strutils::StringId(game_constants::LAB_OPTION_NAME_PREFIX.GetString() + std::to_string(i)));
+        
         if (labOptionSoOpt)
         {
             auto& labOptionSo = labOptionSoOpt->get();
             PositionCarouselObject(labOptionSo, i);
+        }
+    }
+    
+    // Fade in confirmation button
+    auto confirmationButtonSoOpt = mScene.GetSceneObject(game_constants::CONFIRMATION_BUTTON_NAME);
+    if (confirmationButtonSoOpt)
+    {
+        auto& confirmationButtonSo = confirmationButtonSoOpt->get();
+        confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_DAMAGE_ALPHA_SPEED;
+        if (confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
+        {
+            confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+        }
+    }
+    
+    // & text
+    auto confirmationButtonTextSoOpt = mScene.GetSceneObject(game_constants::CONFIRMATION_BUTTON_TEXT_NAME);
+    if (confirmationButtonTextSoOpt)
+    {
+        auto& confirmationButtonTextSo = confirmationButtonTextSoOpt->get();
+        confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_DAMAGE_ALPHA_SPEED;
+        if (confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
+        {
+            confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+        }
+    }
+    
+    // & text area
+    auto textPromptSoOpt = mScene.GetSceneObject(game_constants::TEXT_PROMPT_NAME);
+    if (textPromptSoOpt)
+    {
+        auto& textPromptSo = textPromptSoOpt->get();
+        textPromptSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_DAMAGE_ALPHA_SPEED;
+        if (textPromptSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
+        {
+            textPromptSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
         }
     }
     
@@ -210,31 +266,33 @@ void LabUpdater::CreateSceneObjects()
         mScene.AddSceneObject(std::move(bgSO));
     }
     
-    // Navigation arrow
-    {
-        SceneObject arrowSo;
-        arrowSo.mPosition = game_constants::LAB_NAVIGATION_ARROW_POSITION;
-        arrowSo.mScale = game_constants::LAB_NAVIGATION_ARROW_SCALE;
-        arrowSo.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::LEFT_NAVIGATION_ARROW_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), 0.0f, game_constants::LAB_ARROW_PULSING_SPEED, game_constants::LAB_ARROW_PULSING_ENLARGEMENT_FACTOR, false);
-        arrowSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-        arrowSo.mName = game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME;
-        arrowSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
-        mScene.AddSceneObject(std::move(arrowSo));
-    }
-    
+//    // Navigation arrow
+//    {
+//        SceneObject arrowSo;
+//        arrowSo.mPosition = game_constants::LAB_NAVIGATION_ARROW_POSITION;
+//        arrowSo.mScale = game_constants::LAB_NAVIGATION_ARROW_SCALE;
+//        arrowSo.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::LEFT_NAVIGATION_ARROW_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), 0.0f, game_constants::LAB_ARROW_PULSING_SPEED, game_constants::LAB_ARROW_PULSING_ENLARGEMENT_FACTOR, false);
+//        arrowSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+//        arrowSo.mName = game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME;
+//        arrowSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+//        mScene.AddSceneObject(std::move(arrowSo));
+//    }
+//
     // Options
-    const int optionCount = 4;
-    mLabOptionSoNames.resize(optionCount);
+    const auto optionCount = DEFAULT_LAB_OPTIONS.size();
+    mLabOptions.resize(optionCount);
     
-    for (int i = 0; i < static_cast<int>(mLabOptionSoNames.size()); ++i)
+    for (int i = 0; i < static_cast<int>(mLabOptions.size()); ++i)
     {
+        game_constants::LabOptionType currentLabOption = static_cast<game_constants::LabOptionType>(i);
+        mLabOptions[i] = currentLabOption;
+        
         SceneObject labOptionSO;
-        labOptionSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::LAB_OPTIONS_TEXTURE_FILE_NAME_PREFIX + std::to_string(i) + ".bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        labOptionSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::LAB_OPTION_TYPE_TO_TEXTURE.at(currentLabOption)), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         labOptionSO.mSceneObjectType = SceneObjectType::WorldGameObject;
         labOptionSO.mName = strutils::StringId(game_constants::LAB_OPTION_NAME_PREFIX.GetString() + std::to_string(i));
         labOptionSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
         PositionCarouselObject(labOptionSO, i);
-        mLabOptionSoNames[i] = labOptionSO.mName;
         mScene.AddSceneObject(std::move(labOptionSO));
     }
 }
@@ -243,10 +301,71 @@ void LabUpdater::CreateSceneObjects()
 
 void LabUpdater::PositionCarouselObject(SceneObject& carouselObject, const int objectIndex) const
 {
-    float optionRadsOffset = objectIndex * (math::PI * 2.0f / mLabOptionSoNames.size());
+    float optionRadsOffset = objectIndex * (math::PI * 2.0f / mLabOptions.size());
     carouselObject.mPosition.x = math::Sinf(mCarouselRads + optionRadsOffset) * game_constants::LAB_CAROUSEL_OBJECT_X_MULTIPLIER;
     carouselObject.mPosition.z = game_constants::LAB_OPTIONS_Z + math::Cosf(mCarouselRads + optionRadsOffset);
     carouselObject.mScale = glm::vec3(carouselObject.mPosition.z + game_constants::LAB_CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT, carouselObject.mPosition.z + game_constants::LAB_CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT, 1.0f);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LabUpdater::OnCarouselMovementStart()
+{
+    mScene.RemoveAllSceneObjectsWithName(game_constants::CONFIRMATION_BUTTON_NAME);
+    mScene.RemoveAllSceneObjectsWithName(game_constants::CONFIRMATION_BUTTON_TEXT_NAME);
+    mScene.RemoveAllSceneObjectsWithName(game_constants::TEXT_PROMPT_NAME);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LabUpdater::OnCarouselStationary()
+{
+    // Find front-most option
+    auto closestZ = -1.0f;
+    for (int i = 0; i < static_cast<int>(mLabOptions.size()); ++i)
+    {
+        auto labOptionSoOpt = mScene.GetSceneObject(strutils::StringId(game_constants::LAB_OPTION_NAME_PREFIX.GetString() + std::to_string(i)));
+        
+        if (labOptionSoOpt && labOptionSoOpt->get().mPosition.z > closestZ)
+        {
+            closestZ = labOptionSoOpt->get().mPosition.z;
+            mSelectedLabOption = static_cast<game_constants::LabOptionType>(i);
+        }
+    }
+    
+    // Recreate confirmation button
+    auto& resService = resources::ResourceLoadingService::GetInstance();
+    SceneObject confirmationButtonSo;
+    confirmationButtonSo.mPosition = game_constants::LAB_CONFIRMATION_BUTTON_POSITION;
+    confirmationButtonSo.mScale = game_constants::LAB_CONFIRMATION_BTUTON_SCALE;
+    confirmationButtonSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CONFIRMATION_BUTTON_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Z, 0.0f,  game_constants::LAB_CONFIRMATION_BUTTON_ROTATION_SPEED, false);
+    confirmationButtonSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+    confirmationButtonSo.mName = game_constants::CONFIRMATION_BUTTON_NAME;
+    confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+    confirmationButtonSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+    mScene.AddSceneObject(std::move(confirmationButtonSo));
+    
+    // Confirmation button text
+    SceneObject confirmationButtonTextSo;
+    confirmationButtonTextSo.mPosition = game_constants::LAB_CONFIRMATION_BUTTON_TEXT_POSITION;
+    confirmationButtonTextSo.mScale = game_constants::LAB_CONFIRMATION_BUTTON_TEXT_SCALE;
+    confirmationButtonTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+    confirmationButtonTextSo.mFontName = game_constants::DEFAULT_FONT_NAME;
+    confirmationButtonTextSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+    confirmationButtonTextSo.mName = game_constants::CONFIRMATION_BUTTON_TEXT_NAME;
+    confirmationButtonTextSo.mText = "Confirm";
+    confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+    mScene.AddSceneObject(std::move(confirmationButtonTextSo));
+    
+    // Text Prompt
+    SceneObject textPromptSo;
+    textPromptSo.mPosition = game_constants::TEXT_PROMPT_POSITION;
+    textPromptSo.mScale = game_constants::TEXT_PROMPT_SCALE;
+    textPromptSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::TEXT_PROMPT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+    textPromptSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+    textPromptSo.mName = game_constants::TEXT_PROMPT_NAME;
+    textPromptSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+    mScene.AddSceneObject(std::move(textPromptSo));
 }
 
 ///------------------------------------------------------------------------------------------------
