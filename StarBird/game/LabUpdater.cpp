@@ -11,6 +11,7 @@
 #include "LabUpdater.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
+#include "TextPromptController.h"
 #include "states/DebugConsoleGameState.h"
 #include "datarepos/FontRepository.h"
 #include "../resloading/ResourceLoadingService.h"
@@ -171,15 +172,9 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     }
     
     // & text area
-    auto textPromptSoOpt = mScene.GetSceneObject(game_constants::TEXT_PROMPT_NAME);
-    if (textPromptSoOpt)
+    if (mTextPromptController)
     {
-        auto& textPromptSo = textPromptSoOpt->get();
-        textPromptSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_DAMAGE_ALPHA_SPEED;
-        if (textPromptSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
-        {
-            textPromptSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
-        }
+        mTextPromptController->Update(dtMillis);
     }
     
     // Animate all SOs
@@ -313,7 +308,7 @@ void LabUpdater::OnCarouselMovementStart()
 {
     mScene.RemoveAllSceneObjectsWithName(game_constants::CONFIRMATION_BUTTON_NAME);
     mScene.RemoveAllSceneObjectsWithName(game_constants::CONFIRMATION_BUTTON_TEXT_NAME);
-    mScene.RemoveAllSceneObjectsWithName(game_constants::TEXT_PROMPT_NAME);
+    mTextPromptController.reset();
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -358,14 +353,7 @@ void LabUpdater::OnCarouselStationary()
     mScene.AddSceneObject(std::move(confirmationButtonTextSo));
     
     // Text Prompt
-    SceneObject textPromptSo;
-    textPromptSo.mPosition = game_constants::TEXT_PROMPT_POSITION;
-    textPromptSo.mScale = game_constants::TEXT_PROMPT_SCALE;
-    textPromptSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::TEXT_PROMPT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
-    textPromptSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-    textPromptSo.mName = game_constants::TEXT_PROMPT_NAME;
-    textPromptSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-    mScene.AddSceneObject(std::move(textPromptSo));
+    mTextPromptController = std::make_unique<TextPromptController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::TEXT_PROMPT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false), game_constants::TEXT_PROMPT_POSITION, game_constants::TEXT_PROMPT_SCALE, true, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
 }
 
 ///------------------------------------------------------------------------------------------------

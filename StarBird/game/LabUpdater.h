@@ -18,6 +18,7 @@
 
 ///------------------------------------------------------------------------------------------------
 
+class TextPromptController;
 class Scene;
 class LabUpdater final: public IUpdater
 {
@@ -48,6 +49,7 @@ private:
     Scene& mScene;
     StateMachine mStateMachine;
     std::vector<game_constants::LabOptionType> mLabOptions;
+    std::unique_ptr<TextPromptController> mTextPromptController;
     CarouselState mCarouselState;
     game_constants::LabOptionType mSelectedLabOption;
     float mCarouselRads;
