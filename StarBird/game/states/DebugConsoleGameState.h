@@ -62,15 +62,6 @@ private:
     };
     
 private:
-    static const glm::vec4 SUCCESS_COLOR;
-    static const glm::vec4 FAILURE_COLOR;
-    static const int SCROLL_LINE_THRESHOLD;
-    static const float BIRDS_EYE_VIEW_CAMERA_LENSE_HEIGHT;
-    static const float SCROLL_TOUCH_MIN_Y;
-    static const float SCROLL_MIN_Y;
-    static const float SCROLL_MAX_Y;
-    
-private:
     void RegisterCommands();
     void ExecuteCommand(const std::string& command, const SceneObject& commandTextSo);
     void SetCommandExecutionOutput(const CommandExecutionResult& executionResult);

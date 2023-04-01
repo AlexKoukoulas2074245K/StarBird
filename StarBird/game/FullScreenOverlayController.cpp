@@ -12,6 +12,11 @@
 
 ///------------------------------------------------------------------------------------------------
 
+static const glm::vec3 FULL_SCREEN_OVERLAY_POSITION = glm::vec3(0.0f, 0.0f, 3.0f);
+static const glm::vec3 FULL_SCREEN_OVERLAY_SCALE = glm::vec3(200.0f, 200.0f, 1.0f);
+
+///------------------------------------------------------------------------------------------------
+
 FullScreenOverlayController::FullScreenOverlayController(Scene& scene, const float darkeningSpeed, const float maxDarkeningValue, const bool pauseAtMidPoint, CallbackType midwayCallback /* nullptr */, CallbackType completionCallback /* nullptr */)
     : mScene(scene)
     , mDarkeningSpeed(darkeningSpeed)
@@ -28,8 +33,8 @@ FullScreenOverlayController::FullScreenOverlayController(Scene& scene, const flo
     SceneObject overlaySo;
     overlaySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::FULL_SCREEN_OVERLAY_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
     overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
-    overlaySo.mScale = game_constants::FULL_SCREEN_OVERLAY_SCALE;
-    overlaySo.mPosition = game_constants::FULL_SCREEN_OVERLAY_POSITION;
+    overlaySo.mScale = FULL_SCREEN_OVERLAY_SCALE;
+    overlaySo.mPosition = FULL_SCREEN_OVERLAY_POSITION;
     overlaySo.mName = game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
     overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
     overlaySo.mCrossSceneLifetime = true;

@@ -23,14 +23,6 @@
 
 ///------------------------------------------------------------------------------------------------
 
-static const float MAX_MAP_VELOCITY_LENGTH = 5.0f;
-static const float MAP_VELOCITY_DAMPING = 0.9f;
-static const float MAP_VELOCITY_INTEGRATION_SPEED = 0.04f;
-static const float CAMERA_MAX_ZOOM_FACTOR = 2.4f;
-static const float CAMERA_MIN_ZOOM_FACTOR = 0.4f;
-static const float CAMERA_ZOOM_SPEED = 0.1f;
-static const float MIN_CAMERA_VELOCITY_TO_START_MOVEMENT = 0.0001f;
-
 static const std::unordered_map<Map::NodeType, Scene::SceneType> NODE_TYPE_TO_SCENE_TYPE =
 {
     { Map::NodeType::NORMAL_ENCOUNTER, Scene::SceneType::LEVEL },
@@ -38,6 +30,15 @@ static const std::unordered_map<Map::NodeType, Scene::SceneType> NODE_TYPE_TO_SC
     { Map::NodeType::BOSS_ENCOUNTER, Scene::SceneType::LEVEL },
     { Map::NodeType::LAB, Scene::SceneType::LAB }
 };
+
+static const float MAX_MAP_VELOCITY_LENGTH = 5.0f;
+static const float MAP_VELOCITY_DAMPING = 0.9f;
+static const float MAP_VELOCITY_INTEGRATION_SPEED = 0.04f;
+static const float CAMERA_MAX_ZOOM_FACTOR = 2.4f;
+static const float CAMERA_MIN_ZOOM_FACTOR = 0.4f;
+static const float CAMERA_ZOOM_SPEED = 0.1f;
+static const float MIN_CAMERA_VELOCITY_TO_START_MOVEMENT = 0.0001f;
+static const float MAP_NODE_CLICK_BIAS = 3.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -241,7 +242,7 @@ bool MapUpdater::SelectedActiveLevel(const glm::vec3& touchPos)
     const auto& currentMapCoord = GameSingletons::GetCurrentMapCoord();
     for (const auto& linkedMapCoord: mMap.GetMapData().at(currentMapCoord).mNodeLinks)
     {
-        if (scene_object_utils::IsPointInsideSceneObject(mScene.GetSceneObject(strutils::StringId(linkedMapCoord.ToString()))->get(), glm::vec2(touchPos.x, touchPos.y), glm::vec2(game_constants::MAP_NODE_CLICK_BIAS)))
+        if (scene_object_utils::IsPointInsideSceneObject(mScene.GetSceneObject(strutils::StringId(linkedMapCoord.ToString()))->get(), glm::vec2(touchPos.x, touchPos.y), glm::vec2(MAP_NODE_CLICK_BIAS)))
         {
             mSelectedMapCoord = linkedMapCoord;
             return true;

@@ -39,6 +39,42 @@
 
 ///------------------------------------------------------------------------------------------------
 
+static const glm::vec4 ENEMY_TEXT_DAMAGE_COLOR = glm::vec4(1.0f, 1.0f, 1.0f, 0.8f);
+static const glm::vec4 PLAYER_TEXT_DAMAGE_COLOR = glm::vec4(1.0f, 0.3f, 0.3f, 0.8f);
+
+static const glm::vec3 PLAYER_HEALTH_BAR_POSITION = glm::vec3(0.0f, -12.0f, 0.5f);
+static const glm::vec3 PLAYER_HEALTH_BAR_SCALE = glm::vec3(5.0f, 1.0f, 1.0f);
+
+static const glm::vec3 TEXT_DAMAGE_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
+
+static const glm::vec3 JOYSTICK_SCALE = glm::vec3(2.0f, 2.0f, 1.0f);
+static const glm::vec3 JOYSTICK_BOUNDS_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
+
+static const float JOYSTICK_Z = 1.0f;
+static const float JOYSTICK_BOUNDS_Z = 2.0f;
+
+static const float BACKGROUND_SPEED = 1.0f/4000.0f;
+
+static const float HEALTH_BAR_POSITION_DIVISOR_MAGIC = 2.15f;
+
+static const float PLAYER_BULLET_X_OFFSET = 0.48f;
+static const float MIRROR_IMAGE_BULLET_X_OFFSET = 0.38f;
+
+static const float PLAYER_MOVEMENT_ROLL_CHANCE = 0.333f;
+static const float PLAYER_MOVEMENT_ROLL_SPEED = 0.008f;
+static const float PLAYER_MOVEMENT_ROLL_ANGLE = 180.0f;
+
+static const float EXPLOSION_LIGHT_POWER = 1.0f;
+static const float EXPLOSION_LIGHT_FADE_SPEED = 1.0f/400.0f;
+
+static const float TEXT_DAMAGE_Y_OFFSET = 1.5f;
+static const float TEXT_DAMAGE_X_OFFSET = -0.2f;
+static const float TEXT_DAMAGE_MOVEMENT_SPEED = 0.002f;
+static const float TEXT_DAMAGE_FREEZE_MILLIS = 300.0f;
+static const float TEXT_DAMAGE_Z = 2.0f;
+
+///------------------------------------------------------------------------------------------------
+
 LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& levelDef)
     : mScene(scene)
     , mBox2dWorld(box2dWorld)
@@ -68,11 +104,11 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 auto bulletPosition = math::Box2dVec2ToGlmVec3(playerOpt->get().mBody->GetWorldCenter());
 
                 // Left Bullet
-                bulletPosition.x -= game_constants::PLAYER_BULLET_X_OFFSET;
+                bulletPosition.x -= PLAYER_BULLET_X_OFFSET;
                 CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_PLAYER_BULLET_TYPE : game_constants::PLAYER_BULLET_TYPE, bulletPosition);
 
                 // Right Bullet
-                bulletPosition.x += 2 * game_constants::PLAYER_BULLET_X_OFFSET;
+                bulletPosition.x += 2 * PLAYER_BULLET_X_OFFSET;
                 CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_PLAYER_BULLET_TYPE : game_constants::PLAYER_BULLET_TYPE, bulletPosition);
 
                 if (hasMirrorImageUpgrade)
@@ -83,20 +119,20 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                     if (leftMirrorImageSoOpt)
                     {
                         auto bulletPosition = leftMirrorImageSoOpt->get().mPosition;
-                        bulletPosition.x -= game_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        bulletPosition.x -= MIRROR_IMAGE_BULLET_X_OFFSET;
                         CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
 
-                        bulletPosition.x += 2 * game_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        bulletPosition.x += 2 * MIRROR_IMAGE_BULLET_X_OFFSET;
                         CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
                     }
 
                     if (rightMirrorImageSoOpt)
                     {
                         auto bulletPosition = rightMirrorImageSoOpt->get().mPosition;
-                        bulletPosition.x -= game_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        bulletPosition.x -= MIRROR_IMAGE_BULLET_X_OFFSET;
                         CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
 
-                        bulletPosition.x += 2 * game_constants::MIRROR_IMAGE_BULLET_X_OFFSET;
+                        bulletPosition.x += 2 * MIRROR_IMAGE_BULLET_X_OFFSET;
                         CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
                     }
                 }
@@ -165,7 +201,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
                 
                 mActiveLightNames.insert(enemyName);
-                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_constants::POINT_LIGHT_COLOR, enemySO.mPosition, game_constants::EXPLOSION_LIGHT_POWER);
+                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_constants::POINT_LIGHT_COLOR, enemySO.mPosition, EXPLOSION_LIGHT_POWER);
             }
             
             // Erase bullet collision mask so that it doesn't also contribute to other
@@ -727,7 +763,7 @@ void LevelUpdater::LoadLevelInvariantObjects()
         SceneObject joystickSO;
         joystickSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::JOYSTICK_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         joystickSO.mSceneObjectType = SceneObjectType::GUIObject;
-        joystickSO.mScale = game_constants::JOYSTICK_SCALE;
+        joystickSO.mScale = JOYSTICK_SCALE;
         joystickSO.mName = game_constants::JOYSTICK_SCENE_OBJECT_NAME;
         joystickSO.mInvisible = true;
         mScene.AddSceneObject(std::move(joystickSO));
@@ -738,7 +774,7 @@ void LevelUpdater::LoadLevelInvariantObjects()
         SceneObject joystickBoundsSO;
         joystickBoundsSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::JOYSTICK_BOUNDS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         joystickBoundsSO.mSceneObjectType = SceneObjectType::GUIObject;
-        joystickBoundsSO.mScale = game_constants::JOYSTICK_BOUNDS_SCALE;
+        joystickBoundsSO.mScale = JOYSTICK_BOUNDS_SCALE;
         joystickBoundsSO.mName = game_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME;
         joystickBoundsSO.mInvisible = true;
         mScene.AddSceneObject(std::move(joystickBoundsSO));
@@ -749,8 +785,8 @@ void LevelUpdater::LoadLevelInvariantObjects()
         SceneObject healthBarSo;
         healthBarSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         healthBarSo.mSceneObjectType = SceneObjectType::GUIObject;
-        healthBarSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
-        healthBarSo.mScale = game_constants::PLAYER_HEALTH_BAR_SCALE;
+        healthBarSo.mPosition = PLAYER_HEALTH_BAR_POSITION;
+        healthBarSo.mScale = PLAYER_HEALTH_BAR_SCALE;
         healthBarSo.mName = game_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(healthBarSo));
     }
@@ -760,8 +796,8 @@ void LevelUpdater::LoadLevelInvariantObjects()
         SceneObject healthBarFrameSo;
         healthBarFrameSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         healthBarFrameSo.mSceneObjectType = SceneObjectType::GUIObject;
-        healthBarFrameSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
-        healthBarFrameSo.mScale = game_constants::PLAYER_HEALTH_BAR_SCALE;
+        healthBarFrameSo.mPosition = PLAYER_HEALTH_BAR_POSITION;
+        healthBarFrameSo.mScale = PLAYER_HEALTH_BAR_SCALE;
         healthBarFrameSo.mName = game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
         mScene.AddSceneObject(std::move(healthBarFrameSo));
     }
@@ -786,10 +822,10 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
              if (joystickBoundsSO && joystickSO)
              {
                  joystickBoundsSO->get().mPosition = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
-                 joystickBoundsSO->get().mPosition.z = game_constants::JOYSTICK_Z;
+                 joystickBoundsSO->get().mPosition.z = JOYSTICK_Z;
                  
                  joystickSO->get().mPosition = joystickBoundsSO->get().mPosition;
-                 joystickSO->get().mPosition.z = game_constants::JOYSTICK_BOUNDS_Z;
+                 joystickSO->get().mPosition.z = JOYSTICK_BOUNDS_Z;
 
                  mAllowInputControl = true;
                  
@@ -816,27 +852,27 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                 }
                 
                 joystickSO->get().mPosition = joystickBoundsSO->get().mPosition + motionVec;
-                joystickSO->get().mPosition.z = game_constants::JOYSTICK_Z;
+                joystickSO->get().mPosition.z = JOYSTICK_Z;
                 
                 motionVec.x *= sceneObjectTypeDef.mSpeed * dtMilis;
                 motionVec.y *= sceneObjectTypeDef.mSpeed * dtMilis;
                 
                 if (motionVec.x > 0.0f && mPreviousMotionVec.x <= 0.0f && mMovementRotationAllowed)
                 {
-                    if (math::RandomFloat() < game_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
+                    if (math::RandomFloat() < PLAYER_MOVEMENT_ROLL_CHANCE)
                     {
                         sceneObject.mExtraCompoundingAnimations.clear();
-                        sceneObject.mExtraCompoundingAnimations.push_back( std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, game_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_constants::PLAYER_MOVEMENT_ROLL_SPEED, true));
+                        sceneObject.mExtraCompoundingAnimations.push_back( std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, PLAYER_MOVEMENT_ROLL_ANGLE, PLAYER_MOVEMENT_ROLL_SPEED, true));
                     }
                     
                     mMovementRotationAllowed = false;
                 }
                 else if (motionVec.x < 0.0f && mPreviousMotionVec.x >= 0.0f && mMovementRotationAllowed)
                 {
-                    if (math::RandomFloat() < game_constants::PLAYER_MOVEMENT_ROLL_CHANCE)
+                    if (math::RandomFloat() < PLAYER_MOVEMENT_ROLL_CHANCE)
                     {
                         sceneObject.mExtraCompoundingAnimations.clear();
-                        sceneObject.mExtraCompoundingAnimations.push_back( std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, -game_constants::PLAYER_MOVEMENT_ROLL_ANGLE, game_constants::PLAYER_MOVEMENT_ROLL_SPEED, true));
+                        sceneObject.mExtraCompoundingAnimations.push_back( std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, -PLAYER_MOVEMENT_ROLL_ANGLE, PLAYER_MOVEMENT_ROLL_SPEED, true));
                     }
                     
                     mMovementRotationAllowed = false;
@@ -864,7 +900,7 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
 void LevelUpdater::UpdateBackground(const float dtMillis)
 {
     static float msAccum = 0.0f;
-    msAccum += dtMillis * game_constants::BACKGROUND_SPEED;
+    msAccum += dtMillis * BACKGROUND_SPEED;
     msAccum = std::fmod(msAccum, 1.0f);
     
     auto bgSO = mScene.GetSceneObject(game_constants::BACKGROUND_SCENE_OBJECT_NAME);
@@ -891,15 +927,15 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
         
         auto& playerObjectDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSo.mObjectFamilyTypeName)->get();
         
-        healthBarSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
+        healthBarSo.mPosition = PLAYER_HEALTH_BAR_POSITION;
         healthBarSo.mPosition.z = game_constants::PLAYER_HEALTH_BAR_Z;
         
-        healthBarFrameSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
+        healthBarFrameSo.mPosition = PLAYER_HEALTH_BAR_POSITION;
         
         float healthPerc = playerSo.mHealth/static_cast<float>(playerObjectDef.mHealth);
         
-        healthBarSo.mScale.x = game_constants::PLAYER_HEALTH_BAR_SCALE.x * mPlayerAnimatedHealthBarPerc;
-        healthBarSo.mPosition.x -= (1.0f - mPlayerAnimatedHealthBarPerc)/game_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_constants::PLAYER_HEALTH_BAR_SCALE.x;
+        healthBarSo.mScale.x = PLAYER_HEALTH_BAR_SCALE.x * mPlayerAnimatedHealthBarPerc;
+        healthBarSo.mPosition.x -= (1.0f - mPlayerAnimatedHealthBarPerc)/HEALTH_BAR_POSITION_DIVISOR_MAGIC * PLAYER_HEALTH_BAR_SCALE.x;
         
         if (healthPerc < mPlayerAnimatedHealthBarPerc)
         {
@@ -943,7 +979,7 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
             double healthPerc = GameSingletons::GetBossCurrentHealth()/GameSingletons::GetBossMaxHealth();
             
             healthBarSo.mScale.x = game_constants::BOSS_HEALTH_BAR_SCALE.x * mBossAnimatedHealthBarPerc;
-            healthBarSo.mPosition.x -= (1.0f - mBossAnimatedHealthBarPerc)/game_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_constants::BOSS_HEALTH_BAR_SCALE.x;
+            healthBarSo.mPosition.x -= (1.0f - mBossAnimatedHealthBarPerc)/HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_constants::BOSS_HEALTH_BAR_SCALE.x;
             
             if (healthPerc < mBossAnimatedHealthBarPerc)
             {
@@ -1010,7 +1046,7 @@ void LevelUpdater::UpdateLights(const float dtMillis)
         }
         else
         {
-            lightPower -= dtMillis * game_constants::EXPLOSION_LIGHT_FADE_SPEED;
+            lightPower -= dtMillis * EXPLOSION_LIGHT_FADE_SPEED;
             lightRepository.SetLightPower(lightIndex, lightPower);
             lightIter++;
         }
@@ -1039,9 +1075,9 @@ void LevelUpdater::UpdateTextDamage(const float dtMillis)
                 if (damagedSceneObjectOpt)
                 {
                     sceneObject.mPosition = math::Box2dVec2ToGlmVec3(damagedSceneObjectOpt->get().mBody->GetWorldCenter());
-                    sceneObject.mPosition.x += game_constants::TEXT_DAMAGE_X_OFFSET;
-                    sceneObject.mPosition.y += game_constants::TEXT_DAMAGE_Y_OFFSET;
-                    sceneObject.mPosition.z = game_constants::TEXT_DAMAGE_Z;
+                    sceneObject.mPosition.x += TEXT_DAMAGE_X_OFFSET;
+                    sceneObject.mPosition.y += TEXT_DAMAGE_Y_OFFSET;
+                    sceneObject.mPosition.z = TEXT_DAMAGE_Z;
                 }
             }
             else
@@ -1049,7 +1085,7 @@ void LevelUpdater::UpdateTextDamage(const float dtMillis)
                 sceneObject.mAnimation->VResume();
                 auto& sceneObjectAlpha = sceneObject.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME].w;
                 
-                sceneObjectAlpha -= game_constants::TEXT_DAMAGE_ALPHA_SPEED * dtMillis;
+                sceneObjectAlpha -= game_constants::TEXT_FADE_IN_ALPHA_SPEED * dtMillis;
                 if (sceneObjectAlpha <= 0.0f)
                 {
                     sceneObjectAlpha = 0.0f;
@@ -1057,7 +1093,7 @@ void LevelUpdater::UpdateTextDamage(const float dtMillis)
                     sceneObjectEntriesToRemove.insert(damagedSceneObjectToTextEntry.first);
                 }
                 
-                sceneObject.mPosition.y += game_constants::TEXT_DAMAGE_MOVEMENT_SPEED * dtMillis;
+                sceneObject.mPosition.y += TEXT_DAMAGE_MOVEMENT_SPEED * dtMillis;
             }
         }
     }
@@ -1084,7 +1120,7 @@ void LevelUpdater::CreateTextOnDamage(const strutils::StringId& damagedSceneObje
         {
             existingDamageTextSceneObjectOpt->get().mText = std::to_string(std::stoi(existingDamageTextSceneObjectOpt->get().mText) + damage);
             
-            mDamagedSceneObjectNameToTextSceneObjectFreezeTimer[damagedSceneObjectName] = game_constants::TEXT_DAMAGE_FREEZE_MILLIS;
+            mDamagedSceneObjectNameToTextSceneObjectFreezeTimer[damagedSceneObjectName] = TEXT_DAMAGE_FREEZE_MILLIS;
         }
     }
     // Otherwise create a new text scene object
@@ -1093,19 +1129,19 @@ void LevelUpdater::CreateTextOnDamage(const strutils::StringId& damagedSceneObje
         bool enemyDamaged = damagedSceneObjectName != game_constants::PLAYER_SCENE_OBJECT_NAME;
         SceneObject damageTextSO;
         damageTextSO.mPosition = textOriginPos;
-        damageTextSO.mPosition.x += game_constants::TEXT_DAMAGE_X_OFFSET;
-        damageTextSO.mPosition.y += game_constants::TEXT_DAMAGE_Y_OFFSET;
-        damageTextSO.mPosition.z = game_constants::TEXT_DAMAGE_Z;
-        damageTextSO.mScale = game_constants::TEXT_DAMAGE_SCALE;
+        damageTextSO.mPosition.x += TEXT_DAMAGE_X_OFFSET;
+        damageTextSO.mPosition.y += TEXT_DAMAGE_Y_OFFSET;
+        damageTextSO.mPosition.z = TEXT_DAMAGE_Z;
+        damageTextSO.mScale = TEXT_DAMAGE_SCALE;
         damageTextSO.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         damageTextSO.mFontName = game_constants::DEFAULT_FONT_NAME;
         damageTextSO.mSceneObjectType = SceneObjectType::GUIObject;
         damageTextSO.mName = strutils::StringId(std::to_string(SDL_GetTicks64()));
         damageTextSO.mText = std::to_string(damage);
-        damageTextSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = enemyDamaged ? game_constants::ENEMY_TEXT_DAMAGE_COLOR : game_constants::PLAYER_TEXT_DAMAGE_COLOR;
+        damageTextSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = enemyDamaged ? ENEMY_TEXT_DAMAGE_COLOR : PLAYER_TEXT_DAMAGE_COLOR;
         
         mDamagedSceneObjectNameToTextSceneObject[damagedSceneObjectName] = damageTextSO.mName;
-        mDamagedSceneObjectNameToTextSceneObjectFreezeTimer[damagedSceneObjectName] = game_constants::TEXT_DAMAGE_FREEZE_MILLIS;
+        mDamagedSceneObjectNameToTextSceneObjectFreezeTimer[damagedSceneObjectName] = TEXT_DAMAGE_FREEZE_MILLIS;
         mScene.AddSceneObject(std::move(damageTextSO));
     }
 }

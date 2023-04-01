@@ -19,6 +19,24 @@
 
 const strutils::StringId UpgradeSelectionGameState::STATE_NAME("UpgradeSelectionGameState");
 
+static const float UPGRADE_SHINE_EFFECT_SPEED = 1.0f/200.0f;
+
+static const glm::vec3 LEFT_UPGRADE_INIT_POS = glm::vec3(-11.0f, 0.5f, 5.0f);
+static const glm::vec3 LEFT_UPGRADE_TARGET_POS = glm::vec3(-2.0f, 0.5f, 5.0f);
+static const glm::vec3 LEFT_UPGRADE_SCALE = glm::vec3(2.5f, 2.5f, 1.0f);
+
+static const glm::vec3 LEFT_UPGRADE_CONTAINER_INIT_POS = glm::vec3(-11.0f, 0.0f, 5.0f);
+static const glm::vec3 LEFT_UPGRADE_CONTAINER_TARGET_POS = glm::vec3(-4.0f, 0.0f, 5.0f);
+static const glm::vec3 LEFT_UPGRADE_CONTAINER_SCALE = glm::vec3(8.5f, 5.5f, 1.0f);
+
+static const glm::vec3 RIGHT_UPGRADE_INIT_POS = glm::vec3(11.0f, 0.5f, 5.0f);
+static const glm::vec3 RIGHT_UPGRADE_TARGET_POS = glm::vec3(2.0f, 0.5f, 5.0f);
+static const glm::vec3 RIGHT_UPGRADE_SCALE = glm::vec3(2.5f, 2.5f, 1.0f);
+
+static const glm::vec3 RIGHT_UPGRADE_CONTAINER_INIT_POS = glm::vec3(11.0f, 0.0f, 5.0f);
+static const glm::vec3 RIGHT_UPGRADE_CONTAINER_TARGET_POS = glm::vec3(4.0f, 0.0f, 5.0f);
+static const glm::vec3 RIGHT_UPGRADE_CONTAINER_SCALE = glm::vec3(-8.5f, 5.5f, 1.0f);
+
 ///------------------------------------------------------------------------------------------------
 
 // Preload shine texture to avoid stuttering
@@ -97,7 +115,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
             playerSoOpt->get().mRotation.y = 0.0f;
             playerSoOpt->get().mAnimation = std::make_unique<ShineAnimation>(&playerSoOpt->get(), playerSoOpt->get().mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, playerSoOpt->get().mAnimation->VGetCurrentMeshResourceId(), mShineShaderFileResourceId,
                 playerSoOpt->get().mAnimation->VGetScale(),
-                game_constants::UPGRADE_SHINE_EFFECT_SPEED, true);
+                UPGRADE_SHINE_EFFECT_SPEED, true);
         }
         Complete(WaveIntroGameState::STATE_NAME);
     });
@@ -107,8 +125,8 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         SceneObject leftUpgradeContainerSO;
         leftUpgradeContainerSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         leftUpgradeContainerSO.mSceneObjectType = SceneObjectType::GUIObject;
-        leftUpgradeContainerSO.mScale = game_constants::LEFT_UPGRADE_CONTAINER_SCALE;
-        leftUpgradeContainerSO.mPosition = game_constants::LEFT_UPGRADE_CONTAINER_INIT_POS;
+        leftUpgradeContainerSO.mScale = LEFT_UPGRADE_CONTAINER_SCALE;
+        leftUpgradeContainerSO.mPosition = LEFT_UPGRADE_CONTAINER_INIT_POS;
         leftUpgradeContainerSO.mName = game_constants::LEFT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
         mScene->AddSceneObject(std::move(leftUpgradeContainerSO));
     }
@@ -118,8 +136,8 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         SceneObject rightUpgradeContainerSO;
         rightUpgradeContainerSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::UPGRADE_CONTAINER_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         rightUpgradeContainerSO.mSceneObjectType = SceneObjectType::GUIObject;
-        rightUpgradeContainerSO.mScale = game_constants::RIGHT_UPGRADE_CONTAINER_SCALE;
-        rightUpgradeContainerSO.mPosition = game_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS;
+        rightUpgradeContainerSO.mScale = RIGHT_UPGRADE_CONTAINER_SCALE;
+        rightUpgradeContainerSO.mPosition = RIGHT_UPGRADE_CONTAINER_INIT_POS;
         rightUpgradeContainerSO.mName = game_constants::RIGHT_UPGRADE_CONTAINER_SCENE_OBJECT_NAME;
         mScene->AddSceneObject(std::move(rightUpgradeContainerSO));
     }
@@ -134,8 +152,8 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         SceneObject leftUpgradeSO;
         leftUpgradeSO.mAnimation = std::make_unique<SingleFrameAnimation>(upgrade.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         leftUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
-        leftUpgradeSO.mScale = game_constants::LEFT_UPGRADE_SCALE;
-        leftUpgradeSO.mPosition = game_constants::LEFT_UPGRADE_INIT_POS;
+        leftUpgradeSO.mScale = LEFT_UPGRADE_SCALE;
+        leftUpgradeSO.mPosition = LEFT_UPGRADE_INIT_POS;
         leftUpgradeSO.mName = game_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME;
         mScene->AddSceneObject(std::move(leftUpgradeSO));
         
@@ -153,8 +171,8 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         SceneObject rightUpgradeSO;
         rightUpgradeSO.mAnimation = std::make_unique<SingleFrameAnimation>(upgrade.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         rightUpgradeSO.mSceneObjectType = SceneObjectType::GUIObject;
-        rightUpgradeSO.mScale = game_constants::RIGHT_UPGRADE_SCALE;
-        rightUpgradeSO.mPosition = game_constants::RIGHT_UPGRADE_INIT_POS;
+        rightUpgradeSO.mScale = RIGHT_UPGRADE_SCALE;
+        rightUpgradeSO.mPosition = RIGHT_UPGRADE_INIT_POS;
         rightUpgradeSO.mName = game_constants::RIGHT_UPGRADE_SCENE_OBJECT_NAME;
         mScene->AddSceneObject(std::move(rightUpgradeSO));
         
@@ -183,22 +201,22 @@ void UpgradeSelectionGameState::UpdateUpgradeSelection(const float dtMillis)
     
     if (leftUpgradeContainerSoOpt)
     {
-        leftUpgradeContainerSoOpt->get().mPosition.x = (1.0f - perc) * game_constants::LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_constants::LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
+        leftUpgradeContainerSoOpt->get().mPosition.x = (1.0f - perc) * LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
     }
     
     if (rightUpgradeContainerSoOpt)
     {
-        rightUpgradeContainerSoOpt->get().mPosition.x = (1.0f - perc) * game_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_constants::RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
+        rightUpgradeContainerSoOpt->get().mPosition.x = (1.0f - perc) * RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
     }
     
     if (leftUpgradeSoOpt)
     {
-        leftUpgradeSoOpt->get().mPosition.x = (1.0f - perc) * game_constants::LEFT_UPGRADE_INIT_POS.x + perc * game_constants::LEFT_UPGRADE_TARGET_POS.x;
+        leftUpgradeSoOpt->get().mPosition.x = (1.0f - perc) * LEFT_UPGRADE_INIT_POS.x + perc * LEFT_UPGRADE_TARGET_POS.x;
     }
     
     if (rightUpgradeSoOpt)
     {
-        rightUpgradeSoOpt->get().mPosition.x = (1.0f - perc) * game_constants::RIGHT_UPGRADE_INIT_POS.x + perc * game_constants::RIGHT_UPGRADE_TARGET_POS.x;
+        rightUpgradeSoOpt->get().mPosition.x = (1.0f - perc) * RIGHT_UPGRADE_INIT_POS.x + perc * RIGHT_UPGRADE_TARGET_POS.x;
     }
     
     auto selectedUpgradeName = TestForUpgradeSelected();
@@ -218,7 +236,7 @@ void UpgradeSelectionGameState::UpdateUpgradeSelection(const float dtMillis)
             if (leftUpgradeSoOpt)
             {
                 auto& leftUpgradeSo = leftUpgradeSoOpt->get();
-                leftUpgradeSo.mAnimation = std::make_unique<ShineAnimation>(&leftUpgradeSo, leftUpgradeSo.mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, leftUpgradeSo.mAnimation->VGetCurrentMeshResourceId(), mShineShaderFileResourceId, glm::vec3(1.0f), game_constants::UPGRADE_SHINE_EFFECT_SPEED, false);
+                leftUpgradeSo.mAnimation = std::make_unique<ShineAnimation>(&leftUpgradeSo, leftUpgradeSo.mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, leftUpgradeSo.mAnimation->VGetCurrentMeshResourceId(), mShineShaderFileResourceId, glm::vec3(1.0f), UPGRADE_SHINE_EFFECT_SPEED, false);
             }
         }
         else
@@ -231,7 +249,7 @@ void UpgradeSelectionGameState::UpdateUpgradeSelection(const float dtMillis)
             if (rightUpgradeSoOpt)
             {
                 auto& rightUpgradeSo = rightUpgradeSoOpt->get();
-                rightUpgradeSo.mAnimation = std::make_unique<ShineAnimation>(&rightUpgradeSo, rightUpgradeSo.mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, rightUpgradeSo.mAnimation->VGetCurrentMeshResourceId(), mShineShaderFileResourceId, glm::vec3(1.0f), game_constants::UPGRADE_SHINE_EFFECT_SPEED, false);
+                rightUpgradeSo.mAnimation = std::make_unique<ShineAnimation>(&rightUpgradeSo, rightUpgradeSo.mAnimation->VGetCurrentTextureResourceId(), mShineTextureResourceId, rightUpgradeSo.mAnimation->VGetCurrentMeshResourceId(), mShineShaderFileResourceId, glm::vec3(1.0f), UPGRADE_SHINE_EFFECT_SPEED, false);
             }
         }
         
@@ -297,22 +315,22 @@ void UpgradeSelectionGameState::UpdateOverlayOut(const float dtMillis)
 
     if (leftUpgradeContainerSoOpt)
     {
-        leftUpgradeContainerSoOpt->get().mPosition.x = (1.0f - perc) * game_constants::LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_constants::LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
+        leftUpgradeContainerSoOpt->get().mPosition.x = (1.0f - perc) * LEFT_UPGRADE_CONTAINER_INIT_POS.x + perc * LEFT_UPGRADE_CONTAINER_TARGET_POS.x;
     }
     
     if (rightUpgradeContainerSoOpt)
     {
-        rightUpgradeContainerSoOpt->get().mPosition.x = (1.0f - perc) * game_constants::RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * game_constants::RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
+        rightUpgradeContainerSoOpt->get().mPosition.x = (1.0f - perc) * RIGHT_UPGRADE_CONTAINER_INIT_POS.x + perc * RIGHT_UPGRADE_CONTAINER_TARGET_POS.x;
     }
     
     if (leftUpgradeSoOpt)
     {
-        leftUpgradeSoOpt->get().mPosition.x = (1.0f - perc) * game_constants::LEFT_UPGRADE_INIT_POS.x + perc * game_constants::LEFT_UPGRADE_TARGET_POS.x;
+        leftUpgradeSoOpt->get().mPosition.x = (1.0f - perc) * LEFT_UPGRADE_INIT_POS.x + perc * LEFT_UPGRADE_TARGET_POS.x;
     }
     
     if (rightUpgradeSoOpt)
     {
-        rightUpgradeSoOpt->get().mPosition.x = (1.0f - perc) * game_constants::RIGHT_UPGRADE_INIT_POS.x + perc * game_constants::RIGHT_UPGRADE_TARGET_POS.x;
+        rightUpgradeSoOpt->get().mPosition.x = (1.0f - perc) * RIGHT_UPGRADE_INIT_POS.x + perc * RIGHT_UPGRADE_TARGET_POS.x;
     }
 }
 

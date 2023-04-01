@@ -20,13 +20,18 @@
 ///------------------------------------------------------------------------------------------------
 
 const strutils::StringId DebugConsoleGameState::STATE_NAME("DebugConsoleGameState");
-const glm::vec4 DebugConsoleGameState::SUCCESS_COLOR(0.0f, 1.0f, 0.0f, 1.0f);
-const glm::vec4 DebugConsoleGameState::FAILURE_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
-const float DebugConsoleGameState::BIRDS_EYE_VIEW_CAMERA_LENSE_HEIGHT = 90.0f;
-const int DebugConsoleGameState::SCROLL_LINE_THRESHOLD = 8;
-const float DebugConsoleGameState::SCROLL_TOUCH_MIN_Y = 1.0f;
-const float DebugConsoleGameState::SCROLL_MIN_Y = 1.5f;
-const float DebugConsoleGameState::SCROLL_MAX_Y = 9.0f;
+
+static const glm::vec4 SUCCESS_COLOR(0.0f, 1.0f, 0.0f, 1.0f);
+static const glm::vec4 FAILURE_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
+
+static const int SCROLL_LINE_THRESHOLD = 8;
+
+static const float BIRDS_EYE_VIEW_CAMERA_LENSE_HEIGHT = 90.0f;
+static const float SCROLL_TOUCH_MIN_Y = 1.0f;
+static const float SCROLL_MIN_Y = 1.5f;
+static const float SCROLL_MAX_Y = 9.0f;
+static const float DEBUG_PAST_COMMAND_X_OFFSET = -1.0f;
+static const float DEBUG_PAST_COMMAND_Y_OFFSET = 1.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -592,7 +597,7 @@ void DebugConsoleGameState::PostCommandExecution(const std::string& command, con
         SceneObject pastTextSceneObject;
         pastTextSceneObject.mName = strutils::StringId(game_constants::DEBUG_PAST_COMMAND_LINE_NAME_PREFIX.GetString() +  std::to_string(mPastCommandElementIds.size()));
         pastTextSceneObject.mPosition = commandTextSo.mPosition;
-        pastTextSceneObject.mPosition.x += game_constants::DEBUG_PAST_COMMAND_X_OFFSET;
+        pastTextSceneObject.mPosition.x += DEBUG_PAST_COMMAND_X_OFFSET;
         pastTextSceneObject.mScale = commandTextSo.mScale;
         pastTextSceneObject.mText = commandTextSo.mText;
         pastTextSceneObject.mFontName = commandTextSo.mFontName;
@@ -608,7 +613,7 @@ void DebugConsoleGameState::PostCommandExecution(const std::string& command, con
         auto soOpt = mScene->GetSceneObject(id);
         if (soOpt)
         {
-            soOpt->get().mPosition.y += game_constants::DEBUG_PAST_COMMAND_Y_OFFSET;
+            soOpt->get().mPosition.y += DEBUG_PAST_COMMAND_Y_OFFSET;
         }
     }
     

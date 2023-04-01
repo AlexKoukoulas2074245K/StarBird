@@ -23,9 +23,6 @@ namespace game_constants
 ///------------------------------------------------------------------------------------------------
 
 static const char* QUAD_MESH_FILE_NAME = "quad.obj";
-static const char* MAP_PLANET_MESH_FILE_NAME = "planet.obj";
-static const char* MAP_PLANET_RING_MESH_FILE_NAME = "planet_ring.obj";
-static const char* MAP_BASE_MESH_FILE_NAME = "base.obj";
 static const char* BASIC_SHADER_FILE_NAME = "basic.vs";
 static const char* HUE_SHIFT_SHADER_FILE_NAME = "hue_shift.vs";
 static const char* DISSOLVE_SHADER_FILE_NAME = "dissolve.vs";
@@ -56,12 +53,6 @@ static const char* MAP_STAR_PATH_TEXTURE_FILE_NAME = "star_path.bmp";
 static const char* NOISE_PREFIX_TEXTURE_FILE_NAME = "noise_";
 static const char* BOSS_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_frame_mm.bmp";
 static const char* BOSS_HEALTH_BAR_TEXTURE_FILE_NAME = "enemy_health_bar.bmp";
-static const char* PLAYER_HEALTH_LOST_BAR_TEXTURE_FILE_NAME = "player_health_lost_bar.bmp";
-static const char* PLAYER_SHIELD_TEXTURE_FILE_NAME = "player_shield.bmp";
-static const char* RIGHT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "right_navigation_arrow_mm.bmp";
-static const char* LEFT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "left_navigation_arrow_mm.bmp";
-static const char* CONFIRMATION_BUTTON_TEXTURE_FILE_NAME = "confirmation_button_mm.bmp";
-static const char* TEXT_PROMPT_TEXTURE_FILE_NAME = "text_prompt_mm.bmp";
 
 static const strutils::StringId DEFAULT_SCENE_OBJECT_STATE = strutils::StringId("idle");
 static const strutils::StringId DEFAULT_FONT_NAME = strutils::StringId("font_mm");
@@ -137,177 +128,50 @@ static const strutils::StringId TEXT_PROMPT_NAME = strutils::StringId("TEXT_PROM
 
 static const std::string ENEMY_PROJECTILE_FLOW_POSTFIX = std::string("_PROJECTILE_FLOW");
 
-static const float BACKGROUND_SPEED = 1.0f/4000.0f;
-
-static const float WAVE_INTRO_TEXT_SPEED = 0.01f;
-static const float BOSS_INTRO_TEXT_SPEED = 0.01f;
-
 static const float UPGRADE_MOVEMENT_SPEED = 1.0f/400.0f;
 
-static const float WAVE_INTRO_DURATION_MILLIS = 3000.0f;
 static const float BOSS_INTRO_DURATION_MILLIS = 3000.0f;
 
 static const float PLAYER_BULLET_FLOW_DELAY_MILLIS = 300.0f;
 static const float HASTENED_PLAYER_BULLET_FLOW_DELAY_MILLIS = 200.0f;
-
-static const float PLAYER_BODY_X_SCALE = 0.5f;
-static const float PLAYER_SPEED_UPGRADE_MULTIPLIER = 1.5f;
-
 static const float PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS = 300.0f;
-
-static const float JOYSTICK_Z = 1.0f;
-static const float JOYSTICK_BOUNDS_Z = 2.0f;
 
 static const float BACKGROUND_Z = -1.0f;
 static const float LAB_OPTIONS_Z = 2.0f;
 static const float WALL_Z = -0.5f;
 static const float BULLET_Z = -0.5f;
 
-static const float PLAYER_HEALTH_LOST_BAR_Z = 0.4f;
 static const float PLAYER_HEALTH_BAR_Z = 0.45f;
 static const float BOSS_HEALTH_BAR_Z = 2.45f;
 static const float HEALTH_LOST_SPEED = 0.001f;
 static const float BOSS_INTRO_ANIMATED_HEALTH_SPEED = 0.05f;
-static const float HEALTH_BAR_POSITION_DIVISOR_MAGIC = 2.15f;
 
 static const float FULL_SCREEN_OVERLAY_TRANSITION_DARKENING_SPEED = 1.0f/800.0f;
 static const float FULL_SCREEN_OVERLAY_TRANSITION_MAX_ALPHA = 1.0f;
 static const float FULL_SCREEN_OVERLAY_MENU_MAX_ALPHA = 0.8f;
 static const float FULL_SCREEN_OVERLAY_MENU_DARKENING_SPEED = 1.0f/400.0f;
 
-static const float PLAYER_BULLET_X_OFFSET = 0.48f;
-
-static const float MIRROR_IMAGE_BULLET_X_OFFSET = 0.38f;
-
-static const float HEALTH_POTION_HEALTH_GAIN = 100.0f;
-
-static const float PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR = 1.0f/50.0f;
-static const float PLAYER_PULSE_SHIELD_ANIM_SPEED = 0.01f;
-
-static const float SELECTED_UPGRADE_PULSE_ENLARGEMENT_FACTOR = 1.0f/5.0f;
-static const float SELECTED_UPGRADE_PULSE_ANIM_SPEED = 0.03f;
-
-static const float PLAYER_MOVEMENT_ROLL_CHANCE = 0.333f;
-static const float PLAYER_MOVEMENT_ROLL_SPEED = 0.008f;
-static const float PLAYER_MOVEMENT_ROLL_ANGLE = 180.0f;
-
-static const float EXPLOSION_LIGHT_POWER = 1.0f;
-static const float EXPLOSION_LIGHT_FADE_SPEED = 1.0f/400.0f;
-
-static const float MAP_BASE_X_ROTATION = 0.6f;
-static const float MAP_STAR_PATH_PULSING_DELAY_MILLIS = 100.0f;
-static const float MAP_STAR_PATH_PULSING_SPEED = 0.01f;
-static const float MAP_STAR_PATH_PULSING_ENLARGEMENT_FACTOR = 1.0f/100.0f;
-static const float MAP_PLANET_RING_MIN_X_ROTATION = 1.8f;
-static const float MAP_PLANET_RING_MAX_X_ROTATION = 2.2f;
-static const float MAP_PLANET_RING_MIN_Y_ROTATION = -math::PI/10;
-static const float MAP_PLANET_RING_MAX_Y_ROTATION = +math::PI/10;
-static const float MAP_NODE_CLICK_BIAS = 3.0f;
-static const float MAP_NODE_ROTATION_SPEED = 0.0002f;
-static const float MAP_NODE_PULSING_SPEED = 0.005f;
-static const float MAP_NODE_PULSING_ENLARGEMENT_FACTOR = 1.0f/200.0f;
 static const float SHINE_EFFECT_X_OFFSET_INIT_VAL = 1.0f;
 static const float SHINE_EFFECT_X_OFFSET_END_VAL = -1.0f;
-static const float DEBUG_PAST_COMMAND_X_OFFSET = -1.0f;
-static const float DEBUG_PAST_COMMAND_Y_OFFSET = 1.0f;
-static const float UPGRADE_SHINE_EFFECT_SPEED = 1.0f/200.0f;
-static const float PLAYER_SHINE_EFFECT_SPEED = 1.0f/400.0f;
 
 static const float DISSOLVE_EFFECT_Y_INIT_VAL = 1.0f;
-static const float DISSOLVE_EFFECT_SPEED = 1.0f/1000.0f;
 
 static const float NEBULA_ANIMATION_SPEED = 1.0f/15000.0f;
 
-static const float TEXT_DAMAGE_ALPHA_SPEED = 0.002f;
-static const float TEXT_DAMAGE_Y_OFFSET = 1.5f;
-static const float TEXT_DAMAGE_X_OFFSET = -0.2f;
-static const float TEXT_DAMAGE_MOVEMENT_SPEED = 0.002f;
-static const float TEXT_DAMAGE_FREEZE_MILLIS = 300.0f;
-static const float TEXT_DAMAGE_Z = 2.0f;
-
-static const float LAB_ARROW_PULSING_SPEED = 0.01f;
-static const float LAB_ARROW_PULSING_ENLARGEMENT_FACTOR = 1.0f/100.0f;
-static const float LAB_CAROUSEL_OBJECT_X_MULTIPLIER = 4.2f;
-static const float LAB_CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT = 3.5f;
-static const float LAB_CAROUSEL_ROTATION_THRESHOLD = 0.5f;
-static const float LAB_CAROUSEL_ROTATION_SPEED = 0.006f;
-static const float LAB_CONFIRMATION_BUTTON_ROTATION_SPEED = 0.0002f;
-
-static const glm::vec3 LAB_NAVIGATION_ARROW_SCALE = glm::vec3(3.0f, 2.0f, 0.0f);
-static const glm::vec3 LAB_NAVIGATION_ARROW_POSITION = glm::vec3(-4.0f, 10.0f, 0.0f);
+static const float TEXT_FADE_IN_ALPHA_SPEED = 0.002f;
 
 static const glm::vec3 PLAYER_INITIAL_POS = glm::vec3(0.0f, -10.0f, 0.0f);
 static const glm::vec3 BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
 static const glm::vec3 MAP_BACKGROUND_SCALE = glm::vec3(120.0f, 120.0f, 1.0f);
-static const glm::vec3 LAB_BACKGROUND_POS = glm::vec3(-1.8f, 0.0f, -1.0f);
-static const glm::vec3 LAB_BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
-
-static const glm::vec3 JOYSTICK_SCALE = glm::vec3(2.0f, 2.0f, 1.0f);
-static const glm::vec3 JOYSTICK_BOUNDS_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
-
-static const glm::vec3 WAVE_INTRO_TEXT_INIT_POS = glm::vec3(-3.0f, 0.0f, 2.0f);
-static const glm::vec3 WAVE_INTRO_TEXT_SCALE = glm::vec3(0.02f, 0.02f, 1.0f);
-
-static const glm::vec3 TEXT_DAMAGE_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
-
-static const glm::vec3 BOSS_INTRO_TEXT_INIT_POS = glm::vec3(-3.0f, 0.0f, 2.0f);
-static const glm::vec3 BOSS_INTRO_TEXT_SCALE = glm::vec3(0.02f, 0.02f, 1.0f);
-
-static const glm::vec3 LEFT_UPGRADE_INIT_POS = glm::vec3(-11.0f, 0.5f, 5.0f);
-static const glm::vec3 LEFT_UPGRADE_TARGET_POS = glm::vec3(-2.0f, 0.5f, 5.0f);
-static const glm::vec3 LEFT_UPGRADE_SCALE = glm::vec3(2.5f, 2.5f, 1.0f);
-
-static const glm::vec3 LEFT_UPGRADE_CONTAINER_INIT_POS = glm::vec3(-11.0f, 0.0f, 5.0f);
-static const glm::vec3 LEFT_UPGRADE_CONTAINER_TARGET_POS = glm::vec3(-4.0f, 0.0f, 5.0f);
-static const glm::vec3 LEFT_UPGRADE_CONTAINER_SCALE = glm::vec3(8.5f, 5.5f, 1.0f);
-
-static const glm::vec3 RIGHT_UPGRADE_INIT_POS = glm::vec3(11.0f, 0.5f, 5.0f);
-static const glm::vec3 RIGHT_UPGRADE_TARGET_POS = glm::vec3(2.0f, 0.5f, 5.0f);
-static const glm::vec3 RIGHT_UPGRADE_SCALE = glm::vec3(2.5f, 2.5f, 1.0f);
-
-static const glm::vec3 RIGHT_UPGRADE_CONTAINER_INIT_POS = glm::vec3(11.0f, 0.0f, 5.0f);
-static const glm::vec3 RIGHT_UPGRADE_CONTAINER_TARGET_POS = glm::vec3(4.0f, 0.0f, 5.0f);
-static const glm::vec3 RIGHT_UPGRADE_CONTAINER_SCALE = glm::vec3(-8.5f, 5.5f, 1.0f);
-
-static const glm::vec3 FULL_SCREEN_OVERLAY_POSITION = glm::vec3(0.0f, 0.0f, 3.0f);
-static const glm::vec3 FULL_SCREEN_OVERLAY_SCALE = glm::vec3(200.0f, 200.0f, 1.0f);
-
-static const glm::vec3 PLAYER_HEALTH_BAR_POSITION = glm::vec3(0.0f, -12.0f, 0.5f);
-static const glm::vec3 PLAYER_HEALTH_BAR_SCALE = glm::vec3(5.0f, 1.0f, 1.0f);
 
 static const glm::vec3 BOSS_HEALTH_BAR_POSITION = glm::vec3(0.0f, 11.5f, 2.5f);
 static const glm::vec3 BOSS_HEALTH_BAR_SCALE = glm::vec3(10.0f, 1.0f, 1.0f);
 
-static const glm::vec3 LEFT_MIRROR_IMAGE_POSITION_OFFSET = glm::vec3(-2.0f, -0.5f, 0.0f);
-static const glm::vec3 LEFT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
-
-static const glm::vec3 RIGHT_MIRROR_IMAGE_POSITION_OFFSET = glm::vec3(2.0f, -0.5f, 0.0f);
-static const glm::vec3 RIGHT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
-
-static const glm::vec3 PLAYER_SHIELD_POSITION_OFFSET = glm::vec3(0.0f, 0.5f, 0.5f);
-static const glm::vec3 PLAYER_SHIELD_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
-
 static const glm::vec4 AMBIENT_LIGHT_COLOR = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
 static const glm::vec4 POINT_LIGHT_COLOR = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
 
-static const glm::vec4 ENEMY_TEXT_DAMAGE_COLOR = glm::vec4(1.0f, 1.0f, 1.0f, 0.8f);
-static const glm::vec4 PLAYER_TEXT_DAMAGE_COLOR = glm::vec4(1.0f, 0.3f, 0.3f, 0.8f);
-
 static const glm::vec2 MAP_MAX_WORLD_BOUNDS = glm::vec2(40.0f, 20.0f);
 static const glm::vec2 MAP_MIN_WORLD_BOUNDS = glm::vec2(-17.0f, -13.0f);
-
-static const glm::vec3 MAP_NEBULA_NODE_SCALE = glm::vec3(3.0f, 3.0f, 1.0f);
-static const glm::vec3 MAP_STAR_PATH_SCALE = glm::vec3(0.3f, 0.3f, 1.0f);
-static const glm::vec3 MAP_BASE_SCALE = glm::vec3(0.9, 0.5f, 0.9f);
-
-static const glm::vec3 LAB_CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -6.0f, 0.0f);
-static const glm::vec3 LAB_CONFIRMATION_BTUTON_SCALE = glm::vec3(5.13f, 5.13f, 0.0f);
-
-static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-1.6f, -6.3f, 0.5f);
-static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_SCALE = glm::vec3(0.01f, 0.01f, 1.0f);
-
-static const glm::vec3 TEXT_PROMPT_POSITION = glm::vec3(0.0f, 7.2f, 0.5f);
-static const glm::vec3 TEXT_PROMPT_SCALE = glm::vec3(12.0f, 8.0f, 1.0f);
 
 enum class LabOptionType
 {

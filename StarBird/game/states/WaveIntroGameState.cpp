@@ -17,6 +17,11 @@
 
 const strutils::StringId WaveIntroGameState::STATE_NAME("WaveIntroGameState");
 
+static const float WAVE_INTRO_DURATION_MILLIS = 3000.0f;
+
+static const glm::vec3 WAVE_INTRO_TEXT_INIT_POS = glm::vec3(-3.0f, 0.0f, 2.0f);
+static const glm::vec3 WAVE_INTRO_TEXT_SCALE = glm::vec3(0.02f, 0.02f, 1.0f);
+
 ///------------------------------------------------------------------------------------------------
 
 void WaveIntroGameState::VInitialize()
@@ -24,8 +29,8 @@ void WaveIntroGameState::VInitialize()
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
     SceneObject waveTextSO;
-    waveTextSO.mPosition = game_constants::WAVE_INTRO_TEXT_INIT_POS;
-    waveTextSO.mScale = game_constants::WAVE_INTRO_TEXT_SCALE;
+    waveTextSO.mPosition = WAVE_INTRO_TEXT_INIT_POS;
+    waveTextSO.mScale = WAVE_INTRO_TEXT_SCALE;
     waveTextSO.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
     waveTextSO.mFontName = game_constants::DEFAULT_FONT_NAME;
     waveTextSO.mSceneObjectType = SceneObjectType::GUIObject;
@@ -37,7 +42,7 @@ void WaveIntroGameState::VInitialize()
     mLevelUpdater->AddFlow(RepeatableFlow([&]()
     {
         Complete(FightingWaveGameState::STATE_NAME);
-    }, game_constants::WAVE_INTRO_DURATION_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::WAVE_INTRO_FLOW_NAME));
+    }, WAVE_INTRO_DURATION_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::WAVE_INTRO_FLOW_NAME));
 }
 
 ///------------------------------------------------------------------------------------------------

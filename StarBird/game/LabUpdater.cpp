@@ -18,6 +18,7 @@
 #include "../utils/Logging.h"
 
 #include <vector>
+#include <unordered_map>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -27,6 +28,41 @@ static const std::vector<game_constants::LabOptionType> DEFAULT_LAB_OPTIONS =
     game_constants::LabOptionType::CrystalTransfer,
     game_constants::LabOptionType::Research,
 };
+
+static const std::unordered_map<game_constants::LabOptionType, std::string> LAB_OPTION_DESCRIPTIONS =
+{
+    { game_constants::LabOptionType::Repair, "Fully repairs the vessel to factory state standards." },
+    { game_constants::LabOptionType::CrystalTransfer, "Transfers all collected crystals to be stored and used for future pioneering human research." },
+    { game_constants::LabOptionType::Research, "Expends collected crystal reserves to unlock powerful upgrades for the vessel." }
+};
+
+static const char* RIGHT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "right_navigation_arrow_mm.bmp";
+static const char* LEFT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "left_navigation_arrow_mm.bmp";
+static const char* CONFIRMATION_BUTTON_TEXTURE_FILE_NAME = "confirmation_button_mm.bmp";
+static const char* TEXT_PROMPT_TEXTURE_FILE_NAME = "text_prompt_mm.bmp";
+
+static const glm::vec3 LAB_BACKGROUND_POS = glm::vec3(-1.8f, 0.0f, -1.0f);
+static const glm::vec3 LAB_BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
+
+static const glm::vec3 LAB_NAVIGATION_ARROW_SCALE = glm::vec3(3.0f, 2.0f, 0.0f);
+static const glm::vec3 LAB_NAVIGATION_ARROW_POSITION = glm::vec3(-4.0f, 10.0f, 0.0f);
+
+static const glm::vec3 LAB_CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -6.0f, 0.0f);
+static const glm::vec3 LAB_CONFIRMATION_BTUTON_SCALE = glm::vec3(5.13f, 5.13f, 0.0f);
+
+static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-1.6f, -6.3f, 0.5f);
+static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_SCALE = glm::vec3(0.01f, 0.01f, 1.0f);
+
+static const glm::vec3 TEXT_PROMPT_POSITION = glm::vec3(0.0f, 7.2f, 0.5f);
+static const glm::vec3 TEXT_PROMPT_SCALE = glm::vec3(12.0f, 8.0f, 1.0f);
+
+static const float LAB_ARROW_PULSING_SPEED = 0.01f;
+static const float LAB_ARROW_PULSING_ENLARGEMENT_FACTOR = 1.0f/100.0f;
+static const float LAB_CAROUSEL_OBJECT_X_MULTIPLIER = 4.2f;
+static const float LAB_CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT = 3.5f;
+static const float LAB_CAROUSEL_ROTATION_THRESHOLD = 0.5f;
+static const float LAB_CAROUSEL_ROTATION_SPEED = 0.006f;
+static const float LAB_CONFIRMATION_BUTTON_ROTATION_SPEED = 0.0002f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -90,7 +126,7 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     {
         auto currentTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
         
-        if (mCarouselState == CarouselState::STATIONARY && math::Abs(touchPos.x - currentTouchPos.x) > game_constants::LAB_CAROUSEL_ROTATION_THRESHOLD)
+        if (mCarouselState == CarouselState::STATIONARY && math::Abs(touchPos.x - currentTouchPos.x) > LAB_CAROUSEL_ROTATION_THRESHOLD)
         {
             if (currentTouchPos.x > touchPos.x)
             {
@@ -116,7 +152,7 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     // Rotate lab options
     if (mCarouselState == CarouselState::MOVING_LEFT)
     {
-        mCarouselRads += dtMillis * game_constants::LAB_CAROUSEL_ROTATION_SPEED;
+        mCarouselRads += dtMillis * LAB_CAROUSEL_ROTATION_SPEED;
         if (mCarouselRads >= mCarouselTargetRads)
         {
             mCarouselRads = mCarouselTargetRads;
@@ -126,7 +162,7 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     }
     else if (mCarouselState == CarouselState::MOVING_RIGHT)
     {
-        mCarouselRads -= dtMillis * game_constants::LAB_CAROUSEL_ROTATION_SPEED;
+        mCarouselRads -= dtMillis * LAB_CAROUSEL_ROTATION_SPEED;
         if (mCarouselRads <= mCarouselTargetRads)
         {
             mCarouselRads = mCarouselTargetRads;
@@ -152,7 +188,7 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     if (confirmationButtonSoOpt)
     {
         auto& confirmationButtonSo = confirmationButtonSoOpt->get();
-        confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_DAMAGE_ALPHA_SPEED;
+        confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
         if (confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
         {
             confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
@@ -164,7 +200,7 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     if (confirmationButtonTextSoOpt)
     {
         auto& confirmationButtonTextSo = confirmationButtonTextSoOpt->get();
-        confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_DAMAGE_ALPHA_SPEED;
+        confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
         if (confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
         {
             confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
@@ -252,8 +288,8 @@ void LabUpdater::CreateSceneObjects()
     // Background
     {
         SceneObject bgSO;
-        bgSO.mScale = game_constants::LAB_BACKGROUND_SCALE;
-        bgSO.mPosition = game_constants::LAB_BACKGROUND_POS;
+        bgSO.mScale = LAB_BACKGROUND_SCALE;
+        bgSO.mPosition = LAB_BACKGROUND_POS;
         bgSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::LAB_BACKGROUND_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         bgSO.mSceneObjectType = SceneObjectType::WorldGameObject;
         bgSO.mName = game_constants::BACKGROUND_SCENE_OBJECT_NAME;
@@ -297,9 +333,9 @@ void LabUpdater::CreateSceneObjects()
 void LabUpdater::PositionCarouselObject(SceneObject& carouselObject, const int objectIndex) const
 {
     float optionRadsOffset = objectIndex * (math::PI * 2.0f / mLabOptions.size());
-    carouselObject.mPosition.x = math::Sinf(mCarouselRads + optionRadsOffset) * game_constants::LAB_CAROUSEL_OBJECT_X_MULTIPLIER;
+    carouselObject.mPosition.x = math::Sinf(mCarouselRads + optionRadsOffset) * LAB_CAROUSEL_OBJECT_X_MULTIPLIER;
     carouselObject.mPosition.z = game_constants::LAB_OPTIONS_Z + math::Cosf(mCarouselRads + optionRadsOffset);
-    carouselObject.mScale = glm::vec3(carouselObject.mPosition.z + game_constants::LAB_CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT, carouselObject.mPosition.z + game_constants::LAB_CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT, 1.0f);
+    carouselObject.mScale = glm::vec3(carouselObject.mPosition.z + LAB_CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT, carouselObject.mPosition.z + LAB_CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT, 1.0f);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -331,9 +367,9 @@ void LabUpdater::OnCarouselStationary()
     // Recreate confirmation button
     auto& resService = resources::ResourceLoadingService::GetInstance();
     SceneObject confirmationButtonSo;
-    confirmationButtonSo.mPosition = game_constants::LAB_CONFIRMATION_BUTTON_POSITION;
-    confirmationButtonSo.mScale = game_constants::LAB_CONFIRMATION_BTUTON_SCALE;
-    confirmationButtonSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CONFIRMATION_BUTTON_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Z, 0.0f,  game_constants::LAB_CONFIRMATION_BUTTON_ROTATION_SPEED, false);
+    confirmationButtonSo.mPosition = LAB_CONFIRMATION_BUTTON_POSITION;
+    confirmationButtonSo.mScale = LAB_CONFIRMATION_BTUTON_SCALE;
+    confirmationButtonSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + CONFIRMATION_BUTTON_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Z, 0.0f, LAB_CONFIRMATION_BUTTON_ROTATION_SPEED, false);
     confirmationButtonSo.mSceneObjectType = SceneObjectType::WorldGameObject;
     confirmationButtonSo.mName = game_constants::CONFIRMATION_BUTTON_NAME;
     confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
@@ -342,8 +378,8 @@ void LabUpdater::OnCarouselStationary()
     
     // Confirmation button text
     SceneObject confirmationButtonTextSo;
-    confirmationButtonTextSo.mPosition = game_constants::LAB_CONFIRMATION_BUTTON_TEXT_POSITION;
-    confirmationButtonTextSo.mScale = game_constants::LAB_CONFIRMATION_BUTTON_TEXT_SCALE;
+    confirmationButtonTextSo.mPosition = LAB_CONFIRMATION_BUTTON_TEXT_POSITION;
+    confirmationButtonTextSo.mScale = LAB_CONFIRMATION_BUTTON_TEXT_SCALE;
     confirmationButtonTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
     confirmationButtonTextSo.mFontName = game_constants::DEFAULT_FONT_NAME;
     confirmationButtonTextSo.mSceneObjectType = SceneObjectType::WorldGameObject;
@@ -353,7 +389,7 @@ void LabUpdater::OnCarouselStationary()
     mScene.AddSceneObject(std::move(confirmationButtonTextSo));
     
     // Text Prompt
-    mTextPromptController = std::make_unique<TextPromptController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::TEXT_PROMPT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false), game_constants::TEXT_PROMPT_POSITION, game_constants::TEXT_PROMPT_SCALE, true, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
+    mTextPromptController = std::make_unique<TextPromptController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + TEXT_PROMPT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false), TEXT_PROMPT_POSITION, TEXT_PROMPT_SCALE, true, LAB_OPTION_DESCRIPTIONS.at(mSelectedLabOption));
 }
 
 ///------------------------------------------------------------------------------------------------
