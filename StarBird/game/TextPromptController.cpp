@@ -67,6 +67,11 @@ TextPromptController::TextPromptController(Scene& scene, std::unique_ptr<BaseAni
         auto words = strutils::StringSplit(text, ' ');
         for (size_t i = 0; i < words.size() - 1; ++i)
         {
+            if (strutils::StringContains(words[i], "\n"))
+            {
+                continue;
+            }
+            
             words[i] += " ";
         }
         
@@ -93,6 +98,13 @@ TextPromptController::TextPromptController(Scene& scene, std::unique_ptr<BaseAni
             // Create a scene object for each char in the text prompt
             for (size_t j = 0; j < currentWord.size(); ++j)
             {
+                if (currentWord[j] == '\n')
+                {
+                    xCursor = position.x - scale.x * LEFT_BOUND_MAGIC;
+                    yCursor -= glyphScale * TEXT_WRAP_Y_OFFSET_MAGIC;
+                    continue;
+                }
+                
                 const auto& glyph = GetGlyphIter(currentWord[j], font)->second;
                 auto& resService = resources::ResourceLoadingService::GetInstance();
                 

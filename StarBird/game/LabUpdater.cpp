@@ -31,9 +31,9 @@ static const std::vector<game_constants::LabOptionType> DEFAULT_LAB_OPTIONS =
 
 static const std::unordered_map<game_constants::LabOptionType, std::string> LAB_OPTION_DESCRIPTIONS =
 {
-    { game_constants::LabOptionType::Repair, "Fully repairs the vessel to factory state standards." },
-    { game_constants::LabOptionType::CrystalTransfer, "Transfers all collected crystals to be stored and used for future pioneering human research." },
-    { game_constants::LabOptionType::Research, "Expends collected crystal reserves to unlock powerful upgrades for the vessel." }
+    { game_constants::LabOptionType::Repair, "REPAIR:\n Fully repairs the vessel to factory state standards." },
+    { game_constants::LabOptionType::CrystalTransfer, "CRYSTAL TRANSFER:\n Transfers all collected crystals to be stored and used for future pioneering human research." },
+    { game_constants::LabOptionType::Research, "RESEARCH:\n Expends collected crystal reserves to unlock powerful upgrades for the vessel." }
 };
 
 static const char* RIGHT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "right_navigation_arrow_mm.bmp";
