@@ -14,7 +14,7 @@
 
 ///------------------------------------------------------------------------------------------------
 
-static const float GLYPH_SCALE_INFERENCE_MAGIC = 1428.5714f;
+static const float GLYPH_SCALE_INFERENCE_MAGIC = 1350.0f;
 static const float LEFT_BOUND_MAGIC = 0.43f;
 static const float RIGHT_BOUND_MAGIC = 0.41f;
 static const float TEXT_WRAP_Y_OFFSET_MAGIC = 100.0f;

@@ -34,8 +34,6 @@ Scene::Scene()
     , mPreFirstUpdate(true)
 {
     FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_NAME);
-    GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera());
-    GameSingletons::SetCameraForSceneObjectType(SceneObjectType::GUIObject, Camera());
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -250,6 +248,9 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
         }
         mSceneObjects.clear();
         mSceneObjectsToAdd.clear();
+        
+        GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera());
+        GameSingletons::SetCameraForSceneObjectType(SceneObjectType::GUIObject, Camera());
         
         switch (mTransitionParameters->mSceneType)
         {
