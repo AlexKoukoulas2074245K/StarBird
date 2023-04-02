@@ -42,9 +42,6 @@
 static const glm::vec4 ENEMY_TEXT_DAMAGE_COLOR = glm::vec4(1.0f, 1.0f, 1.0f, 0.8f);
 static const glm::vec4 PLAYER_TEXT_DAMAGE_COLOR = glm::vec4(1.0f, 0.3f, 0.3f, 0.8f);
 
-static const glm::vec3 PLAYER_HEALTH_BAR_POSITION = glm::vec3(0.0f, -12.0f, 0.5f);
-static const glm::vec3 PLAYER_HEALTH_BAR_SCALE = glm::vec3(5.0f, 1.0f, 1.0f);
-
 static const glm::vec3 TEXT_DAMAGE_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
 
 static const glm::vec3 JOYSTICK_SCALE = glm::vec3(2.0f, 2.0f, 1.0f);
@@ -54,8 +51,6 @@ static const float JOYSTICK_Z = 1.0f;
 static const float JOYSTICK_BOUNDS_Z = 2.0f;
 
 static const float BACKGROUND_SPEED = 1.0f/4000.0f;
-
-static const float HEALTH_BAR_POSITION_DIVISOR_MAGIC = 2.15f;
 
 static const float PLAYER_BULLET_X_OFFSET = 0.48f;
 static const float MIRROR_IMAGE_BULLET_X_OFFSET = 0.38f;
@@ -82,7 +77,6 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
     , mStateMachine(&scene, this, &mUpgradesLogicHandler, &mBox2dWorld)
     , mBossAIController(scene, *this, mStateMachine, mBox2dWorld)
     , mCurrentWaveNumber(0)
-    , mPlayerAnimatedHealthBarPerc(1.0f)
     , mBossAnimatedHealthBarPerc(0.0f)
     , mAllowInputControl(false)
     , mMovementRotationAllowed(false)
@@ -473,7 +467,7 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
     
     mUpgradesLogicHandler.OnUpdate(dtMillis);
     UpdateBackground(dtMillis);
-    UpdateHealthBars(dtMillis);
+    UpdateBossHealthBar(dtMillis);
     UpdateFlows(dtMillis);
     UpdateCameras(dtMillis);
     UpdateLights(dtMillis);
@@ -779,28 +773,6 @@ void LevelUpdater::LoadLevelInvariantObjects()
         joystickBoundsSO.mInvisible = true;
         mScene.AddSceneObject(std::move(joystickBoundsSO));
     }
-    
-    // Player Health Bar
-    {
-        SceneObject healthBarSo;
-        healthBarSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
-        healthBarSo.mSceneObjectType = SceneObjectType::GUIObject;
-        healthBarSo.mPosition = PLAYER_HEALTH_BAR_POSITION;
-        healthBarSo.mScale = PLAYER_HEALTH_BAR_SCALE;
-        healthBarSo.mName = game_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME;
-        mScene.AddSceneObject(std::move(healthBarSo));
-    }
-    
-    // Player Health Bar Frame
-    {
-        SceneObject healthBarFrameSo;
-        healthBarFrameSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
-        healthBarFrameSo.mSceneObjectType = SceneObjectType::GUIObject;
-        healthBarFrameSo.mPosition = PLAYER_HEALTH_BAR_POSITION;
-        healthBarFrameSo.mScale = PLAYER_HEALTH_BAR_SCALE;
-        healthBarFrameSo.mName = game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
-        mScene.AddSceneObject(std::move(healthBarFrameSo));
-    }
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -912,53 +884,9 @@ void LevelUpdater::UpdateBackground(const float dtMillis)
 
 ///------------------------------------------------------------------------------------------------
 
-void LevelUpdater::UpdateHealthBars(const float dtMillis)
+void LevelUpdater::UpdateBossHealthBar(const float dtMillis)
 {
     // Player health bar
-    auto playerSoOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
-    auto playerHealthBarFrameSoOpt = mScene.GetSceneObject(game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
-    auto playerHealthBarSoOpt = mScene.GetSceneObject(game_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME);
-    
-    if (playerSoOpt && playerHealthBarSoOpt && playerHealthBarFrameSoOpt)
-    {
-        auto& playerSo = playerSoOpt->get();
-        auto& healthBarFrameSo = playerHealthBarFrameSoOpt->get();
-        auto& healthBarSo = playerHealthBarSoOpt->get();
-        
-        auto& playerObjectDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSo.mObjectFamilyTypeName)->get();
-        
-        healthBarSo.mPosition = PLAYER_HEALTH_BAR_POSITION;
-        healthBarSo.mPosition.z = game_constants::PLAYER_HEALTH_BAR_Z;
-        
-        healthBarFrameSo.mPosition = PLAYER_HEALTH_BAR_POSITION;
-        
-        float healthPerc = playerSo.mHealth/static_cast<float>(playerObjectDef.mHealth);
-        
-        healthBarSo.mScale.x = PLAYER_HEALTH_BAR_SCALE.x * mPlayerAnimatedHealthBarPerc;
-        healthBarSo.mPosition.x -= (1.0f - mPlayerAnimatedHealthBarPerc)/HEALTH_BAR_POSITION_DIVISOR_MAGIC * PLAYER_HEALTH_BAR_SCALE.x;
-        
-        if (healthPerc < mPlayerAnimatedHealthBarPerc)
-        {
-            mPlayerAnimatedHealthBarPerc -= game_constants::HEALTH_LOST_SPEED * dtMillis;
-            if (mPlayerAnimatedHealthBarPerc <= healthPerc)
-            {
-                mPlayerAnimatedHealthBarPerc = healthPerc;
-            }
-        }
-        else
-        {
-            mPlayerAnimatedHealthBarPerc += game_constants::HEALTH_LOST_SPEED * dtMillis;
-            if (mPlayerAnimatedHealthBarPerc >= healthPerc)
-            {
-                mPlayerAnimatedHealthBarPerc = healthPerc;
-            }
-        }
-    }
-    else
-    {
-        playerHealthBarFrameSoOpt->get().mInvisible = true;
-        playerHealthBarSoOpt->get().mInvisible = true;
-    }
     
     // Boss Health bar
     auto bossHealthBarFrameSoOpt = mScene.GetSceneObject(game_constants::BOSS_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
@@ -979,7 +907,7 @@ void LevelUpdater::UpdateHealthBars(const float dtMillis)
             double healthPerc = GameSingletons::GetBossCurrentHealth()/GameSingletons::GetBossMaxHealth();
             
             healthBarSo.mScale.x = game_constants::BOSS_HEALTH_BAR_SCALE.x * mBossAnimatedHealthBarPerc;
-            healthBarSo.mPosition.x -= (1.0f - mBossAnimatedHealthBarPerc)/HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_constants::BOSS_HEALTH_BAR_SCALE.x;
+            healthBarSo.mPosition.x -= (1.0f - mBossAnimatedHealthBarPerc)/game_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_constants::BOSS_HEALTH_BAR_SCALE.x;
             
             if (healthPerc < mBossAnimatedHealthBarPerc)
             {

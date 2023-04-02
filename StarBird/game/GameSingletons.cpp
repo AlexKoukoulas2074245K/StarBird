@@ -21,6 +21,9 @@ MapCoord GameSingletons::mCurrentMapCoord = MapCoord(0, 2);
 float GameSingletons::mGameSpeedMultiplier = 1.0f;
 float GameSingletons::mBossMaxHealth = 0.0f;
 float GameSingletons::mBossCurrentHealth = 1.0f;
+float GameSingletons::mPlayerMaxHealth = 1.0f;
+float GameSingletons::mPlayerCurrentHealth = 1.0f;
+float GameSingletons::mPlayerDisplayedHealth = 1.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -201,6 +204,48 @@ float GameSingletons::GetBossCurrentHealth()
 void GameSingletons::SetBossCurrentHealth(const float bossCurrentHealth)
 {
     mBossCurrentHealth = bossCurrentHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+float GameSingletons::GetPlayerMaxHealth()
+{
+    return mPlayerMaxHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetPlayerMaxHealth(const float playerMaxHealth)
+{
+    mPlayerMaxHealth = playerMaxHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+float GameSingletons::GetPlayerCurrentHealth()
+{
+    return mPlayerCurrentHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetPlayerCurrentHealth(const float playerCurrentHealth)
+{
+    mPlayerCurrentHealth = playerCurrentHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+float GameSingletons::GetPlayerDisplayedHealth()
+{
+    return mPlayerDisplayedHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetPlayerDisplayedHealth(const float playerDisplayedHealth)
+{
+    mPlayerDisplayedHealth = playerDisplayedHealth;
 }
 
 ///------------------------------------------------------------------------------------------------

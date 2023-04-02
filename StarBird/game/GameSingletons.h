@@ -63,6 +63,15 @@ public:
     static float GetBossCurrentHealth();
     static void SetBossCurrentHealth(const float bossCurrentHealth);
     
+    static float GetPlayerMaxHealth();
+    static void SetPlayerMaxHealth(const float playerMaxHealth);
+    
+    static float GetPlayerCurrentHealth();
+    static void SetPlayerCurrentHealth(const float playerCurrentHealth);
+    
+    static float GetPlayerDisplayedHealth();
+    static void SetPlayerDisplayedHealth(const float playerDisplayedHealth);
+    
     static MapCoord GetCurrentMapCoord();
     static void SetCurrentMapCoord(const MapCoord& mapCoord);
     
@@ -82,6 +91,9 @@ private:
     static float mGameSpeedMultiplier;
     static float mBossMaxHealth;
     static float mBossCurrentHealth;
+    static float mPlayerMaxHealth;
+    static float mPlayerCurrentHealth;
+    static float mPlayerDisplayedHealth;
 };
 
 ///------------------------------------------------------------------------------------------------

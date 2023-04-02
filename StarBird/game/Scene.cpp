@@ -34,6 +34,7 @@ Scene::Scene()
     , mPreFirstUpdate(true)
 {
     FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_NAME);
+    CreateCrossSceneInterfaceObjects();
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -339,6 +340,8 @@ void Scene::UpdateScene(const float dtMillis)
         mSceneUpdater->Update(mSceneObjects, dtMillis * GameSingletons::GetGameSpeedMultiplier());
     }
     
+    UpdateCrossSceneInterfaceObjects(dtMillis);
+    
     for (const auto& name: mNamesOfSceneObjectsToRemove)
     {
         do
@@ -374,6 +377,61 @@ void Scene::UpdateScene(const float dtMillis)
 
 ///------------------------------------------------------------------------------------------------
 
+void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
+{
+    auto playerSO = GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
+    auto playerDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
+    
+    if (playerSO && playerDef)
+    {
+        GameSingletons::SetPlayerCurrentHealth(playerSO->get().mHealth);
+        GameSingletons::SetPlayerMaxHealth(playerDef->get().mHealth);
+    }
+    
+    auto playerHealthBarFrameSoOpt = GetSceneObject(game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
+    auto playerHealthBarSoOpt = GetSceneObject(game_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME);
+    
+    if (playerHealthBarSoOpt && playerHealthBarFrameSoOpt)
+    {
+        auto& healthBarFrameSo = playerHealthBarFrameSoOpt->get();
+        auto& healthBarSo = playerHealthBarSoOpt->get();
+        
+        healthBarSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
+        healthBarSo.mPosition.z = game_constants::PLAYER_HEALTH_BAR_Z;
+        
+        healthBarFrameSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
+        
+        float healthPerc =  GameSingletons::GetPlayerCurrentHealth()/GameSingletons::GetPlayerMaxHealth();
+        
+        healthBarSo.mScale.x = game_constants::PLAYER_HEALTH_BAR_SCALE.x * GameSingletons::GetPlayerDisplayedHealth();
+        healthBarSo.mPosition.x -= (1.0f - GameSingletons::GetPlayerDisplayedHealth())/game_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_constants::PLAYER_HEALTH_BAR_SCALE.x;
+        
+        if (healthPerc < GameSingletons::GetPlayerDisplayedHealth())
+        {
+            GameSingletons::SetPlayerDisplayedHealth(GameSingletons::GetPlayerDisplayedHealth() - game_constants::HEALTH_LOST_SPEED * dtMillis);
+            if (GameSingletons::GetPlayerDisplayedHealth() <= healthPerc)
+            {
+                GameSingletons::SetPlayerDisplayedHealth(healthPerc);
+            }
+        }
+        else
+        {
+            GameSingletons::SetPlayerDisplayedHealth(GameSingletons::GetPlayerDisplayedHealth() + game_constants::HEALTH_LOST_SPEED * dtMillis);
+            if (GameSingletons::GetPlayerDisplayedHealth() >= healthPerc)
+            {
+                GameSingletons::SetPlayerDisplayedHealth(healthPerc);
+            }
+        }
+    }
+    else
+    {
+        playerHealthBarFrameSoOpt->get().mInvisible = true;
+        playerHealthBarSoOpt->get().mInvisible = true;
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
 void Scene::RenderScene()
 {
     mSceneRenderer.Render(mSceneObjects, mLightRepository);
@@ -397,6 +455,44 @@ void Scene::OpenDebugConsole()
     }
 }
 #endif
+
+///------------------------------------------------------------------------------------------------
+
+void Scene::CreateCrossSceneInterfaceObjects()
+{
+    auto& resService = resources::ResourceLoadingService::GetInstance();
+    
+    // Player Health Bar
+    {
+        SceneObject healthBarSo;
+        healthBarSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        healthBarSo.mSceneObjectType = SceneObjectType::GUIObject;
+        healthBarSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
+        healthBarSo.mScale = game_constants::PLAYER_HEALTH_BAR_SCALE;
+        healthBarSo.mName = game_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME;
+        healthBarSo.mCrossSceneLifetime = true;
+        AddSceneObject(std::move(healthBarSo));
+    }
+    
+    // Player Health Bar Frame
+    {
+        SceneObject healthBarFrameSo;
+        healthBarFrameSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        healthBarFrameSo.mSceneObjectType = SceneObjectType::GUIObject;
+        healthBarFrameSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
+        healthBarFrameSo.mScale = game_constants::PLAYER_HEALTH_BAR_SCALE;
+        healthBarFrameSo.mName = game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
+        healthBarFrameSo.mCrossSceneLifetime = true;
+        AddSceneObject(std::move(healthBarFrameSo));
+    }
+    
+    auto playerSO = GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
+    
+    if (playerSO)
+    {
+        GameSingletons::SetPlayerDisplayedHealth(playerSO->get().mHealth);
+    }
+}
 
 ///------------------------------------------------------------------------------------------------
 

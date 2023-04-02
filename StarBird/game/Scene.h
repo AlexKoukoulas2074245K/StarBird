@@ -76,6 +76,7 @@ public:
     
     void OnAppStateChange(Uint32 event);
     void UpdateScene(const float dtMillis);
+    void UpdateCrossSceneInterfaceObjects(const float dtMillis);
     void RenderScene();
     
     void SetSceneRendererPhysicsDebugMode(const bool debugMode);
@@ -83,6 +84,8 @@ public:
 #ifdef DEBUG
     void OpenDebugConsole();
 #endif
+    
+    void CreateCrossSceneInterfaceObjects();
     
 private:
     b2World mBox2dWorld;
