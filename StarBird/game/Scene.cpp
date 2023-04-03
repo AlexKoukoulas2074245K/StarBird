@@ -34,6 +34,7 @@ Scene::Scene()
     , mPreFirstUpdate(true)
 {
     FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_NAME);
+    FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_MM_NAME);
     CreateCrossSceneInterfaceObjects();
 }
 

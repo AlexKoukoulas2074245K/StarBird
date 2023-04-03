@@ -45,7 +45,7 @@ TextPromptController::TextPromptController(Scene& scene, std::unique_ptr<BaseAni
     textPromptSo.mAnimation = std::move(animation);
     textPromptSo.mSceneObjectType = SceneObjectType::WorldGameObject;
     textPromptSo.mName = game_constants::TEXT_PROMPT_NAME;
-    textPromptSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = fadeIn ? 0.0f : 1.0f;
+    textPromptSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
     mSceneObjectNamesToTransparencyDelayMillis[textPromptSo.mName] = 0.0f;
     
     mScene.AddSceneObject(std::move(textPromptSo));
@@ -111,9 +111,9 @@ TextPromptController::TextPromptController(Scene& scene, std::unique_ptr<BaseAni
                 SceneObject glyphSO;
                 glyphSO.mPosition = glm::vec3(xCursor, yCursor, position.z + 0.5f);
                 glyphSO.mScale = glm::vec3(glyphScale, glyphScale, position.z + 0.5f);
-                glyphSO.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(glyphScale), false);
+                glyphSO.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(glyphScale), false);
                 glyphSO.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = fadeIn ? 0.0f : 1.0f;
-                glyphSO.mFontName = game_constants::DEFAULT_FONT_NAME;
+                glyphSO.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
                 glyphSO.mSceneObjectType = SceneObjectType::WorldGameObject;
                 glyphSO.mName = strutils::StringId(std::to_string(charCounter));
                 glyphSO.mText = std::string(1, currentWord[j]);

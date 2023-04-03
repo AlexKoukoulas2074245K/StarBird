@@ -15,6 +15,7 @@
 
 #include <SDL_events.h>
 #include <memory>
+#include <unordered_set>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -50,6 +51,7 @@ private:
     Scene& mScene;
     StateMachine mStateMachine;
     std::vector<game_constants::LabOptionType> mLabOptions;
+    std::unordered_set<game_constants::LabOptionType> mVisitedLabOptions;
     std::unique_ptr<TextPromptController> mTextPromptController;
     CarouselState mCarouselState;
     game_constants::LabOptionType mSelectedLabOption;

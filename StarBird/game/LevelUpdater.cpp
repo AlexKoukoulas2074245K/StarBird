@@ -1000,7 +1000,7 @@ void LevelUpdater::UpdateTextDamage(const float dtMillis)
                 sceneObject.mAnimation->VPause();
                 
                 auto damagedSceneObjectOpt = mScene.GetSceneObject(damagedSceneObjectToTextEntry.first);
-                if (damagedSceneObjectOpt)
+                if (damagedSceneObjectOpt && damagedSceneObjectOpt->get().mHealth > 0)
                 {
                     sceneObject.mPosition = math::Box2dVec2ToGlmVec3(damagedSceneObjectOpt->get().mBody->GetWorldCenter());
                     sceneObject.mPosition.x += TEXT_DAMAGE_X_OFFSET;

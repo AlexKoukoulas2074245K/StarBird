@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Scene>
-    <GUIElement name="PROMPT" fontName="font_mm" position="-5.2f, 10.0f, 4.0f" scale="0.006f, 0.006f" shader="basic" text=">" />
-    <GUIElement name="COMMAND_TEXT" fontName="font_mm" position="-4.5f, 10.0f, 4.0f" scale="0.006f, 0.006f" shader="basic" text="" />
-    <GUIElement name="COMMAND_OUTPUT" fontName="font_mm" position="-5.0f, 9.0f, 4.0f" scale="0.006f, 0.006f" shader="basic" text="" />
+    <GUIElement name="PROMPT" fontName="font" position="-5.2f, 10.0f, 4.0f" scale="0.006f, 0.006f" shader="basic" text=">" />
+    <GUIElement name="COMMAND_TEXT" fontName="font" position="-4.5f, 10.0f, 4.0f" scale="0.006f, 0.006f" shader="basic" text="" />
+    <GUIElement name="COMMAND_OUTPUT" fontName="font" position="-5.0f, 9.0f, 4.0f" scale="0.006f, 0.006f" shader="basic" text="" />
     <GUIElement name="OUTPUT_AREA" position="0.2f, 5.4f, 4.5f" texture="output_area" scale="11.8f, 9.0f" shader="basic" text="" />
-    <GUIElement name="BACK_TO_GAME" fontName="font_mm" position="-3.0f, -0.1f, 4.0f" scale="0.01f, 0.01f" shader="basic" text="Back to Game" />
+    <GUIElement name="BACK_TO_GAME" fontName="font" position="-3.0f, -0.1f, 4.0f" scale="0.01f, 0.01f" shader="basic" text="Back to Game" />
 </Scene>

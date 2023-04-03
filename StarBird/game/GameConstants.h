@@ -55,7 +55,8 @@ inline const char* BOSS_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_
 inline const char* BOSS_HEALTH_BAR_TEXTURE_FILE_NAME = "enemy_health_bar.bmp";
 
 inline const strutils::StringId DEFAULT_SCENE_OBJECT_STATE = strutils::StringId("idle");
-inline const strutils::StringId DEFAULT_FONT_NAME = strutils::StringId("font_mm");
+inline const strutils::StringId DEFAULT_FONT_NAME = strutils::StringId("font");
+inline const strutils::StringId DEFAULT_FONT_MM_NAME = strutils::StringId("font_mm");
 
 inline const strutils::StringId WALL_SCENE_OBJECT_NAME = strutils::StringId("WALL");
 inline const strutils::StringId PLAYER_SCENE_OBJECT_NAME = strutils::StringId("PLAYER");
