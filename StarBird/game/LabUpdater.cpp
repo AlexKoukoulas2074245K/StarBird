@@ -14,6 +14,7 @@
 #include "TextPromptController.h"
 #include "states/DebugConsoleGameState.h"
 #include "datarepos/FontRepository.h"
+#include "datarepos/ObjectTypeDefinitionRepository.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../utils/Logging.h"
 
@@ -48,13 +49,13 @@ static const glm::vec3 LAB_BACKGROUND_POS = glm::vec3(-1.8f, 0.0f, -1.0f);
 static const glm::vec3 LAB_BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
 
 static const glm::vec3 LAB_NAVIGATION_ARROW_SCALE = glm::vec3(3.0f, 2.0f, 0.0f);
-static const glm::vec3 LAB_NAVIGATION_ARROW_POSITION = glm::vec3(-4.0f, 10.0f, 0.0f);
+static const glm::vec3 LAB_NAVIGATION_ARROW_POSITION = glm::vec3(0.0f, -6.0f, 0.0f);
 
 static const glm::vec3 LAB_CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -6.0f, 0.0f);
-static const glm::vec3 LAB_CONFIRMATION_BTUTON_SCALE = glm::vec3(5.13f, 5.13f, 0.0f);
+static const glm::vec3 LAB_CONFIRMATION_BTUTON_SCALE = glm::vec3(3.5f, 3.5f, 0.0f);
 
-static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-1.6f, -6.3f, 0.5f);
-static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_SCALE = glm::vec3(0.01f, 0.01f, 1.0f);
+static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-1.1f, -6.3f, 0.5f);
+static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_SCALE = glm::vec3(0.007f, 0.007f, 1.0f);
 
 static const glm::vec3 TEXT_PROMPT_POSITION = glm::vec3(0.0f, 7.2f, 0.5f);
 static const glm::vec3 TEXT_PROMPT_SCALE = glm::vec3(12.0f, 10.0f, 1.0f);
@@ -73,10 +74,10 @@ LabUpdater::LabUpdater(Scene& scene)
     : mScene(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
     , mCarouselState(CarouselState::STATIONARY)
+    , mOptionSelectionState(OptionSelectionState::OPTION_NOT_SELECTED)
     , mSelectedLabOption(game_constants::LabOptionType::REPAIR)
     , mCarouselRads(0.0f)
     , mCarouselTargetRads(0.0f)
-    , mTransitioning(false)
 {
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
@@ -85,6 +86,7 @@ LabUpdater::LabUpdater(Scene& scene)
     auto& worldCamera = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject)->get();
     worldCamera.SetPosition(glm::vec3(0.0f));
     
+    GameSingletons::SetPlayerCurrentHealth(1);
     CreateSceneObjects();
     OnCarouselStationary();
 }
@@ -99,64 +101,126 @@ LabUpdater::~LabUpdater()
 
 PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis)
 {
-    if (mStateMachine.Update(dtMillis) == PostStateUpdateDirective::BLOCK_UPDATE || mTransitioning)
+    if (mStateMachine.Update(dtMillis) == PostStateUpdateDirective::BLOCK_UPDATE)
     {
         return PostStateUpdateDirective::BLOCK_UPDATE;
     }
     
-    auto camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
-    auto& worldCamera = camOpt->get();
-    
-    // Input flow
-    auto& inputContext = GameSingletons::GetInputContext();
-    static glm::vec3 originalFingerDownTouchPos(0.0f);
-    static bool exhaustedMove = false;
-    
-    if (inputContext.mEventType == SDL_FINGERDOWN)
+    switch (mOptionSelectionState)
     {
-        originalFingerDownTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
-        
-        auto navigationArrowSoOpt = mScene.GetSceneObject(game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME);
-        
-        if (navigationArrowSoOpt && scene_object_utils::IsPointInsideSceneObject(navigationArrowSoOpt->get(), originalFingerDownTouchPos))
+        case OptionSelectionState::OPTION_NOT_SELECTED:
         {
-            mTransitioning = true;
-            mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
-            return PostStateUpdateDirective::BLOCK_UPDATE;
-        }
-        
-        auto confirmationButtonSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_NAME);
-        if (confirmationButtonSoOpt && scene_object_utils::IsPointInsideSceneObject(*confirmationButtonSoOpt, originalFingerDownTouchPos))
-        {
-            OnConfirmationButtonPress();
-        }
-    }
-    else if (inputContext.mEventType == SDL_FINGERMOTION && !exhaustedMove)
-    {
-        auto currentTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
-        
-        if (mCarouselState == CarouselState::STATIONARY && math::Abs(originalFingerDownTouchPos.x - currentTouchPos.x) > LAB_CAROUSEL_ROTATION_THRESHOLD)
-        {
-            if (currentTouchPos.x > originalFingerDownTouchPos.x)
-            {
-                mCarouselState = CarouselState::MOVING_LEFT;
-                mCarouselTargetRads = mCarouselRads + (math::PI * 2.0f / (mLabOptions.size()));
-                OnCarouselMovementStart();
-            }
-            else
-            {
-                mCarouselState = CarouselState::MOVING_RIGHT;
-                mCarouselTargetRads = mCarouselRads - (math::PI * 2.0f / (mLabOptions.size()));
-                OnCarouselMovementStart();
-            }
+            auto camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
+            auto& worldCamera = camOpt->get();
             
-            exhaustedMove = true;
-        }
+            // Input flow
+            auto& inputContext = GameSingletons::GetInputContext();
+            static glm::vec3 originalFingerDownTouchPos(0.0f);
+            static bool exhaustedMove = false;
+            
+            if (inputContext.mEventType == SDL_FINGERDOWN && !exhaustedMove)
+            {
+                originalFingerDownTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
+                
+                auto confirmationButtonSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_NAME);
+                if (confirmationButtonSoOpt && scene_object_utils::IsPointInsideSceneObject(*confirmationButtonSoOpt, originalFingerDownTouchPos))
+                {
+                    OnConfirmationButtonPressed();
+                    mOptionSelectionState = OptionSelectionState::OPTION_SELECTED;
+                }
+            }
+            else if (inputContext.mEventType == SDL_FINGERMOTION && !exhaustedMove)
+            {
+                auto currentTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
+                
+                if (mCarouselState == CarouselState::STATIONARY && math::Abs(originalFingerDownTouchPos.x - currentTouchPos.x) > LAB_CAROUSEL_ROTATION_THRESHOLD)
+                {
+                    if (currentTouchPos.x > originalFingerDownTouchPos.x)
+                    {
+                        mCarouselState = CarouselState::MOVING_LEFT;
+                        mCarouselTargetRads = mCarouselRads + (math::PI * 2.0f / (mLabOptions.size()));
+                        OnCarouselMovementStart();
+                    }
+                    else
+                    {
+                        mCarouselState = CarouselState::MOVING_RIGHT;
+                        mCarouselTargetRads = mCarouselRads - (math::PI * 2.0f / (mLabOptions.size()));
+                        OnCarouselMovementStart();
+                    }
+                    
+                    exhaustedMove = true;
+                }
+            }
+            else if (inputContext.mEventType == SDL_FINGERUP)
+            {
+                exhaustedMove = false;
+            }
+        } break;
+            
+        case OptionSelectionState::OPTION_SELECTED:
+        {
+            auto confirmationButtonSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_NAME);
+            if (confirmationButtonSoOpt && !confirmationButtonSoOpt->get().mExtraCompoundingAnimations.empty() && confirmationButtonSoOpt->get().mExtraCompoundingAnimations.front()->VIsPaused())
+            {
+                OnTriggerOptionFlow();
+                mOptionSelectionState = OptionSelectionState::OPTION_TRIGGERED;
+            }
+        } break;
+            
+        case OptionSelectionState::OPTION_TRIGGERED:
+        {
+            switch (mSelectedLabOption)
+            {
+                case game_constants::LabOptionType::REPAIR:
+                {
+                    if (GameSingletons::GetPlayerDisplayedHealth() >= GameSingletons::GetPlayerMaxHealth())
+                    {
+                        mScene.RemoveAllSceneObjectsWithName(CONFIRMATION_BUTTON_NAME);
+                        mScene.RemoveAllSceneObjectsWithName(CONFIRMATION_BUTTON_TEXT_NAME);
+                        
+                        auto& resService = resources::ResourceLoadingService::GetInstance();
+                        SceneObject arrowSo;
+                        arrowSo.mPosition = LAB_NAVIGATION_ARROW_POSITION;
+                        arrowSo.mScale = LAB_NAVIGATION_ARROW_SCALE;
+                        arrowSo.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + LEFT_NAVIGATION_ARROW_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, LAB_ARROW_PULSING_SPEED, LAB_ARROW_PULSING_ENLARGEMENT_FACTOR, false);
+                        arrowSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+                        arrowSo.mName = game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME;
+                        arrowSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+                        mScene.AddSceneObject(std::move(arrowSo));
+                        
+                        mOptionSelectionState = OptionSelectionState::OPTION_FLOW_FINISHED;
+                    }
+                } break;
+                case game_constants::LabOptionType::CRYSTAL_TRANSFER:
+                {
+                } break;
+                    
+                case game_constants::LabOptionType::RESEARCH:
+                {
+                } break;
+            }
+        } break;
+            
+        case OptionSelectionState::OPTION_FLOW_FINISHED:
+        {
+            auto& inputContext = GameSingletons::GetInputContext();
+            auto camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
+            auto& worldCamera = camOpt->get();
+            glm::vec3 originalFingerDownTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
+            auto navigationArrowSoOpt = mScene.GetSceneObject(game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME);
+            if (inputContext.mEventType == SDL_FINGERDOWN && navigationArrowSoOpt && scene_object_utils::IsPointInsideSceneObject(navigationArrowSoOpt->get(), originalFingerDownTouchPos))
+            {
+                mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
+                mOptionSelectionState = OptionSelectionState::TRANSITIONING_TO_MAP;
+            }
+        } break;
+            
+        case OptionSelectionState::TRANSITIONING_TO_MAP:
+        {
+            return PostStateUpdateDirective::BLOCK_UPDATE;
+        } break;
     }
-    else if (inputContext.mEventType == SDL_FINGERUP)
-    {
-        exhaustedMove = false;
-    }
+    
     
     // Rotate lab options
     if (mCarouselState == CarouselState::MOVING_LEFT)
@@ -307,19 +371,7 @@ void LabUpdater::CreateSceneObjects()
         bgSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
         mScene.AddSceneObject(std::move(bgSO));
     }
-    
-//    // Navigation arrow
-//    {
-//        SceneObject arrowSo;
-//        arrowSo.mPosition = game_constants::LAB_NAVIGATION_ARROW_POSITION;
-//        arrowSo.mScale = game_constants::LAB_NAVIGATION_ARROW_SCALE;
-//        arrowSo.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::LEFT_NAVIGATION_ARROW_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), 0.0f, game_constants::LAB_ARROW_PULSING_SPEED, game_constants::LAB_ARROW_PULSING_ENLARGEMENT_FACTOR, false);
-//        arrowSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-//        arrowSo.mName = game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME;
-//        arrowSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
-//        mScene.AddSceneObject(std::move(arrowSo));
-//    }
-//
+
     // Options
     const auto optionCount = DEFAULT_LAB_OPTIONS.size();
     mLabOptions.resize(optionCount);
@@ -408,15 +460,8 @@ void LabUpdater::OnCarouselStationary()
 
 ///------------------------------------------------------------------------------------------------
 
-void LabUpdater::OnConfirmationButtonPress()
+void LabUpdater::OnConfirmationButtonPressed()
 {
-    switch (mSelectedLabOption)
-    {
-        case game_constants::LabOptionType::REPAIR: break;
-        case game_constants::LabOptionType::CRYSTAL_TRANSFER: break;
-        case game_constants::LabOptionType::RESEARCH: break;
-    }
-    
     auto confirmationButtonSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_NAME);
     auto confirmationButtonTexSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_TEXT_NAME);
     
@@ -437,8 +482,29 @@ void LabUpdater::OnConfirmationButtonPress()
         confirmationButtonTextSo.mExtraCompoundingAnimations.clear();
         confirmationButtonTextSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(confirmationButtonTextSo.mAnimation->VGetCurrentTextureResourceId(), confirmationButtonTextSo.mAnimation->VGetCurrentMeshResourceId(), confirmationButtonTextSo.mAnimation->VGetCurrentShaderResourceId(), LAB_CONFIRMATION_BUTTON_TEXT_SCALE, PulsingAnimation::PulsingMode::INNER_PULSE_ONCE, 0.0f, LAB_ARROW_PULSING_SPEED * 2, LAB_ARROW_PULSING_ENLARGEMENT_FACTOR / 40, false));
     }
-    
-    GameSingletons::SetPlayerCurrentHealth(100);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LabUpdater::OnTriggerOptionFlow()
+{
+    switch (mSelectedLabOption)
+    {
+        case game_constants::LabOptionType::REPAIR:
+        {
+            GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerMaxHealth());
+        } break;
+            
+        case game_constants::LabOptionType::CRYSTAL_TRANSFER:
+        {
+            
+        } break;
+            
+        case game_constants::LabOptionType::RESEARCH:
+        {
+            
+        } break;
+    }
 }
 
 ///------------------------------------------------------------------------------------------------

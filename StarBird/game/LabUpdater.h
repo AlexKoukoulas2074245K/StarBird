@@ -40,12 +40,18 @@ private:
     void PositionCarouselObject(SceneObject& carouselObject, const int objectIndex) const;
     void OnCarouselMovementStart();
     void OnCarouselStationary();
-    void OnConfirmationButtonPress();
+    void OnConfirmationButtonPressed();
+    void OnTriggerOptionFlow();
     
 private:
     enum class CarouselState
     {
         STATIONARY, MOVING_LEFT, MOVING_RIGHT
+    };
+    
+    enum class OptionSelectionState
+    {
+        OPTION_NOT_SELECTED, OPTION_SELECTED, OPTION_TRIGGERED, OPTION_FLOW_FINISHED, TRANSITIONING_TO_MAP
     };
     
     Scene& mScene;
@@ -54,10 +60,10 @@ private:
     std::unordered_set<game_constants::LabOptionType> mVisitedLabOptions;
     std::unique_ptr<TextPromptController> mTextPromptController;
     CarouselState mCarouselState;
+    OptionSelectionState mOptionSelectionState;
     game_constants::LabOptionType mSelectedLabOption;
     float mCarouselRads;
     float mCarouselTargetRads;
-    bool mTransitioning;
 };
 
 
