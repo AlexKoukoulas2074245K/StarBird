@@ -97,11 +97,11 @@ LabUpdater::~LabUpdater()
 
 ///------------------------------------------------------------------------------------------------
 
-void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMillis)
+PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis)
 {
     if (mStateMachine.Update(dtMillis) == PostStateUpdateDirective::BLOCK_UPDATE || mTransitioning)
     {
-        return;
+        return PostStateUpdateDirective::BLOCK_UPDATE;
     }
     
     auto camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
@@ -122,7 +122,7 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
         {
             mTransitioning = true;
             mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
-            return;
+            return PostStateUpdateDirective::BLOCK_UPDATE;
         }
         
         auto confirmationButtonSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_NAME);
@@ -238,11 +238,13 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
             }
         }
     }
+    
+    return PostStateUpdateDirective::CONTINUE;
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void LabUpdater::OnAppStateChange(Uint32 event)
+void LabUpdater::VOnAppStateChange(Uint32 event)
 {
     static bool hasLeftForegroundOnce = false;
     
@@ -262,7 +264,7 @@ void LabUpdater::OnAppStateChange(Uint32 event)
 #ifdef DEBUG
             if (hasLeftForegroundOnce)
             {
-                OpenDebugConsole();
+                VOpenDebugConsole();
             }
 #endif
         } break;
@@ -271,7 +273,7 @@ void LabUpdater::OnAppStateChange(Uint32 event)
 
 ///------------------------------------------------------------------------------------------------
 
-std::string LabUpdater::GetDescription() const
+std::string LabUpdater::VGetDescription() const
 {
     return "";
 }
@@ -279,7 +281,7 @@ std::string LabUpdater::GetDescription() const
 ///------------------------------------------------------------------------------------------------
 
 #ifdef DEBUG
-void LabUpdater::OpenDebugConsole()
+void LabUpdater::VOpenDebugConsole()
 {
     if (mStateMachine.GetActiveStateName() != DebugConsoleGameState::STATE_NAME)
     {
@@ -435,6 +437,8 @@ void LabUpdater::OnConfirmationButtonPress()
         confirmationButtonTextSo.mExtraCompoundingAnimations.clear();
         confirmationButtonTextSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(confirmationButtonTextSo.mAnimation->VGetCurrentTextureResourceId(), confirmationButtonTextSo.mAnimation->VGetCurrentMeshResourceId(), confirmationButtonTextSo.mAnimation->VGetCurrentShaderResourceId(), LAB_CONFIRMATION_BUTTON_TEXT_SCALE, PulsingAnimation::PulsingMode::INNER_PULSE_ONCE, 0.0f, LAB_ARROW_PULSING_SPEED * 2, LAB_ARROW_PULSING_ENLARGEMENT_FACTOR / 40, false));
     }
+    
+    GameSingletons::SetPlayerCurrentHealth(100);
 }
 
 ///------------------------------------------------------------------------------------------------

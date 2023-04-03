@@ -80,11 +80,11 @@ MapUpdater::~MapUpdater()
 
 ///------------------------------------------------------------------------------------------------
 
-void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMillis)
+PostStateUpdateDirective MapUpdater::VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis)
 {
     if (mTransitioning)
     {
-        return;
+        return PostStateUpdateDirective::BLOCK_UPDATE;
     }
     
     static glm::vec3 originTouchPos;
@@ -92,7 +92,7 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     static float previousPinchDistance = 0.0f;
     
     // Debug Console or Popup taking over
-    if (mStateMachine.Update(dtMillis) == PostStateUpdateDirective::BLOCK_UPDATE) return;
+    if (mStateMachine.Update(dtMillis) == PostStateUpdateDirective::BLOCK_UPDATE) return PostStateUpdateDirective::BLOCK_UPDATE;
     
     auto& inputContext = GameSingletons::GetInputContext();
     auto camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
@@ -117,7 +117,7 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
             
             mScene.ChangeScene(Scene::TransitionParameters(nextSceneType, nextSceneType == Scene::SceneType::LEVEL ? "test_level" : "", true));
             
-            return;
+            return PostStateUpdateDirective::BLOCK_UPDATE;
         }
     }
     // Map Position/Zoom flow on FingerMotion
@@ -185,11 +185,13 @@ void MapUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
             }
         }
     }
+    
+    return PostStateUpdateDirective::CONTINUE;
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void MapUpdater::OnAppStateChange(Uint32 event)
+void MapUpdater::VOnAppStateChange(Uint32 event)
 {
     static bool hasLeftForegroundOnce = false;
     
@@ -209,7 +211,7 @@ void MapUpdater::OnAppStateChange(Uint32 event)
 #ifdef DEBUG
             if (hasLeftForegroundOnce)
             {
-                OpenDebugConsole();
+                VOpenDebugConsole();
             }
 #endif
         } break;
@@ -218,7 +220,7 @@ void MapUpdater::OnAppStateChange(Uint32 event)
 
 ///------------------------------------------------------------------------------------------------
 
-std::string MapUpdater::GetDescription() const
+std::string MapUpdater::VGetDescription() const
 {
     return "";
 }
@@ -226,7 +228,7 @@ std::string MapUpdater::GetDescription() const
 ///------------------------------------------------------------------------------------------------
 
 #ifdef DEBUG
-void MapUpdater::OpenDebugConsole()
+void MapUpdater::VOpenDebugConsole()
 {
     if (mStateMachine.GetActiveStateName() != DebugConsoleGameState::STATE_NAME)
     {

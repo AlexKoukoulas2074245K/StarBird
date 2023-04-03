@@ -62,6 +62,19 @@ void BossIntroGameState::VInitialize()
     bossHealthBarFrameSo.mInvisible = true;
     mScene->AddSceneObject(std::move(bossHealthBarFrameSo));
     
+    // Player Health Bar Text
+    SceneObject healthBarTextSo;
+    healthBarTextSo.mPosition = game_constants::BOSS_HEALTH_BAR_POSITION + game_constants::HEALTH_BAR_TEXT_OFFSET;
+    healthBarTextSo.mScale = game_constants::HEALTH_BAR_TEXT_SCALE;
+    healthBarTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), game_constants::HEALTH_BAR_TEXT_SCALE, false);
+    healthBarTextSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
+    healthBarTextSo.mSceneObjectType = SceneObjectType::GUIObject;
+    healthBarTextSo.mName = game_constants::BOSS_HEALTH_BAR_TEXT_SCENE_OBJECT_NAME;
+    healthBarTextSo.mText = std::to_string(static_cast<int>(mLevelUpdater->GetCurrentLevelDefinition().mWaves.at(mLevelUpdater->GetCurrentWaveNumber()).mBossHealth));
+    healthBarTextSo.mInvisible = true;
+    
+    mScene->AddSceneObject(std::move(healthBarTextSo));
+    
     mLevelUpdater->AddFlow(RepeatableFlow([&]()
     {
         mScene->RemoveAllSceneObjectsWithName(game_constants::BOSS_INTRO_TEXT_SCENE_OBJECT_NAME);
@@ -104,6 +117,7 @@ PostStateUpdateDirective BossIntroGameState::VUpdate(const float dtMillis)
         {
             mScene->GetSceneObject(game_constants::BOSS_HEALTH_BAR_SCENE_OBJECT_NAME)->get().mInvisible = false;
             mScene->GetSceneObject(game_constants::BOSS_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME)->get().mInvisible = false;
+            mScene->GetSceneObject(game_constants::BOSS_HEALTH_BAR_TEXT_SCENE_OBJECT_NAME)->get().mInvisible = false;
             
             GameSingletons::SetBossCurrentHealth(GameSingletons::GetBossCurrentHealth() + (GameSingletons::GetBossMaxHealth()/100.0f) * game_constants::BOSS_INTRO_ANIMATED_HEALTH_SPEED * dtMillis);
             if (GameSingletons::GetBossCurrentHealth() >= GameSingletons::GetBossMaxHealth())

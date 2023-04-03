@@ -180,9 +180,8 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 else
                 {
                     enemySO.mHealth -= bulletSceneObjectTypeDef.mDamage;
+                    CreateTextOnDamage(enemySO.mName, math::Box2dVec2ToGlmVec3(enemySO.mBody->GetWorldCenter()), bulletSceneObjectTypeDef.mDamage);
                 }
-                
-                CreateTextOnDamage(enemySO.mName, math::Box2dVec2ToGlmVec3(enemySO.mBody->GetWorldCenter()), bulletSceneObjectTypeDef.mDamage);
             }
             
             if (enemySO.mHealth <= 0)
@@ -353,7 +352,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
 
 ///------------------------------------------------------------------------------------------------
 
-void LevelUpdater::OnAppStateChange(Uint32 event)
+void LevelUpdater::VOnAppStateChange(Uint32 event)
 {
     static bool hasLeftForegroundOnce = false;
     
@@ -378,7 +377,7 @@ void LevelUpdater::OnAppStateChange(Uint32 event)
 #ifdef DEBUG
             if (hasLeftForegroundOnce)
             {
-                OpenDebugConsole();
+                VOpenDebugConsole();
             }
 #endif
         } break;
@@ -387,13 +386,13 @@ void LevelUpdater::OnAppStateChange(Uint32 event)
 
 ///------------------------------------------------------------------------------------------------
 
-void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMillis)
+PostStateUpdateDirective LevelUpdater::VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis)
 {
     mLastPostStateMachineUpdateDirective = mStateMachine.Update(dtMillis);
     if (mLastPostStateMachineUpdateDirective == PostStateUpdateDirective::BLOCK_UPDATE)
     {
         OnBlockedUpdate();
-        return;
+        return PostStateUpdateDirective::BLOCK_UPDATE;
     }
     
     mBox2dWorld.Step(physics_constants::WORLD_STEP * GameSingletons::GetGameSpeedMultiplier(), physics_constants::WORLD_VELOCITY_ITERATIONS, physics_constants::WORLD_POSITION_ITERATIONS);
@@ -472,11 +471,13 @@ void LevelUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dt
     UpdateCameras(dtMillis);
     UpdateLights(dtMillis);
     UpdateTextDamage(dtMillis);
+    
+    return PostStateUpdateDirective::CONTINUE;
 }
 
 ///------------------------------------------------------------------------------------------------
 
-std::string LevelUpdater::GetDescription() const
+std::string LevelUpdater::VGetDescription() const
 {
     return std::to_string(GetWaveEnemyCount());
 }
@@ -555,7 +556,7 @@ std::optional<std::reference_wrapper<RepeatableFlow>> LevelUpdater::GetFlow(cons
 ///------------------------------------------------------------------------------------------------
 
 #ifdef DEBUG
-void LevelUpdater::OpenDebugConsole()
+void LevelUpdater::VOpenDebugConsole()
 {
     if (mStateMachine.GetActiveStateName() != DebugConsoleGameState::STATE_NAME)
     {
@@ -891,8 +892,9 @@ void LevelUpdater::UpdateBossHealthBar(const float dtMillis)
     // Boss Health bar
     auto bossHealthBarFrameSoOpt = mScene.GetSceneObject(game_constants::BOSS_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
     auto bossHealthBarSoOpt = mScene.GetSceneObject(game_constants::BOSS_HEALTH_BAR_SCENE_OBJECT_NAME);
+    auto bossHealthBarTextSoOpt = mScene.GetSceneObject(game_constants::BOSS_HEALTH_BAR_TEXT_SCENE_OBJECT_NAME);
     
-    if (bossHealthBarFrameSoOpt && bossHealthBarSoOpt)
+    if (bossHealthBarFrameSoOpt && bossHealthBarSoOpt && bossHealthBarTextSoOpt)
     {
         auto& healthBarFrameSo = bossHealthBarFrameSoOpt->get();
         auto& healthBarSo = bossHealthBarSoOpt->get();
@@ -925,6 +927,10 @@ void LevelUpdater::UpdateBossHealthBar(const float dtMillis)
                     mBossAnimatedHealthBarPerc = healthPerc;
                 }
             }
+            
+            bossHealthBarTextSoOpt->get().mText = std::to_string(static_cast<int>(mBossAnimatedHealthBarPerc * GameSingletons::GetBossMaxHealth()));
+            bossHealthBarTextSoOpt->get().mPosition = game_constants::BOSS_HEALTH_BAR_POSITION + game_constants::HEALTH_BAR_TEXT_OFFSET;
+            bossHealthBarTextSoOpt->get().mPosition.x -= (bossHealthBarTextSoOpt->get().mText.size() * 0.5f)/2;
         }
     }
 }

@@ -51,7 +51,7 @@ inline const char* MAP_PLANET_RING_TEXTURE_FILE_NAME = "planet_ring_mm.bmp";
 inline const char* MAP_BASE_TEXTURE_FILE_NAME = "base_mm.bmp";
 inline const char* MAP_STAR_PATH_TEXTURE_FILE_NAME = "star_path.bmp";
 inline const char* NOISE_PREFIX_TEXTURE_FILE_NAME = "noise_";
-inline const char* BOSS_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_frame_mm.bmp";
+inline const char* BOSS_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_frame.bmp";
 inline const char* BOSS_HEALTH_BAR_TEXTURE_FILE_NAME = "enemy_health_bar.bmp";
 
 inline const strutils::StringId DEFAULT_SCENE_OBJECT_STATE = strutils::StringId("idle");
@@ -75,8 +75,10 @@ inline const strutils::StringId FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME = strutils
 inline const strutils::StringId PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME = strutils::StringId("PLAYER_HEALTH_BAR");
 inline const strutils::StringId PLAYER_HEALTH_LOST_BAR_SCENE_OBJECT_NAME = strutils::StringId("PLAYER_HEALTH_LOST_BAR");
 inline const strutils::StringId PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME = strutils::StringId("PLAYER_HEALTH_BAR_FRAME");
+inline const strutils::StringId PLAYER_HEALTH_BAR_TEXT_SCENE_OBJECT_NAME = strutils::StringId("PLAYER_HEALTH_BAR_TEXT");
 inline const strutils::StringId BOSS_HEALTH_BAR_SCENE_OBJECT_NAME = strutils::StringId("BOSS_HEALTH_BAR");
 inline const strutils::StringId BOSS_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME = strutils::StringId("BOSS_HEALTH_BAR_FRAME");
+inline const strutils::StringId BOSS_HEALTH_BAR_TEXT_SCENE_OBJECT_NAME = strutils::StringId("BOSS_HEALTH_BAR_TEXT");
 inline const strutils::StringId LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME = strutils::StringId("LEFT_MIRROR_IMAGE");
 inline const strutils::StringId RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME = strutils::StringId("RIGHT_MIRROR_IMAGE");
 inline const strutils::StringId DEBUG_PAST_COMMAND_LINE_NAME_PREFIX = strutils::StringId("PAST_COMMAND_");
@@ -141,7 +143,7 @@ inline const float BULLET_Z = -0.5f;
 
 inline const float PLAYER_HEALTH_BAR_Z = 0.45f;
 inline const float BOSS_HEALTH_BAR_Z = 2.45f;
-inline const float HEALTH_LOST_SPEED = 0.001f;
+inline const float HEALTH_LOST_SPEED = 0.0007f;
 inline const float BOSS_INTRO_ANIMATED_HEALTH_SPEED = 0.05f;
 inline const float HEALTH_BAR_POSITION_DIVISOR_MAGIC = 2.15f;
 
@@ -159,8 +161,11 @@ inline const float NEBULA_ANIMATION_SPEED = 1.0f/15000.0f;
 
 inline const float TEXT_FADE_IN_ALPHA_SPEED = 0.002f;
 
+static const glm::vec3 HEALTH_BAR_TEXT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
+static const glm::vec3 HEALTH_BAR_TEXT_OFFSET = glm::vec3(0.3f, -0.2f, 0.5f);
+
 inline const glm::vec3 PLAYER_HEALTH_BAR_POSITION = glm::vec3(0.0f, -12.0f, 0.5f);
-inline const glm::vec3 PLAYER_HEALTH_BAR_SCALE = glm::vec3(5.0f, 1.0f, 1.0f);
+inline const glm::vec3 PLAYER_HEALTH_BAR_SCALE = glm::vec3(5.0f, 1.2f, 1.0f);
 
 inline const glm::vec3 PLAYER_INITIAL_POS = glm::vec3(0.0f, -10.0f, 0.0f);
 inline const glm::vec3 BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);

@@ -29,12 +29,12 @@ public:
     MapUpdater(Scene& scene);
     ~MapUpdater();
     
-    void Update(std::vector<SceneObject>& sceneObjects, const float dtMillis) override;
-    void OnAppStateChange(Uint32 event) override;
-    std::string GetDescription() const override;
+    PostStateUpdateDirective VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis) override;
+    void VOnAppStateChange(Uint32 event) override;
+    std::string VGetDescription() const override;
     
 #ifdef DEBUG
-    void OpenDebugConsole() override;
+    void VOpenDebugConsole() override;
 #endif
 
 private:

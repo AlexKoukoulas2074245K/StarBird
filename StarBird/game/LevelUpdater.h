@@ -38,12 +38,12 @@ class LevelUpdater final: public IUpdater
 public:
     LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& levelDef);
     
-    void OnAppStateChange(Uint32 event) override;
-    void Update(std::vector<SceneObject>& sceneObjects, const float dtMillis) override;
-    std::string GetDescription() const override;
+    void VOnAppStateChange(Uint32 event) override;
+    PostStateUpdateDirective VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis) override;
+    std::string VGetDescription() const override;
     
 #ifdef DEBUG
-    void OpenDebugConsole() override;
+    void VOpenDebugConsole() override;
 #endif
     
     void AdvanceWave();
