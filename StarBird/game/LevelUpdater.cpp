@@ -186,7 +186,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             
             if (enemySO.mHealth <= 0)
             {
-                scene_object_utils::ChangeSceneObjectState(enemySO, enemySceneObjectTypeDef, strutils::StringId("dying"));
+                scene_object_utils::ChangeSceneObjectState(enemySO, enemySceneObjectTypeDef, game_constants::DYING_SCENE_OBJECT_STATE);
                 
                 mFlows.emplace_back([=]()
                 {
@@ -227,6 +227,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             auto& playerSODef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSO.mObjectFamilyTypeName)->get();
             auto enemySceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemySO.mObjectFamilyTypeName)->get();
             
+            // Remove player shield/damage player flow
             if (mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
             {
                 mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
@@ -238,9 +239,10 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemySceneObjectTypeDef.mDamage);
             }
             
+            // Kamikaze everything that isn't a boss part
             if (!scene_object_utils::IsSceneObjectBossPart(enemySO))
             {
-                scene_object_utils::ChangeSceneObjectState(enemySO, enemySceneObjectTypeDef, strutils::StringId("dying"));
+                scene_object_utils::ChangeSceneObjectState(enemySO, enemySceneObjectTypeDef, game_constants::DYING_SCENE_OBJECT_STATE);
                 
                 mFlows.emplace_back([=]()
                 {
@@ -251,13 +253,15 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_constants::POINT_LIGHT_COLOR, enemySO.mPosition, EXPLOSION_LIGHT_POWER);
             }
             
+            // Enable invincibility flow
             mFlows.emplace_back([]()
             {
             }, game_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
             
+            // Player death flow
             if (playerSO.mHealth <= 0)
             {
-                scene_object_utils::ChangeSceneObjectState(playerSO, playerSODef, strutils::StringId("dying"));
+                scene_object_utils::ChangeSceneObjectState(playerSO, playerSODef, game_constants::DYING_SCENE_OBJECT_STATE);
                 
                 mFlows.emplace_back([=]()
                 {
@@ -305,7 +309,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             
             if (playerSO.mHealth <= 0)
             {
-                scene_object_utils::ChangeSceneObjectState(playerSO, playerSODef, strutils::StringId("dying"));
+                scene_object_utils::ChangeSceneObjectState(playerSO, playerSODef, game_constants::DYING_SCENE_OBJECT_STATE);
                 
                 mFlows.emplace_back([=]()
                 {

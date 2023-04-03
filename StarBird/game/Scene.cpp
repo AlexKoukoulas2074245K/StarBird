@@ -14,6 +14,7 @@
 #include "LevelUpdater.h"
 #include "PhysicsConstants.h"
 #include "SceneObjectUtils.h"
+#include "StatsUpgradeUpdater.h"
 #include "ObjectTypeDefinitionRepository.h"
 #include "dataloaders/LevelDataLoader.h"
 #include "../resloading/ResourceLoadingService.h"
@@ -23,6 +24,19 @@
 
 #include <algorithm>
 #include <Box2D/Box2D.h>
+
+///------------------------------------------------------------------------------------------------
+
+static const glm::vec3 GUI_CRYSTAL_COUNT_HOLDER_SCALE = glm::vec3(2.5f, 3.5f, 1.0f);
+static const glm::vec3 GUI_CRYSTAL_COUNT_HOLDER_POSITION = glm::vec3(-4.2f, -10.9f, 0.0f);
+
+static const glm::vec3 GUI_CRYSTAL_COUNT_POSITION = glm::vec3(-4.0f, -12.1f, 2.0f);
+static const glm::vec3 GUI_CRYSTAL_COUNT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
+
+static const glm::vec3 GUI_CRYSTAL_POSITION = glm::vec3(-4.2f, -10.2f, 0.5f);
+static const glm::vec3 GUI_CRYSTAL_SCALE = glm::vec3(0.6f, 0.6f, 0.6f);
+
+static const float GUI_CRYSTAL_ROTATION_SPEED = 0.0004f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -266,6 +280,11 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
                 mSceneUpdater = std::make_unique<LabUpdater>(*this);
             } break;
                 
+            case SceneType::STATS_UPGRADE:
+            {
+                mSceneUpdater = std::make_unique<StatsUpgradeUpdater>(*this);
+            } break;
+                
             case SceneType::LEVEL:
             {
                 LevelDataLoader levelDataLoader;
@@ -391,10 +410,13 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
         GameSingletons::SetPlayerMaxHealth(playerDef->get().mHealth);
     }
     
+    
+    
+    // Player Health Bar update
     auto playerHealthBarFrameSoOpt = GetSceneObject(game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
     auto playerHealthBarSoOpt = GetSceneObject(game_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME);
     auto playerHealthBarTextSoOpt = GetSceneObject(game_constants::PLAYER_HEALTH_BAR_TEXT_SCENE_OBJECT_NAME);
-    
+
     if (playerHealthBarSoOpt && playerHealthBarFrameSoOpt && playerHealthBarTextSoOpt)
     {
         auto& healthBarFrameSo = playerHealthBarFrameSoOpt->get();
@@ -433,6 +455,33 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
         healthBarTextSo.mText = std::to_string(static_cast<int>(GameSingletons::GetPlayerDisplayedHealth()));
         healthBarTextSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION + game_constants::HEALTH_BAR_TEXT_OFFSET;
         healthBarTextSo.mPosition.x -= (healthBarTextSo.mText.size() * 0.5f)/2;
+    }
+    
+    // Crystal Count update
+    auto crystalCountSoOpt = GetSceneObject(game_constants::GUI_CRYSTAL_COUNT_SCENE_OBJECT_NAME);
+    if (crystalCountSoOpt)
+    {
+        auto& crystalCountSo = crystalCountSoOpt->get();
+        if (GameSingletons::GetDisplayedCrystalCount() > GameSingletons::GetCrystalCount())
+        {
+            GameSingletons::SetDisplayedCrystalCount(GameSingletons::GetDisplayedCrystalCount() - game_constants::CRYSTAL_COUNT_CHANGE_SPEED * dtMillis);
+            if (GameSingletons::GetDisplayedCrystalCount() <= GameSingletons::GetCrystalCount())
+            {
+                GameSingletons::SetDisplayedCrystalCount(GameSingletons::GetCrystalCount());
+            }
+        }
+        else if (GameSingletons::GetDisplayedCrystalCount() < GameSingletons::GetCrystalCount())
+        {
+            GameSingletons::SetDisplayedCrystalCount(GameSingletons::GetDisplayedCrystalCount() + game_constants::CRYSTAL_COUNT_CHANGE_SPEED * dtMillis);
+            if (GameSingletons::GetDisplayedCrystalCount() <= GameSingletons::GetCrystalCount())
+            {
+                GameSingletons::SetDisplayedCrystalCount(GameSingletons::GetCrystalCount());
+            }
+        }
+        
+        crystalCountSo.mText = std::to_string(static_cast<int>(GameSingletons::GetDisplayedCrystalCount()));
+        crystalCountSo.mPosition = GUI_CRYSTAL_COUNT_POSITION;
+        crystalCountSo.mPosition.x -= (crystalCountSo.mText.size() * 0.5f)/3.0;
     }
 }
 
@@ -490,6 +539,43 @@ void Scene::CreateCrossSceneInterfaceObjects()
         healthBarFrameSo.mName = game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
         healthBarFrameSo.mCrossSceneLifetime = true;
         AddSceneObject(std::move(healthBarFrameSo));
+    }
+    
+    // Crystsal Holder
+    {
+        SceneObject crystalHolder;
+        crystalHolder.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTAL_HOLDER_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        crystalHolder.mSceneObjectType = SceneObjectType::GUIObject;
+        crystalHolder.mPosition = GUI_CRYSTAL_COUNT_HOLDER_POSITION;
+        crystalHolder.mScale = GUI_CRYSTAL_COUNT_HOLDER_SCALE;
+        crystalHolder.mCrossSceneLifetime = true;
+        AddSceneObject(std::move(crystalHolder));
+    }
+    
+    // Crystsal GUI icon
+    {
+        SceneObject crystalIconSo;
+        crystalIconSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, GUI_CRYSTAL_ROTATION_SPEED, false);
+        crystalIconSo.mSceneObjectType = SceneObjectType::GUIObject;
+        crystalIconSo.mPosition = GUI_CRYSTAL_POSITION;
+        crystalIconSo.mScale = GUI_CRYSTAL_SCALE;
+        crystalIconSo.mName = game_constants::GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME;
+        crystalIconSo.mCrossSceneLifetime = true;
+        AddSceneObject(std::move(crystalIconSo));
+    }
+    
+    // Crystal Count Text
+    {
+        SceneObject crystalCountSo;
+        crystalCountSo.mPosition = GUI_CRYSTAL_COUNT_POSITION;
+        crystalCountSo.mScale = GUI_CRYSTAL_COUNT_SCALE;
+        crystalCountSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), GUI_CRYSTAL_COUNT_SCALE, false);
+        crystalCountSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
+        crystalCountSo.mSceneObjectType = SceneObjectType::GUIObject;
+        crystalCountSo.mName = game_constants::GUI_CRYSTAL_COUNT_SCENE_OBJECT_NAME;
+        crystalCountSo.mText = std::to_string(GameSingletons::GetCrystalCount());
+        crystalCountSo.mCrossSceneLifetime = true;
+        AddSceneObject(std::move(crystalCountSo));
     }
     
     auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();

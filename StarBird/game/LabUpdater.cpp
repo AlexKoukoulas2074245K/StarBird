@@ -26,21 +26,20 @@
 static const std::vector<game_constants::LabOptionType> DEFAULT_LAB_OPTIONS =
 {
     game_constants::LabOptionType::REPAIR,
-    game_constants::LabOptionType::CRYSTAL_TRANSFER,
+    game_constants::LabOptionType::STATS_UPGRADE,
     game_constants::LabOptionType::RESEARCH,
 };
 
 static const std::unordered_map<game_constants::LabOptionType, std::string> LAB_OPTION_DESCRIPTIONS =
 {
     { game_constants::LabOptionType::REPAIR, "REPAIR:\n Fully repairs the vessel to factory state standards." },
-    { game_constants::LabOptionType::CRYSTAL_TRANSFER, "CRYSTAL TRANSFER:\n Transfers all collected crystals to be stored and used for future pioneering human research." },
-    { game_constants::LabOptionType::RESEARCH, "RESEARCH:\n Expends collected crystal reserves to unlock powerful upgrades for the vessel." }
+    { game_constants::LabOptionType::STATS_UPGRADE, "STATS UPGRADE:\n Uses a small amount of crystals to upgrade individual vessel parts." },
+    { game_constants::LabOptionType::RESEARCH, "RESEARCH:\n Consumes a large amount of crystals to unlock powerful end-of-map upgrades for the vessel." }
 };
 
 static const strutils::StringId CONFIRMATION_BUTTON_NAME = strutils::StringId("CONFIRMATION_BUTTON");
 static const strutils::StringId CONFIRMATION_BUTTON_TEXT_NAME = strutils::StringId("CONFIRMATION_BUTTON_TEXT");
 
-static const char* RIGHT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "right_navigation_arrow_mm.bmp";
 static const char* LEFT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "left_navigation_arrow_mm.bmp";
 static const char* CONFIRMATION_BUTTON_TEXTURE_FILE_NAME = "confirmation_button_mm.bmp";
 static const char* TEXT_PROMPT_TEXTURE_FILE_NAME = "text_prompt_mm.bmp";
@@ -54,7 +53,8 @@ static const glm::vec3 LAB_NAVIGATION_ARROW_POSITION = glm::vec3(0.0f, -6.0f, 0.
 static const glm::vec3 LAB_CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -6.0f, 0.0f);
 static const glm::vec3 LAB_CONFIRMATION_BTUTON_SCALE = glm::vec3(3.5f, 3.5f, 0.0f);
 
-static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-1.1f, -6.3f, 0.5f);
+static const glm::vec3 LAB_REJECTION_TEXT_POSITION = glm::vec3(-3.8f, -6.3f, 0.5f);
+static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-0.8f, -6.3f, 0.5f);
 static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_SCALE = glm::vec3(0.007f, 0.007f, 1.0f);
 
 static const glm::vec3 TEXT_PROMPT_POSITION = glm::vec3(0.0f, 7.2f, 0.5f);
@@ -82,11 +82,7 @@ LabUpdater::LabUpdater(Scene& scene)
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
 #endif
-
-    auto& worldCamera = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject)->get();
-    worldCamera.SetPosition(glm::vec3(0.0f));
-    
-    GameSingletons::SetPlayerCurrentHealth(1);
+    GameSingletons::SetCrystalCount(2);
     CreateSceneObjects();
     OnCarouselStationary();
 }
@@ -191,8 +187,10 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
                         mOptionSelectionState = OptionSelectionState::OPTION_FLOW_FINISHED;
                     }
                 } break;
-                case game_constants::LabOptionType::CRYSTAL_TRANSFER:
+                case game_constants::LabOptionType::STATS_UPGRADE:
                 {
+                    mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::STATS_UPGRADE, "", true));
+                    mOptionSelectionState = OptionSelectionState::TRANSITIONING_TO_NEXT_SCREEN;
                 } break;
                     
                 case game_constants::LabOptionType::RESEARCH:
@@ -211,11 +209,11 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
             if (inputContext.mEventType == SDL_FINGERDOWN && navigationArrowSoOpt && scene_object_utils::IsPointInsideSceneObject(navigationArrowSoOpt->get(), originalFingerDownTouchPos))
             {
                 mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
-                mOptionSelectionState = OptionSelectionState::TRANSITIONING_TO_MAP;
+                mOptionSelectionState = OptionSelectionState::TRANSITIONING_TO_NEXT_SCREEN;
             }
         } break;
             
-        case OptionSelectionState::TRANSITIONING_TO_MAP:
+        case OptionSelectionState::TRANSITIONING_TO_NEXT_SCREEN:
         {
             return PostStateUpdateDirective::BLOCK_UPDATE;
         } break;
@@ -426,30 +424,48 @@ void LabUpdater::OnCarouselStationary()
             mSelectedLabOption = static_cast<game_constants::LabOptionType>(i);
         }
     }
-    
-    // Recreate confirmation button
     auto& resService = resources::ResourceLoadingService::GetInstance();
-    SceneObject confirmationButtonSo;
-    confirmationButtonSo.mPosition = LAB_CONFIRMATION_BUTTON_POSITION;
-    confirmationButtonSo.mScale = LAB_CONFIRMATION_BTUTON_SCALE;
-    confirmationButtonSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + CONFIRMATION_BUTTON_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Z, 0.0f, LAB_CONFIRMATION_BUTTON_ROTATION_SPEED, false);
-    confirmationButtonSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-    confirmationButtonSo.mName = CONFIRMATION_BUTTON_NAME;
-    confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-    confirmationButtonSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
-    mScene.AddSceneObject(std::move(confirmationButtonSo));
     
-    // Confirmation button text
-    SceneObject confirmationButtonTextSo;
-    confirmationButtonTextSo.mPosition = LAB_CONFIRMATION_BUTTON_TEXT_POSITION;
-    confirmationButtonTextSo.mScale = LAB_CONFIRMATION_BUTTON_TEXT_SCALE;
-    confirmationButtonTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
-    confirmationButtonTextSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
-    confirmationButtonTextSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-    confirmationButtonTextSo.mName = CONFIRMATION_BUTTON_TEXT_NAME;
-    confirmationButtonTextSo.mText = "Confirm";
-    confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-    mScene.AddSceneObject(std::move(confirmationButtonTextSo));
+    auto validityRejectionText = CheckForOptionValidity();
+    if (!validityRejectionText.empty())
+    {
+        // Confirmation button text
+        SceneObject rejectionTextSo;
+        rejectionTextSo.mPosition = LAB_REJECTION_TEXT_POSITION;
+        rejectionTextSo.mScale = LAB_CONFIRMATION_BUTTON_TEXT_SCALE;
+        rejectionTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        rejectionTextSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
+        rejectionTextSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+        rejectionTextSo.mName = CONFIRMATION_BUTTON_TEXT_NAME;
+        rejectionTextSo.mText = validityRejectionText;
+        rejectionTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+        mScene.AddSceneObject(std::move(rejectionTextSo));
+    }
+    else
+    {
+        // Recreate confirmation button
+        SceneObject confirmationButtonSo;
+        confirmationButtonSo.mPosition = LAB_CONFIRMATION_BUTTON_POSITION;
+        confirmationButtonSo.mScale = LAB_CONFIRMATION_BTUTON_SCALE;
+        confirmationButtonSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + CONFIRMATION_BUTTON_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Z, 0.0f, LAB_CONFIRMATION_BUTTON_ROTATION_SPEED, false);
+        confirmationButtonSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+        confirmationButtonSo.mName = CONFIRMATION_BUTTON_NAME;
+        confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+        confirmationButtonSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+        mScene.AddSceneObject(std::move(confirmationButtonSo));
+        
+        // Confirmation button text
+        SceneObject confirmationButtonTextSo;
+        confirmationButtonTextSo.mPosition = LAB_CONFIRMATION_BUTTON_TEXT_POSITION;
+        confirmationButtonTextSo.mScale = LAB_CONFIRMATION_BUTTON_TEXT_SCALE;
+        confirmationButtonTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        confirmationButtonTextSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
+        confirmationButtonTextSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+        confirmationButtonTextSo.mName = CONFIRMATION_BUTTON_TEXT_NAME;
+        confirmationButtonTextSo.mText = "Select";
+        confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+        mScene.AddSceneObject(std::move(confirmationButtonTextSo));
+    }
     
     // Text Prompt
     mTextPromptController = std::make_unique<TextPromptController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + TEXT_PROMPT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false), TEXT_PROMPT_POSITION, TEXT_PROMPT_SCALE, !mVisitedLabOptions.contains(mSelectedLabOption), LAB_OPTION_DESCRIPTIONS.at(mSelectedLabOption));
@@ -495,7 +511,7 @@ void LabUpdater::OnTriggerOptionFlow()
             GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerMaxHealth());
         } break;
             
-        case game_constants::LabOptionType::CRYSTAL_TRANSFER:
+        case game_constants::LabOptionType::STATS_UPGRADE:
         {
             
         } break;
@@ -505,6 +521,22 @@ void LabUpdater::OnTriggerOptionFlow()
             
         } break;
     }
+}
+
+///------------------------------------------------------------------------------------------------
+
+std::string LabUpdater::CheckForOptionValidity() const
+{
+    if (mSelectedLabOption == game_constants::LabOptionType::REPAIR && GameSingletons::GetPlayerCurrentHealth() == GameSingletons::GetPlayerMaxHealth())
+    {
+        return "Vessel is not damaged";
+    }
+    else if (mSelectedLabOption == game_constants::LabOptionType::RESEARCH)
+    {
+        return "Not implemented";
+    }
+    
+    return "";
 }
 
 ///------------------------------------------------------------------------------------------------

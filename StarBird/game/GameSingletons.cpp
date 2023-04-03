@@ -18,6 +18,8 @@ GameSingletons::UpgradeMap GameSingletons::mEquippedUpgrades = {};
 GameSingletons::UpgradeMap GameSingletons::mAvailableUpgrades = {};
 std::pair<UpgradeDefinition, UpgradeDefinition> GameSingletons::mUpgradeSelection = {};
 MapCoord GameSingletons::mCurrentMapCoord = MapCoord(0, 2);
+long GameSingletons::mCrystalCount = 0;
+float GameSingletons::mDisplayedCrystalCount = 0;
 float GameSingletons::mGameSpeedMultiplier = 1.0f;
 float GameSingletons::mBossMaxHealth = 0.0f;
 float GameSingletons::mBossCurrentHealth = 1.0f;
@@ -246,6 +248,34 @@ float GameSingletons::GetPlayerDisplayedHealth()
 void GameSingletons::SetPlayerDisplayedHealth(const float playerDisplayedHealth)
 {
     mPlayerDisplayedHealth = playerDisplayedHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+long GameSingletons::GetCrystalCount()
+{
+    return mCrystalCount;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetCrystalCount(const long crystalCount)
+{
+    mCrystalCount = crystalCount;
+}
+
+///------------------------------------------------------------------------------------------------
+
+float GameSingletons::GetDisplayedCrystalCount()
+{
+    return mDisplayedCrystalCount;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetDisplayedCrystalCount(const float displayedCrystalCount)
+{
+    mDisplayedCrystalCount = displayedCrystalCount;
 }
 
 ///------------------------------------------------------------------------------------------------

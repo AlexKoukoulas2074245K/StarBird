@@ -23,6 +23,7 @@ namespace game_constants
 ///------------------------------------------------------------------------------------------------
 
 inline const char* QUAD_MESH_FILE_NAME = "quad.obj";
+inline const char* SMALL_CRYSTAL_MESH_FILE_NAME = "crystals/crystal_0.obj";
 inline const char* BASIC_SHADER_FILE_NAME = "basic.vs";
 inline const char* HUE_SHIFT_SHADER_FILE_NAME = "hue_shift.vs";
 inline const char* DISSOLVE_SHADER_FILE_NAME = "dissolve.vs";
@@ -37,6 +38,8 @@ inline const char* UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME = "shine_effect_fxx.bm
 inline const char* DISSOLVE_EFFECT_TEXTURE_FILE_NAME = "dissolve_line_fxy_mm.bmp";
 inline const char* BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/blue/0.bmp";
 inline const char* LAB_BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/lab/lab_bg.bmp";
+inline const char* CRYSTALS_TEXTURE_FILE_NAME = "crystal.bmp";
+inline const char* CRYSTAL_HOLDER_TEXTURE_FILE_NAME = "crystal_count_holder.bmp";
 inline const char* MIRROR_IMAGE_TEXTURE_FILE_NAME = "player_mirror_image_mm.bmp";
 inline const char* BULLET_TEXTURE_FILE_NAME = "bullet.bmp";
 inline const char* BETTER_BULLET_TEXTURE_FILE_NAME = "better_bullet.bmp";
@@ -55,6 +58,7 @@ inline const char* BOSS_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_
 inline const char* BOSS_HEALTH_BAR_TEXTURE_FILE_NAME = "enemy_health_bar.bmp";
 
 inline const strutils::StringId DEFAULT_SCENE_OBJECT_STATE = strutils::StringId("idle");
+inline const strutils::StringId DYING_SCENE_OBJECT_STATE = strutils::StringId("dying");
 inline const strutils::StringId DEFAULT_FONT_NAME = strutils::StringId("font");
 inline const strutils::StringId DEFAULT_FONT_MM_NAME = strutils::StringId("font_mm");
 
@@ -87,6 +91,8 @@ inline const strutils::StringId LAB_OPTION_NAME_PREFIX = strutils::StringId("LAB
 inline const strutils::StringId DEBUG_COMMAND_TEXT_SCENE_OBJECT_NAME = strutils::StringId("COMMAND_TEXT");
 inline const strutils::StringId DEBUG_COMMAND_OUTPUT_SCENE_OBJECT_NAME = strutils::StringId("COMMAND_OUTPUT");
 inline const strutils::StringId DEBUG_BACK_TO_GAME_SCENE_OBJECT_NAME = strutils::StringId("BACK_TO_GAME");
+inline const strutils::StringId GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME = strutils::StringId("CRYSTAL_ICON");
+inline const strutils::StringId GUI_CRYSTAL_COUNT_SCENE_OBJECT_NAME = strutils::StringId("CRYSTAL_COUNT");
 
 inline const strutils::StringId TEXTURE_OFFSET_X_UNIFORM_NAME = strutils::StringId("tex_offset_x");
 inline const strutils::StringId TEXTURE_OFFSET_Y_UNIFORM_NAME = strutils::StringId("tex_offset_y");
@@ -144,6 +150,7 @@ inline const float BULLET_Z = -0.5f;
 inline const float PLAYER_HEALTH_BAR_Z = 0.45f;
 inline const float BOSS_HEALTH_BAR_Z = 2.45f;
 inline const float HEALTH_LOST_SPEED = 0.0007f;
+inline const float CRYSTAL_COUNT_CHANGE_SPEED = 0.07f;
 inline const float BOSS_INTRO_ANIMATED_HEALTH_SPEED = 0.05f;
 inline const float HEALTH_BAR_POSITION_DIVISOR_MAGIC = 2.15f;
 
@@ -182,13 +189,13 @@ inline const glm::vec2 MAP_MIN_WORLD_BOUNDS = glm::vec2(-17.0f, -13.0f);
 
 enum class LabOptionType
 {
-    REPAIR, CRYSTAL_TRANSFER, RESEARCH
+    REPAIR, STATS_UPGRADE, RESEARCH
 };
 
 inline const std::unordered_map<game_constants::LabOptionType, std::string> LAB_OPTION_TYPE_TO_TEXTURE =
 {
     { LabOptionType::REPAIR, "backgrounds/lab/lab_option_repair.bmp" },
-    { LabOptionType::CRYSTAL_TRANSFER, "backgrounds/lab/lab_option_crystal_transfer.bmp" },
+    { LabOptionType::STATS_UPGRADE, "backgrounds/lab/lab_option_crystal_transfer.bmp" },
     { LabOptionType::RESEARCH, "backgrounds/lab/lab_option_research.bmp" }
 };
 

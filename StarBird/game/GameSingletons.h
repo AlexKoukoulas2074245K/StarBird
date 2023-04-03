@@ -72,6 +72,12 @@ public:
     static float GetPlayerDisplayedHealth();
     static void SetPlayerDisplayedHealth(const float playerDisplayedHealth);
     
+    static long GetCrystalCount();
+    static void SetCrystalCount(const long crystalCount);
+    
+    static float GetDisplayedCrystalCount();
+    static void SetDisplayedCrystalCount(const float displayedCrystalCount);
+    
     static MapCoord GetCurrentMapCoord();
     static void SetCurrentMapCoord(const MapCoord& mapCoord);
     
@@ -88,6 +94,8 @@ private:
     static UpgradeMap mAvailableUpgrades;
     static std::pair<UpgradeDefinition, UpgradeDefinition> mUpgradeSelection;
     static MapCoord mCurrentMapCoord;
+    static long mCrystalCount;
+    static float mDisplayedCrystalCount;
     static float mGameSpeedMultiplier;
     static float mBossMaxHealth;
     static float mBossCurrentHealth;

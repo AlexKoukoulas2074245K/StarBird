@@ -12,7 +12,7 @@
 
 ///------------------------------------------------------------------------------------------------
 
-static const glm::vec3 FULL_SCREEN_OVERLAY_POSITION = glm::vec3(0.0f, 0.0f, 3.0f);
+static const glm::vec3 FULL_SCREEN_OVERLAY_POSITION = glm::vec3(0.0f, 0.0f, 3.5f);
 static const glm::vec3 FULL_SCREEN_OVERLAY_SCALE = glm::vec3(200.0f, 200.0f, 1.0f);
 
 ///------------------------------------------------------------------------------------------------

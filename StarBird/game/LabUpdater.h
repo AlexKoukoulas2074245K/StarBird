@@ -43,6 +43,8 @@ private:
     void OnConfirmationButtonPressed();
     void OnTriggerOptionFlow();
     
+    std::string CheckForOptionValidity() const;
+    
 private:
     enum class CarouselState
     {
@@ -51,7 +53,7 @@ private:
     
     enum class OptionSelectionState
     {
-        OPTION_NOT_SELECTED, OPTION_SELECTED, OPTION_TRIGGERED, OPTION_FLOW_FINISHED, TRANSITIONING_TO_MAP
+        OPTION_NOT_SELECTED, OPTION_SELECTED, OPTION_TRIGGERED, OPTION_FLOW_FINISHED, TRANSITIONING_TO_NEXT_SCREEN
     };
     
     Scene& mScene;
