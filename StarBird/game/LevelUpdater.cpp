@@ -238,6 +238,19 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemySceneObjectTypeDef.mDamage);
             }
             
+            if (!scene_object_utils::IsSceneObjectBossPart(enemySO))
+            {
+                scene_object_utils::ChangeSceneObjectState(enemySO, enemySceneObjectTypeDef, strutils::StringId("dying"));
+                
+                mFlows.emplace_back([=]()
+                {
+                    RemoveWaveEnemy(enemyName);
+                }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
+                
+                mActiveLightNames.insert(enemyName);
+                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_constants::POINT_LIGHT_COLOR, enemySO.mPosition, EXPLOSION_LIGHT_POWER);
+            }
+            
             mFlows.emplace_back([]()
             {
             }, game_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
