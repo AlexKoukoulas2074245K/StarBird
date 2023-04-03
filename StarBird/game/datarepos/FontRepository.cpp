@@ -6,6 +6,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "FontRepository.h"
+#include "../../utils/OSMessageBox.h"
 
 ///------------------------------------------------------------------------------------------------
 
@@ -24,6 +25,8 @@ std::optional<std::reference_wrapper<const FontDefinition>> FontRepository::GetF
     {
         return std::optional<std::reference_wrapper<const FontDefinition>>{findIter->second};
     }
+    
+    ospopups::ShowMessageBox(ospopups::MessageBoxType::ERROR, "Cannot find font", fontName.GetString().c_str());
     return std::nullopt;
 }
 
@@ -35,6 +38,10 @@ void FontRepository::LoadFont(const strutils::StringId& fontName)
     if (findIter == mFontMap.end())
     {
         mFontMap[fontName] = mLoader.LoadFont(fontName.GetString());
+    }
+    else
+    {
+        ospopups::ShowMessageBox(ospopups::MessageBoxType::ERROR, "Cannot find font", fontName.GetString().c_str());
     }
 }
 

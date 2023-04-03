@@ -148,12 +148,15 @@ std::unique_ptr<BaseAnimation> VariableTexturedAnimation::VClone() const
 
 ///------------------------------------------------------------------------------------------------
 
-PulsingAnimation::PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float delayedStartMillis, const float pulsingSpeed, const float pulsingEnlargementFactor, const bool bodyRenderingEnabled)
+PulsingAnimation::PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const PulsingMode pulsingMode, const float delayedStartMillis, const float pulsingSpeed, const float pulsingEnlargementFactor, const bool bodyRenderingEnabled)
     : BaseAnimation(textureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
+    , mPulsingMode(pulsingMode)
     , mDelayedStartMillis(delayedStartMillis)
     , mPulsingSpeed(pulsingSpeed)
     , mPulsingEnlargementFactor(pulsingEnlargementFactor)
     , mPulsingDtAccum(0.0f)
+    , mCapturedOriginalScale(false)
+    , mSignHasBeenReversed(false)
 {
 }
 
@@ -164,6 +167,26 @@ std::unique_ptr<BaseAnimation> PulsingAnimation::VClone() const
 
 void PulsingAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
+    if (!mCapturedOriginalScale)
+    {
+        mOriginalScale = sceneObject.mScale;
+        mCapturedOriginalScale = true;
+    }
+    
+    if ((mPulsingMode == PulsingMode::OUTER_PULSE_ONCE && math::Sinf(mPulsingDtAccum) < 0.0f) ||
+        (mPulsingMode == PulsingMode::INNER_PULSE_ONCE && math::Sinf(mPulsingDtAccum) > 0.0f))
+    {
+        mSignHasBeenReversed = true;
+    }
+    
+    if ((math::Sinf(mPulsingDtAccum) > 0.0f && mSignHasBeenReversed && mPulsingMode == PulsingMode::OUTER_PULSE_ONCE) ||
+        (math::Sinf(mPulsingDtAccum) < 0.0f && mSignHasBeenReversed && mPulsingMode == PulsingMode::INNER_PULSE_ONCE))
+    {
+        sceneObject.mScale = mOriginalScale;
+        BaseAnimation::VPause();
+        return;
+    }
+    
     if (mDelayedStartMillis > 0.0f)
     {
         mDelayedStartMillis -= dtMillis;
@@ -171,7 +194,16 @@ void PulsingAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
     else
     {
         mDelayedStartMillis = 0.0f;
-        mPulsingDtAccum += dtMillis * mPulsingSpeed;
+        
+        if (mPulsingMode == PulsingMode::INNER_PULSE_ONCE)
+        {
+            mPulsingDtAccum -= dtMillis * mPulsingSpeed;
+        }
+        else
+        {
+            mPulsingDtAccum += dtMillis * mPulsingSpeed;
+        }
+        
         sceneObject.mScale += math::Sinf(mPulsingDtAccum) * mPulsingEnlargementFactor;
     }
 }

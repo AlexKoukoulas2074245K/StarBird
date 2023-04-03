@@ -121,9 +121,6 @@ inline const strutils::StringId BETTER_PLAYER_BULLET_TYPE = strutils::StringId("
 inline const strutils::StringId MIRROR_IMAGE_BULLET_TYPE = strutils::StringId("mirror_image_bullet");
 inline const strutils::StringId BETTER_MIRROR_IMAGE_BULLET_TYPE = strutils::StringId("mirror_image_better_bullet");
 
-inline const strutils::StringId CONFIRMATION_BUTTON_NAME = strutils::StringId("CONFIRMATION_BUTTON");
-inline const strutils::StringId CONFIRMATION_BUTTON_TEXT_NAME = strutils::StringId("CONFIRMATION_BUTTON_TEXT");
-
 inline const strutils::StringId TEXT_PROMPT_NAME = strutils::StringId("TEXT_PROMPT");
 
 inline const std::string ENEMY_PROJECTILE_FLOW_POSTFIX = std::string("_PROJECTILE_FLOW");
@@ -179,14 +176,14 @@ inline const glm::vec2 MAP_MIN_WORLD_BOUNDS = glm::vec2(-17.0f, -13.0f);
 
 enum class LabOptionType
 {
-    Repair, CrystalTransfer, Research
+    REPAIR, CRYSTAL_TRANSFER, RESEARCH
 };
 
 inline const std::unordered_map<game_constants::LabOptionType, std::string> LAB_OPTION_TYPE_TO_TEXTURE =
 {
-    { LabOptionType::Repair, "backgrounds/lab/lab_option_repair.bmp" },
-    { LabOptionType::CrystalTransfer, "backgrounds/lab/lab_option_crystal_transfer.bmp" },
-    { LabOptionType::Research, "backgrounds/lab/lab_option_research.bmp" }
+    { LabOptionType::REPAIR, "backgrounds/lab/lab_option_repair.bmp" },
+    { LabOptionType::CRYSTAL_TRANSFER, "backgrounds/lab/lab_option_crystal_transfer.bmp" },
+    { LabOptionType::RESEARCH, "backgrounds/lab/lab_option_research.bmp" }
 };
 
 ///------------------------------------------------------------------------------------------------

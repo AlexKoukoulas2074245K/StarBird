@@ -24,17 +24,20 @@
 
 static const std::vector<game_constants::LabOptionType> DEFAULT_LAB_OPTIONS =
 {
-    game_constants::LabOptionType::Repair,
-    game_constants::LabOptionType::CrystalTransfer,
-    game_constants::LabOptionType::Research,
+    game_constants::LabOptionType::REPAIR,
+    game_constants::LabOptionType::CRYSTAL_TRANSFER,
+    game_constants::LabOptionType::RESEARCH,
 };
 
 static const std::unordered_map<game_constants::LabOptionType, std::string> LAB_OPTION_DESCRIPTIONS =
 {
-    { game_constants::LabOptionType::Repair, "REPAIR:\n Fully repairs the vessel to factory state standards." },
-    { game_constants::LabOptionType::CrystalTransfer, "CRYSTAL TRANSFER:\n Transfers all collected crystals to be stored and used for future pioneering human research." },
-    { game_constants::LabOptionType::Research, "RESEARCH:\n Expends collected crystal reserves to unlock powerful upgrades for the vessel." }
+    { game_constants::LabOptionType::REPAIR, "REPAIR:\n Fully repairs the vessel to factory state standards." },
+    { game_constants::LabOptionType::CRYSTAL_TRANSFER, "CRYSTAL TRANSFER:\n Transfers all collected crystals to be stored and used for future pioneering human research." },
+    { game_constants::LabOptionType::RESEARCH, "RESEARCH:\n Expends collected crystal reserves to unlock powerful upgrades for the vessel." }
 };
+
+static const strutils::StringId CONFIRMATION_BUTTON_NAME = strutils::StringId("CONFIRMATION_BUTTON");
+static const strutils::StringId CONFIRMATION_BUTTON_TEXT_NAME = strutils::StringId("CONFIRMATION_BUTTON_TEXT");
 
 static const char* RIGHT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "right_navigation_arrow_mm.bmp";
 static const char* LEFT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "left_navigation_arrow_mm.bmp";
@@ -70,7 +73,7 @@ LabUpdater::LabUpdater(Scene& scene)
     : mScene(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
     , mCarouselState(CarouselState::STATIONARY)
-    , mSelectedLabOption(game_constants::LabOptionType::Repair)
+    , mSelectedLabOption(game_constants::LabOptionType::REPAIR)
     , mCarouselRads(0.0f)
     , mCarouselTargetRads(0.0f)
     , mTransitioning(false)
@@ -106,29 +109,35 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     
     // Input flow
     auto& inputContext = GameSingletons::GetInputContext();
-    static glm::vec3 touchPos(0.0f);
+    static glm::vec3 originalFingerDownTouchPos(0.0f);
     static bool exhaustedMove = false;
     
     if (inputContext.mEventType == SDL_FINGERDOWN)
     {
-        touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
+        originalFingerDownTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
         
         auto navigationArrowSoOpt = mScene.GetSceneObject(game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME);
         
-        if (navigationArrowSoOpt && scene_object_utils::IsPointInsideSceneObject(navigationArrowSoOpt->get(), glm::vec2(touchPos.x, touchPos.y)))
+        if (navigationArrowSoOpt && scene_object_utils::IsPointInsideSceneObject(navigationArrowSoOpt->get(), originalFingerDownTouchPos))
         {
             mTransitioning = true;
             mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
             return;
+        }
+        
+        auto confirmationButtonSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_NAME);
+        if (confirmationButtonSoOpt && scene_object_utils::IsPointInsideSceneObject(*confirmationButtonSoOpt, originalFingerDownTouchPos))
+        {
+            OnConfirmationButtonPress();
         }
     }
     else if (inputContext.mEventType == SDL_FINGERMOTION && !exhaustedMove)
     {
         auto currentTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
         
-        if (mCarouselState == CarouselState::STATIONARY && math::Abs(touchPos.x - currentTouchPos.x) > LAB_CAROUSEL_ROTATION_THRESHOLD)
+        if (mCarouselState == CarouselState::STATIONARY && math::Abs(originalFingerDownTouchPos.x - currentTouchPos.x) > LAB_CAROUSEL_ROTATION_THRESHOLD)
         {
-            if (currentTouchPos.x > touchPos.x)
+            if (currentTouchPos.x > originalFingerDownTouchPos.x)
             {
                 mCarouselState = CarouselState::MOVING_LEFT;
                 mCarouselTargetRads = mCarouselRads + (math::PI * 2.0f / (mLabOptions.size()));
@@ -184,7 +193,7 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     }
     
     // Fade in confirmation button
-    auto confirmationButtonSoOpt = mScene.GetSceneObject(game_constants::CONFIRMATION_BUTTON_NAME);
+    auto confirmationButtonSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_NAME);
     if (confirmationButtonSoOpt)
     {
         auto& confirmationButtonSo = confirmationButtonSoOpt->get();
@@ -196,7 +205,7 @@ void LabUpdater::Update(std::vector<SceneObject>& sceneObjects, const float dtMi
     }
     
     // & text
-    auto confirmationButtonTextSoOpt = mScene.GetSceneObject(game_constants::CONFIRMATION_BUTTON_TEXT_NAME);
+    auto confirmationButtonTextSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_TEXT_NAME);
     if (confirmationButtonTextSoOpt)
     {
         auto& confirmationButtonTextSo = confirmationButtonTextSoOpt->get();
@@ -342,8 +351,8 @@ void LabUpdater::PositionCarouselObject(SceneObject& carouselObject, const int o
 
 void LabUpdater::OnCarouselMovementStart()
 {
-    mScene.RemoveAllSceneObjectsWithName(game_constants::CONFIRMATION_BUTTON_NAME);
-    mScene.RemoveAllSceneObjectsWithName(game_constants::CONFIRMATION_BUTTON_TEXT_NAME);
+    mScene.RemoveAllSceneObjectsWithName(CONFIRMATION_BUTTON_NAME);
+    mScene.RemoveAllSceneObjectsWithName(CONFIRMATION_BUTTON_TEXT_NAME);
     mTextPromptController.reset();
 }
 
@@ -371,7 +380,7 @@ void LabUpdater::OnCarouselStationary()
     confirmationButtonSo.mScale = LAB_CONFIRMATION_BTUTON_SCALE;
     confirmationButtonSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + CONFIRMATION_BUTTON_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Z, 0.0f, LAB_CONFIRMATION_BUTTON_ROTATION_SPEED, false);
     confirmationButtonSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-    confirmationButtonSo.mName = game_constants::CONFIRMATION_BUTTON_NAME;
+    confirmationButtonSo.mName = CONFIRMATION_BUTTON_NAME;
     confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
     confirmationButtonSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
     mScene.AddSceneObject(std::move(confirmationButtonSo));
@@ -383,13 +392,46 @@ void LabUpdater::OnCarouselStationary()
     confirmationButtonTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
     confirmationButtonTextSo.mFontName = game_constants::DEFAULT_FONT_NAME;
     confirmationButtonTextSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-    confirmationButtonTextSo.mName = game_constants::CONFIRMATION_BUTTON_TEXT_NAME;
+    confirmationButtonTextSo.mName = CONFIRMATION_BUTTON_TEXT_NAME;
     confirmationButtonTextSo.mText = "Confirm";
     confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
     mScene.AddSceneObject(std::move(confirmationButtonTextSo));
     
     // Text Prompt
     mTextPromptController = std::make_unique<TextPromptController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + TEXT_PROMPT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false), TEXT_PROMPT_POSITION, TEXT_PROMPT_SCALE, true, LAB_OPTION_DESCRIPTIONS.at(mSelectedLabOption));
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LabUpdater::OnConfirmationButtonPress()
+{
+    switch (mSelectedLabOption)
+    {
+        case game_constants::LabOptionType::REPAIR: break;
+        case game_constants::LabOptionType::CRYSTAL_TRANSFER: break;
+        case game_constants::LabOptionType::RESEARCH: break;
+    }
+    
+    auto confirmationButtonSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_NAME);
+    auto confirmationButtonTexSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_TEXT_NAME);
+    
+    if (confirmationButtonSoOpt)
+    {
+        auto& confirmationButtonSo = confirmationButtonSoOpt->get();
+        confirmationButtonSo.mScale = LAB_CONFIRMATION_BTUTON_SCALE;
+        
+        confirmationButtonSo.mExtraCompoundingAnimations.clear();
+        confirmationButtonSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(confirmationButtonSo.mAnimation->VGetCurrentTextureResourceId(), confirmationButtonSo.mAnimation->VGetCurrentMeshResourceId(), confirmationButtonSo.mAnimation->VGetCurrentShaderResourceId(), LAB_CONFIRMATION_BTUTON_SCALE, PulsingAnimation::PulsingMode::INNER_PULSE_ONCE, 0.0f, LAB_ARROW_PULSING_SPEED * 2, LAB_ARROW_PULSING_ENLARGEMENT_FACTOR * 10, false));
+    }
+    
+    if (confirmationButtonTexSoOpt)
+    {
+        auto& confirmationButtonTextSo = confirmationButtonTexSoOpt->get();
+        confirmationButtonTextSo.mScale = LAB_CONFIRMATION_BUTTON_TEXT_SCALE;
+        
+        confirmationButtonTextSo.mExtraCompoundingAnimations.clear();
+        confirmationButtonTextSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(confirmationButtonTextSo.mAnimation->VGetCurrentTextureResourceId(), confirmationButtonTextSo.mAnimation->VGetCurrentMeshResourceId(), confirmationButtonTextSo.mAnimation->VGetCurrentShaderResourceId(), LAB_CONFIRMATION_BUTTON_TEXT_SCALE, PulsingAnimation::PulsingMode::INNER_PULSE_ONCE, 0.0f, LAB_ARROW_PULSING_SPEED * 2, LAB_ARROW_PULSING_ENLARGEMENT_FACTOR / 40, false));
+    }
 }
 
 ///------------------------------------------------------------------------------------------------

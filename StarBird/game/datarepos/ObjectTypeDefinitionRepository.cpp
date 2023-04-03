@@ -6,6 +6,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "ObjectTypeDefinitionRepository.h"
+#include "../../utils/OSMessageBox.h"
 
 ///------------------------------------------------------------------------------------------------
 
@@ -36,6 +37,7 @@ std::optional<std::reference_wrapper<const ObjectTypeDefinition>> ObjectTypeDefi
     {
         return std::optional<std::reference_wrapper<const ObjectTypeDefinition>>{findIter->second};
     }
+    
     return std::nullopt;
 }
 

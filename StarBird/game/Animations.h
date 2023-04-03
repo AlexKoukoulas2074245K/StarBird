@@ -92,7 +92,12 @@ private:
 class PulsingAnimation final: public BaseAnimation
 {
 public:
-    PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float delayedStartMillis, const float pulsingSpeed, const float pulsingEnlargementFactor, const bool bodyRenderingEnabled);
+    enum class PulsingMode
+    {
+        INNER_PULSE_ONCE, OUTER_PULSE_ONCE, PULSE_CONTINUALLY
+    };
+    
+    PulsingAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const PulsingMode pulsingMode, const float delayedStartMillis, const float pulsingSpeed, const float pulsingEnlargementFactor, const bool bodyRenderingEnabled);
     
     std::unique_ptr<BaseAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
@@ -100,10 +105,14 @@ public:
     float VGetDuration() const override;
     
 private:
+    glm::vec3 mOriginalScale;
+    PulsingMode mPulsingMode;
     float mDelayedStartMillis;
     float mPulsingSpeed;
     float mPulsingEnlargementFactor;
     float mPulsingDtAccum;
+    bool mCapturedOriginalScale;
+    bool mSignHasBeenReversed;
 };
 
 ///------------------------------------------------------------------------------------------------

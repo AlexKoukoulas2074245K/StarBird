@@ -39,6 +39,7 @@ private:
     void PositionCarouselObject(SceneObject& carouselObject, const int objectIndex) const;
     void OnCarouselMovementStart();
     void OnCarouselStationary();
+    void OnConfirmationButtonPress();
     
 private:
     enum class CarouselState
