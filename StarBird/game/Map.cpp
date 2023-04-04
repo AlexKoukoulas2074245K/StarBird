@@ -37,13 +37,14 @@ static const float MAP_NODE_PULSING_ENLARGEMENT_FACTOR = 1.0f/200.0f;
 
 ///------------------------------------------------------------------------------------------------
 
-Map::Map(Scene& scene, const std::map<MapCoord, NodeData>& existingMapData, const glm::ivec2& mapDimensions, const MapCoord& currentMapCoord, const bool singleEntryPoint)
+Map::Map(Scene& scene, const int generationSeed, const glm::ivec2& mapDimensions, const MapCoord& currentMapCoord, const bool singleEntryPoint)
     : mScene(scene)
     , mMapDimensions(mapDimensions)
     , mCurrentMapCoord(currentMapCoord)
+    , mGenerationSeed(generationSeed)
     , mHasSingleEntryPoint(singleEntryPoint)
 {
-    mMapData = existingMapData;
+    math::SetControlSeed(generationSeed);
     
     // No map data has been saved to GameSingletons
     if (mMapData.empty())
@@ -52,6 +53,13 @@ Map::Map(Scene& scene, const std::map<MapCoord, NodeData>& existingMapData, cons
     }
     
     CreateMapSceneObjects();
+}
+
+///------------------------------------------------------------------------------------------------
+
+int Map::GetCurrentGenerationSeed() const
+{
+    return mGenerationSeed;
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -76,7 +84,7 @@ void Map::GenerateMapData()
     
     for (int i = 0; i < iterations; ++i)
     {
-        auto currentCoordinate = mHasSingleEntryPoint ? MapCoord(0, mMapDimensions.y/2) : MapCoord(0, math::RandomInt(0, mMapDimensions.y - 1));
+        auto currentCoordinate = mHasSingleEntryPoint ? MapCoord(0, mMapDimensions.y/2) : MapCoord(0, math::ControlledRandomInt(0, mMapDimensions.y - 1));
         mMapData[currentCoordinate].mPosition = GenerateNodePositionForCoord(currentCoordinate);
         mMapData[currentCoordinate].mNodeType = SelectNodeTypeForCoord(currentCoordinate);
         
@@ -132,8 +140,8 @@ void Map::CreateMapSceneObjects()
                 planetRingSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
                 planetRingSO.mSceneObjectType = SceneObjectType::WorldGameObject;
                 planetRingSO.mScale = glm::vec3(1.0f);
-                planetRingSO.mRotation.x = math::RandomFloat(MAP_PLANET_RING_MIN_X_ROTATION, MAP_PLANET_RING_MAX_X_ROTATION);
-                planetRingSO.mRotation.y += math::RandomFloat(MAP_PLANET_RING_MIN_Y_ROTATION, MAP_PLANET_RING_MAX_Y_ROTATION);
+                planetRingSO.mRotation.x = math::ControlledRandomFloat(MAP_PLANET_RING_MIN_X_ROTATION, MAP_PLANET_RING_MAX_X_ROTATION);
+                planetRingSO.mRotation.y += math::ControlledRandomFloat(MAP_PLANET_RING_MIN_Y_ROTATION, MAP_PLANET_RING_MAX_Y_ROTATION);
                 planetRingSO.mPosition = mapNodeEntry.second.mPosition;
                 planetRingSO.mName = strutils::StringId("PLANET_RING_" + mapNodeEntry.first.ToString());
                 
@@ -149,7 +157,7 @@ void Map::CreateMapSceneObjects()
             {
                 nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_PLANET_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f,  MAP_NODE_ROTATION_SPEED, false);
                 
-                nodeSo.mShaderFloatUniformValues[game_constants::HUE_SHIFT_UNIFORM_NAME] = math::RandomFloat(0, 2.0f * math::PI);
+                nodeSo.mShaderFloatUniformValues[game_constants::HUE_SHIFT_UNIFORM_NAME] = math::ControlledRandomFloat(0, 2.0f * math::PI);
                 nodeSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
             } break;
                
@@ -254,8 +262,8 @@ glm::vec3 Map::GenerateNodePositionForCoord(const MapCoord& currentMapCoord) con
      );
     
     // Add noise
-    result.x += math::RandomFloat(-1.0f, 1.0f);
-    result.y += math::RandomFloat(-1.0f, 1.0f);
+    result.x += math::ControlledRandomFloat(-1.0f, 1.0f);
+    result.y += math::ControlledRandomFloat(-1.0f, 1.0f);
     return result;
 }
 
@@ -307,7 +315,7 @@ Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
         
         // Select at random from the remaining node types.
         // Unfortunately because it's a set I can't just pick begin() + random index
-        auto randomIndex = math::RandomInt(0, static_cast<int>(availableNodeTypes.size()) - 1);
+        auto randomIndex = math::ControlledRandomInt(0, static_cast<int>(availableNodeTypes.size()) - 1);
         for (const auto& nodeType: availableNodeTypes)
         {
             if (randomIndex-- == 0) return nodeType;
@@ -321,7 +329,7 @@ Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
 
 MapCoord Map::RandomlySelectNextMapCoord(const MapCoord& currentMapCoord) const
 {
-    auto randRow = math::Max(math::Min(mMapDimensions.y - 1, currentMapCoord.mRow + math::RandomInt(-1, 1)), 0);
+    auto randRow = math::Max(math::Min(mMapDimensions.y - 1, currentMapCoord.mRow + math::ControlledRandomInt(-1, 1)), 0);
     return currentMapCoord.mCol == mMapDimensions.x - 2 ? MapCoord(mMapDimensions.x - 1, mMapDimensions.y/2) : MapCoord(currentMapCoord.mCol + 1, randRow);
 }
 

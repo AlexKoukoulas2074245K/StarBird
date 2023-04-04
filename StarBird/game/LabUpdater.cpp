@@ -82,7 +82,7 @@ LabUpdater::LabUpdater(Scene& scene)
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
 #endif
-    GameSingletons::SetCrystalCount(2);
+    GameSingletons::SetPlayerCurrentHealth(10);
     CreateSceneObjects();
     OnCarouselStationary();
 }

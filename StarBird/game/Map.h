@@ -80,8 +80,9 @@ public:
     };
     
 public:
-    Map(Scene& scene, const std::map<MapCoord, NodeData>& existingMapData, const glm::ivec2& mapDimensions, const MapCoord& currentMapCoord, const bool singleEntryPoint);
+    Map(Scene& scene, const int generationSeed, const glm::ivec2& mapDimensions, const MapCoord& currentMapCoord, const bool singleEntryPoint);
     
+    int GetCurrentGenerationSeed() const;
     const std::map<MapCoord, Map::NodeData>& GetMapData() const;
     const glm::ivec2& GetMapDimensions() const;
     
@@ -97,6 +98,7 @@ private:
     Scene& mScene;
     const glm::ivec2 mMapDimensions;
     const MapCoord mCurrentMapCoord;
+    const int mGenerationSeed;
     const bool mHasSingleEntryPoint;
     std::map<MapCoord, NodeData> mMapData;
 };

@@ -40,19 +40,21 @@ static const float CAMERA_ZOOM_SPEED = 0.1f;
 static const float MIN_CAMERA_VELOCITY_TO_START_MOVEMENT = 0.0001f;
 static const float MAP_NODE_CLICK_BIAS = 3.0f;
 
+static const int TEST_MAP_GENERATION_SEED = 123456;
+
 ///------------------------------------------------------------------------------------------------
 
 MapUpdater::MapUpdater(Scene& scene)
     : mScene(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
-    , mMap(scene, GameSingletons::GetMapData(), glm::ivec2(9, 5), GameSingletons::GetCurrentMapCoord(), true)
+    , mMap(scene, TEST_MAP_GENERATION_SEED, glm::ivec2(9, 5), GameSingletons::GetCurrentMapCoord(), true)
     , mSelectedMapCoord(0, 0)
     , mTransitioning(false)
     
 {
-    if (GameSingletons::GetMapData().empty())
+    if (GameSingletons::GetMapGenerationSeed() == 0)
     {
-        GameSingletons::SetMapData(mMap.GetMapData());
+        GameSingletons::SetMapGenerationSeed(mMap.GetCurrentGenerationSeed());
     }
     
 #ifdef DEBUG

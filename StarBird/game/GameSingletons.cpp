@@ -13,11 +13,11 @@ InputContext GameSingletons::mInputContext = {};
 SDL_Window* GameSingletons::mWindow = nullptr;
 glm::vec2 GameSingletons::mWindowDimensions = glm::vec2();
 std::unordered_map<SceneObjectType, Camera> GameSingletons::mSceneObjectTypeToCameraMap = {};
-std::map<MapCoord, Map::NodeData> GameSingletons::mMapData = {};
 GameSingletons::UpgradeMap GameSingletons::mEquippedUpgrades = {};
 GameSingletons::UpgradeMap GameSingletons::mAvailableUpgrades = {};
 std::pair<UpgradeDefinition, UpgradeDefinition> GameSingletons::mUpgradeSelection = {};
 MapCoord GameSingletons::mCurrentMapCoord = MapCoord(0, 2);
+int GameSingletons::mMapGenerationSeed = 0;
 long GameSingletons::mCrystalCount = 0;
 float GameSingletons::mDisplayedCrystalCount = 0;
 float GameSingletons::mGameSpeedMultiplier = 1.0f;
@@ -294,17 +294,16 @@ void GameSingletons::SetCurrentMapCoord(const MapCoord &mapCoord)
 
 ///------------------------------------------------------------------------------------------------
 
-const std::map<MapCoord, Map::NodeData>& GameSingletons::GetMapData()
+int GameSingletons::GetMapGenerationSeed()
 {
-    return mMapData;
+    return mMapGenerationSeed;
 }
 
 ///------------------------------------------------------------------------------------------------
 
-
-void GameSingletons::SetMapData(const std::map<MapCoord, Map::NodeData>& mapData)
+void GameSingletons::SetMapGenerationSeed(const int mapGenerationSeed)
 {
-    mMapData = mapData;
+    mMapGenerationSeed = mapGenerationSeed;
 }
 
 ///------------------------------------------------------------------------------------------------

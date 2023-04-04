@@ -22,7 +22,7 @@ namespace scene_object_utils
 
 ///------------------------------------------------------------------------------------------------
 
-static const std::string BOSS_SCENE_OBJECT_NAME_PREFIX = "boss";
+static const std::string BOSS_SCENE_OBJECT_NAME_PREFIX = "enemies/boss";
 
 ///------------------------------------------------------------------------------------------------
 

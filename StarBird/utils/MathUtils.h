@@ -308,6 +308,35 @@ inline float TweenValue(const float val, const std::function<float(const float)>
 /// @returns the rng engine
 std::mt19937& GetRandomEngine();
 
+
+///-----------------------------------------------------------------------------------------------
+/// Sets a custom seed for a controlled sequence of generated random numbers.
+/// @param[in] seed the seed to start the sequence with
+inline void SetControlSeed(const int seed)
+{
+    srand(seed);
+}
+
+///-----------------------------------------------------------------------------------------------
+/// Computes a random int based on the min and max inclusive values provided and the control seed specified at SetCRandomSeed.
+/// @param[in] min the minimum value (inclusive) that the function can return (defaults to 0).
+/// @param[in] max the maximum value (inclusive) that the function can return (defaults to 32767).
+/// @returns a random integer that respects the given bounds.
+inline int ControlledRandomInt(const int min = 0, const int max = RAND_MAX)
+{
+    return rand() % (max + 1 - min) + min;
+}
+
+///-----------------------------------------------------------------------------------------------
+/// Computes a random float based on the min and max inclusive values provided and the control seed specified at SetCRandomSeed.
+/// @param[in] min the minimum value (inclusive) that the function can return (defaults to 0.0f).
+/// @param[in] max the maximum value (inclusive) that the function can return (defaults to 1.0f).
+/// @returns a random float that respects the given bounds.
+inline int ControlledRandomFloat(const float min = 0.0f, const float max = 1.0f)
+{
+    return min + static_cast <float> (ControlledRandomInt()) / (static_cast <float> (RAND_MAX / (max - min)));
+}
+
 ///-----------------------------------------------------------------------------------------------
 /// Computes a random int based on the min and max inclusive values provided.
 /// @param[in] min the minimum value (inclusive) that the function can return (defaults to 0).

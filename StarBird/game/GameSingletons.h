@@ -81,19 +81,19 @@ public:
     static MapCoord GetCurrentMapCoord();
     static void SetCurrentMapCoord(const MapCoord& mapCoord);
     
-    static const std::map<MapCoord, Map::NodeData>& GetMapData();
-    static void SetMapData(const std::map<MapCoord, Map::NodeData>& mapData);
+    static int GetMapGenerationSeed();
+    static void SetMapGenerationSeed(const int mapGenerationSeed);
     
 private:
     static InputContext mInputContext;
     static SDL_Window* mWindow;
     static glm::vec2 mWindowDimensions;
     static std::unordered_map<SceneObjectType, Camera> mSceneObjectTypeToCameraMap;
-    static std::map<MapCoord, Map::NodeData> mMapData;
     static UpgradeMap mEquippedUpgrades;
     static UpgradeMap mAvailableUpgrades;
     static std::pair<UpgradeDefinition, UpgradeDefinition> mUpgradeSelection;
     static MapCoord mCurrentMapCoord;
+    static int mMapGenerationSeed;
     static long mCrystalCount;
     static float mDisplayedCrystalCount;
     static float mGameSpeedMultiplier;

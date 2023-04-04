@@ -43,19 +43,19 @@ const std::unordered_map<KathunBossAI::State, float> KathunBossAI::MIN_HEALTH_PE
 
 static const float KATHUN_SET_Y = 7.0f;
 static const std::string KATHUN_ABILITY_FLOW_NAME_POST_FIX = "_ABILITY_FLOW";
-static const strutils::StringId KATHUN_BODY_NAME = strutils::StringId("boss_1/body");
-static const strutils::StringId KATHUN_SLOW_CHASER_ENEMY_TYPE = strutils::StringId("test_enemy_chasing");
-static const strutils::StringId KATHUN_FAST_CHASER_ENEMY_TYPE = strutils::StringId("small_enemy_chasing");
-static const strutils::StringId KATHUN_BULLET_TYPE = strutils::StringId("boss_1/bullet");
+static const strutils::StringId KATHUN_BODY_NAME = strutils::StringId("enemies/boss_1/body");
+static const strutils::StringId KATHUN_SLOW_CHASER_ENEMY_TYPE = strutils::StringId("enemies/test_enemy_chasing");
+static const strutils::StringId KATHUN_FAST_CHASER_ENEMY_TYPE = strutils::StringId("enemies/small_enemy_chasing");
+static const strutils::StringId KATHUN_BULLET_TYPE = strutils::StringId("enemies/boss_1/bullet");
 
 static const std::vector<strutils::StringId> KATHUN_FLAP_NAMES =
 {
-    strutils::StringId("boss_1/top_left_flap"),
-    strutils::StringId("boss_1/middle_left_flap"),
-    strutils::StringId("boss_1/bottom_left_flap"),
-    strutils::StringId("boss_1/top_right_flap"),
-    strutils::StringId("boss_1/middle_right_flap"),
-    strutils::StringId("boss_1/bottom_right_flap")
+    strutils::StringId("enemies/boss_1/top_left_flap"),
+    strutils::StringId("enemies/boss_1/middle_left_flap"),
+    strutils::StringId("enemies/boss_1/bottom_left_flap"),
+    strutils::StringId("enemies/boss_1/top_right_flap"),
+    strutils::StringId("enemies/boss_1/middle_right_flap"),
+    strutils::StringId("enemies/boss_1/bottom_right_flap")
 };
 
 static const std::vector<glm::vec3> KATHUN_VERTICAL_BULLET_SPAWN_POSITIONS =
