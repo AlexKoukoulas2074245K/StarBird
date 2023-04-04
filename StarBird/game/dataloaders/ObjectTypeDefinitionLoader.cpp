@@ -356,7 +356,12 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             mConstructedObjectTypeDef.mProjectileType = strutils::StringId(projectile->value());
             mSubObjectsFound->insert(mConstructedObjectTypeDef.mProjectileType);
         }
-
+        
+        auto* crystalYield = node->first_attribute("crystalYield");
+        if (crystalYield)
+        {
+            mConstructedObjectTypeDef.mCrystalYield = std::stof(crystalYield->value());
+        }
     });
 }
 

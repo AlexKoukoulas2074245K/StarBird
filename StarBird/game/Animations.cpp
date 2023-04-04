@@ -77,6 +77,12 @@ bool BaseAnimation::VGetBodyRenderingEnabled() const
     return mBodyRenderingEnabled;
 }
 
+void BaseAnimation::VSetCompletionCallback(std::function<void()> completionCallback)
+{
+    mCompletionCallback = completionCallback;
+}
+
+
 ///------------------------------------------------------------------------------------------------
 
 SingleFrameAnimation::SingleFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled)
@@ -183,7 +189,13 @@ void PulsingAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
         (math::Sinf(mPulsingDtAccum) < 0.0f && mSignHasBeenReversed && mPulsingMode == PulsingMode::INNER_PULSE_ONCE))
     {
         sceneObject.mScale = mOriginalScale;
+        
         BaseAnimation::VPause();
+        if (mCompletionCallback)
+        {
+            mCompletionCallback();
+        }
+        
         return;
     }
     
@@ -232,6 +244,15 @@ void BezierCurvePathAnimation::VUpdate(const float dtMillis, SceneObject& sceneO
 {
     mCurveTraversalProgress += dtMillis * mCurveTraversalSpeed;
     sceneObject.mPosition = mPathCurve.ComputePointForT(mCurveTraversalProgress);
+    
+    if (mCurveTraversalProgress >= 1.0f)
+    {
+        BaseAnimation::VPause();
+        if (mCompletionCallback)
+        {
+            mCompletionCallback();
+        }
+    }
 }
 
 float BezierCurvePathAnimation::VGetDuration() const

@@ -33,11 +33,6 @@ static const glm::vec3 GUI_CRYSTAL_COUNT_HOLDER_POSITION = glm::vec3(-4.2f, -10.
 static const glm::vec3 GUI_CRYSTAL_COUNT_POSITION = glm::vec3(-4.0f, -12.1f, 2.5f);
 static const glm::vec3 GUI_CRYSTAL_COUNT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
 
-static const glm::vec3 GUI_CRYSTAL_POSITION = glm::vec3(-4.2f, -10.2f, 2.5f);
-static const glm::vec3 GUI_CRYSTAL_SCALE = glm::vec3(0.6f, 0.6f, 0.6f);
-
-static const float GUI_CRYSTAL_ROTATION_SPEED = 0.0004f;
-
 ///------------------------------------------------------------------------------------------------
 
 Scene::Scene()
@@ -555,10 +550,10 @@ void Scene::CreateCrossSceneInterfaceObjects()
     // Crystsal GUI icon
     {
         SceneObject crystalIconSo;
-        crystalIconSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, GUI_CRYSTAL_ROTATION_SPEED, false);
+        crystalIconSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, game_constants::GUI_CRYSTAL_ROTATION_SPEED, false);
         crystalIconSo.mSceneObjectType = SceneObjectType::GUIObject;
-        crystalIconSo.mPosition = GUI_CRYSTAL_POSITION;
-        crystalIconSo.mScale = GUI_CRYSTAL_SCALE;
+        crystalIconSo.mPosition = game_constants::GUI_CRYSTAL_POSITION;
+        crystalIconSo.mScale = game_constants::GUI_CRYSTAL_SCALE;
         crystalIconSo.mName = game_constants::GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME;
         crystalIconSo.mCrossSceneLifetime = true;
         AddSceneObject(std::move(crystalIconSo));

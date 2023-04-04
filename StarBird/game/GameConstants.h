@@ -147,6 +147,8 @@ inline const float LAB_OPTIONS_Z = 2.0f;
 inline const float WALL_Z = -0.5f;
 inline const float BULLET_Z = -0.5f;
 
+static const float GUI_CRYSTAL_ROTATION_SPEED = 0.0004f;
+
 inline const float PLAYER_HEALTH_BAR_Z = 0.45f;
 inline const float BOSS_HEALTH_BAR_Z = 2.45f;
 inline const float HEALTH_LOST_SPEED = 0.0007f;
@@ -186,6 +188,9 @@ inline const glm::vec4 POINT_LIGHT_COLOR = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
 
 inline const glm::vec2 MAP_MAX_WORLD_BOUNDS = glm::vec2(40.0f, 20.0f);
 inline const glm::vec2 MAP_MIN_WORLD_BOUNDS = glm::vec2(-17.0f, -13.0f);
+
+static const glm::vec3 GUI_CRYSTAL_POSITION = glm::vec3(-4.2f, -10.2f, 2.5f);
+static const glm::vec3 GUI_CRYSTAL_SCALE = glm::vec3(0.6f, 0.6f, 0.6f);
 
 enum class LabOptionType
 {

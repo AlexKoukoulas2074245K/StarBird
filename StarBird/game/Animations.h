@@ -14,6 +14,7 @@
 #include "../utils/MathUtils.h"
 
 #include <memory>
+#include <functional>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -37,10 +38,13 @@ public:
     virtual float VGetDuration() const;
     virtual bool VGetBodyRenderingEnabled() const;
     
+    void VSetCompletionCallback(std::function<void()> completionCallback);
+    
 protected:
     resources::ResourceId mTextureResourceId;
     resources::ResourceId mMeshResourceId;
     resources::ResourceId mShaderResourceId;
+    std::function<void()> mCompletionCallback;
     glm::vec3 mScale;
     bool mBodyRenderingEnabled;
     bool mPaused;

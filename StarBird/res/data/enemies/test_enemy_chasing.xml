@@ -3,5 +3,5 @@
     <Animation state="idle" texture="enemies/alien_mm" mesh="quad" shader="basic" scale="2.0f"/>
     <Animation state="dying" texture="explosion_sheet" mesh="quad" shader="basic" scale="2.0f" textureSheetRow="0" duration="150" bodyRenderingEnabled="false"/>
     <Physics linearDamping="7.5f" speed="6.0f" category="enemy"/>
-    <GameAttributes movementControllerPattern="chasing_player" health="40.0f" damage="20.0f"/>
+    <GameAttributes movementControllerPattern="chasing_player" health="40.0f" damage="20.0f" crystalYield="0.2f"/>
 </ObjectDefinition>

@@ -38,6 +38,7 @@ struct ObjectTypeDefinition
     glm::vec2 mConstantLinearVelocity = glm::vec2(0.0f, 0.0f);
     glm::vec3 mBodyCustomScale = glm::vec3(1.0f, 1.0f, 1.0f);
     glm::vec3 mBodyCustomOffset = glm::vec3(0.0f, 0.0f, 0.0f);
+    float mCrystalYield = 0.0f;
     float mSpeed = 0.0f;
     float mLinearDamping = 0.0f;
     float mShootingFrequencyMillis = 0.0f;
