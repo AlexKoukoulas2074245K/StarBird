@@ -95,6 +95,9 @@ struct SceneObject // 464b
     
     // Whether or not this scene object should stay alive cross scene creation/destruction
     bool mCrossSceneLifetime = false;
+    
+    // Whether or not this scene object has been selected in edit mode
+    bool mDebugEditSelected = false;
 };
 
 ///------------------------------------------------------------------------------------------------

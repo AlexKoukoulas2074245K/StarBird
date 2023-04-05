@@ -32,6 +32,7 @@ public:
     PostStateUpdateDirective VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis) override;
     void VOnAppStateChange(Uint32 event) override;
     std::string VGetDescription() const override;
+    strutils::StringId VGetStateMachineActiveStateName() const override;
     
 #ifdef DEBUG
     void VOpenDebugConsole() override;

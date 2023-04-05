@@ -229,6 +229,13 @@ std::string MapUpdater::VGetDescription() const
 
 ///------------------------------------------------------------------------------------------------
 
+strutils::StringId MapUpdater::VGetStateMachineActiveStateName() const
+{
+    return mStateMachine.GetActiveStateName();
+}
+
+///------------------------------------------------------------------------------------------------
+
 #ifdef DEBUG
 void MapUpdater::VOpenDebugConsole()
 {

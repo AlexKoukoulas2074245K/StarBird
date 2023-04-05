@@ -16,6 +16,7 @@
 #include "SceneObjectUtils.h"
 #include "StatsUpgradeUpdater.h"
 #include "ObjectTypeDefinitionRepository.h"
+#include "states/DebugConsoleGameState.h"
 #include "dataloaders/LevelDataLoader.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../resloading/MeshResource.h"
@@ -24,8 +25,12 @@
 
 #include <algorithm>
 #include <Box2D/Box2D.h>
+#include <SDL.h>
 
 ///------------------------------------------------------------------------------------------------
+
+static const strutils::StringId SCENE_EDIT_RESULT_TEXT_NAME_1 = strutils::StringId("SCENE_EDIT_RESULT_TEXT_1");
+static const strutils::StringId SCENE_EDIT_RESULT_TEXT_NAME_2 = strutils::StringId("SCENE_EDIT_RESULT_TEXT_2");
 
 static const glm::vec3 GUI_CRYSTAL_COUNT_HOLDER_SCALE = glm::vec3(2.5f, 3.5f, 1.0f);
 static const glm::vec3 GUI_CRYSTAL_COUNT_HOLDER_POSITION = glm::vec3(-4.2f, -10.9f, 2.0f);
@@ -41,6 +46,7 @@ Scene::Scene()
     , mTransitionParameters(nullptr)
     , mSceneRenderer(mBox2dWorld)
     , mPreFirstUpdate(true)
+    , mSceneEditMode(false)
 {
     FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_NAME);
     FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_MM_NAME);
@@ -350,14 +356,20 @@ void Scene::UpdateScene(const float dtMillis)
         }
     }
     
-    if (mSceneUpdater)
+    if (mSceneEditMode && (!mSceneUpdater || mSceneUpdater->VGetStateMachineActiveStateName() != DebugConsoleGameState::STATE_NAME))
     {
-        if (mSceneUpdater->VUpdate(mSceneObjects, dtMillis * GameSingletons::GetGameSpeedMultiplier()) == PostStateUpdateDirective::CONTINUE)
+        UpdateOnSceneEditModeOn(dtMillis);
+    }
+    else
+    {
+        if (mSceneUpdater)
         {
-            UpdateCrossSceneInterfaceObjects(dtMillis);
+            if (mSceneUpdater->VUpdate(mSceneObjects, dtMillis * GameSingletons::GetGameSpeedMultiplier()) == PostStateUpdateDirective::CONTINUE)
+            {
+                UpdateCrossSceneInterfaceObjects(dtMillis);
+            }
         }
     }
-    
     
     for (const auto& name: mNamesOfSceneObjectsToRemove)
     {
@@ -404,8 +416,6 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
         GameSingletons::SetPlayerCurrentHealth(playerSO->get().mHealth);
         GameSingletons::SetPlayerMaxHealth(playerDef->get().mHealth);
     }
-    
-    
     
     // Player Health Bar update
     auto playerHealthBarFrameSoOpt = GetSceneObject(game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
@@ -482,6 +492,112 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
 
 ///------------------------------------------------------------------------------------------------
 
+void Scene::UpdateOnSceneEditModeOn(const float dtMillis)
+{
+    auto& inputContext = GameSingletons::GetInputContext();
+    static float previousPinchDistance = 0.0f;
+    static bool previousMultiGestureActive = false;
+    static glm::vec3 worldInitTouchPos, guiInitTouchPos;
+    static glm::vec3 initTouchOffset;
+    
+    if (inputContext.mEventType == SDL_FINGERDOWN)
+    {
+        std::vector<strutils::StringId> touchedSceneObjectNames;
+        
+        auto worldCamOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
+        auto& worldCamera = worldCamOpt->get();
+        
+        auto guiCamOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
+        auto& guiCamera = guiCamOpt->get();
+        
+        worldInitTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
+        
+        guiInitTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, worldCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
+            
+        for (int i = 0; i < mSceneObjects.size(); ++i)
+        {
+            auto& so = mSceneObjects.at(i);
+            so.mDebugEditSelected = false;
+            
+            if (so.mBody == nullptr)
+            {
+                if ((so.mSceneObjectType == SceneObjectType::GUIObject && scene_object_utils::IsPointInsideSceneObject(so, guiInitTouchPos)) ||
+                    (so.mSceneObjectType == SceneObjectType::WorldGameObject && scene_object_utils::IsPointInsideSceneObject(so, worldInitTouchPos)))
+                {
+                    if (so.mName.isEmpty())
+                    {
+                        so.mName = strutils::StringId(std::to_string(SDL_GetTicks64()) + std::to_string(i));
+                    }
+                    
+                    if (so.mPosition.z > 0.0f && so.mName != SCENE_EDIT_RESULT_TEXT_NAME_1 && so.mName != SCENE_EDIT_RESULT_TEXT_NAME_2)
+                    {
+                        touchedSceneObjectNames.push_back(so.mName);
+                    }
+                }
+            }
+        }
+        
+        std::sort(touchedSceneObjectNames.begin(), touchedSceneObjectNames.end(), [&](const strutils::StringId& lhs, const strutils::StringId& rhs)
+        {
+            return GetSceneObject(lhs)->get().mPosition.z > GetSceneObject(rhs)->get().mPosition.z;
+        });
+        
+        if (touchedSceneObjectNames.size() > 0)
+        {
+            auto& so = GetSceneObject(touchedSceneObjectNames.front())->get();
+            so.mDebugEditSelected = true;
+            auto initTouchPos = so.mSceneObjectType == SceneObjectType::GUIObject ? guiInitTouchPos : worldInitTouchPos;
+            initTouchOffset = so.mBody ? initTouchPos - math::Box2dVec2ToGlmVec3(so.mBody->GetWorldCenter()) : initTouchPos - so.mPosition;
+            
+            SetSceneEditResultMessage(so.mBody ? math::Box2dVec2ToGlmVec3(so.mBody->GetWorldCenter()) : so.mPosition, so.mScale);
+        }
+    }
+    else if (inputContext.mEventType == SDL_FINGERMOTION)
+    {
+        auto selectedSoIter = std::find_if(mSceneObjects.begin(), mSceneObjects.end(), [](const SceneObject& so)
+        {
+            return so.mDebugEditSelected;
+        });
+        
+        if (selectedSoIter != mSceneObjects.end())
+        {
+            auto& so = *selectedSoIter;
+            
+            // Scale selected object
+            if (inputContext.mPinchDistance > 0.0f && previousPinchDistance > 0.0f && inputContext.mMultiGestureActive)
+            {
+                so.mScale += dtMillis * (GameSingletons::GetInputContext().mPinchDistance - previousPinchDistance) * 0.3f;
+                SetSceneEditResultMessage(so.mPosition, so.mScale);
+            }
+            // Translate selected object
+            else if (inputContext.mMultiGestureActive == false && previousMultiGestureActive == false)
+            {
+                auto& camera = GameSingletons::GetCameraForSceneObjectType(so.mSceneObjectType)->get();
+                auto touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, camera.GetViewMatrix(), camera.GetProjMatrix());
+                
+                if (so.mBody)
+                {
+                    so.mBody->SetTransform(math::GlmVec3ToBox2dVec2(touchPos - initTouchOffset), so.mBody->GetAngle());
+                    SetSceneEditResultMessage(math::Box2dVec2ToGlmVec3(so.mBody->GetWorldCenter()), so.mScale);
+                }
+                else
+                {
+                    so.mPosition.x = touchPos.x - initTouchOffset.x;
+                    so.mPosition.y = touchPos.y - initTouchOffset.y;
+                    SetSceneEditResultMessage(so.mPosition, so.mScale);
+                }
+            }
+            
+            // Keep track of previous finger pinch distance
+            previousPinchDistance = GameSingletons::GetInputContext().mPinchDistance;
+        }
+    }
+    
+    previousMultiGestureActive = inputContext.mMultiGestureActive;
+}
+
+///------------------------------------------------------------------------------------------------
+
 void Scene::RenderScene()
 {
     mSceneRenderer.Render(mSceneObjects, mLightRepository);
@@ -492,6 +608,77 @@ void Scene::RenderScene()
 void Scene::SetSceneRendererPhysicsDebugMode(const bool debugMode)
 {
     mSceneRenderer.SetPhysicsDebugMode(debugMode);
+}
+
+///------------------------------------------------------------------------------------------------
+
+void Scene::SetSceneEditMode(const bool editMode)
+{
+    mSceneEditMode = editMode;
+    
+    RemoveAllSceneObjectsWithName(SCENE_EDIT_RESULT_TEXT_NAME_1);
+    RemoveAllSceneObjectsWithName(SCENE_EDIT_RESULT_TEXT_NAME_2);
+    for (auto& so: mSceneObjects)
+    {
+        so.mDebugEditSelected = false;
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void Scene::SetSceneEditResultMessage(const glm::vec3& position, const glm::vec3& scale)
+{
+    std::stringstream positionString;
+    positionString << "Position: ";
+    positionString << std::fixed << std::setprecision(4) << position.x << ",";
+    positionString << std::fixed << std::setprecision(4) << position.y << ",";
+    positionString << std::fixed << std::setprecision(4) << position.z;
+    
+    std::stringstream scaleString;
+    scaleString << "Scale: ";
+    scaleString << std::fixed << std::setprecision(4) << scale.x << ",";
+    scaleString << std::fixed << std::setprecision(4) << scale.y << ",";
+    scaleString << std::fixed << std::setprecision(4) << scale.z;
+    
+    auto sceneEditResultMessage1SoOpt = GetSceneObject(SCENE_EDIT_RESULT_TEXT_NAME_1);
+    if (sceneEditResultMessage1SoOpt)
+    {
+        sceneEditResultMessage1SoOpt->get().mText = positionString.str();
+    }
+    else
+    {
+        SceneObject textSo;
+        textSo.mPosition = glm::vec3(-5.5, 0.0f, 4.0f);
+        textSo.mScale = glm::vec3(0.007f, 0.007f, 1.0f);
+        
+        auto& resService = resources::ResourceLoadingService::GetInstance();
+        textSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(textSo.mScale), false);
+        textSo.mName = SCENE_EDIT_RESULT_TEXT_NAME_1;
+        textSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
+        textSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+        textSo.mText = positionString.str();
+        AddSceneObject(std::move(textSo));
+    }
+    
+    auto sceneEditResultMessage2SoOpt = GetSceneObject(SCENE_EDIT_RESULT_TEXT_NAME_2);
+    if (sceneEditResultMessage2SoOpt)
+    {
+        sceneEditResultMessage2SoOpt->get().mText = scaleString.str();
+    }
+    else
+    {
+        SceneObject textSo;
+        textSo.mPosition = glm::vec3(-5.5, -1.0f, 4.0f);
+        textSo.mScale = glm::vec3(0.007f, 0.007f, 1.0f);
+        
+        auto& resService = resources::ResourceLoadingService::GetInstance();
+        textSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(textSo.mScale), false);
+        textSo.mName = SCENE_EDIT_RESULT_TEXT_NAME_2;
+        textSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
+        textSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+        textSo.mText = positionString.str();
+        AddSceneObject(std::move(textSo));
+    }
 }
 
 ///------------------------------------------------------------------------------------------------

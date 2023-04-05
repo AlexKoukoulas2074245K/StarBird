@@ -342,6 +342,13 @@ std::string LabUpdater::VGetDescription() const
 
 ///------------------------------------------------------------------------------------------------
 
+strutils::StringId LabUpdater::VGetStateMachineActiveStateName() const
+{
+    return mStateMachine.GetActiveStateName();
+}
+
+///------------------------------------------------------------------------------------------------
+
 #ifdef DEBUG
 void LabUpdater::VOpenDebugConsole()
 {

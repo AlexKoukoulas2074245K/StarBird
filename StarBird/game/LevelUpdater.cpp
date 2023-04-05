@@ -514,6 +514,13 @@ std::string LevelUpdater::VGetDescription() const
 
 ///------------------------------------------------------------------------------------------------
 
+strutils::StringId LevelUpdater::VGetStateMachineActiveStateName() const
+{
+    return mStateMachine.GetActiveStateName();
+}
+
+///------------------------------------------------------------------------------------------------
+
 void LevelUpdater::AdvanceWave()
 {
     mCurrentWaveNumber++;

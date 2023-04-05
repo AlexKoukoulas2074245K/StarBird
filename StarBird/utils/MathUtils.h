@@ -324,7 +324,7 @@ inline void SetControlSeed(const int seed)
 /// @returns a random integer that respects the given bounds.
 inline int ControlledRandomInt(const int min = 0, const int max = RAND_MAX)
 {
-    return rand() % (max + 1 - min) + min;
+    return static_cast<int>(rand() % (static_cast<long>(max) + 1 - min) + min);
 }
 
 ///-----------------------------------------------------------------------------------------------

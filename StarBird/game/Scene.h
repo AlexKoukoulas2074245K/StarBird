@@ -77,9 +77,13 @@ public:
     void OnAppStateChange(Uint32 event);
     void UpdateScene(const float dtMillis);
     void UpdateCrossSceneInterfaceObjects(const float dtMillis);
+    void UpdateOnSceneEditModeOn(const float dtMillis);
+    
     void RenderScene();
     
     void SetSceneRendererPhysicsDebugMode(const bool debugMode);
+    void SetSceneEditMode(const bool editMode);
+    void SetSceneEditResultMessage(const glm::vec3& position, const glm::vec3& scale);
     
 #ifdef DEBUG
     void OpenDebugConsole();
@@ -98,6 +102,7 @@ private:
     std::unique_ptr<TransitionParameters> mTransitionParameters;
     SceneRenderer mSceneRenderer;
     bool mPreFirstUpdate;
+    bool mSceneEditMode;
 };
 
 ///------------------------------------------------------------------------------------------------

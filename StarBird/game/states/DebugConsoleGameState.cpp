@@ -531,6 +531,23 @@ void DebugConsoleGameState::RegisterCommands()
         
         return CommandExecutionResult(true, output);
     };
+    
+    mCommandMap[strutils::StringId("scene_edit")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: scene_edit on|off");
+        
+        if (commandComponents.size() != 2)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        else if (commandComponents[1] != "on" && commandComponents[1] != "off")
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        mScene->SetSceneEditMode(commandComponents[1] == "on");
+        return CommandExecutionResult(true, "Scene edit turned " + commandComponents[1]);
+    };
 }
 
 ///------------------------------------------------------------------------------------------------

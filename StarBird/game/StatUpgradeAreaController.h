@@ -1,12 +1,12 @@
 ///------------------------------------------------------------------------------------------------
-///  TextPromptController.h                                                                                          
+///  StatUpgradeAreaController.h                                                                                          
 ///  StarBird                                                                                            
 ///                                                                                                
-///  Created by Alex Koukoulas on 31/03/2023                                                       
+///  Created by Alex Koukoulas on 05/04/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef TextPromptController_h
-#define TextPromptController_h
+#ifndef StatUpgradeAreaController_h
+#define StatUpgradeAreaController_h
 
 ///------------------------------------------------------------------------------------------------
 
@@ -22,19 +22,18 @@
 class BaseAnimation;
 class Scene;
 class SceneObject;
-class TextPromptController final
+class StatUpgradeAreaController final
 {
 public:
-    TextPromptController(Scene& scene, std::unique_ptr<BaseAnimation> textPromptAreaAnimation, const glm::vec3& position, const glm::vec3& scale, bool fadeIn, const std::string& text);
-    ~TextPromptController();
+    StatUpgradeAreaController(Scene& scene, std::unique_ptr<BaseAnimation> statUpgradeBackgroundAnimation, const glm::vec3& position, const glm::vec3& scale, const std::string& text, const float initialStatValue);
     
     void Update(const float dtMillis);
     
 private:
     Scene& mScene;
-    std::unordered_map<strutils::StringId, float, strutils::StringIdHasher> mSceneObjectNamesToTransparencyDelayMillis;
+    float mStatValue;
 };
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* TextPromptController_h */
+#endif /* StatUpgradeAreaController_h */

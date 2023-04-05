@@ -8,6 +8,7 @@
 #include "FontRepository.h"
 #include "GameSingletons.h"
 #include "GameConstants.h"
+#include "SceneObjectUtils.h"
 #include "SceneRenderer.h"
 
 #include "datarepos/LightRepository.h"
@@ -22,6 +23,8 @@
 #include <SDL.h>
 
 ///------------------------------------------------------------------------------------------------
+
+static const char* EDIT_MODE_SELECTED_SO_OUTLINE_TEXTURE_FILE_NAME = "edit_mode_selection_outline.bmp";
 
 static const strutils::StringId WORLD_MATRIX_UNIFORM_NAME = strutils::StringId("world");
 static const strutils::StringId VIEW_MATRIX_UNIFORM_NAME  = strutils::StringId("view");
@@ -241,6 +244,38 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
             currentShader->SetMatrix4fv(mat4Entry.first, mat4Entry.second);
         
         GL_CALL(glDrawElements(GL_TRIANGLES, currentMesh->GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
+        
+        if (so.mDebugEditSelected)
+        {
+            currentMesh = &(resService.GetResource<resources::MeshResource>(resources::ResourceLoadingService::FALLBACK_MESH_ID));
+            GL_CALL(glBindVertexArray(currentMesh->GetVertexArrayObject()));
+            
+            currentShader = &(resService.GetResource<resources::ShaderResource>(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME));
+            
+            GL_CALL(glUseProgram(currentShader->GetProgramId()));
+            
+            currentTextureResourceId = resources::ResourceLoadingService::FALLBACK_TEXTURE_ID;
+            GL_CALL(glActiveTexture(GL_TEXTURE0));
+            GL_CALL(glBindTexture(GL_TEXTURE_2D, resService.GetResource<resources::TextureResource>( resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + EDIT_MODE_SELECTED_SO_OUTLINE_TEXTURE_FILE_NAME)).GetGLTextureId()));
+    
+            const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(so.mSceneObjectType);
+            assert(camOpt);
+            const auto& camera = camOpt->get();
+            
+            glm::vec2 boundingRectBotLeft, boundingRectTopRight;
+            scene_object_utils::GetSceneObjectBoundingRect(so, boundingRectBotLeft, boundingRectTopRight);
+            
+            glm::mat4 world = glm::mat4(1.0f);
+            world = glm::translate(world, glm::vec3((boundingRectBotLeft.x + boundingRectTopRight.x)/2.0f, (boundingRectBotLeft.y + boundingRectTopRight.y)/2.0f, so.mPosition.z + 0.5f));
+            
+            world = glm::scale(world, glm::vec3(math::Abs(boundingRectBotLeft.x - boundingRectTopRight.x), math::Abs(boundingRectBotLeft.y - boundingRectTopRight.y), 1.0f));
+            
+            currentShader->SetMatrix4fv(WORLD_MATRIX_UNIFORM_NAME, world);
+            currentShader->SetMatrix4fv(VIEW_MATRIX_UNIFORM_NAME, camera.GetViewMatrix());
+            currentShader->SetMatrix4fv(PROJ_MATRIX_UNIFORM_NAME, camera.GetProjMatrix());
+            
+            GL_CALL(glDrawElements(GL_TRIANGLES, currentMesh->GetElementCount(), GL_UNSIGNED_SHORT, (void*)0));
+        }
     }
    
     if (mPhysicsDebugMode)

@@ -35,14 +35,14 @@ static std::unordered_map<char, Glyph>::const_iterator GetGlyphIter(char c, cons
 
 ///------------------------------------------------------------------------------------------------
 
-TextPromptController::TextPromptController(Scene& scene, std::unique_ptr<BaseAnimation> animation, const glm::vec3& position, const glm::vec3& scale, bool fadeIn, const std::string& text)
+TextPromptController::TextPromptController(Scene& scene, std::unique_ptr<BaseAnimation> textPromptAreaAnimation, const glm::vec3& position, const glm::vec3& scale, bool fadeIn, const std::string& text)
     : mScene(scene)
 {
     // Text prompt background
     SceneObject textPromptSo;
     textPromptSo.mPosition = position;
     textPromptSo.mScale = scale;
-    textPromptSo.mAnimation = std::move(animation);
+    textPromptSo.mAnimation = std::move(textPromptAreaAnimation);
     textPromptSo.mSceneObjectType = SceneObjectType::WorldGameObject;
     textPromptSo.mName = game_constants::TEXT_PROMPT_NAME;
     textPromptSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;

@@ -35,9 +35,16 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
 ///-----------------------------------------------------------------------------------------------
 /// Changes the state of a scene object and assigns the respective animation for that state.
 /// @param[in] sceneObject scene object to change its state.
-/// @param[in] objectDef the object definition to get the animation data from..
+/// @param[in] objectDef the object definition to get the animation data from.
 /// @param[in] newStateName name of the new state to transition the object to.
 void ChangeSceneObjectState(SceneObject& sceneObject, const ObjectTypeDefinition& objectDef, const strutils::StringId newStateName);
+
+///-----------------------------------------------------------------------------------------------
+/// Computes and returns the bounding rect for a scene object.
+/// @param[in] sceneObject scene object to compute the bounding rect for.
+/// @param[out] rectBotLeft the bottom-left xy coordinates of the bounding rect.
+/// @param[out] rectTopRight the top-right xy coordinates of the bounding rect.
+void GetSceneObjectBoundingRect(const SceneObject& sceneObject, glm::vec2& rectBotLeft, glm::vec2& rectTopRight);
 
 ///-----------------------------------------------------------------------------------------------
 /// Tests the sceen object's name to assess whether it is part of a boss

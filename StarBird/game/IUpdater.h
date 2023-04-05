@@ -27,6 +27,7 @@ public:
     virtual PostStateUpdateDirective VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis) = 0;
     virtual void VOnAppStateChange(Uint32 event) = 0;
     virtual std::string VGetDescription() const = 0;
+    virtual strutils::StringId VGetStateMachineActiveStateName() const = 0;
     
 #ifdef DEBUG
     virtual void VOpenDebugConsole() = 0;

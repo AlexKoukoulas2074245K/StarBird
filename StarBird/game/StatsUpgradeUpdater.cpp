@@ -10,6 +10,7 @@
 #include "GameSingletons.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
+#include "StatUpgradeAreaController.h"
 #include "StatsUpgradeUpdater.h"
 #include "datarepos/ObjectTypeDefinitionRepository.h"
 #include "states/DebugConsoleGameState.h"
@@ -143,6 +144,13 @@ std::string StatsUpgradeUpdater::VGetDescription() const
 
 ///------------------------------------------------------------------------------------------------
 
+strutils::StringId StatsUpgradeUpdater::VGetStateMachineActiveStateName() const
+{
+    return mStateMachine.GetActiveStateName();
+}
+
+///------------------------------------------------------------------------------------------------
+
 #ifdef DEBUG
 void StatsUpgradeUpdater::VOpenDebugConsole()
 {
@@ -198,6 +206,10 @@ void StatsUpgradeUpdater::CreateSceneObjects()
         vesselSo.mName = VESSEL_SCENE_OBJECT_NAME;
         vesselSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
         mScene.AddSceneObject(std::move(vesselSo));
+    }
+    
+    {
+        StatUpgradeAreaController attackStatController(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "diagonal_upgrade_area_mm.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(5.4591, 3.0f, 1.0f), false), glm::vec3(2.5f, 4.0f, 0.5f), glm::vec3(5.4591, 3.0f, 1.0f), "ATTACK: ", 10.0f);
     }
 }
 

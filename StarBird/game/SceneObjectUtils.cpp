@@ -38,13 +38,13 @@ static std::unordered_map<char, Glyph>::const_iterator GetGlyphIter(char c, cons
 
 ///------------------------------------------------------------------------------------------------
 
-bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& point, const glm::vec2 xyBias /* glm::vec2(1.0f, 1.0f) */)
+void GetSceneObjectBoundingRect(const SceneObject& sceneObject, glm::vec2& rectBotLeft, glm::vec2& rectTopRight)
 {
     // Text SO
     if (!sceneObject.mText.empty())
     {
         auto fontOpt = FontRepository::GetInstance().GetFont(sceneObject.mFontName);
-        if (!fontOpt) return false;
+        if (!fontOpt) return;
         
         const auto& font = fontOpt->get();
         
@@ -76,12 +76,8 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
             }
         }
         
-        auto rectBottomLeft = glm::vec2(minX, minY) * xyBias;
-        auto rectTopRight = glm::vec2(maxX, maxY) * xyBias;
-        
-        return math::IsPointInsideRectangle(rectBottomLeft, rectTopRight, point);
-        
-        return true;
+        rectBotLeft = glm::vec2(minX, minY);
+        rectTopRight = glm::vec2(maxX, maxY);
     }
     // SO with Physical Body
     else if (sceneObject.mBody)
@@ -91,19 +87,50 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
         auto soPosition = glm::vec3(sceneObject.mBody->GetWorldCenter().x, sceneObject.mBody->GetWorldCenter().y, sceneObject.mPosition.z);
         auto soScale = glm::vec3(b2Abs(shape.GetVertex(1).x - shape.GetVertex(3).x), b2Abs(shape.GetVertex(1).y - shape.GetVertex(3).y), 1.0f);
         
-        auto rectBottomLeft = glm::vec2(soPosition.x - (soScale.x/2 * xyBias.x), soPosition.y - (soScale.y/2 * xyBias.y));
-        auto rectTopRight = glm::vec2(soPosition.x + (soScale.x/2 * xyBias.x), soPosition.y + (soScale.y/2 * xyBias.y));
-        
-        return math::IsPointInsideRectangle(rectBottomLeft, rectTopRight, point);
+        auto rectBotLeft = glm::vec2(soPosition.x - soScale.x/2, soPosition.y - soScale.y/2);
+        auto rectTopRight = glm::vec2(soPosition.x + soScale.x/2, soPosition.y + soScale.y/2);
     }
     // SO with custom position and scale
     else
     {
-        auto rectBottomLeft = glm::vec2(sceneObject.mPosition.x - (sceneObject.mScale.x/2 * xyBias.x), sceneObject.mPosition.y - (sceneObject.mScale.y/2 * xyBias.y));
-        auto rectTopRight = glm::vec2(sceneObject.mPosition.x + (sceneObject.mScale.x/2 * xyBias.x), sceneObject.mPosition.y + (sceneObject.mScale.y/2 * xyBias.y));
-        
-        return math::IsPointInsideRectangle(rectBottomLeft, rectTopRight, point);
+        rectBotLeft = glm::vec2(sceneObject.mPosition.x - sceneObject.mScale.x/2, sceneObject.mPosition.y - sceneObject.mScale.y/2);
+        rectTopRight = glm::vec2(sceneObject.mPosition.x + sceneObject.mScale.x/2, sceneObject.mPosition.y + sceneObject.mScale.y/2);
     }
+}
+
+///------------------------------------------------------------------------------------------------
+
+bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& point, const glm::vec2 xyBias /* glm::vec2(1.0f, 1.0f) */)
+{
+    glm::vec2 rectBotLeft, rectTopRight;
+    GetSceneObjectBoundingRect(sceneObject, rectBotLeft, rectTopRight);
+    
+    // Text SO
+    if (!sceneObject.mText.empty())
+    {
+        rectBotLeft.x *= xyBias.x;
+        rectBotLeft.y *= xyBias.y;
+        
+        rectTopRight.x *= xyBias.x;
+        rectTopRight.y *= xyBias.y;
+    }
+    // SO with Physical Body or custom position and scale
+    else
+    {
+        rectBotLeft.x += sceneObject.mScale.x/2;
+        rectBotLeft.x -= sceneObject.mScale.x/2 * xyBias.x;
+        
+        rectBotLeft.y += sceneObject.mScale.y/2;
+        rectBotLeft.y -= sceneObject.mScale.y/2 * xyBias.y;
+        
+        rectTopRight.x -= sceneObject.mScale.x/2;
+        rectTopRight.x += sceneObject.mScale.x/2 * xyBias.x;
+        
+        rectTopRight.y -= sceneObject.mScale.y/2;
+        rectTopRight.y += sceneObject.mScale.y/2 * xyBias.y;
+    }
+    
+    return math::IsPointInsideRectangle(rectBotLeft, rectTopRight, point);
 }
 
 ///------------------------------------------------------------------------------------------------
