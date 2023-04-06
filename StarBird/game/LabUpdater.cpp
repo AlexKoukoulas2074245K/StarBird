@@ -50,11 +50,11 @@ static const glm::vec3 LAB_BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
 static const glm::vec3 LAB_NAVIGATION_ARROW_SCALE = glm::vec3(3.0f, 2.0f, 0.0f);
 static const glm::vec3 LAB_NAVIGATION_ARROW_POSITION = glm::vec3(0.0f, -6.0f, 0.0f);
 
-static const glm::vec3 LAB_CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -6.0f, 0.0f);
+static const glm::vec3 LAB_CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -8.0f, 0.0f);
 static const glm::vec3 LAB_CONFIRMATION_BUTTON_SCALE = glm::vec3(3.5f, 3.5f, 0.0f);
 
-static const glm::vec3 LAB_REJECTION_TEXT_POSITION = glm::vec3(-3.8f, -6.3f, 0.5f);
-static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-0.8f, -6.3f, 0.5f);
+static const glm::vec3 LAB_REJECTION_TEXT_POSITION = glm::vec3(-3.8f, -8.3f, 0.5f);
+static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-0.8f, -8.3f, 0.5f);
 static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_SCALE = glm::vec3(0.007f, 0.007f, 1.0f);
 
 static const glm::vec3 TEXT_PROMPT_POSITION = glm::vec3(0.0f, 7.2f, 0.5f);

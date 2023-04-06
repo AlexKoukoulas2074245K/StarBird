@@ -15,11 +15,8 @@
 #include "StatUpgradeAreaController.h"
 
 ///------------------------------------------------------------------------------------------------
-// 2.93 7.32
-// +button 2.80, 6.02
-// -button 4.50, 6.02
 
-static const strutils::StringId STAT_UPGRADE_BACKGROUND_NAME = strutils::StringId("STAT_UPGRADE_BACKGROUND");
+static const char* STAT_UPGRADE_BACKGROUND_NAME = "STAT_UPGRADE_BACKGROUND";
 
 ///------------------------------------------------------------------------------------------------
 
@@ -39,7 +36,7 @@ StatUpgradeAreaController::StatUpgradeAreaController(Scene& scene, std::unique_p
         statUpgradeBackgroundSo.mScale = scale;
         statUpgradeBackgroundSo.mAnimation = std::move(statUpgradeBackgroundAnimation);
         statUpgradeBackgroundSo.mSceneObjectType = SceneObjectType::GUIObject;
-        statUpgradeBackgroundSo.mName = STAT_UPGRADE_BACKGROUND_NAME;
+        statUpgradeBackgroundSo.mName = strutils::StringId(text + STAT_UPGRADE_BACKGROUND_NAME);
         mScene.AddSceneObject(std::move(statUpgradeBackgroundSo));
     }
     
@@ -145,7 +142,7 @@ StatUpgradeAreaController::StatUpgradeAreaController(Scene& scene, std::unique_p
         mTargetCrystalPosition = crystalIconSo.mPosition;
         crystalIconSo.mSceneObjectType = SceneObjectType::GUIObject;
         crystalIconSo.mScale = glm::vec3(0.3f, 0.3f, 0.3f);
-        crystalIconSo.mName = game_constants::GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME;
+        crystalIconSo.mName = strutils::StringId(text + game_constants::GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME.GetString());
         mScene.AddSceneObject(std::move(crystalIconSo));
     }
 }

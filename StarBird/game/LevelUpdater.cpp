@@ -247,7 +247,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             }
             else
             {
-                playerSO.mHealth -= enemySceneObjectTypeDef.mDamage;
+                GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - enemySceneObjectTypeDef.mDamage);
                 OnPlayerDamaged();
                 CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemySceneObjectTypeDef.mDamage);
             }
@@ -272,7 +272,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             }, game_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
             
             // Player death flow
-            if (playerSO.mHealth <= 0)
+            if (GameSingletons::GetPlayerCurrentHealth() <= 0)
             {
                 scene_object_utils::ChangeSceneObjectState(playerSO, playerSODef, game_constants::DYING_SCENE_OBJECT_STATE);
                 
@@ -311,7 +311,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             }
             else
             {
-                playerSO.mHealth -= enemyBulletSceneObjectTypeDef.mDamage;
+                GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - enemyBulletSceneObjectTypeDef.mDamage);
                 OnPlayerDamaged();
                 CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemyBulletSceneObjectTypeDef.mDamage);
             }
@@ -320,7 +320,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             {
             }, game_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
             
-            if (playerSO.mHealth <= 0)
+            if (GameSingletons::GetPlayerCurrentHealth() <= 0)
             {
                 scene_object_utils::ChangeSceneObjectState(playerSO, playerSODef, game_constants::DYING_SCENE_OBJECT_STATE);
                 

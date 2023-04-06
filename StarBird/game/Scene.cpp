@@ -408,15 +408,6 @@ void Scene::UpdateScene(const float dtMillis)
 
 void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
 {
-    auto playerSO = GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
-    auto playerDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
-    
-    if (playerSO && playerDef)
-    {
-        GameSingletons::SetPlayerCurrentHealth(playerSO->get().mHealth);
-        GameSingletons::SetPlayerMaxHealth(playerDef->get().mHealth);
-    }
-    
     // Player Health Bar update
     auto playerHealthBarFrameSoOpt = GetSceneObject(game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
     auto playerHealthBarSoOpt = GetSceneObject(game_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME);
@@ -768,7 +759,7 @@ void Scene::CreateCrossSceneInterfaceObjects()
     GameSingletons::SetPlayerMaxHealth(playerDef.mHealth);
     GameSingletons::SetPlayerCurrentHealth(playerDef.mHealth);
     GameSingletons::SetPlayerAttackStat(playerDef.mDamage);
-    GameSingletons::SetPlayerMovementSpeedStat(playerDef.mSpeed);
+    GameSingletons::SetPlayerMovementSpeedStat(1.0f);
     GameSingletons::SetPlayerBulletSpeedStat(1.0f);
     
     // Player Health Bar Text

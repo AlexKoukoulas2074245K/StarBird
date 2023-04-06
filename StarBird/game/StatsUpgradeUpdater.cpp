@@ -40,14 +40,11 @@ static const glm::vec3 VESSEL_SCALE = glm::vec3(7.0f, 7.0f, 1.0f);
 static const float NAVIGATION_ARROW_PULSING_SPEED = 0.01f;
 static const float NAVIGATION_ARROW_PULSING_ENLARGEMENT_FACTOR = 1.0f/100.0f;
 
-static const glm::vec3 CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -6.0f, 0.0f);
+static const glm::vec3 CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -8.0f, 0.0f);
 static const glm::vec3 CONFIRMATION_BUTTON_SCALE = glm::vec3(3.5f, 3.5f, 0.0f);
 
-static const glm::vec3 CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-0.8f, -6.3f, 0.5f);
+static const glm::vec3 CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-0.8f, -8.3f, 0.5f);
 static const glm::vec3 CONFIRMATION_BUTTON_TEXT_SCALE = glm::vec3(0.007f, 0.007f, 1.0f);
-
-static const glm::vec3 TEXT_PROMPT_POSITION = glm::vec3(0.0f, 7.2f, 0.5f);
-static const glm::vec3 TEXT_PROMPT_SCALE = glm::vec3(12.0f, 10.0f, 1.0f);
 
 static const float CONFIRMATION_BUTTON_PULSING_SPEED = 0.01f;
 static const float CONFIRMATION_BUTTON_PULSING_ENLARGEMENT_FACTOR = 1.0f/100.0f;
@@ -55,7 +52,6 @@ static const float CONFIRMATION_BUTTON_ROTATION_SPEED = 0.0002f;
 
 static const float DROPPED_CRYSTAL_SPEED = 0.0009f;
 static const float DROPPED_CRYSTAL_DISTANCE_FACTOR = 24.0f;
-static const float DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG = 0.5f;
 static const float DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG = 2.0f;
 
 ///------------------------------------------------------------------------------------------------
@@ -216,6 +212,7 @@ PostStateUpdateDirective StatsUpgradeUpdater::VUpdate(std::vector<SceneObject>& 
                         
                         case StatType::HEALTH_STAT:
                         {
+                            GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() +  statControllerEntry.second->GetCurrentStatValue() - GameSingletons::GetPlayerMaxHealth());
                             GameSingletons::SetPlayerMaxHealth(statControllerEntry.second->GetCurrentStatValue());
                         } break;
                     }
@@ -411,10 +408,15 @@ void StatsUpgradeUpdater::CreateSceneObjects()
     }
     
     {
-        mStatControllers[StatType::ATTACK_STAT] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "diagonal_upgrade_area_mm.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(6.22f, 4.8f, 1.0f), false), glm::vec3(2.93f, 7.32f, 0.5f), glm::vec3(6.22f, 4.8f, 1.0f), "ATTACK ", GameSingletons::GetPlayerAttackStat(), 1.0f, false);
+        mStatControllers[StatType::ATTACK_STAT] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "diagonal_upgrade_area_mm.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(6.22f, 4.8f, 1.0f), false), glm::vec3(2.93f, 7.80f, 0.5f), glm::vec3(6.22f, 4.8f, 1.0f), "ATTACK ", GameSingletons::GetPlayerAttackStat(), 1.0f, false);
         
         
-        mStatControllers[StatType::HASTE_STAT] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "diagonal_upgrade_area_mm.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(6.22f, 4.8f, 1.0f), false), glm::vec3(2.93f, -2.32f, 0.5f), glm::vec3(6.22f, 4.8f, 1.0f), "HASTE ", GameSingletons::GetPlayerBulletSpeedStat(), 0.1f, true);
+        mStatControllers[StatType::HEALTH_STAT] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "diagonal_upgrade_area_mm.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(6.22f, 4.8f, 1.0f), false), glm::vec3(2.82f, 2.30f, 0.5f), glm::vec3(6.22f, 4.8f, 1.0f), "HEALTH ", GameSingletons::GetPlayerMaxHealth(), 5.0f, false);
+        
+        
+        mStatControllers[StatType::HASTE_STAT] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "vertical_upgrade_area_mm.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(5.4f, 7.0f, 1.0f), false), glm::vec3(-3.3f, 4.7f, 0.5f), glm::vec3(5.4f, 7.0f, 1.0f), "HASTE ", GameSingletons::GetPlayerBulletSpeedStat(), 0.05f, true);
+        
+        mStatControllers[StatType::SPEED_STAT] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "diagonal_upgrade_area_mm.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(-6.22f, -4.8f, 1.0f), false), glm::vec3(-2.89f, -3.63f, 0.5f), glm::vec3(-6.22f, -4.8f, 1.0f), "SPEED ", GameSingletons::GetPlayerMovementSpeedStat(), 0.05f, true);
     }
 }
 

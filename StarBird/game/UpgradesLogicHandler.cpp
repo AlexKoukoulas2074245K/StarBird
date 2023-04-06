@@ -70,12 +70,11 @@ void UpgradesLogicHandler::OnUpgradeEquipped(const strutils::StringId& upgradeId
     }
     else if (upgradeId == game_constants::PLAYER_HEALTH_POTION_UGPRADE_NAME)
     {
-        auto playerTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetMutableObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
         auto playerSoOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
         
-        if (playerSoOpt && playerTypeDefOpt)
+        if (playerSoOpt)
         {
-            playerSoOpt->get().mHealth = math::Min(playerTypeDefOpt->get().mHealth, playerSoOpt->get().mHealth + HEALTH_POTION_HEALTH_GAIN);
+            GameSingletons::SetPlayerCurrentHealth(math::Min(GameSingletons::GetPlayerMaxHealth(), GameSingletons::GetPlayerCurrentHealth() + HEALTH_POTION_HEALTH_GAIN));
         }
     }
 }

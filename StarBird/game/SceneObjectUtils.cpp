@@ -93,8 +93,8 @@ void GetSceneObjectBoundingRect(const SceneObject& sceneObject, glm::vec2& rectB
     // SO with custom position and scale
     else
     {
-        rectBotLeft = glm::vec2(sceneObject.mPosition.x - sceneObject.mScale.x/2, sceneObject.mPosition.y - sceneObject.mScale.y/2);
-        rectTopRight = glm::vec2(sceneObject.mPosition.x + sceneObject.mScale.x/2, sceneObject.mPosition.y + sceneObject.mScale.y/2);
+        rectBotLeft = glm::vec2(sceneObject.mPosition.x - math::Abs(sceneObject.mScale.x/2), sceneObject.mPosition.y - math::Abs(sceneObject.mScale.y/2));
+        rectTopRight = glm::vec2(sceneObject.mPosition.x + math::Abs(sceneObject.mScale.x/2), sceneObject.mPosition.y + math::Abs(sceneObject.mScale.y/2));
     }
 }
 
@@ -117,17 +117,17 @@ bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& p
     // SO with Physical Body or custom position and scale
     else
     {
-        rectBotLeft.x += sceneObject.mScale.x/2;
-        rectBotLeft.x -= sceneObject.mScale.x/2 * xyBias.x;
+        rectBotLeft.x += math::Abs(sceneObject.mScale.x/2);
+        rectBotLeft.x -= math::Abs(sceneObject.mScale.x/2) * xyBias.x;
         
-        rectBotLeft.y += sceneObject.mScale.y/2;
-        rectBotLeft.y -= sceneObject.mScale.y/2 * xyBias.y;
+        rectBotLeft.y += math::Abs(sceneObject.mScale.y/2);
+        rectBotLeft.y -= math::Abs(sceneObject.mScale.y/2) * xyBias.y;
         
-        rectTopRight.x -= sceneObject.mScale.x/2;
-        rectTopRight.x += sceneObject.mScale.x/2 * xyBias.x;
+        rectTopRight.x -= math::Abs(sceneObject.mScale.x/2);
+        rectTopRight.x += math::Abs(sceneObject.mScale.x/2) * xyBias.x;
         
-        rectTopRight.y -= sceneObject.mScale.y/2;
-        rectTopRight.y += sceneObject.mScale.y/2 * xyBias.y;
+        rectTopRight.y -= math::Abs(sceneObject.mScale.y/2);
+        rectTopRight.y += math::Abs(sceneObject.mScale.y/2) * xyBias.y;
     }
     
     return math::IsPointInsideRectangle(rectBotLeft, rectTopRight, point);
