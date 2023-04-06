@@ -12,10 +12,12 @@
 
 #include "IUpdater.h"
 #include "StateMachine.h"
+#include "StatUpgradeAreaController.h"
 #include "../utils/MathUtils.h"
 
 #include <SDL_events.h>
 #include <memory>
+#include <unordered_map>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -37,17 +39,31 @@ public:
 
 private:
     void CreateSceneObjects();
+    void CreateCrystalsTowardTargetPosition(const int crystalCount, const glm::vec3& position);
+    void OnConfirmationButtonPressed();
     
 private:
     enum class SelectionState
     {
         NO_STATS_SELECTED,
+        ONE_OR_MORE_STATS_HAVE_BEEN_SELECTED,
+        EXPENDING_CRYSTALS,
         TRANSITIONING_TO_NEXT_SCREEN
+    };
+    
+    enum class StatType
+    {
+        ATTACK_STAT,
+        SPEED_STAT,
+        HASTE_STAT,
+        HEALTH_STAT
     };
     
     Scene& mScene;
     StateMachine mStateMachine;
     SelectionState mSelectionState;
+    std::vector<strutils::StringId> mCrystalSceneObjectNames;
+    std::unordered_map<StatType, std::unique_ptr<StatUpgradeAreaController>> mStatControllers;
 };
 
 

@@ -184,12 +184,12 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             {
                 if (scene_object_utils::IsSceneObjectBossPart(enemySO))
                 {
-                    GameSingletons::SetBossCurrentHealth(math::Max(0.0f, GameSingletons::GetBossCurrentHealth() - bulletSceneObjectTypeDef.mDamage));
+                    GameSingletons::SetBossCurrentHealth(math::Max(0.0f, GameSingletons::GetBossCurrentHealth() - GameSingletons::GetPlayerAttackStat()));
                 }
                 else
                 {
-                    enemySO.mHealth -= bulletSceneObjectTypeDef.mDamage;
-                    CreateTextOnDamage(enemySO.mName, math::Box2dVec2ToGlmVec3(enemySO.mBody->GetWorldCenter()), bulletSceneObjectTypeDef.mDamage);
+                    enemySO.mHealth -= GameSingletons::GetPlayerAttackStat();
+                    CreateTextOnDamage(enemySO.mName, math::Box2dVec2ToGlmVec3(enemySO.mBody->GetWorldCenter()), GameSingletons::GetPlayerAttackStat());
                 }
             }
             

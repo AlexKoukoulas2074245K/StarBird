@@ -26,6 +26,9 @@ float GameSingletons::mBossCurrentHealth = 1.0f;
 float GameSingletons::mPlayerMaxHealth = 1.0f;
 float GameSingletons::mPlayerCurrentHealth = 1.0f;
 float GameSingletons::mPlayerDisplayedHealth = 1.0f;
+float GameSingletons::mPlayerAttackStat = 0.0f;
+float GameSingletons::mPlayerBulletSpeedStat = 0.0f;
+float GameSingletons::mPlayerMovementStat = 0.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -248,6 +251,48 @@ float GameSingletons::GetPlayerDisplayedHealth()
 void GameSingletons::SetPlayerDisplayedHealth(const float playerDisplayedHealth)
 {
     mPlayerDisplayedHealth = playerDisplayedHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+float GameSingletons::GetPlayerAttackStat()
+{
+    return mPlayerAttackStat;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetPlayerAttackStat(const float playerAttackStat)
+{
+    mPlayerAttackStat = playerAttackStat;
+}
+
+///------------------------------------------------------------------------------------------------
+
+float GameSingletons::GetPlayerBulletSpeedStat()
+{
+    return mPlayerBulletSpeedStat;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetPlayerBulletSpeedStat(const float playerBulletSpeedStat)
+{
+    mPlayerBulletSpeedStat = playerBulletSpeedStat;
+}
+
+///------------------------------------------------------------------------------------------------
+
+float GameSingletons::GetPlayerMovementSpeedStat()
+{
+    return mPlayerMovementStat;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetPlayerMovementSpeedStat(const float playerMovementStat)
+{
+    mPlayerMovementStat = playerMovementStat;
 }
 
 ///------------------------------------------------------------------------------------------------

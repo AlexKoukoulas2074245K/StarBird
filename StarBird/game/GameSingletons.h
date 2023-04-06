@@ -72,6 +72,15 @@ public:
     static float GetPlayerDisplayedHealth();
     static void SetPlayerDisplayedHealth(const float playerDisplayedHealth);
     
+    static float GetPlayerAttackStat();
+    static void SetPlayerAttackStat(const float playerAttackStat);
+    
+    static float GetPlayerBulletSpeedStat();
+    static void SetPlayerBulletSpeedStat(const float playerBulletSpeedStat);
+    
+    static float GetPlayerMovementSpeedStat();
+    static void SetPlayerMovementSpeedStat(const float playerMovementStat);
+    
     static long GetCrystalCount();
     static void SetCrystalCount(const long crystalCount);
     
@@ -102,6 +111,9 @@ private:
     static float mPlayerMaxHealth;
     static float mPlayerCurrentHealth;
     static float mPlayerDisplayedHealth;
+    static float mPlayerAttackStat;
+    static float mPlayerBulletSpeedStat;
+    static float mPlayerMovementStat;
 };
 
 ///------------------------------------------------------------------------------------------------

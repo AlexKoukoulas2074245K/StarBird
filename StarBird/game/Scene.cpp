@@ -630,14 +630,14 @@ void Scene::SetSceneEditResultMessage(const glm::vec3& position, const glm::vec3
 {
     std::stringstream positionString;
     positionString << "Position: ";
-    positionString << std::fixed << std::setprecision(4) << position.x << ",";
-    positionString << std::fixed << std::setprecision(4) << position.y << ",";
+    positionString << std::fixed << std::setprecision(4) << position.x << ", ";
+    positionString << std::fixed << std::setprecision(4) << position.y << ", ";
     positionString << std::fixed << std::setprecision(4) << position.z;
     
     std::stringstream scaleString;
     scaleString << "Scale: ";
-    scaleString << std::fixed << std::setprecision(4) << scale.x << ",";
-    scaleString << std::fixed << std::setprecision(4) << scale.y << ",";
+    scaleString << std::fixed << std::setprecision(4) << scale.x << ", ";
+    scaleString << std::fixed << std::setprecision(4) << scale.y << ", ";
     scaleString << std::fixed << std::setprecision(4) << scale.z;
     
     auto sceneEditResultMessage1SoOpt = GetSceneObject(SCENE_EDIT_RESULT_TEXT_NAME_1);
@@ -762,9 +762,14 @@ void Scene::CreateCrossSceneInterfaceObjects()
     
     auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
     typeDefRepo.LoadObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
-    GameSingletons::SetPlayerDisplayedHealth(typeDefRepo.GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get().mHealth);
-    GameSingletons::SetPlayerMaxHealth(typeDefRepo.GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get().mHealth);
-    GameSingletons::SetPlayerCurrentHealth(typeDefRepo.GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get().mHealth);
+    auto& playerDef = typeDefRepo.GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
+    
+    GameSingletons::SetPlayerDisplayedHealth(playerDef.mHealth);
+    GameSingletons::SetPlayerMaxHealth(playerDef.mHealth);
+    GameSingletons::SetPlayerCurrentHealth(playerDef.mHealth);
+    GameSingletons::SetPlayerAttackStat(playerDef.mDamage);
+    GameSingletons::SetPlayerMovementSpeedStat(playerDef.mSpeed);
+    GameSingletons::SetPlayerBulletSpeedStat(1.0f);
     
     // Player Health Bar Text
     {
