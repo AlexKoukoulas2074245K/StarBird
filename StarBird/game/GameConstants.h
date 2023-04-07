@@ -152,6 +152,7 @@ static const float GUI_CRYSTAL_ROTATION_SPEED = 0.0004f;
 inline const float PLAYER_HEALTH_BAR_Z = 0.45f;
 inline const float BOSS_HEALTH_BAR_Z = 2.45f;
 inline const float HEALTH_LOST_SPEED = 0.0007f;
+inline const float DROPPED_CRYSTALS_CREATION_STAGGER_MILLIS = 25.0f;
 inline const float CRYSTAL_COUNT_CHANGE_SPEED = 0.07f;
 inline const float BOSS_INTRO_ANIMATED_HEALTH_SPEED = 0.05f;
 inline const float HEALTH_BAR_POSITION_DIVISOR_MAGIC = 2.15f;

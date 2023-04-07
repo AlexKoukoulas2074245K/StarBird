@@ -116,9 +116,6 @@ bool Game::InitSystems()
 
 void Game::Run()
 {
-    // Load saved data
-    GameSingletons::SetCrystalCount(10);
-    GameSingletons::SetDisplayedCrystalCount(10);
     
     Scene scene;
     scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", false));

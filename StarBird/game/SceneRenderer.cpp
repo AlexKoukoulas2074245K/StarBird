@@ -142,6 +142,8 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
         // If it's a text element
         if (!so.mFontName.isEmpty() && so.mText.size() > 0)
         {
+            bool usesCustomColor = so.mAnimation->VGetCurrentShaderResourceId() == resService.GetResourceIdFromPath(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME);
+            
             auto fontOpt = FontRepository::GetInstance().GetFont(so.mFontName);
             if (fontOpt)
             {
@@ -193,7 +195,9 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
                         // Since each glyph is rendered with its center as the origin, we advance
                         // half this glyph's width + half the next glyph's width ahead
                         const auto& nextGlyph = GetGlyphIter(so.mText[i + 1], font)->second;
-                        xCursor += (glyph.mWidthPixels * so.mScale.x) * 0.5f + (nextGlyph.mWidthPixels * so.mScale.x) * 0.5f;
+                        
+                        const auto additionalSpacingMultiplier = usesCustomColor ? 1.5f : 1.0f;
+                        xCursor += (glyph.mWidthPixels * so.mScale.x) * 0.5f + (nextGlyph.mWidthPixels * so.mScale.x) * 0.5f * additionalSpacingMultiplier;
                     }
                 }
             }

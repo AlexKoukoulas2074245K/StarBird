@@ -761,6 +761,8 @@ void Scene::CreateCrossSceneInterfaceObjects()
     GameSingletons::SetPlayerAttackStat(playerDef.mDamage);
     GameSingletons::SetPlayerMovementSpeedStat(1.0f);
     GameSingletons::SetPlayerBulletSpeedStat(1.0f);
+    GameSingletons::SetCrystalCount(100);
+    GameSingletons::SetDisplayedCrystalCount(100);
     
     // Player Health Bar Text
     {

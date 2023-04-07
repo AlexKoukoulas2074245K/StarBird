@@ -72,7 +72,7 @@ private:
     void UpdateLights(const float dtMillis);
     void UpdateTextDamage(const float dtMillis);
     
-    void DropCrystals(const glm::vec3& deathPosition, float crystalYieldValue);
+    void DropCrystals(const glm::vec3& deathPosition, const float enemyDeathAnimationMillis, float crystalYieldValue);
     void CreateTextOnDamage(const strutils::StringId& damagedSceneObjectName, const glm::vec3& textOriginPos, const int damage);
     void OnPlayerDamaged();
     void OnBlockedUpdate();

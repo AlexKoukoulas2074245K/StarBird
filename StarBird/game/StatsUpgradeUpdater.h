@@ -11,6 +11,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "IUpdater.h"
+#include "RepeatableFlow.h"
 #include "StateMachine.h"
 #include "StatUpgradeAreaController.h"
 #include "../utils/MathUtils.h"
@@ -24,6 +25,16 @@
 class Scene;
 class StatsUpgradeUpdater final: public IUpdater
 {
+public:
+    enum class StatType
+    {
+        ATTACK_STAT = 0,
+        SPEED_STAT = 1,
+        HASTE_STAT = 2,
+        HEALTH_STAT = 3,
+        COUNT = 4
+    };
+    
 public:
     StatsUpgradeUpdater(Scene& scene);
     ~StatsUpgradeUpdater();
@@ -51,19 +62,12 @@ private:
         TRANSITIONING_TO_NEXT_SCREEN
     };
     
-    enum class StatType
-    {
-        ATTACK_STAT,
-        SPEED_STAT,
-        HASTE_STAT,
-        HEALTH_STAT
-    };
-    
     Scene& mScene;
     StateMachine mStateMachine;
     SelectionState mSelectionState;
     std::vector<strutils::StringId> mCrystalSceneObjectNames;
     std::unordered_map<StatType, std::unique_ptr<StatUpgradeAreaController>> mStatControllers;
+    std::vector<RepeatableFlow> mFlows;
 };
 
 

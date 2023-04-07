@@ -200,9 +200,10 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 const auto deathPosition = enemySO.mPosition;
                 const auto crystalYield = enemySceneObjectTypeDef.mCrystalYield;
                 
+                DropCrystals(deathPosition, enemySO.mAnimation->VGetDuration(), crystalYield);
+                
                 mFlows.emplace_back([=]()
                 {
-                    DropCrystals(deathPosition, crystalYield);
                     RemoveWaveEnemy(enemyName);
                 }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
                 
@@ -1078,7 +1079,7 @@ void LevelUpdater::UpdateTextDamage(const float dtMillis)
 
 ///------------------------------------------------------------------------------------------------
 
-void LevelUpdater::DropCrystals(const glm::vec3& deathPosition, float crystalYieldValue)
+void LevelUpdater::DropCrystals(const glm::vec3& deathPosition, const float enemyDeathAnimationMillis, float crystalYieldValue)
 {
     // A value of crystalYield <= 1.0f will be random depending on the value,
     // however a value of > 1.0f such as 1.5f will guarantee 1 plus 1 half of the time and so on.
@@ -1088,48 +1089,51 @@ void LevelUpdater::DropCrystals(const glm::vec3& deathPosition, float crystalYie
     {
         if ((crystalYieldValue <= 1.0f && math::RandomFloat() <= crystalYieldValue) || crystalYieldValue > 1.0f)
         {
-            auto& resService = resources::ResourceLoadingService::GetInstance();
-            
-            SceneObject crystalSo;
-            
-            glm::vec3 firstControlPoint(deathPosition + glm::vec3(math::RandomFloat(-DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG), math::RandomFloat(-DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG), 0.0f));
-            glm::vec3 thirdControlPoint(game_constants::GUI_CRYSTAL_POSITION);
-            glm::vec3 secondControlPoint((thirdControlPoint + firstControlPoint) * 0.5f + glm::vec3(math::RandomFloat(-DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG), math::RandomFloat(-DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG), 0.0f));
-            
-            firstControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
-            secondControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
-            thirdControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
-            
-            float speedNoise = math::RandomFloat(-DROPPED_CRYSTAL_SPEED/5, DROPPED_CRYSTAL_SPEED/5);
-            float speedMultiplier = DROPPED_CRYSTAL_DISTANCE_FACTOR/glm::distance(firstControlPoint, game_constants::GUI_CRYSTAL_POSITION);
-            
-            const strutils::StringId droppedCrystalName = strutils::StringId(DROPPED_CRYSTAL_NAME_PREFIX + std::to_string(SDL_GetTicks()) + "_" + std::to_string(droppedCrystalCounter));
-            
-            crystalSo.mAnimation = std::make_unique<BezierCurvePathAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), math::BezierCurve({firstControlPoint, secondControlPoint, thirdControlPoint}), (DROPPED_CRYSTAL_SPEED + speedNoise) * speedMultiplier, false);
-            
-            crystalSo.mAnimation->VSetCompletionCallback([droppedCrystalName, this]()
+            mFlows.emplace_back([this, deathPosition, droppedCrystalCounter]()
             {
-                auto crystalHolderSoOpt = mScene.GetSceneObject(game_constants::GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME);
-                if (crystalHolderSoOpt)
-                {
-                    auto& crystalHolderSo = crystalHolderSoOpt->get();
-                    crystalHolderSo.mScale = game_constants::GUI_CRYSTAL_SCALE;
-                    
-                    crystalHolderSo.mExtraCompoundingAnimations.clear();
-                    crystalHolderSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(crystalHolderSo.mAnimation->VGetCurrentTextureResourceId(), crystalHolderSo.mAnimation->VGetCurrentMeshResourceId(), crystalHolderSo.mAnimation->VGetCurrentShaderResourceId(), game_constants::GUI_CRYSTAL_SCALE, PulsingAnimation::PulsingMode::OUTER_PULSE_ONCE, 0.0f, COLLECTED_CRYSTAL_PULSING_SPEED, COLLECTED_CRYSTAL_PULSING_FACTOR, false));
-                }
+                auto& resService = resources::ResourceLoadingService::GetInstance();
                 
-                mScene.RemoveAllSceneObjectsWithName(droppedCrystalName);
-                GameSingletons::SetCrystalCount(GameSingletons::GetCrystalCount() + 1);
-            });
-            
-            crystalSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, game_constants::GUI_CRYSTAL_ROTATION_SPEED, false));
-            
-            crystalSo.mSceneObjectType = SceneObjectType::GUIObject;
-            crystalSo.mPosition = firstControlPoint;
-            crystalSo.mScale = game_constants::GUI_CRYSTAL_SCALE;
-            crystalSo.mName = droppedCrystalName;
-            mScene.AddSceneObject(std::move(crystalSo));
+                SceneObject crystalSo;
+                
+                glm::vec3 firstControlPoint(deathPosition + glm::vec3(math::RandomFloat(-DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG), math::RandomFloat(-DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG), 0.0f));
+                glm::vec3 thirdControlPoint(game_constants::GUI_CRYSTAL_POSITION);
+                glm::vec3 secondControlPoint((thirdControlPoint + firstControlPoint) * 0.5f + glm::vec3(math::RandomFloat(-DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG), math::RandomFloat(-DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG), 0.0f));
+                
+                firstControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
+                secondControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
+                thirdControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
+                
+                float speedNoise = math::RandomFloat(-DROPPED_CRYSTAL_SPEED/5, DROPPED_CRYSTAL_SPEED/5);
+                float speedMultiplier = DROPPED_CRYSTAL_DISTANCE_FACTOR/glm::distance(firstControlPoint, game_constants::GUI_CRYSTAL_POSITION);
+                
+                const strutils::StringId droppedCrystalName = strutils::StringId(DROPPED_CRYSTAL_NAME_PREFIX + std::to_string(SDL_GetTicks()) + "_" + std::to_string(droppedCrystalCounter));
+                
+                crystalSo.mAnimation = std::make_unique<BezierCurvePathAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), math::BezierCurve({firstControlPoint, secondControlPoint, thirdControlPoint}), (DROPPED_CRYSTAL_SPEED + speedNoise) * speedMultiplier, false);
+                
+                crystalSo.mAnimation->VSetCompletionCallback([droppedCrystalName, this]()
+                {
+                    auto crystalHolderSoOpt = mScene.GetSceneObject(game_constants::GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME);
+                    if (crystalHolderSoOpt)
+                    {
+                        auto& crystalHolderSo = crystalHolderSoOpt->get();
+                        crystalHolderSo.mScale = game_constants::GUI_CRYSTAL_SCALE;
+                        
+                        crystalHolderSo.mExtraCompoundingAnimations.clear();
+                        crystalHolderSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(crystalHolderSo.mAnimation->VGetCurrentTextureResourceId(), crystalHolderSo.mAnimation->VGetCurrentMeshResourceId(), crystalHolderSo.mAnimation->VGetCurrentShaderResourceId(), game_constants::GUI_CRYSTAL_SCALE, PulsingAnimation::PulsingMode::OUTER_PULSE_ONCE, 0.0f, COLLECTED_CRYSTAL_PULSING_SPEED, COLLECTED_CRYSTAL_PULSING_FACTOR, false));
+                    }
+                    
+                    mScene.RemoveAllSceneObjectsWithName(droppedCrystalName);
+                    GameSingletons::SetCrystalCount(GameSingletons::GetCrystalCount() + 1);
+                });
+                
+                crystalSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, game_constants::GUI_CRYSTAL_ROTATION_SPEED, false));
+                
+                crystalSo.mSceneObjectType = SceneObjectType::GUIObject;
+                crystalSo.mPosition = firstControlPoint;
+                crystalSo.mScale = game_constants::GUI_CRYSTAL_SCALE;
+                crystalSo.mName = droppedCrystalName;
+                mScene.AddSceneObject(std::move(crystalSo));
+            }, droppedCrystalCounter * game_constants::DROPPED_CRYSTALS_CREATION_STAGGER_MILLIS + enemyDeathAnimationMillis, RepeatableFlow::RepeatPolicy::ONCE);
             
             droppedCrystalCounter++;
         }

@@ -21,6 +21,70 @@
 
 ///------------------------------------------------------------------------------------------------
 
+static const std::unordered_map<StatsUpgradeUpdater::StatType, const char*> STAT_CONTROLLER_TEXTURES =
+{
+    { StatsUpgradeUpdater::StatType::ATTACK_STAT, "diagonal_upgrade_area_mm.bmp" },
+    { StatsUpgradeUpdater::StatType::HEALTH_STAT, "diagonal_upgrade_area_mm.bmp" },
+    { StatsUpgradeUpdater::StatType::HASTE_STAT, "vertical_upgrade_area_mm.bmp" },
+    { StatsUpgradeUpdater::StatType::SPEED_STAT, "diagonal_upgrade_area_mm.bmp" }
+};
+
+static const std::unordered_map<StatsUpgradeUpdater::StatType, const char*> STAT_CONTROLLER_STAT_DESCRIPTIONS =
+{
+    { StatsUpgradeUpdater::StatType::ATTACK_STAT, "ATTACK " },
+    { StatsUpgradeUpdater::StatType::HEALTH_STAT, "HEALTH " },
+    { StatsUpgradeUpdater::StatType::HASTE_STAT, "HASTE " },
+    { StatsUpgradeUpdater::StatType::SPEED_STAT, "SPEED " }
+};
+
+static const std::unordered_map<StatsUpgradeUpdater::StatType, glm::vec3> STAT_CONTROLLER_POSITIONS =
+{
+    { StatsUpgradeUpdater::StatType::ATTACK_STAT, glm::vec3(2.93f, 7.80f, 0.5f) },
+    { StatsUpgradeUpdater::StatType::HEALTH_STAT, glm::vec3(2.82f, 2.30f, 0.5f) },
+    { StatsUpgradeUpdater::StatType::HASTE_STAT, glm::vec3(-3.3f, 4.7f, 0.5f) },
+    { StatsUpgradeUpdater::StatType::SPEED_STAT, glm::vec3(-2.89f, -3.63f, 0.5f) }
+};
+
+static const std::unordered_map<StatsUpgradeUpdater::StatType, glm::vec3> STAT_CONTROLLER_ELEMENTS_ADDITION_OFFSETS =
+{
+    { StatsUpgradeUpdater::StatType::ATTACK_STAT, glm::vec3(0.0f) },
+    { StatsUpgradeUpdater::StatType::HEALTH_STAT, glm::vec3(0.0f) },
+    { StatsUpgradeUpdater::StatType::HASTE_STAT, glm::vec3(-0.4f, 1.26f, 0.0f) },
+    { StatsUpgradeUpdater::StatType::SPEED_STAT, glm::vec3(-1.46f, 0.1f, 0.0f) }
+};
+
+static const std::unordered_map<StatsUpgradeUpdater::StatType, glm::vec3> STAT_CONTROLLER_SCALES =
+{
+    { StatsUpgradeUpdater::StatType::ATTACK_STAT, glm::vec3(6.22f, 4.8f, 1.0f) },
+    { StatsUpgradeUpdater::StatType::HEALTH_STAT, glm::vec3(6.22f, 4.8f, 1.0f) },
+    { StatsUpgradeUpdater::StatType::HASTE_STAT, glm::vec3(5.4f, 7.0f, 1.0f) },
+    { StatsUpgradeUpdater::StatType::SPEED_STAT, glm::vec3(-6.22f, -4.8f, 1.0f) }
+};
+
+static const std::unordered_map<StatsUpgradeUpdater::StatType, std::function<float()>> STAT_CONTROLLER_STAT_GETTER_FUNCS =
+{
+    { StatsUpgradeUpdater::StatType::ATTACK_STAT, GameSingletons::GetPlayerAttackStat },
+    { StatsUpgradeUpdater::StatType::HEALTH_STAT, GameSingletons::GetPlayerMaxHealth },
+    { StatsUpgradeUpdater::StatType::HASTE_STAT, GameSingletons::GetPlayerBulletSpeedStat },
+    { StatsUpgradeUpdater::StatType::SPEED_STAT, GameSingletons::GetPlayerMovementSpeedStat }
+};
+
+static const std::unordered_map<StatsUpgradeUpdater::StatType, float> STAT_CONTROLLER_STAT_INCREMENTS =
+{
+    { StatsUpgradeUpdater::StatType::ATTACK_STAT, 1.0f },
+    { StatsUpgradeUpdater::StatType::HEALTH_STAT, 5.0f },
+    { StatsUpgradeUpdater::StatType::HASTE_STAT, 0.1f },
+    { StatsUpgradeUpdater::StatType::SPEED_STAT, 0.1f }
+};
+
+static const std::unordered_map<StatsUpgradeUpdater::StatType, bool> STAT_CONTROLLER_STAT_FLOAT_DISPLAYS =
+{
+    { StatsUpgradeUpdater::StatType::ATTACK_STAT, false },
+    { StatsUpgradeUpdater::StatType::HEALTH_STAT, false },
+    { StatsUpgradeUpdater::StatType::HASTE_STAT, true },
+    { StatsUpgradeUpdater::StatType::SPEED_STAT, true }
+};
+
 static const strutils::StringId VESSEL_SCENE_OBJECT_NAME = strutils::StringId("VESSEL");
 static const strutils::StringId CONFIRMATION_BUTTON_NAME = strutils::StringId("CONFIRMATION_BUTTON");
 static const strutils::StringId CONFIRMATION_BUTTON_TEXT_NAME = strutils::StringId("CONFIRMATION_BUTTON_TEXT");
@@ -215,6 +279,8 @@ PostStateUpdateDirective StatsUpgradeUpdater::VUpdate(std::vector<SceneObject>& 
                             GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() +  statControllerEntry.second->GetCurrentStatValue() - GameSingletons::GetPlayerMaxHealth());
                             GameSingletons::SetPlayerMaxHealth(statControllerEntry.second->GetCurrentStatValue());
                         } break;
+                            
+                        default: break;
                     }
                     
                     GameSingletons::SetCrystalCount(GameSingletons::GetCrystalCount() - statControllerEntry.second->GetCurrentCost());
@@ -273,6 +339,17 @@ PostStateUpdateDirective StatsUpgradeUpdater::VUpdate(std::vector<SceneObject>& 
             }
         }
     }
+    
+    // Update flows
+    for (size_t i = 0; i < mFlows.size(); ++i)
+    {
+        mFlows[i].Update(dtMillis);
+    }
+    
+    mFlows.erase(std::remove_if(mFlows.begin(), mFlows.end(), [](const RepeatableFlow& flow)
+    {
+        return !flow.IsRunning();
+    }), mFlows.end());
     
     return PostStateUpdateDirective::CONTINUE;
 }
@@ -407,16 +484,19 @@ void StatsUpgradeUpdater::CreateSceneObjects()
         mScene.AddSceneObject(std::move(confirmationButtonTextSo));
     }
     
+    for (int i = 0; i < static_cast<int>(StatType::COUNT); ++i)
     {
-        mStatControllers[StatType::ATTACK_STAT] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "diagonal_upgrade_area_mm.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(6.22f, 4.8f, 1.0f), false), glm::vec3(2.93f, 7.80f, 0.5f), glm::vec3(6.22f, 4.8f, 1.0f), "ATTACK ", GameSingletons::GetPlayerAttackStat(), 1.0f, false);
+        const auto statType = static_cast<StatType>(i);
+        const auto statControllerTexture = STAT_CONTROLLER_TEXTURES.at(statType);
+        const auto statControllerStatDescription = STAT_CONTROLLER_STAT_DESCRIPTIONS.at(statType);
+        const auto statControllerPosition = STAT_CONTROLLER_POSITIONS.at(statType);
+        const auto statControllerElementsAdditionalOffset = STAT_CONTROLLER_ELEMENTS_ADDITION_OFFSETS.at(statType);
+        const auto statControllerScale = STAT_CONTROLLER_SCALES.at(statType);
+        const auto statControllerStatGetterFunc = STAT_CONTROLLER_STAT_GETTER_FUNCS.at(statType);
+        const auto statControllerStatIncrement = STAT_CONTROLLER_STAT_INCREMENTS.at(statType);
+        const auto statControllerFloatDisplay = STAT_CONTROLLER_STAT_FLOAT_DISPLAYS.at(statType);
         
-        
-        mStatControllers[StatType::HEALTH_STAT] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "diagonal_upgrade_area_mm.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(6.22f, 4.8f, 1.0f), false), glm::vec3(2.82f, 2.30f, 0.5f), glm::vec3(6.22f, 4.8f, 1.0f), "HEALTH ", GameSingletons::GetPlayerMaxHealth(), 5.0f, false);
-        
-        
-        mStatControllers[StatType::HASTE_STAT] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "vertical_upgrade_area_mm.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(5.4f, 7.0f, 1.0f), false), glm::vec3(-3.3f, 4.7f, 0.5f), glm::vec3(5.4f, 7.0f, 1.0f), "HASTE ", GameSingletons::GetPlayerBulletSpeedStat(), 0.05f, true);
-        
-        mStatControllers[StatType::SPEED_STAT] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "diagonal_upgrade_area_mm.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(-6.22f, -4.8f, 1.0f), false), glm::vec3(-2.89f, -3.63f, 0.5f), glm::vec3(-6.22f, -4.8f, 1.0f), "SPEED ", GameSingletons::GetPlayerMovementSpeedStat(), 0.05f, true);
+        mStatControllers[statType] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + statControllerTexture), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), statControllerScale, false), statControllerPosition, statControllerElementsAdditionalOffset, statControllerScale, statControllerStatDescription, statControllerStatGetterFunc(), statControllerStatIncrement, statControllerFloatDisplay);
     }
 }
 
@@ -426,33 +506,35 @@ void StatsUpgradeUpdater::CreateCrystalsTowardTargetPosition(const int crystalCo
 {
     for (int i = 0; i < crystalCount; ++i)
     {
-        auto& resService = resources::ResourceLoadingService::GetInstance();
-        
-        SceneObject crystalSo;
-        
-        glm::vec3 firstControlPoint(game_constants::GUI_CRYSTAL_POSITION);
-        glm::vec3 thirdControlPoint(position);
-        glm::vec3 secondControlPoint((thirdControlPoint + firstControlPoint) * 0.5f + glm::vec3(math::RandomFloat(-DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG), math::RandomFloat(-DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG), 0.0f));
-        
-        firstControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
-        secondControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
-        thirdControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
-        
-        float speedNoise = math::RandomFloat(-DROPPED_CRYSTAL_SPEED/5, DROPPED_CRYSTAL_SPEED/5);
-        float speedMultiplier = DROPPED_CRYSTAL_DISTANCE_FACTOR/glm::distance(thirdControlPoint, game_constants::GUI_CRYSTAL_POSITION);
-        
-        const strutils::StringId droppedCrystalName = strutils::StringId(std::to_string(SDL_GetPerformanceCounter()));
-        mCrystalSceneObjectNames.push_back(droppedCrystalName);
-        
-        crystalSo.mAnimation = std::make_unique<BezierCurvePathAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), math::BezierCurve({firstControlPoint, secondControlPoint, thirdControlPoint}), (DROPPED_CRYSTAL_SPEED + speedNoise) * speedMultiplier, false);
-       
-        crystalSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, game_constants::GUI_CRYSTAL_ROTATION_SPEED, false));
-        
-        crystalSo.mSceneObjectType = SceneObjectType::GUIObject;
-        crystalSo.mPosition = firstControlPoint;
-        crystalSo.mScale = game_constants::GUI_CRYSTAL_SCALE;
-        crystalSo.mName = droppedCrystalName;
-        mScene.AddSceneObject(std::move(crystalSo));
+        mFlows.emplace_back([this, position]()
+        {
+            auto& resService = resources::ResourceLoadingService::GetInstance();
+            SceneObject crystalSo;
+            
+            glm::vec3 firstControlPoint(game_constants::GUI_CRYSTAL_POSITION);
+            glm::vec3 thirdControlPoint(position);
+            glm::vec3 secondControlPoint((thirdControlPoint + firstControlPoint) * 0.5f + glm::vec3(math::RandomFloat(-DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG), math::RandomFloat(-DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG), 0.0f));
+            
+            firstControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
+            secondControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
+            thirdControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
+            
+            float speedNoise = math::RandomFloat(-DROPPED_CRYSTAL_SPEED/5, DROPPED_CRYSTAL_SPEED/5);
+            float speedMultiplier = DROPPED_CRYSTAL_DISTANCE_FACTOR/glm::distance(thirdControlPoint, game_constants::GUI_CRYSTAL_POSITION);
+            
+            const strutils::StringId droppedCrystalName = strutils::StringId(std::to_string(SDL_GetPerformanceCounter()));
+            mCrystalSceneObjectNames.push_back(droppedCrystalName);
+            
+            crystalSo.mAnimation = std::make_unique<BezierCurvePathAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), math::BezierCurve({firstControlPoint, secondControlPoint, thirdControlPoint}), (DROPPED_CRYSTAL_SPEED + speedNoise) * speedMultiplier, false);
+           
+            crystalSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, game_constants::GUI_CRYSTAL_ROTATION_SPEED, false));
+            
+            crystalSo.mSceneObjectType = SceneObjectType::GUIObject;
+            crystalSo.mPosition = firstControlPoint;
+            crystalSo.mScale = game_constants::GUI_CRYSTAL_SCALE;
+            crystalSo.mName = droppedCrystalName;
+            mScene.AddSceneObject(std::move(crystalSo));
+        }, i * game_constants::DROPPED_CRYSTALS_CREATION_STAGGER_MILLIS, RepeatableFlow::RepeatPolicy::ONCE);
     }
 }
 
