@@ -11,37 +11,6 @@
     </Wave>
     
     <Wave>
-        <Enemy position="0.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 35.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="4.0f, 35.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-6.0f, 50.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="1.0f, 50.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 52.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="4.0f, 52.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-2.0f, 78.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="3.0f, 78.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-4.0f, 80.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="5.0f, 80.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-6.0f, 82.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="1.0f, 82.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="0.0f, 198.0f" type="enemies/small_enemy_chasing"/>
-        <Enemy position="-3.0f, 218.0f" type="enemies/small_enemy_chasing"/>
-        <Enemy position="4.0f, 218.0f" type="enemies/small_enemy_chasing"/>
-        <Enemy position="1.0f, 253.0f" type="enemies/small_enemy_chasing"/>
-        <Enemy position="-3.0f, 254.0f" type="enemies/small_enemy_chasing"/>
-        <Enemy position="5.0f, 254.0f" type="enemies/small_enemy_chasing"/>
-        <Enemy position="-5.0f, 256.0f" type="enemies/small_enemy_chasing"/>
-        <Enemy position="1.0f, 256.0f" type="enemies/small_enemy_chasing"/>
-        <Enemy position="6.0f, 256.0f" type="enemies/small_enemy_chasing"/>
-    </Wave>
-    
-    <Wave>
-        <Enemy position="-5.0f, 20.0f" type="enemies/enemy_shooting"/>
-        <Enemy position=" 0.0f, 20.0f" type="enemies/enemy_shooting"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/enemy_shooting"/>
-    </Wave>
-    
-    <Wave>
         <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
         <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
         <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
@@ -81,9 +50,10 @@
         <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
         <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
         <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        
     </Wave>
     
+    
+    <!--
     <Wave bossName="Ka'thun" bossHealth="10000.0f">
         <Enemy position="0.0f, 20.0f" type="enemies/boss_1/body"/>
         <Enemy position="0.0f, 20.0f" type="enemies/boss_1/top_left_flap"/>
@@ -496,4 +466,5 @@
         <Enemy position=" 4.0f, 49.0f" type="enemies/enemy_asteroid"/>
         <Enemy position=" 2.0f, 52.0f" type="enemies/enemy_asteroid"/>
     </Wave>
+    -->
 </Level>

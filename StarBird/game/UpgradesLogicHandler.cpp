@@ -48,14 +48,6 @@ void UpgradesLogicHandler::OnUpgradeEquipped(const strutils::StringId& upgradeId
     {
         CreateMirrorImageSceneObjects();
     }
-    else if (upgradeId == game_constants::BULLET_SPEED_UGPRADE_NAME)
-    {
-        auto bulletFlowOpt = mLevelUpdater.GetFlow(game_constants::PLAYER_BULLET_FLOW_NAME);
-        if (bulletFlowOpt)
-        {
-            bulletFlowOpt->get().SetDuration(game_constants::HASTENED_PLAYER_BULLET_FLOW_DELAY_MILLIS);
-        }
-    }
     else if (upgradeId == game_constants::PLAYER_SPEED_UGPRADE_NAME)
     {
         auto playerTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetMutableObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);

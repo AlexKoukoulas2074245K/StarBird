@@ -53,6 +53,7 @@ public:
     void RemoveWaveEnemy(const strutils::StringId& enemyName);
     
     const LevelDefinition& GetCurrentLevelDefinition() const;
+    bool LevelFinished() const;
     size_t GetCurrentWaveNumber() const;
     size_t GetWaveEnemyCount() const;
     std::optional<std::reference_wrapper<RepeatableFlow>> GetFlow(const strutils::StringId& flowName);

@@ -135,7 +135,7 @@ void Game::Run()
     {
         // Calculate frame delta
         const auto currentMillisSinceInit = static_cast<float>(SDL_GetTicks());        // the number of milliseconds since the SDL library
-        const auto dtMillis = currentMillisSinceInit - lastFrameMillisSinceInit; // milis diff between current and last frame
+        const auto dtMillis = currentMillisSinceInit - lastFrameMillisSinceInit; // millis diff between current and last frame
         
         lastFrameMillisSinceInit = currentMillisSinceInit;
         framesAccumulator++;

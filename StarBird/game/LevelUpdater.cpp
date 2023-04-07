@@ -17,7 +17,9 @@
 #include "SceneObjectUtils.h"
 
 #include "dataloaders/UpgradesLoader.h"
+
 #include "states/BossIntroGameState.h"
+#include "states/ClearedLevelAnimationGameState.h"
 #include "states/DebugConsoleGameState.h"
 #include "states/FightingWaveGameState.h"
 #include "states/WaveIntroGameState.h"
@@ -161,7 +163,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 }
             }
         }
-    }, game_constants::PLAYER_BULLET_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::REPEAT, game_constants::PLAYER_BULLET_FLOW_NAME);
+    }, game_constants::BASE_PLAYER_BULLET_FLOW_DELAY_MILLIS / GameSingletons::GetPlayerBulletSpeedStat(), RepeatableFlow::RepeatPolicy::REPEAT, game_constants::PLAYER_BULLET_FLOW_NAME);
 
     static PhysicsCollisionListener collisionListener;
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::PLAYER_BULLET_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
@@ -369,6 +371,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
 #endif
     
     mStateMachine.RegisterState<BossIntroGameState>();
+    mStateMachine.RegisterState<ClearedLevelAnimationGameState>();
     mStateMachine.RegisterState<FightingWaveGameState>();
     mStateMachine.RegisterState<WaveIntroGameState>();
     mStateMachine.RegisterState<PauseMenuGameState>();
@@ -419,6 +422,11 @@ void LevelUpdater::VOnAppStateChange(Uint32 event)
 
 PostStateUpdateDirective LevelUpdater::VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis)
 {
+    if (mStateMachine.IsEmpty())
+    {
+        return PostStateUpdateDirective::BLOCK_UPDATE;
+    }
+    
     mLastPostStateMachineUpdateDirective = mStateMachine.Update(dtMillis);
     if (mLastPostStateMachineUpdateDirective == PostStateUpdateDirective::BLOCK_UPDATE)
     {
@@ -489,10 +497,13 @@ PostStateUpdateDirective LevelUpdater::VUpdate(std::vector<SceneObject>& sceneOb
         }
     }
     
-    const auto& bossName = mLevel.mWaves.at(mCurrentWaveNumber).mBossName;
-    if (!bossName.isEmpty())
+    if (!LevelFinished())
     {
-        mBossAIController.UpdateBossAI(bossName, dtMillis);
+        const auto& bossName = mLevel.mWaves.at(mCurrentWaveNumber).mBossName;
+        if (!bossName.isEmpty())
+        {
+            mBossAIController.UpdateBossAI(bossName, dtMillis);
+        }
     }
     
     mUpgradesLogicHandler.OnUpdate(dtMillis);
@@ -560,6 +571,13 @@ void LevelUpdater::RemoveWaveEnemy(const strutils::StringId& enemyName)
 const LevelDefinition& LevelUpdater::GetCurrentLevelDefinition() const
 {
     return mLevel;
+}
+
+///------------------------------------------------------------------------------------------------
+
+bool LevelUpdater::LevelFinished() const
+{
+    return mCurrentWaveNumber >= mLevel.mWaves.size();
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -816,7 +834,7 @@ void LevelUpdater::LoadLevelInvariantObjects()
 
 ///------------------------------------------------------------------------------------------------
 
-void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMilis)
+void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, const ObjectTypeDefinition& sceneObjectTypeDef, const float dtMillis)
 {
     const auto& camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
     assert(camOpt);
@@ -865,8 +883,8 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
                 joystickSO->get().mPosition = joystickBoundsSO->get().mPosition + motionVec;
                 joystickSO->get().mPosition.z = JOYSTICK_Z;
                 
-                motionVec.x *= sceneObjectTypeDef.mSpeed * dtMilis;
-                motionVec.y *= sceneObjectTypeDef.mSpeed * dtMilis;
+                motionVec.x *= game_constants::BASE_PLAYER_SPEED * GameSingletons::GetPlayerMovementSpeedStat() * dtMillis;
+                motionVec.y *= game_constants::BASE_PLAYER_SPEED * GameSingletons::GetPlayerMovementSpeedStat() * dtMillis;
                 
                 if (motionVec.x > 0.0f && mPreviousMotionVec.x <= 0.0f && mMovementRotationAllowed)
                 {

@@ -83,14 +83,14 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
     {
         mLevelUpdater->AdvanceWave();
         
-        if (GameSingletons::GetAvailableUpgrades().size() > 1)
-        {
-            Complete(UpgradeSelectionGameState::STATE_NAME);
-        }
-        else
-        {
+//        if (GameSingletons::GetAvailableUpgrades().size() > 1)
+//        {
+//            Complete(UpgradeSelectionGameState::STATE_NAME);
+//        }
+//        else
+//        {
             Complete(WaveIntroGameState::STATE_NAME);
-        }
+//        }
     }
     
     return PostStateUpdateDirective::CONTINUE;

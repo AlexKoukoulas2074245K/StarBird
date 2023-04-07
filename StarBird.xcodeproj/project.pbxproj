@@ -72,6 +72,7 @@
 		925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */; };
 		925FD880298AD7D50058E747 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925FD87F298AD7D50058E747 /* AudioToolbox.framework */; };
 		92693B6829C87D2500157222 /* MapUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92693B5B29C87D2500157222 /* MapUpdater.cpp */; };
+		9269AE8629E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9269AE8529E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp */; };
 		927FD9B529C35C750012C724 /* BossAIController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 927FD9B129C35C750012C724 /* BossAIController.cpp */; };
 		927FD9B629C35C750012C724 /* KathunBossAI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 927FD9B329C35C750012C724 /* KathunBossAI.cpp */; };
 		9285241529A8D5B9007EA0D9 /* DebugConsoleGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9285241429A8D5B9007EA0D9 /* DebugConsoleGameState.cpp */; };
@@ -360,6 +361,8 @@
 		92693B5B29C87D2500157222 /* MapUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MapUpdater.cpp; sourceTree = "<group>"; };
 		92693B6729C87D2500157222 /* MapUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapUpdater.h; sourceTree = "<group>"; };
 		92693B6929C8821F00157222 /* IUpdater.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IUpdater.h; sourceTree = "<group>"; };
+		9269AE7929E0B481008B9C27 /* ClearedLevelAnimationGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClearedLevelAnimationGameState.h; sourceTree = "<group>"; };
+		9269AE8529E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClearedLevelAnimationGameState.cpp; sourceTree = "<group>"; };
 		927FD9B129C35C750012C724 /* BossAIController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BossAIController.cpp; sourceTree = "<group>"; };
 		927FD9B229C35C750012C724 /* BossAIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BossAIController.h; sourceTree = "<group>"; };
 		927FD9B329C35C750012C724 /* KathunBossAI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KathunBossAI.cpp; sourceTree = "<group>"; };
@@ -1698,6 +1701,8 @@
 			children = (
 				9208BE5429B3FD41007C5335 /* BossIntroGameState.cpp */,
 				9208BE6029B3FD41007C5335 /* BossIntroGameState.h */,
+				9269AE8529E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp */,
+				9269AE7929E0B481008B9C27 /* ClearedLevelAnimationGameState.h */,
 				9285241429A8D5B9007EA0D9 /* DebugConsoleGameState.cpp */,
 				9285240829A8D5B9007EA0D9 /* DebugConsoleGameState.h */,
 				92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */,
@@ -2014,6 +2019,7 @@
 				9259F35829D7261100850744 /* TextPromptController.cpp in Sources */,
 				9254CBF12969B79A00EFE0CC /* b2DistanceJoint.cpp in Sources */,
 				9254CC092969B79A00EFE0CC /* b2CircleShape.cpp in Sources */,
+				9269AE8629E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp in Sources */,
 				9254CC052969B79A00EFE0CC /* b2CollidePolygon.cpp in Sources */,
 				925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */,
 				92F9EC8E299E9A5300C263E8 /* PauseMenuGameState.cpp in Sources */,

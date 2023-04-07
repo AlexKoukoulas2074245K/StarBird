@@ -50,6 +50,10 @@ Scene::Scene()
 {
     FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_NAME);
     FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_MM_NAME);
+    
+    GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera());
+    GameSingletons::SetCameraForSceneObjectType(SceneObjectType::GUIObject, Camera());
+    
     CreateCrossSceneInterfaceObjects();
 }
 

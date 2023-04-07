@@ -24,6 +24,7 @@ namespace game_constants
 
 inline const char* QUAD_MESH_FILE_NAME = "quad.obj";
 inline const char* SMALL_CRYSTAL_MESH_FILE_NAME = "crystals/crystal_0.obj";
+
 inline const char* BASIC_SHADER_FILE_NAME = "basic.vs";
 inline const char* HUE_SHIFT_SHADER_FILE_NAME = "hue_shift.vs";
 inline const char* DISSOLVE_SHADER_FILE_NAME = "dissolve.vs";
@@ -33,7 +34,9 @@ inline const char* BLACK_NEBULA_SHADER_FILE_NAME = "black_nebula.vs";
 inline const char* TEXTURE_OFFSET_SHADER_FILE_NAME = "tex_offset.vs";
 inline const char* CUSTOM_ALPHA_SHADER_FILE_NAME = "custom_alpha.vs";
 inline const char* CUSTOM_COLOR_SHADER_FILE_NAME = "custom_color.vs";
+inline const char* GRAYSCALE_SHADER_FILE_NAME = "grayscale.vs";
 inline const char* DEBUG_CONSOLE_FONT_SHADER_FILE_NAME = "debug_console_font.vs";
+
 inline const char* UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME = "shine_effect_fxx.bmp";
 inline const char* DISSOLVE_EFFECT_TEXTURE_FILE_NAME = "dissolve_line_fxy_mm.bmp";
 inline const char* BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/blue/0.bmp";
@@ -138,10 +141,10 @@ inline const float UPGRADE_MOVEMENT_SPEED = 1.0f/400.0f;
 
 inline const float BOSS_INTRO_DURATION_MILLIS = 3000.0f;
 
-inline const float PLAYER_BULLET_FLOW_DELAY_MILLIS = 300.0f;
-inline const float HASTENED_PLAYER_BULLET_FLOW_DELAY_MILLIS = 200.0f;
+inline const float BASE_PLAYER_BULLET_FLOW_DELAY_MILLIS = 300.0f;
 inline const float PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS = 300.0f;
 
+inline const float BASE_PLAYER_SPEED = 0.4f;
 inline const float BACKGROUND_Z = -1.0f;
 inline const float LAB_OPTIONS_Z = 2.0f;
 inline const float WALL_Z = -0.5f;

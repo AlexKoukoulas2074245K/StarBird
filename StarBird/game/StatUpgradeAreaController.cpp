@@ -23,11 +23,11 @@ static const glm::vec4 STAT_UPGRADED_TEXT_COLOR = glm::vec4(0.0f, 1.0f, 0.0f, 1.
 static const glm::vec3 STAT_TEXT_SCALE = glm::vec3(0.0067f, 0.0067f, 0.0067);
 static const glm::vec3 STAT_DESCRIPTION_TEXT_OFFSET = glm::vec3(-1.0f, 1.03f, 0.5f);
 static const glm::vec3 COST_DESCRIPTION_TEXT_OFFSET = glm::vec3(-1.0f, 0.2f, 0.5f);
-static const glm::vec3 STAT_VALUE_TEXT_OFFSET = glm::vec3(1.8f, 1.03f, 0.5f);
+static const glm::vec3 STAT_VALUE_TEXT_OFFSET = glm::vec3(1.7f, 1.03f, 0.5f);
 static const glm::vec3 COST_VALUE_TEXT_OFFSET = glm::vec3(1.0f, 0.2f, 0.5f);
 static const glm::vec3 PLUS_BUTTON_OFFSET = glm::vec3(-0.13f, -1.3f, 0.5f);
 static const glm::vec3 MINUS_BUTTON_OFFSET = glm::vec3(1.57f, -1.3f, 0.5f);
-static const glm::vec3 CRYSTAL_ICON_OFFSET = glm::vec3(2.0f, 0.52f, 0.5f);
+static const glm::vec3 CRYSTAL_ICON_OFFSET = glm::vec3(2.3f, 0.52f, 0.5f);
 
 static const glm::vec3 CONTROL_BUTTON_SCALE = glm::vec3(1.25f);
 static const glm::vec3 CRYSTAL_ICON_SCALE = glm::vec3(0.3f);
@@ -124,7 +124,7 @@ StatUpgradeAreaController::StatUpgradeAreaController(Scene& scene, std::unique_p
         costValueTextSo.mName = mUpgradeCostTextName;
         
         costValueTextSo.mText = std::to_string(mCost);
-        if (costValueTextSo.mText.size() == 1)
+        while (costValueTextSo.mText.size() != 3)
         {
             costValueTextSo.mText = " " + costValueTextSo.mText;
         }
@@ -266,15 +266,15 @@ void StatUpgradeAreaController::Update(const float dtMillis, const float current
         }
     }
     
-    auto upgradeCostTextSoOpt = mScene.GetSceneObject(mUpgradeCostTextName);
-    if (upgradeCostTextSoOpt)
+    auto costValueTextSoOpt = mScene.GetSceneObject(mUpgradeCostTextName);
+    if (costValueTextSoOpt)
     {
-        auto& upgradeCostSo = upgradeCostTextSoOpt->get();
+        auto& costValueTextSo = costValueTextSoOpt->get();
         
-        upgradeCostSo.mText = std::to_string(mCost);
-        if (upgradeCostSo.mText.size() == 1)
+        costValueTextSo.mText = std::to_string(mCost);
+        while (costValueTextSo.mText.size() != 3)
         {
-            upgradeCostSo.mText = " " + upgradeCostSo.mText;
+            costValueTextSo.mText = " " + costValueTextSo.mText;
         }
     }
     

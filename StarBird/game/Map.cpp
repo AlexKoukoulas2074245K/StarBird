@@ -136,7 +136,8 @@ void Map::CreateMapSceneObjects()
             {
                 SceneObject planetRingSO;
                 
-                planetRingSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_RING_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_PLANET_RING_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+                auto shaderNameToUse = mapNodeEntry.first.mCol <= mCurrentMapCoord.mCol ? game_constants::GRAYSCALE_SHADER_FILE_NAME : game_constants::BASIC_SHADER_FILE_NAME;
+                planetRingSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_RING_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_PLANET_RING_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + shaderNameToUse), glm::vec3(1.0f), false);
                 planetRingSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
                 planetRingSO.mSceneObjectType = SceneObjectType::WorldGameObject;
                 planetRingSO.mScale = glm::vec3(1.0f);
@@ -155,7 +156,9 @@ void Map::CreateMapSceneObjects()
             } // Intentional Fallthrough
             case NodeType::NORMAL_ENCOUNTER:
             {
-                nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_PLANET_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::HUE_SHIFT_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f,  MAP_NODE_ROTATION_SPEED, false);
+                bool shouldRotate = mapNodeEntry.first.mCol > mCurrentMapCoord.mCol;
+                
+                nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_PLANET_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + (shouldRotate ? game_constants::HUE_SHIFT_SHADER_FILE_NAME : game_constants::GRAYSCALE_SHADER_FILE_NAME)), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f,  shouldRotate ? MAP_NODE_ROTATION_SPEED : 0.0f, false);
                 
                 nodeSo.mShaderFloatUniformValues[game_constants::HUE_SHIFT_UNIFORM_NAME] = math::ControlledRandomFloat(0, 2.0f * math::PI);
                 nodeSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
@@ -163,7 +166,9 @@ void Map::CreateMapSceneObjects()
                
             case NodeType::LAB:
             {
-                nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_BASE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_LAB_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), MAP_LAB_SCALE, RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f,  MAP_NODE_ROTATION_SPEED, false);
+                bool shouldRotate = mapNodeEntry.first.mCol > mCurrentMapCoord.mCol;
+                
+                nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_BASE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_LAB_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + (shouldRotate ? game_constants::BASIC_SHADER_FILE_NAME : game_constants::GRAYSCALE_SHADER_FILE_NAME)), MAP_LAB_SCALE, RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, shouldRotate ? MAP_NODE_ROTATION_SPEED : 0.0f, false);
                 nodeSo.mRotation.x = MAP_BASE_X_ROTATION;
                 nodeSo.mScale = MAP_LAB_SCALE;
             } break;

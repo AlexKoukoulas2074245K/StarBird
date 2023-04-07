@@ -11,6 +11,13 @@
 
 ///------------------------------------------------------------------------------------------------
 
+bool StateMachine::IsEmpty() const
+{
+    return mStateStack.empty();
+}
+
+///------------------------------------------------------------------------------------------------
+
 const strutils::StringId StateMachine::GetActiveStateName() const
 {
     if (mStateStack.empty()) return strutils::StringId();
