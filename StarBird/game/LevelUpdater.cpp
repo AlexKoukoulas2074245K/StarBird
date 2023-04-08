@@ -79,6 +79,9 @@ static const float DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG = 2.0f;
 static const float COLLECTED_CRYSTAL_PULSING_SPEED = 0.02f;
 static const float COLLECTED_CRYSTAL_PULSING_FACTOR = 0.01f;
 
+static const float SHAKE_ENTITY_HEALTH_RATIO_THRESHOLD = 0.2f;
+static const float SHAKE_ENTITY_RANDOM_MAG = 0.03f;
+
 ///------------------------------------------------------------------------------------------------
 
 LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& levelDef)
@@ -422,11 +425,14 @@ void LevelUpdater::VOnAppStateChange(Uint32 event)
 
 PostStateUpdateDirective LevelUpdater::VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis)
 {
+    // State machines empties out once the level is finished
     if (mStateMachine.IsEmpty())
     {
         return PostStateUpdateDirective::BLOCK_UPDATE;
     }
     
+    // A BLOCK_UPDATE directive from the FSM signals a e.g. popup, the existence of which
+    // makes it so that we should skip the rest of the world/SOs/Elements in the scene from updating below
     mLastPostStateMachineUpdateDirective = mStateMachine.Update(dtMillis);
     if (mLastPostStateMachineUpdateDirective == PostStateUpdateDirective::BLOCK_UPDATE)
     {
@@ -434,6 +440,7 @@ PostStateUpdateDirective LevelUpdater::VUpdate(std::vector<SceneObject>& sceneOb
         return PostStateUpdateDirective::BLOCK_UPDATE;
     }
     
+    // Physics update
     mBox2dWorld.Step(physics_constants::WORLD_STEP * GameSingletons::GetGameSpeedMultiplier(), physics_constants::WORLD_VELOCITY_ITERATIONS, physics_constants::WORLD_POSITION_ITERATIONS);
     
     auto joystickSO = mScene.GetSceneObject(game_constants::JOYSTICK_SCENE_OBJECT_NAME);
@@ -507,6 +514,7 @@ PostStateUpdateDirective LevelUpdater::VUpdate(std::vector<SceneObject>& sceneOb
     }
     
     mUpgradesLogicHandler.OnUpdate(dtMillis);
+    ApplyShakeToNearlyDeadEntities(sceneObjects);
     UpdateBackground(dtMillis);
     UpdateBossHealthBar(dtMillis);
     UpdateFlows(dtMillis);
@@ -1236,6 +1244,50 @@ void LevelUpdater::OnBlockedUpdate()
     if (joystickBoundsSOopt)
     {
         joystickBoundsSOopt->get().mInvisible = true;
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void LevelUpdater::ApplyShakeToNearlyDeadEntities(std::vector<SceneObject>& sceneObjects)
+{
+    for (auto& so: sceneObjects)
+    {
+        // Player special case
+        if (so.mName == game_constants::PLAYER_SCENE_OBJECT_NAME)
+        {
+            auto healthRatio = GameSingletons::GetPlayerCurrentHealth()/GameSingletons::GetPlayerMaxHealth();
+            if (healthRatio <= SHAKE_ENTITY_HEALTH_RATIO_THRESHOLD)
+            {
+                so.mBody->SetTransform(so.mBody->GetWorldCenter() + b2Vec2(math::RandomFloat(-SHAKE_ENTITY_RANDOM_MAG, SHAKE_ENTITY_RANDOM_MAG), math::RandomFloat(-SHAKE_ENTITY_RANDOM_MAG, SHAKE_ENTITY_RANDOM_MAG)), 0.0f);
+            }
+        }
+        else if (!scene_object_utils::IsSceneObjectBossPart(so))
+        {
+            auto objectDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(so.mObjectFamilyTypeName);
+            if (objectDefOpt)
+            {
+                auto healthRatio = so.mHealth/objectDefOpt->get().mHealth;
+                if (healthRatio <= SHAKE_ENTITY_HEALTH_RATIO_THRESHOLD)
+                {
+                    so.mBody->SetTransform(so.mBody->GetWorldCenter() + b2Vec2(math::RandomFloat(-SHAKE_ENTITY_RANDOM_MAG, SHAKE_ENTITY_RANDOM_MAG), math::RandomFloat(-SHAKE_ENTITY_RANDOM_MAG, SHAKE_ENTITY_RANDOM_MAG)), 0.0f);
+                }
+            }
+        }
+    }
+    
+    // For boss SOs calculate a global offset
+    if (!mLevel.mWaves.at(mCurrentWaveNumber).mBossName.isEmpty())
+    {
+        b2Vec2 randomOffset = b2Vec2(math::RandomFloat(-SHAKE_ENTITY_RANDOM_MAG, SHAKE_ENTITY_RANDOM_MAG), math::RandomFloat(-SHAKE_ENTITY_RANDOM_MAG, SHAKE_ENTITY_RANDOM_MAG));
+        
+        for (auto& so: sceneObjects)
+        {
+            if (scene_object_utils::IsSceneObjectBossPart(so) && GameSingletons::GetBossCurrentHealth()/GameSingletons::GetBossMaxHealth() <= SHAKE_ENTITY_HEALTH_RATIO_THRESHOLD)
+            {
+                so.mBody->SetTransform(so.mBody->GetWorldCenter() + randomOffset, 0.0f);
+            }
+        }
     }
 }
 

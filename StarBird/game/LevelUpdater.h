@@ -78,6 +78,7 @@ private:
     void OnPlayerDamaged();
     void OnBlockedUpdate();
     
+    void ApplyShakeToNearlyDeadEntities(std::vector<SceneObject>& sceneObjects);
     void CreateBulletAtPosition(const strutils::StringId& bulletType, const glm::vec3& position);
     
 private:
