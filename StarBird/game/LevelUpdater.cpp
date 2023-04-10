@@ -105,7 +105,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
         bool hasMirrorImageUpgrade = equippedUpgrades.count(game_constants::MIRROR_IMAGE_UGPRADE_NAME) != 0;
 
         auto playerOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
-        if (playerOpt && playerOpt->get().mStateName == game_constants::DEFAULT_SCENE_OBJECT_STATE)
+        if (playerOpt && GameSingletons::GetPlayerCurrentHealth() > 0.0f)
         {
             if (hasDoubleBulletUpgrade)
             {
@@ -243,7 +243,6 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
         {
             auto& playerSO = playerSceneObjectOpt->get();
             auto& enemySO = enemySceneObjectOpt->get();
-            auto& playerSODef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSO.mObjectFamilyTypeName)->get();
             auto enemySceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemySO.mObjectFamilyTypeName)->get();
             
             // Remove player shield/damage player flow
@@ -276,17 +275,6 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             mFlows.emplace_back([]()
             {
             }, game_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
-            
-            // Player death flow
-            if (GameSingletons::GetPlayerCurrentHealth() <= 0)
-            {
-                scene_object_utils::ChangeSceneObjectState(playerSO, playerSODef, game_constants::DYING_SCENE_OBJECT_STATE);
-                
-                mFlows.emplace_back([=]()
-                {
-                    mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SCENE_OBJECT_NAME);
-                }, playerSO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
-            }
         }
     });
     
@@ -307,7 +295,6 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
         {
             auto& playerSO = playerSceneObjectOpt->get();
             auto& enemyBulletSO = enemyBulletSceneObjectOpt->get();
-            auto& playerSODef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(playerSO.mObjectFamilyTypeName)->get();
             
             auto enemyBulletSceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemyBulletSO.mObjectFamilyTypeName)->get();
             
@@ -325,16 +312,6 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             mFlows.emplace_back([]()
             {
             }, game_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
-            
-            if (GameSingletons::GetPlayerCurrentHealth() <= 0)
-            {
-                scene_object_utils::ChangeSceneObjectState(playerSO, playerSODef, game_constants::DYING_SCENE_OBJECT_STATE);
-                
-                mFlows.emplace_back([=]()
-                {
-                    mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SCENE_OBJECT_NAME);
-                }, playerSO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
-            }
             
             // Erase bullet collision mask so that it doesn't also contribute to other
             // enemy damage until it is removed from b2World
@@ -576,6 +553,71 @@ void LevelUpdater::RemoveWaveEnemy(const strutils::StringId& enemyName)
 
 ///------------------------------------------------------------------------------------------------
 
+void LevelUpdater::DropCrystals(const glm::vec3& deathPosition, const float enemyDeathAnimationMillis, float crystalYieldValue)
+{
+    // A value of crystalYield <= 1.0f will be random depending on the value,
+    // however a value of > 1.0f such as 1.5f will guarantee 1 plus 1 half of the time and so on.
+    auto droppedCrystalCounter = 0;
+    
+    while (crystalYieldValue > 0.0f)
+    {
+        if ((crystalYieldValue <= 1.0f && math::RandomFloat() <= crystalYieldValue) || crystalYieldValue > 1.0f)
+        {
+            mFlows.emplace_back([this, deathPosition, droppedCrystalCounter]()
+            {
+                auto& resService = resources::ResourceLoadingService::GetInstance();
+                
+                SceneObject crystalSo;
+                
+                glm::vec3 firstControlPoint(deathPosition + glm::vec3(math::RandomFloat(-DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG), math::RandomFloat(-DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG), 0.0f));
+                glm::vec3 thirdControlPoint(game_constants::GUI_CRYSTAL_POSITION);
+                glm::vec3 secondControlPoint((thirdControlPoint + firstControlPoint) * 0.5f + glm::vec3(math::RandomFloat(-DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG), math::RandomFloat(-DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG), 0.0f));
+                
+                firstControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
+                secondControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
+                thirdControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
+                
+                float speedNoise = math::RandomFloat(-DROPPED_CRYSTAL_SPEED/5, DROPPED_CRYSTAL_SPEED/5);
+                float speedMultiplier = DROPPED_CRYSTAL_DISTANCE_FACTOR/glm::distance(firstControlPoint, game_constants::GUI_CRYSTAL_POSITION);
+                
+                const strutils::StringId droppedCrystalName = strutils::StringId(DROPPED_CRYSTAL_NAME_PREFIX + std::to_string(SDL_GetPerformanceCounter()));
+                
+                crystalSo.mAnimation = std::make_unique<BezierCurvePathAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), math::BezierCurve({firstControlPoint, secondControlPoint, thirdControlPoint}), (DROPPED_CRYSTAL_SPEED + speedNoise) * speedMultiplier, false);
+                
+                crystalSo.mAnimation->SetCompletionCallback([droppedCrystalName, this]()
+                {
+                    auto crystalHolderSoOpt = mScene.GetSceneObject(game_constants::GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME);
+                    if (crystalHolderSoOpt)
+                    {
+                        auto& crystalHolderSo = crystalHolderSoOpt->get();
+                        crystalHolderSo.mScale = game_constants::GUI_CRYSTAL_SCALE;
+                        
+                        crystalHolderSo.mExtraCompoundingAnimations.clear();
+                        crystalHolderSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(crystalHolderSo.mAnimation->VGetCurrentTextureResourceId(), crystalHolderSo.mAnimation->VGetCurrentMeshResourceId(), crystalHolderSo.mAnimation->VGetCurrentShaderResourceId(), game_constants::GUI_CRYSTAL_SCALE, PulsingAnimation::PulsingMode::OUTER_PULSE_ONCE, 0.0f, COLLECTED_CRYSTAL_PULSING_SPEED, COLLECTED_CRYSTAL_PULSING_FACTOR, false));
+                    }
+                    
+                    mScene.RemoveAllSceneObjectsWithName(droppedCrystalName);
+                    GameSingletons::SetCrystalCount(GameSingletons::GetCrystalCount() + 1);
+                });
+                
+                crystalSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, game_constants::GUI_CRYSTAL_ROTATION_SPEED, false));
+                
+                crystalSo.mSceneObjectType = SceneObjectType::GUIObject;
+                crystalSo.mPosition = firstControlPoint;
+                crystalSo.mScale = game_constants::GUI_CRYSTAL_SCALE;
+                crystalSo.mName = droppedCrystalName;
+                mScene.AddSceneObject(std::move(crystalSo));
+            }, droppedCrystalCounter * game_constants::DROPPED_CRYSTALS_CREATION_STAGGER_MILLIS + enemyDeathAnimationMillis, RepeatableFlow::RepeatPolicy::ONCE);
+            
+            droppedCrystalCounter++;
+        }
+        
+        crystalYieldValue -= 1.0f;
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
 const LevelDefinition& LevelUpdater::GetCurrentLevelDefinition() const
 {
     return mLevel;
@@ -615,6 +657,13 @@ std::optional<std::reference_wrapper<RepeatableFlow>> LevelUpdater::GetFlow(cons
         return std::optional<std::reference_wrapper<RepeatableFlow>>{*findIter};
     }
     return std::nullopt;
+}
+
+///------------------------------------------------------------------------------------------------
+
+const std::unordered_set<strutils::StringId, strutils::StringIdHasher>& LevelUpdater::GetWaveEnemyNames() const
+{
+    return mWaveEnemies;
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -962,6 +1011,14 @@ void LevelUpdater::UpdateBossHealthBar(const float dtMillis)
     {
         auto& healthBarFrameSo = bossHealthBarFrameSoOpt->get();
         auto& healthBarSo = bossHealthBarSoOpt->get();
+        auto& healthBarTextSo = bossHealthBarTextSoOpt->get();
+        
+        if (GameSingletons::GetBossCurrentHealth()/GameSingletons::GetBossMaxHealth() <= 0.0f)
+        {
+            healthBarFrameSo.mInvisible = true;
+            healthBarSo.mInvisible = true;
+            healthBarTextSo.mInvisible = true;
+        }
             
         if (!healthBarSo.mInvisible && !healthBarFrameSo.mInvisible)
         {
@@ -992,9 +1049,9 @@ void LevelUpdater::UpdateBossHealthBar(const float dtMillis)
                 }
             }
             
-            bossHealthBarTextSoOpt->get().mText = std::to_string(static_cast<int>(mBossAnimatedHealthBarPerc * GameSingletons::GetBossMaxHealth()));
-            bossHealthBarTextSoOpt->get().mPosition = game_constants::BOSS_HEALTH_BAR_POSITION + game_constants::HEALTH_BAR_TEXT_OFFSET;
-            bossHealthBarTextSoOpt->get().mPosition.x -= (bossHealthBarTextSoOpt->get().mText.size() * 0.5f)/2;
+            healthBarTextSo.mText = std::to_string(static_cast<int>(mBossAnimatedHealthBarPerc * GameSingletons::GetBossMaxHealth()));
+            healthBarTextSo.mPosition = game_constants::BOSS_HEALTH_BAR_POSITION + game_constants::HEALTH_BAR_TEXT_OFFSET;
+            healthBarTextSo.mPosition.x -= (healthBarTextSo.mText.size() * 0.5f)/2;
         }
     }
 }
@@ -1100,71 +1157,6 @@ void LevelUpdater::UpdateTextDamage(const float dtMillis)
     {
         mDamagedSceneObjectNameToTextSceneObject.erase(sceneObjectEntryToRemove);
         mDamagedSceneObjectNameToTextSceneObjectFreezeTimer.erase(sceneObjectEntryToRemove);
-    }
-}
-
-///------------------------------------------------------------------------------------------------
-
-void LevelUpdater::DropCrystals(const glm::vec3& deathPosition, const float enemyDeathAnimationMillis, float crystalYieldValue)
-{
-    // A value of crystalYield <= 1.0f will be random depending on the value,
-    // however a value of > 1.0f such as 1.5f will guarantee 1 plus 1 half of the time and so on.
-    auto droppedCrystalCounter = 0;
-    
-    while (crystalYieldValue > 0.0f)
-    {
-        if ((crystalYieldValue <= 1.0f && math::RandomFloat() <= crystalYieldValue) || crystalYieldValue > 1.0f)
-        {
-            mFlows.emplace_back([this, deathPosition, droppedCrystalCounter]()
-            {
-                auto& resService = resources::ResourceLoadingService::GetInstance();
-                
-                SceneObject crystalSo;
-                
-                glm::vec3 firstControlPoint(deathPosition + glm::vec3(math::RandomFloat(-DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG), math::RandomFloat(-DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_FIRST_CONTROL_POINT_NOISE_MAG), 0.0f));
-                glm::vec3 thirdControlPoint(game_constants::GUI_CRYSTAL_POSITION);
-                glm::vec3 secondControlPoint((thirdControlPoint + firstControlPoint) * 0.5f + glm::vec3(math::RandomFloat(-DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG), math::RandomFloat(-DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG, DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG), 0.0f));
-                
-                firstControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
-                secondControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
-                thirdControlPoint.z = game_constants::GUI_CRYSTAL_POSITION.z;
-                
-                float speedNoise = math::RandomFloat(-DROPPED_CRYSTAL_SPEED/5, DROPPED_CRYSTAL_SPEED/5);
-                float speedMultiplier = DROPPED_CRYSTAL_DISTANCE_FACTOR/glm::distance(firstControlPoint, game_constants::GUI_CRYSTAL_POSITION);
-                
-                const strutils::StringId droppedCrystalName = strutils::StringId(DROPPED_CRYSTAL_NAME_PREFIX + std::to_string(SDL_GetTicks()) + "_" + std::to_string(droppedCrystalCounter));
-                
-                crystalSo.mAnimation = std::make_unique<BezierCurvePathAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), math::BezierCurve({firstControlPoint, secondControlPoint, thirdControlPoint}), (DROPPED_CRYSTAL_SPEED + speedNoise) * speedMultiplier, false);
-                
-                crystalSo.mAnimation->VSetCompletionCallback([droppedCrystalName, this]()
-                {
-                    auto crystalHolderSoOpt = mScene.GetSceneObject(game_constants::GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME);
-                    if (crystalHolderSoOpt)
-                    {
-                        auto& crystalHolderSo = crystalHolderSoOpt->get();
-                        crystalHolderSo.mScale = game_constants::GUI_CRYSTAL_SCALE;
-                        
-                        crystalHolderSo.mExtraCompoundingAnimations.clear();
-                        crystalHolderSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(crystalHolderSo.mAnimation->VGetCurrentTextureResourceId(), crystalHolderSo.mAnimation->VGetCurrentMeshResourceId(), crystalHolderSo.mAnimation->VGetCurrentShaderResourceId(), game_constants::GUI_CRYSTAL_SCALE, PulsingAnimation::PulsingMode::OUTER_PULSE_ONCE, 0.0f, COLLECTED_CRYSTAL_PULSING_SPEED, COLLECTED_CRYSTAL_PULSING_FACTOR, false));
-                    }
-                    
-                    mScene.RemoveAllSceneObjectsWithName(droppedCrystalName);
-                    GameSingletons::SetCrystalCount(GameSingletons::GetCrystalCount() + 1);
-                });
-                
-                crystalSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, game_constants::GUI_CRYSTAL_ROTATION_SPEED, false));
-                
-                crystalSo.mSceneObjectType = SceneObjectType::GUIObject;
-                crystalSo.mPosition = firstControlPoint;
-                crystalSo.mScale = game_constants::GUI_CRYSTAL_SCALE;
-                crystalSo.mName = droppedCrystalName;
-                mScene.AddSceneObject(std::move(crystalSo));
-            }, droppedCrystalCounter * game_constants::DROPPED_CRYSTALS_CREATION_STAGGER_MILLIS + enemyDeathAnimationMillis, RepeatableFlow::RepeatPolicy::ONCE);
-            
-            droppedCrystalCounter++;
-        }
-        
-        crystalYieldValue -= 1.0f;
     }
 }
 
@@ -1277,7 +1269,7 @@ void LevelUpdater::ApplyShakeToNearlyDeadEntities(std::vector<SceneObject>& scen
     }
     
     // For boss SOs calculate a global offset
-    if (!mLevel.mWaves.at(mCurrentWaveNumber).mBossName.isEmpty())
+    if (mCurrentWaveNumber < mLevel.mWaves.size() && !mLevel.mWaves.at(mCurrentWaveNumber).mBossName.isEmpty() && mWaveEnemies.size() > 0)
     {
         b2Vec2 randomOffset = b2Vec2(math::RandomFloat(-SHAKE_ENTITY_RANDOM_MAG, SHAKE_ENTITY_RANDOM_MAG), math::RandomFloat(-SHAKE_ENTITY_RANDOM_MAG, SHAKE_ENTITY_RANDOM_MAG));
         

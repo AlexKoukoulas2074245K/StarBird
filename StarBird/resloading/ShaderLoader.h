@@ -40,6 +40,7 @@ public:
 private:
     static const std::string VERTEX_SHADER_FILE_EXTENSION;
     static const std::string FRAGMENT_SHADER_FILE_EXTENSION;
+    static const std::string GEOMETRY_SHADER_FILE_EXTENSION;
     
     ShaderLoader() = default;
     

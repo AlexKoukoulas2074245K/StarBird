@@ -38,7 +38,8 @@ public:
     virtual float VGetDuration() const;
     virtual bool VGetBodyRenderingEnabled() const;
     
-    void VSetCompletionCallback(std::function<void()> completionCallback);
+    void ChangeShaderResourceId(const resources::ResourceId shaderResourceId);
+    void SetCompletionCallback(std::function<void()> completionCallback);
     
 protected:
     resources::ResourceId mTextureResourceId;

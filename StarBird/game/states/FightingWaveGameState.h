@@ -14,6 +14,7 @@
 
 ///------------------------------------------------------------------------------------------------
 
+class SceneObject;
 class FightingWaveGameState final: public BaseGameState
 {
 public:
@@ -24,7 +25,11 @@ public:
     PostStateUpdateDirective VUpdate(const float dtMillis) override;
     
 private:
+    void UpdateExplodingSpecialEntity(const float dtMillis, SceneObject& sceneObject);
     
+private:
+    bool mBossDeathAnimationActive;
+    bool mPlayerDeathAnimationActive;
 };
 
 ///------------------------------------------------------------------------------------------------

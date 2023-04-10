@@ -79,7 +79,7 @@ void BossIntroGameState::VInitialize()
     {
         mScene->RemoveAllSceneObjectsWithName(game_constants::BOSS_INTRO_TEXT_SCENE_OBJECT_NAME);
         mSubState = SubState::BOSS_HEALTH_BAR_ANIMATION;
-        GameSingletons::SetBossCurrentHealth(0.0f);
+        GameSingletons::SetBossCurrentHealth(1.0f);
         GameSingletons::SetBossMaxHealth(mLevelUpdater->GetCurrentLevelDefinition().mWaves.at(mLevelUpdater->GetCurrentWaveNumber()).mBossHealth);
     }, game_constants::BOSS_INTRO_DURATION_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::BOSS_INTRO_FLOW_NAME));
 }

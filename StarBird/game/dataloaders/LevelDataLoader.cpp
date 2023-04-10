@@ -49,6 +49,7 @@ LevelDataLoader::LevelDataLoader()
         {
             mConstructedLevel.mWaves.back().mBossHealth = std::stof(node->first_attribute("bossHealth")->value());
         }
+        
     });
     
     BaseGameDataLoader::SetCallbackForNode(strutils::StringId("Enemy"), [&](const void* n)

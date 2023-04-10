@@ -77,7 +77,12 @@ bool BaseAnimation::VGetBodyRenderingEnabled() const
     return mBodyRenderingEnabled;
 }
 
-void BaseAnimation::VSetCompletionCallback(std::function<void()> completionCallback)
+void BaseAnimation::ChangeShaderResourceId(const resources::ResourceId shaderResourceId)
+{
+    mShaderResourceId = shaderResourceId;
+}
+
+void BaseAnimation::SetCompletionCallback(std::function<void()> completionCallback)
 {
     mCompletionCallback = completionCallback;
 }

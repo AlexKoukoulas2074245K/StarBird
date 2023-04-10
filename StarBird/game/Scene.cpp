@@ -430,26 +430,36 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
         
         float healthPerc =  GameSingletons::GetPlayerCurrentHealth()/GameSingletons::GetPlayerMaxHealth();
         
-        auto displayedHealthPercentage = GameSingletons::GetPlayerDisplayedHealth()/GameSingletons::GetPlayerMaxHealth();
-        
-        healthBarSo.mScale.x = game_constants::PLAYER_HEALTH_BAR_SCALE.x * displayedHealthPercentage;
-        healthBarSo.mPosition.x -= (1.0f - displayedHealthPercentage)/game_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_constants::PLAYER_HEALTH_BAR_SCALE.x;
-        
-        if (healthPerc < displayedHealthPercentage)
+        if (healthPerc > 0.0f)
         {
-            GameSingletons::SetPlayerDisplayedHealth((displayedHealthPercentage - game_constants::HEALTH_LOST_SPEED * dtMillis) * GameSingletons::GetPlayerMaxHealth());
-            if (GameSingletons::GetPlayerDisplayedHealth()/GameSingletons::GetPlayerMaxHealth() <= healthPerc)
+            auto displayedHealthPercentage = GameSingletons::GetPlayerDisplayedHealth()/GameSingletons::GetPlayerMaxHealth();
+            
+            healthBarSo.mScale.x = game_constants::PLAYER_HEALTH_BAR_SCALE.x * displayedHealthPercentage;
+            healthBarSo.mPosition.x -= (1.0f - displayedHealthPercentage)/game_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_constants::PLAYER_HEALTH_BAR_SCALE.x;
+            
+            if (healthPerc < displayedHealthPercentage)
             {
-                GameSingletons::SetPlayerDisplayedHealth(healthPerc * GameSingletons::GetPlayerMaxHealth());
+                GameSingletons::SetPlayerDisplayedHealth((displayedHealthPercentage - game_constants::HEALTH_LOST_SPEED * dtMillis) * GameSingletons::GetPlayerMaxHealth());
+                if (GameSingletons::GetPlayerDisplayedHealth()/GameSingletons::GetPlayerMaxHealth() <= healthPerc)
+                {
+                    GameSingletons::SetPlayerDisplayedHealth(healthPerc * GameSingletons::GetPlayerMaxHealth());
+                }
+            }
+            else if (healthPerc > displayedHealthPercentage)
+            {
+                GameSingletons::SetPlayerDisplayedHealth((displayedHealthPercentage + game_constants::HEALTH_LOST_SPEED * dtMillis) * GameSingletons::GetPlayerMaxHealth());
+                if (GameSingletons::GetPlayerDisplayedHealth()/GameSingletons::GetPlayerMaxHealth() >= healthPerc)
+                {
+                    GameSingletons::SetPlayerDisplayedHealth(healthPerc * GameSingletons::GetPlayerMaxHealth());
+                }
             }
         }
-        else if (healthPerc > displayedHealthPercentage)
+        else
         {
-            GameSingletons::SetPlayerDisplayedHealth((displayedHealthPercentage + game_constants::HEALTH_LOST_SPEED * dtMillis) * GameSingletons::GetPlayerMaxHealth());
-            if (GameSingletons::GetPlayerDisplayedHealth()/GameSingletons::GetPlayerMaxHealth() >= healthPerc)
-            {
-                GameSingletons::SetPlayerDisplayedHealth(healthPerc * GameSingletons::GetPlayerMaxHealth());
-            }
+            healthBarFrameSo.mInvisible = true;
+            healthBarSo.mInvisible = true;
+            healthBarTextSo.mInvisible = true;
+            return;
         }
         
         healthBarTextSo.mText = std::to_string(static_cast<int>(GameSingletons::GetPlayerDisplayedHealth()));

@@ -51,13 +51,14 @@ public:
     void AddFlow(RepeatableFlow&& flow);
     void AddWaveEnemy(const strutils::StringId& enemyName);
     void RemoveWaveEnemy(const strutils::StringId& enemyName);
+    void DropCrystals(const glm::vec3& deathPosition, const float enemyDeathAnimationMillis, float crystalYieldValue);
     
     const LevelDefinition& GetCurrentLevelDefinition() const;
     bool LevelFinished() const;
     size_t GetCurrentWaveNumber() const;
     size_t GetWaveEnemyCount() const;
     std::optional<std::reference_wrapper<RepeatableFlow>> GetFlow(const strutils::StringId& flowName);
-
+    const std::unordered_set<strutils::StringId, strutils::StringIdHasher>& GetWaveEnemyNames() const;
     void OnBossPositioned();
     
     void CreateLevelWalls(const Camera& cam, const bool invisible);
@@ -73,7 +74,6 @@ private:
     void UpdateLights(const float dtMillis);
     void UpdateTextDamage(const float dtMillis);
     
-    void DropCrystals(const glm::vec3& deathPosition, const float enemyDeathAnimationMillis, float crystalYieldValue);
     void CreateTextOnDamage(const strutils::StringId& damagedSceneObjectName, const glm::vec3& textOriginPos, const int damage);
     void OnPlayerDamaged();
     void OnBlockedUpdate();

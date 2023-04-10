@@ -1,8 +1,8 @@
 ///------------------------------------------------------------------------------------------------
-///  FightingWaveGameState.cpp                                                                                        
-///  StarBird                                                                                            
-///                                                                                                
-///  Created by Alex Koukoulas on 16/02/2023                                                       
+///  FightingWaveGameState.cpp
+///  StarBird
+///
+///  Created by Alex Koukoulas on 16/02/2023
 ///------------------------------------------------------------------------------------------------
 
 #include "FightingWaveGameState.h"
@@ -17,6 +17,7 @@
 #include "../SceneObjectUtils.h"
 #include "../datarepos/ObjectTypeDefinitionRepository.h"
 #include "../../resloading/ResourceLoadingService.h"
+#include "../../resloading/MeshResource.h"
 #include "../../resloading/TextureResource.h"
 #include "../../utils/Logging.h"
 
@@ -26,10 +27,17 @@
 
 const strutils::StringId FightingWaveGameState::STATE_NAME("FightingWaveGameState");
 
+static const float EXPLOSION_SPEED = 0.001f;
+static const float EXPLOSION_FADE_OUT_ALPHA_SPEED = 0.00025f;
+
 ///------------------------------------------------------------------------------------------------
 
 void FightingWaveGameState::VInitialize()
 {
+    mBossDeathAnimationActive = false;
+    mPlayerDeathAnimationActive = false;
+    GameSingletons::SetBossCurrentHealth(1.0f);
+    
     auto& objectTypeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
     const auto& currentWave = mLevelUpdater->GetCurrentLevelDefinition().mWaves[mLevelUpdater->GetCurrentWaveNumber()];
     for (const auto& enemy: currentWave.mEnemies)
@@ -79,7 +87,112 @@ void FightingWaveGameState::VInitialize()
 
 PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
 {
-    if (mLevelUpdater->GetWaveEnemyCount() == 0)
+    if (mBossDeathAnimationActive)
+    {
+        std::unordered_set<strutils::StringId, strutils::StringIdHasher> enemyNamesToRemove;
+        
+        for (const auto& enemyName: mLevelUpdater->GetWaveEnemyNames())
+        {
+            auto enemySoOpt = mScene->GetSceneObject(enemyName);
+            if (enemySoOpt && scene_object_utils::IsSceneObjectBossPart(*enemySoOpt))
+            {
+                auto& enemySo = enemySoOpt->get();
+                
+                UpdateExplodingSpecialEntity(dtMillis, enemySo);
+                
+                if (enemySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] < 0.0f)
+                {
+                    enemyNamesToRemove.insert(enemyName);
+                }
+            }
+        }
+        
+        for (const auto& enemyNameToRemove: enemyNamesToRemove)
+        {
+            mLevelUpdater->RemoveWaveEnemy(enemyNameToRemove);
+        }
+    }
+    else if (!mLevelUpdater->GetCurrentLevelDefinition().mWaves.at(mLevelUpdater->GetCurrentWaveNumber()).mBossName.isEmpty())
+    {
+        if (GameSingletons::GetBossCurrentHealth() <= 0.0f)
+        {
+            auto& objectTypeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
+            
+            std::unordered_set<strutils::StringId, strutils::StringIdHasher> enemyNamesToRemoveInstantly;
+            
+            for (const auto& enemyName: mLevelUpdater->GetWaveEnemyNames())
+            {
+                auto enemySoOpt = mScene->GetSceneObject(enemyName);
+                if (enemySoOpt && !scene_object_utils::IsSceneObjectBossPart(*enemySoOpt))
+                {
+                    const auto& enemyDefOpt = objectTypeDefRepo.GetObjectTypeDefinition(enemySoOpt->get().mObjectFamilyTypeName);
+                    if (!enemyDefOpt || enemyDefOpt->get().mAnimations.count(game_constants::DYING_SCENE_OBJECT_STATE) == 0)
+                    {
+                        enemyNamesToRemoveInstantly.insert(enemyName);
+                    }
+                    else
+                    {
+                        const auto& enemyDef = enemyDefOpt->get();
+                        scene_object_utils::ChangeSceneObjectState(*enemySoOpt, enemyDef, game_constants::DYING_SCENE_OBJECT_STATE);
+                    }
+                }
+                else if (enemySoOpt && scene_object_utils::IsSceneObjectBossPart(*enemySoOpt))
+                {
+                    auto& enemySo = enemySoOpt->get();
+                    const auto& enemyDefOpt = objectTypeDefRepo.GetObjectTypeDefinition(enemySoOpt->get().mObjectFamilyTypeName);
+                    
+                    enemySo.mAnimation->ChangeShaderResourceId(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME));
+                    enemySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+                    
+                    
+                    if (enemyDefOpt)
+                    {
+                        auto droppedCrystalsPosition = enemySo.mBody ? (math::Box2dVec2ToGlmVec3(enemySo.mBody->GetWorldCenter())  - enemySo.mBodyCustomOffset): enemySo.mPosition;
+                        
+                        mLevelUpdater->DropCrystals(droppedCrystalsPosition, 0.0f, enemyDefOpt->get().mCrystalYield);
+                    }
+                }
+            }
+            
+            for (const auto& enemyNameToRemoveInstantly: enemyNamesToRemoveInstantly)
+            {
+                mLevelUpdater->RemoveWaveEnemy(enemyNameToRemoveInstantly);
+            }
+            
+            mBossDeathAnimationActive = true;
+        }
+    }
+    
+    if (mPlayerDeathAnimationActive)
+    {
+        auto playerSoOpt = mScene->GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
+        if (playerSoOpt)
+        {
+            auto& playerSo = playerSoOpt->get();
+            
+            UpdateExplodingSpecialEntity(dtMillis, playerSo);
+            
+            if (playerSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] < 0.0f)
+            {
+                mScene->RemoveAllSceneObjectsWithName(game_constants::PLAYER_SCENE_OBJECT_NAME);
+            }
+        }
+    }
+    else if (GameSingletons::GetPlayerCurrentHealth()/GameSingletons::GetPlayerMaxHealth() <= 0.0f)
+    {
+        auto playerSoOpt = mScene->GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
+        if (playerSoOpt)
+        {
+            auto& playerSo = playerSoOpt->get();
+            
+            playerSo.mAnimation->ChangeShaderResourceId(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME));
+            playerSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+        }
+        
+        mPlayerDeathAnimationActive = true;
+    }
+    
+    if (mLevelUpdater->GetWaveEnemyCount() == 0 && GameSingletons::GetPlayerCurrentHealth() > 0.0f)
     {
         mLevelUpdater->AdvanceWave();
         
@@ -98,3 +211,39 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
 
 ///------------------------------------------------------------------------------------------------
 
+void FightingWaveGameState::UpdateExplodingSpecialEntity(const float dtMillis, SceneObject& sceneObject)
+{
+    auto& mesh =  resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(sceneObject.mAnimation->VGetCurrentMeshResourceId());
+    
+    mesh.ApplyDirectTransformToData([dtMillis](resources::MeshResource::MeshData& data)
+    {
+        for (int i = 0; i < data.mVertices.size(); ++i)
+        {
+            auto oldZ = data.mVertices[i].z;
+
+            if (math::Abs(data.mNormals[i].z) > 0.8)
+            {
+                data.mVertices[i] += glm::normalize(data.mVertices[i]) * dtMillis * EXPLOSION_SPEED;
+                data.mVertices[i + 1] += glm::normalize(data.mVertices[i]) * dtMillis * EXPLOSION_SPEED;
+                data.mVertices[i + 2] += glm::normalize(data.mVertices[i]) * dtMillis * EXPLOSION_SPEED;
+
+                i += 2;
+            }
+            else
+            {
+                data.mVertices[i] += glm::normalize(data.mNormals[i]) * dtMillis * EXPLOSION_SPEED;
+            }
+
+            data.mVertices[i].z = oldZ;
+        }
+    });
+    
+    auto alphaFadeOutSpeed = EXPLOSION_FADE_OUT_ALPHA_SPEED * dtMillis;
+    if (sceneObject.mName == game_constants::PLAYER_SCENE_OBJECT_NAME)
+    {
+        alphaFadeOutSpeed *= 2.0f;
+    }
+    sceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] -= alphaFadeOutSpeed;
+}
+
+///------------------------------------------------------------------------------------------------

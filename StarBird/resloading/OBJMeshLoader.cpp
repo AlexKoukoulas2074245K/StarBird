@@ -12,10 +12,11 @@
 
 #include "OBJMeshLoader.h"
 #include "MeshResource.h"
-#include "../utils/StringUtils.h"
+#include "../utils/FileUtils.h"
 #include "../utils/MathUtils.h"
 #include "../utils/OpenGL.h"
 #include "../utils/OSMessageBox.h"
+#include "../utils/StringUtils.h"
 
 #include <cassert>
 #include <cstdio>
@@ -39,15 +40,15 @@ std::unique_ptr<IResource> OBJMeshLoader::VCreateAndLoadResource(const std::stri
     auto trimmedPath = path;
     std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
     
-    std::vector<glm::vec3> temp_vertices;
-    std::vector<glm::vec2> temp_uvs;
-    std::vector<glm::vec3> temp_normals;
+    std::vector<glm::vec3> tempVertices;
+    std::vector<glm::vec2> tempUvs;
+    std::vector<glm::vec3> tempNormals;
     
-    std::vector<glm::vec3> final_vertices;
-    std::vector<glm::vec2> final_uvs;
-    std::vector<glm::vec3> final_normals;
+    std::vector<glm::vec3> finalVertices;
+    std::vector<glm::vec2> finalUvs;
+    std::vector<glm::vec3> finalNormals;
     
-    std::vector<unsigned short> final_indices;
+    std::vector<unsigned short> finalIndices;
     
     float minX = 100.0f, maxX = -100.0f, minY = 100.0f, maxY = -100.0f, minZ = 100.0f, maxZ = -100.0f;
     
@@ -58,6 +59,9 @@ std::unique_ptr<IResource> OBJMeshLoader::VCreateAndLoadResource(const std::stri
         ospopups::ShowMessageBox(ospopups::MessageBoxType::ERROR, "File could not be found", path.c_str());
         return nullptr;
     }
+    
+    const auto fileNameWithoutExtension = fileutils::GetFileNameWithoutExtension(path);
+    bool dynamicMesh = strutils::StringContains(fileNameWithoutExtension, "dynamic");
     
     while(1)
     {
@@ -72,7 +76,7 @@ std::unique_ptr<IResource> OBJMeshLoader::VCreateAndLoadResource(const std::stri
             glm::vec3 vertex;
             fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
             //vertex.z = -vertex.z;
-            temp_vertices.push_back(vertex);
+            tempVertices.push_back(vertex);
             
             if (vertex.x < minX) minX = vertex.x;
             if (vertex.x > maxX) maxX = vertex.x;
@@ -85,13 +89,13 @@ std::unique_ptr<IResource> OBJMeshLoader::VCreateAndLoadResource(const std::stri
         {
             glm::vec2 uv;
             fscanf(file, "%f %f\n", &uv.x, &uv.y );
-            temp_uvs.push_back(uv);
+            tempUvs.push_back(uv);
         }
         else if (strcmp(lineHeader, "vn") == 0)
         {
             glm::vec3 normal;
             fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z );
-            temp_normals.push_back(normal);
+            tempNormals.push_back(normal);
         }
         else if (strcmp(lineHeader, "f") == 0)
         {
@@ -133,15 +137,15 @@ std::unique_ptr<IResource> OBJMeshLoader::VCreateAndLoadResource(const std::stri
         unsigned int normalIndex = normalIndices[i];
         
         // Get the attributes thanks to the index
-        glm::vec3 vertex = temp_vertices[ vertexIndex-1 ];
-        glm::vec2 uv = temp_uvs[ uvIndex-1 ];
-        glm::vec3 normal = temp_normals[ normalIndex-1 ];
+        glm::vec3 vertex = tempVertices[ vertexIndex-1 ];
+        glm::vec2 uv = tempUvs[ uvIndex-1 ];
+        glm::vec3 normal = tempNormals[ normalIndex-1 ];
         
         // Put the attributes in buffers
-        final_vertices.push_back(vertex);
-        final_uvs.push_back(uv);
-        final_normals.push_back(normal);
-        final_indices.push_back(static_cast<unsigned short>(i));
+        finalVertices.push_back(vertex);
+        finalUvs.push_back(uv);
+        finalNormals.push_back(normal);
+        finalIndices.push_back(static_cast<unsigned short>(i));
     }
     
     std::fclose(file);
@@ -149,12 +153,16 @@ std::unique_ptr<IResource> OBJMeshLoader::VCreateAndLoadResource(const std::stri
     GLuint vertexArrayObject;
     GLuint vertexBufferObject;
     GLuint uvCoordsBufferObject;
+    GLuint normalsBufferObject;
     GLuint indexBufferObject;
+    
+    GLenum usage = dynamicMesh ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
     
     // Create Buffers
     GL_CALL(glGenVertexArrays(1, &vertexArrayObject));
     GL_CALL(glGenBuffers(1, &vertexBufferObject));
     GL_CALL(glGenBuffers(1, &uvCoordsBufferObject));
+    GL_CALL(glGenBuffers(1, &normalsBufferObject));
     GL_CALL(glGenBuffers(1, &indexBufferObject));
     
     // Prepare VAO to record buffer state
@@ -162,7 +170,7 @@ std::unique_ptr<IResource> OBJMeshLoader::VCreateAndLoadResource(const std::stri
     
     // Bind and Buffer VBO
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject));
-    GL_CALL(glBufferData(GL_ARRAY_BUFFER, final_vertices.size() * sizeof(glm::vec3), &final_vertices[0], GL_STATIC_DRAW));
+    GL_CALL(glBufferData(GL_ARRAY_BUFFER, finalVertices.size() * sizeof(glm::vec3), &finalVertices[0], usage));
     
     // 1st attribute buffer : vertices
     GL_CALL(glEnableVertexAttribArray(0));
@@ -170,21 +178,37 @@ std::unique_ptr<IResource> OBJMeshLoader::VCreateAndLoadResource(const std::stri
     
     // Bind and buffer TBO
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, uvCoordsBufferObject));
-    GL_CALL(glBufferData(GL_ARRAY_BUFFER, final_uvs.size() * sizeof(glm::vec2), &final_uvs[0], GL_STATIC_DRAW));
+    GL_CALL(glBufferData(GL_ARRAY_BUFFER, finalUvs.size() * sizeof(glm::vec2), &finalUvs[0], usage));
     
     // 2nd attribute buffer: tex coords
     GL_CALL(glEnableVertexAttribArray(1));
     GL_CALL(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0));
     
+    // Bind and Buffer NBO
+    GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, normalsBufferObject));
+    GL_CALL(glBufferData(GL_ARRAY_BUFFER, finalNormals.size() * sizeof(glm::vec3), &finalNormals[0], usage));
+    
+    // 3rd attribute buffer: normals
+    GL_CALL(glEnableVertexAttribArray(2));
+    GL_CALL(glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+    
     // Bind and Buffer IBO
     GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject));
-    GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, final_indices.size() * sizeof(unsigned short), &final_indices[0], GL_STATIC_DRAW));
+    GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, finalIndices.size() * sizeof(unsigned short), &finalIndices[0], usage));
     
     GL_CALL(glBindVertexArray(0));
     
+    // Decide whether to forward all mesh data as well
+    std::unique_ptr<MeshResource::MeshData> meshData = nullptr;
+    
+    if (dynamicMesh)
+    {
+        meshData = std::make_unique<MeshResource::MeshData>(vertexBufferObject, uvCoordsBufferObject, normalsBufferObject, finalVertices, finalUvs, finalNormals);
+    }
+    
     // Calculate dimensions
     glm::vec3 meshDimensions(math::Abs(minX - maxX), math::Abs(minY - maxY), math::Abs(minZ - maxZ));
-    return std::unique_ptr<MeshResource>(new MeshResource(vertexArrayObject, (GLuint)final_indices.size(), meshDimensions));
+    return std::unique_ptr<MeshResource>(new MeshResource(vertexArrayObject, (GLuint)finalIndices.size(), meshDimensions, std::move(meshData)));
 }
 
 ///------------------------------------------------------------------------------------------------
