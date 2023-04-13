@@ -301,9 +301,9 @@ Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
         // Second node can not have base
         if (currentMapCoord.mCol == 1)
         {
-            availableNodeTypes.erase(NodeType::LAB);
-            //availableNodeTypes.clear();
-            //availableNodeTypes.insert(NodeType::LAB);
+            //availableNodeTypes.erase(NodeType::LAB);
+            availableNodeTypes.clear();
+            availableNodeTypes.insert(NodeType::LAB);
         }
         
         // Remove any node types from the immediate previous links except if there are

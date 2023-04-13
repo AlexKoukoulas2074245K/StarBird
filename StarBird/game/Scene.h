@@ -32,7 +32,7 @@ class Scene final
 public:
     enum class SceneType
     {
-        MAP, LAB, STATS_UPGRADE, LEVEL
+        MAP, LAB, STATS_UPGRADE, LEVEL, CHEST_REWARD
     };
     
     class TransitionParameters

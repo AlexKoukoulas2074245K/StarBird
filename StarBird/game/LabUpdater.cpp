@@ -53,7 +53,7 @@ static const glm::vec3 LAB_NAVIGATION_ARROW_POSITION = glm::vec3(0.0f, -6.0f, 0.
 static const glm::vec3 LAB_CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -8.0f, 0.0f);
 static const glm::vec3 LAB_CONFIRMATION_BUTTON_SCALE = glm::vec3(3.5f, 3.5f, 0.0f);
 
-static const glm::vec3 LAB_REJECTION_TEXT_POSITION = glm::vec3(-3.8f, -8.3f, 0.5f);
+static const glm::vec3 LAB_REJECTION_TEXT_POSITION = glm::vec3(-3.5f, -6.4f, 0.5f);
 static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-0.8f, -8.3f, 0.5f);
 static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_SCALE = glm::vec3(0.007f, 0.007f, 1.0f);
 
@@ -246,7 +246,6 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
     for (int i = 0; i < static_cast<int>(mLabOptions.size()); ++i)
     {
         auto labOptionSoOpt = mScene.GetSceneObject(strutils::StringId(game_constants::LAB_OPTION_NAME_PREFIX.GetString() + std::to_string(i)));
-        
         if (labOptionSoOpt)
         {
             auto& labOptionSo = labOptionSoOpt->get();

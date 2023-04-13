@@ -55,7 +55,9 @@ public:
     GLuint GetVertexArrayObject() const;
     GLuint GetElementCount() const;
     const glm::vec3& GetDimensions() const;
-
+    const std::vector<glm::vec3>& GetMeshVertices() const;
+    const std::vector<glm::vec3>& GetMeshNormals() const;
+    
 private:
     MeshResource(const GLuint vertexArrayObject, const GLuint elementCount, const glm::vec3& meshDimensions, std::unique_ptr<MeshData> meshData = nullptr);
     

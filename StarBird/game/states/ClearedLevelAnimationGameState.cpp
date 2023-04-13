@@ -8,6 +8,7 @@
 #include "ClearedLevelAnimationGameState.h"
 #include "../GameConstants.h"
 #include "../GameSingletons.h"
+#include "../LevelUpdater.h"
 #include "../Scene.h"
 #include "../../utils/Logging.h"
 
@@ -30,7 +31,14 @@ PostStateUpdateDirective ClearedLevelAnimationGameState::VUpdate(const float dtM
         
         if (playerSo.mBody->GetWorldCenter().y >= TRANSITION_Y_THRESHOLD)
         {
-            mScene->ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
+            if (mLevelUpdater->GetCurrentLevelDefinition().mWaves.back().mBossName.isEmpty())
+            {
+                mScene->ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
+            }
+            else
+            {
+                mScene->ChangeScene(Scene::TransitionParameters(Scene::SceneType::CHEST_REWARD, "", true));
+            }
             Complete();
         }
     }

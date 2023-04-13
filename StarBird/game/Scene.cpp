@@ -8,6 +8,7 @@
 #include "FontRepository.h"
 #include "GameSingletons.h"
 #include "Scene.h"
+#include "ChestRewardUpdater.h"
 #include "GameConstants.h"
 #include "LabUpdater.h"
 #include "MapUpdater.h"
@@ -31,6 +32,8 @@
 
 static const strutils::StringId SCENE_EDIT_RESULT_TEXT_NAME_1 = strutils::StringId("SCENE_EDIT_RESULT_TEXT_1");
 static const strutils::StringId SCENE_EDIT_RESULT_TEXT_NAME_2 = strutils::StringId("SCENE_EDIT_RESULT_TEXT_2");
+
+static const glm::vec3 SCENE_EDIT_MAX_SO_SCALE_ELIGIBILITY = glm::vec3(10.0f, 10.0f, 10.0f);
 
 static const glm::vec3 GUI_CRYSTAL_COUNT_HOLDER_SCALE = glm::vec3(2.5f, 3.5f, 1.0f);
 static const glm::vec3 GUI_CRYSTAL_COUNT_HOLDER_POSITION = glm::vec3(-4.2f, -10.9f, 2.0f);
@@ -290,6 +293,11 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
                 mSceneUpdater = std::make_unique<StatsUpgradeUpdater>(*this);
             } break;
                 
+            case SceneType::CHEST_REWARD:
+            {
+                mSceneUpdater = std::make_unique<ChestRewardUpdater>(*this);
+            } break;
+                
             case SceneType::LEVEL:
             {
                 LevelDataLoader levelDataLoader;
@@ -517,7 +525,7 @@ void Scene::UpdateOnSceneEditModeOn(const float dtMillis)
         
         worldInitTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
         
-        guiInitTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, worldCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
+        guiInitTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
             
         for (int i = 0; i < mSceneObjects.size(); ++i)
         {
@@ -534,7 +542,7 @@ void Scene::UpdateOnSceneEditModeOn(const float dtMillis)
                         so.mName = strutils::StringId(std::to_string(SDL_GetTicks64()) + std::to_string(i));
                     }
                     
-                    if (so.mPosition.z > 0.0f && so.mName != SCENE_EDIT_RESULT_TEXT_NAME_1 && so.mName != SCENE_EDIT_RESULT_TEXT_NAME_2)
+                    if (so.mScale.x < SCENE_EDIT_MAX_SO_SCALE_ELIGIBILITY.x && so.mScale.y < SCENE_EDIT_MAX_SO_SCALE_ELIGIBILITY.y && so.mScale.z < SCENE_EDIT_MAX_SO_SCALE_ELIGIBILITY.z && so.mName != SCENE_EDIT_RESULT_TEXT_NAME_1 && so.mName != SCENE_EDIT_RESULT_TEXT_NAME_2)
                     {
                         touchedSceneObjectNames.push_back(so.mName);
                     }
@@ -660,7 +668,7 @@ void Scene::SetSceneEditResultMessage(const glm::vec3& position, const glm::vec3
         textSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(textSo.mScale), false);
         textSo.mName = SCENE_EDIT_RESULT_TEXT_NAME_1;
         textSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
-        textSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+        textSo.mSceneObjectType = SceneObjectType::GUIObject;
         textSo.mText = positionString.str();
         AddSceneObject(std::move(textSo));
     }

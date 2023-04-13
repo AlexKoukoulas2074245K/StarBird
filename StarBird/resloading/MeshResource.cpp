@@ -60,6 +60,32 @@ const glm::vec3& MeshResource::GetDimensions() const
 
 ///------------------------------------------------------------------------------------------------
 
+const std::vector<glm::vec3>& MeshResource::GetMeshVertices() const
+{
+    static std::vector<glm::vec3> emptyVertices;
+    if (mMeshData)
+    {
+        return mMeshData->mVertices;
+    }
+    
+    return emptyVertices;
+}
+
+///------------------------------------------------------------------------------------------------
+
+const std::vector<glm::vec3>& MeshResource::GetMeshNormals() const
+{
+    static std::vector<glm::vec3> emptyNormals;
+    if (mMeshData)
+    {
+        return mMeshData->mNormals;
+    }
+    
+    return emptyNormals;
+}
+
+///------------------------------------------------------------------------------------------------
+
 MeshResource::MeshResource(const GLuint vertexArrayObject, const GLuint elementCount, const glm::vec3& meshDimensions, std::unique_ptr<MeshData> meshData /* = nullptr */)
     : mVertexArrayObject(vertexArrayObject)
     , mElementCount(elementCount)

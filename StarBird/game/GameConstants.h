@@ -135,6 +135,8 @@ inline const strutils::StringId BETTER_MIRROR_IMAGE_BULLET_TYPE = strutils::Stri
 
 inline const strutils::StringId TEXT_PROMPT_NAME = strutils::StringId("TEXT_PROMPT");
 
+inline const strutils::StringId AMBIENT_LIGHT_NAME = strutils::StringId("AMBIENT_LIGHT");
+
 inline const std::string ENEMY_PROJECTILE_FLOW_POSTFIX = std::string("_PROJECTILE_FLOW");
 
 inline const float UPGRADE_MOVEMENT_SPEED = 1.0f/400.0f;

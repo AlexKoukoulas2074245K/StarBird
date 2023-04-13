@@ -27,7 +27,6 @@ class MapUpdater final: public IUpdater
 {
 public:
     MapUpdater(Scene& scene);
-    ~MapUpdater();
     
     PostStateUpdateDirective VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis) override;
     void VOnAppStateChange(Uint32 event) override;

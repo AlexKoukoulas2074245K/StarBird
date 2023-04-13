@@ -96,6 +96,34 @@ inline T Abs(const T val)
 }
 
 ///-----------------------------------------------------------------------------------------------
+/// Computes the sine of the given float value.
+/// @param[in] val the value.
+/// @returns the sin of the value.
+inline float Sinf(const float val)
+{
+    return std::sinf(val);
+}
+
+///-----------------------------------------------------------------------------------------------
+/// Computes the cosine of the given float value.
+/// @param[in] val the value.
+/// @returns the cosine of the value.
+inline float Cosf(const float val)
+{
+    return std::cosf(val);
+}
+
+///-----------------------------------------------------------------------------------------------
+/// Computes the arc tangent value of the given x and y float values.
+/// @param[in] x the first value.
+/// @param[in] y the second value.
+/// @returns the arctan of the two values  given.
+inline float Arctan2(const float x, const float y)
+{
+    return std::atan2(x, y);
+}
+
+///-----------------------------------------------------------------------------------------------
 /// Returns the interpolated value between two values and the parametric argument
 /// @tparam T type class of the arguments given (can be inferred from the parameters passed in).
 /// @param[in] x the start value.
@@ -106,6 +134,20 @@ template <class T>
 inline T Lerp(const T x, const T y, const float t)
 {
     return (T)(x * (1.0f - t) + y * t);
+}
+
+
+///-----------------------------------------------------------------------------------------------
+/// Returns the interpolated value between two values and the parametric argument
+/// @tparam T type class of the arguments given (can be inferred from the parameters passed in).
+/// @param[in] x the start value.
+/// @param[in] y the end value.
+/// @param[in] t the parametric float value.
+/// @returns the interpolated value between the two values and the parametric t.
+template <class T>
+inline T Slerp(const T x, const T y, const float theta, const float t)
+{
+    return (T)((Sinf((1.0f - t) * theta)/(Sinf(theta)))*x + (Sinf(t * theta)/(Sinf(theta)))*y);
 }
 
 ///-----------------------------------------------------------------------------------------------
@@ -364,34 +406,6 @@ inline float RandomFloat(const float min = 0.0f, const float max = 1.0f)
 inline int RandomSign()
 {
     return RandomInt(0, 1) == 0 ? -1 : 1;
-}
-
-///-----------------------------------------------------------------------------------------------
-/// Computes the sine of the given float value.
-/// @param[in] val the value.
-/// @returns the sin of the value.
-inline float Sinf(const float val)
-{
-    return std::sinf(val);
-}
-
-///-----------------------------------------------------------------------------------------------
-/// Computes the cosine of the given float value.
-/// @param[in] val the value.
-/// @returns the cosine of the value.
-inline float Cosf(const float val)
-{
-    return std::cosf(val);
-}
-
-///-----------------------------------------------------------------------------------------------
-/// Computes the arc tangent value of the given x and y float values.
-/// @param[in] x the first value.
-/// @param[in] y the second value.
-/// @returns the arctan of the two values  given.
-inline float Arctan2(const float x, const float y)
-{
-    return std::atan2(x, y);
 }
 
 ///-----------------------------------------------------------------------------------------------

@@ -118,7 +118,7 @@ void Game::Run()
 {
     
     Scene scene;
-    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", false));
+    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::CHEST_REWARD, "", false));
     
     SDL_Event e;
     

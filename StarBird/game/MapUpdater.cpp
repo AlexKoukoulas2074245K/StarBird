@@ -14,6 +14,7 @@
 #include "SceneObjectUtils.h"
 #include "states/DebugConsoleGameState.h"
 #include "../resloading/ResourceLoadingService.h"
+#include "../resloading/MeshResource.h"
 #include "../utils/Logging.h"
 
 #include <vector>
@@ -72,12 +73,6 @@ MapUpdater::MapUpdater(Scene& scene)
     }
     
     worldCamera.SetPosition(glm::vec3(positionAccum.x/(activeCoords.size() + 1), positionAccum.y/(activeCoords.size() + 1), 0.0f));
-}
-
-///------------------------------------------------------------------------------------------------
-
-MapUpdater::~MapUpdater()
-{
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -187,7 +182,7 @@ PostStateUpdateDirective MapUpdater::VUpdate(std::vector<SceneObject>& sceneObje
             }
         }
     }
-    
+
     return PostStateUpdateDirective::CONTINUE;
 }
 

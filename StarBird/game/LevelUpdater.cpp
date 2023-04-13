@@ -829,7 +829,7 @@ void LevelUpdater::CreateLevelWalls(const Camera& cam, const bool invisible)
 
 void LevelUpdater::LoadLevelInvariantObjects()
 {
-    mScene.GetLightRepository().AddLight(LightType::AMBIENT_LIGHT, strutils::StringId("AMBIENT_LIGHT"), game_constants::AMBIENT_LIGHT_COLOR, glm::vec3(0.0f), 0.0f);
+    mScene.GetLightRepository().AddLight(LightType::AMBIENT_LIGHT, game_constants::AMBIENT_LIGHT_NAME, game_constants::AMBIENT_LIGHT_COLOR, glm::vec3(0.0f), 0.0f);
     
     auto& resService = resources::ResourceLoadingService::GetInstance();
     

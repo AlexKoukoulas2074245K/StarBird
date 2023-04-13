@@ -81,6 +81,8 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
     // Clear buffers
     GL_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     
+    GL_CALL(glDisable(GL_CULL_FACE));
+    
     // Reusability optimisation
     resources::ResourceId currentMeshReourceId = resources::ResourceId();
     resources::ResourceId currentShaderResourceId = resources::ResourceId();
