@@ -82,6 +82,8 @@ static const float COLLECTED_CRYSTAL_PULSING_FACTOR = 0.01f;
 static const float SHAKE_ENTITY_HEALTH_RATIO_THRESHOLD = 0.2f;
 static const float SHAKE_ENTITY_RANDOM_MAG = 0.03f;
 
+static const float MIRROR_IMAGE_BULLET_DAMAGE_MULTIPLIER = 0.3f;
+
 ///------------------------------------------------------------------------------------------------
 
 LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& levelDef)
@@ -100,7 +102,6 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
     mFlows.emplace_back([&]()
     {
         auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
-        bool hasBulletDamageUpgrade = equippedUpgrades.count(game_constants::BULLET_DAMAGE_UGPRADE_NAME) != 0;
         bool hasDoubleBulletUpgrade = equippedUpgrades.count(game_constants::DOUBLE_BULLET_UGPRADE_NAME) != 0;
         bool hasMirrorImageUpgrade = equippedUpgrades.count(game_constants::MIRROR_IMAGE_UGPRADE_NAME) != 0;
 
@@ -113,11 +114,11 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
 
                 // Left Bullet
                 bulletPosition.x -= PLAYER_BULLET_X_OFFSET;
-                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_PLAYER_BULLET_TYPE : game_constants::PLAYER_BULLET_TYPE, bulletPosition);
+                CreateBulletAtPosition(game_constants::PLAYER_BULLET_TYPE, bulletPosition);
 
                 // Right Bullet
                 bulletPosition.x += 2 * PLAYER_BULLET_X_OFFSET;
-                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_PLAYER_BULLET_TYPE : game_constants::PLAYER_BULLET_TYPE, bulletPosition);
+                CreateBulletAtPosition(game_constants::PLAYER_BULLET_TYPE, bulletPosition);
 
                 if (hasMirrorImageUpgrade)
                 {
@@ -128,26 +129,26 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                     {
                         auto bulletPosition = leftMirrorImageSoOpt->get().mPosition;
                         bulletPosition.x -= MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                        CreateBulletAtPosition(game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
 
                         bulletPosition.x += 2 * MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                        CreateBulletAtPosition(game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
                     }
 
                     if (rightMirrorImageSoOpt)
                     {
                         auto bulletPosition = rightMirrorImageSoOpt->get().mPosition;
                         bulletPosition.x -= MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                        CreateBulletAtPosition(game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
 
                         bulletPosition.x += 2 * MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
+                        CreateBulletAtPosition(game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
                     }
                 }
             }
             else
             {
-                CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_PLAYER_BULLET_TYPE : game_constants::PLAYER_BULLET_TYPE, math::Box2dVec2ToGlmVec3( playerOpt->get().mBody->GetWorldCenter()));
+                CreateBulletAtPosition(game_constants::PLAYER_BULLET_TYPE, math::Box2dVec2ToGlmVec3( playerOpt->get().mBody->GetWorldCenter()));
 
                 if (hasMirrorImageUpgrade)
                 {
@@ -156,12 +157,12 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
 
                     if (leftMirrorImageSoOpt)
                     {
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, leftMirrorImageSoOpt->get().mPosition);
+                        CreateBulletAtPosition(game_constants::MIRROR_IMAGE_BULLET_TYPE, leftMirrorImageSoOpt->get().mPosition);
                     }
 
                     if (rightMirrorImageSoOpt)
                     {
-                        CreateBulletAtPosition(hasBulletDamageUpgrade ? game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE : game_constants::MIRROR_IMAGE_BULLET_TYPE, rightMirrorImageSoOpt->get().mPosition);
+                        CreateBulletAtPosition(game_constants::MIRROR_IMAGE_BULLET_TYPE, rightMirrorImageSoOpt->get().mPosition);
                     }
                 }
             }
@@ -187,14 +188,20 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             
             if (!enemySO.mInvulnerable)
             {
+                auto bulletDamage = GameSingletons::GetPlayerAttackStat();
+                if (bulletSceneObjectTypeDef.mName == game_constants::MIRROR_IMAGE_BULLET_TYPE)
+                {
+                    bulletDamage *= MIRROR_IMAGE_BULLET_DAMAGE_MULTIPLIER;
+                }
+                
                 if (scene_object_utils::IsSceneObjectBossPart(enemySO))
                 {
-                    GameSingletons::SetBossCurrentHealth(math::Max(0.0f, GameSingletons::GetBossCurrentHealth() - GameSingletons::GetPlayerAttackStat()));
+                    GameSingletons::SetBossCurrentHealth(math::Max(0.0f, GameSingletons::GetBossCurrentHealth() - bulletDamage));
                 }
                 else
                 {
-                    enemySO.mHealth -= GameSingletons::GetPlayerAttackStat();
-                    CreateTextOnDamage(enemySO.mName, math::Box2dVec2ToGlmVec3(enemySO.mBody->GetWorldCenter()), GameSingletons::GetPlayerAttackStat());
+                    enemySO.mHealth -= bulletDamage;
+                    CreateTextOnDamage(enemySO.mName, math::Box2dVec2ToGlmVec3(enemySO.mBody->GetWorldCenter()), bulletDamage);
                 }
             }
             
@@ -850,13 +857,22 @@ void LevelUpdater::LoadLevelInvariantObjects()
         auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
         typeDefRepo.LoadObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
         typeDefRepo.LoadObjectTypeDefinition(game_constants::PLAYER_BULLET_TYPE);
-        typeDefRepo.LoadObjectTypeDefinition(game_constants::BETTER_PLAYER_BULLET_TYPE);
         typeDefRepo.LoadObjectTypeDefinition(game_constants::MIRROR_IMAGE_BULLET_TYPE);
-        typeDefRepo.LoadObjectTypeDefinition(game_constants::BETTER_MIRROR_IMAGE_BULLET_TYPE);
         
         auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
         
         SceneObject playerSO = scene_object_utils::CreateSceneObjectWithBody(playerObjectDef, game_constants::PLAYER_INITIAL_POS, mBox2dWorld, game_constants::PLAYER_SCENE_OBJECT_NAME);
+        
+        auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
+        auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
+        
+        auto mirrorImageUpgradeDef = availableUpgrades.at(game_constants::MIRROR_IMAGE_UGPRADE_NAME);
+        
+        equippedUpgrades[mirrorImageUpgradeDef.mUpgradeName] = mirrorImageUpgradeDef;
+        availableUpgrades.erase(mirrorImageUpgradeDef.mUpgradeName);
+        
+        mUpgradesLogicHandler.OnUpgradeEquipped(mirrorImageUpgradeDef.mUpgradeName);
+        
         mScene.AddSceneObject(std::move(playerSO));
     }
     

@@ -27,7 +27,6 @@ static const glm::vec3 RIGHT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
 static const glm::vec3 PLAYER_SHIELD_POSITION_OFFSET = glm::vec3(0.0f, 0.5f, 0.5f);
 static const glm::vec3 PLAYER_SHIELD_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
 
-static const float PLAYER_SPEED_UPGRADE_MULTIPLIER = 1.5f;
 static const float HEALTH_POTION_HEALTH_GAIN = 100.0f;
 static const float PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR = 1.0f/50.0f;
 static const float PLAYER_PULSE_SHIELD_ANIM_SPEED = 0.01f;
@@ -47,14 +46,6 @@ void UpgradesLogicHandler::OnUpgradeEquipped(const strutils::StringId& upgradeId
     if (upgradeId == game_constants::MIRROR_IMAGE_UGPRADE_NAME)
     {
         CreateMirrorImageSceneObjects();
-    }
-    else if (upgradeId == game_constants::PLAYER_SPEED_UGPRADE_NAME)
-    {
-        auto playerTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetMutableObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
-        if (playerTypeDefOpt)
-        {
-            playerTypeDefOpt->get().mSpeed *= PLAYER_SPEED_UPGRADE_MULTIPLIER;
-        }
     }
     else if (upgradeId == game_constants::PLAYER_SHIELD_UPGRADE_NAME)
     {

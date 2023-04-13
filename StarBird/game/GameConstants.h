@@ -119,11 +119,8 @@ inline const strutils::StringId BOSS_INTRO_FLOW_NAME = strutils::StringId("BOSS_
 
 inline const strutils::StringId PLAYER_OBJECT_TYPE_DEF_NAME = strutils::StringId("player");
 
-inline const strutils::StringId BULLET_DAMAGE_UGPRADE_NAME = strutils::StringId("bullet_dmg");
 inline const strutils::StringId DOUBLE_BULLET_UGPRADE_NAME = strutils::StringId("double_bullet");
 inline const strutils::StringId MIRROR_IMAGE_UGPRADE_NAME = strutils::StringId("mirror_image");
-inline const strutils::StringId BULLET_SPEED_UGPRADE_NAME = strutils::StringId("bullet_speed");
-inline const strutils::StringId PLAYER_SPEED_UGPRADE_NAME = strutils::StringId("player_speed");
 inline const strutils::StringId PLAYER_SHIELD_UPGRADE_NAME = strutils::StringId("player_shield");
 inline const strutils::StringId PLAYER_HEALTH_POTION_UGPRADE_NAME = strutils::StringId("player_health_potion");
 
