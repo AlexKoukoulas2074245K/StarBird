@@ -10,6 +10,7 @@
 		9206BAA929AF8BF20013BE69 /* LightRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9206BAA729AF8BF20013BE69 /* LightRepository.cpp */; };
 		9208BE6129B3FD41007C5335 /* BossIntroGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9208BE5429B3FD41007C5335 /* BossIntroGameState.cpp */; };
 		9210BFC229E82A2B00D117A6 /* ChestRewardUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9210BFB529E82A2B00D117A6 /* ChestRewardUpdater.cpp */; };
+		9225410029E85A11001122E3 /* CarouselController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 922540F329E85A11001122E3 /* CarouselController.cpp */; };
 		9228C168299FD15A00410E49 /* GUISceneLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9228C166299FD15A00410E49 /* GUISceneLoader.cpp */; };
 		9228C16B299FDA5A00410E49 /* SceneObjectUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9228C169299FDA5900410E49 /* SceneObjectUtils.cpp */; };
 		923F0D8929CE0BFD007750D4 /* FullScreenOverlayController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 923F0D8729CE0BFD007750D4 /* FullScreenOverlayController.cpp */; };
@@ -233,6 +234,8 @@
 		9208BE6029B3FD41007C5335 /* BossIntroGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BossIntroGameState.h; sourceTree = "<group>"; };
 		9210BFB529E82A2B00D117A6 /* ChestRewardUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChestRewardUpdater.cpp; sourceTree = "<group>"; };
 		9210BFC129E82A2B00D117A6 /* ChestRewardUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChestRewardUpdater.h; sourceTree = "<group>"; };
+		922540F329E85A11001122E3 /* CarouselController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CarouselController.cpp; sourceTree = "<group>"; };
+		922540FF29E85A11001122E3 /* CarouselController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CarouselController.h; sourceTree = "<group>"; };
 		9228C15A299FCE4F00410E49 /* GUISceneDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GUISceneDefinition.h; sourceTree = "<group>"; };
 		9228C166299FD15A00410E49 /* GUISceneLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUISceneLoader.cpp; sourceTree = "<group>"; };
 		9228C167299FD15A00410E49 /* GUISceneLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUISceneLoader.h; sourceTree = "<group>"; };
@@ -1104,6 +1107,8 @@
 				92BF79BB29A39002002A52D8 /* Animations.h */,
 				92C2198B2984395800B2D2C6 /* Camera.cpp */,
 				92C2198C2984395800B2D2C6 /* Camera.h */,
+				922540F329E85A11001122E3 /* CarouselController.cpp */,
+				922540FF29E85A11001122E3 /* CarouselController.h */,
 				9210BFB529E82A2B00D117A6 /* ChestRewardUpdater.cpp */,
 				9210BFC129E82A2B00D117A6 /* ChestRewardUpdater.h */,
 				923F0D8729CE0BFD007750D4 /* FullScreenOverlayController.cpp */,
@@ -1947,6 +1952,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92DAA4C229829A4C0062A438 /* TextureLoader.cpp in Sources */,
+				9225410029E85A11001122E3 /* CarouselController.cpp in Sources */,
 				927FD9B629C35C750012C724 /* KathunBossAI.cpp in Sources */,
 				9254CC0E2969B79A00EFE0CC /* b2Collision.cpp in Sources */,
 				927FD9B529C35C750012C724 /* BossAIController.cpp in Sources */,

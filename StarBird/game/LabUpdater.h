@@ -19,6 +19,7 @@
 
 ///------------------------------------------------------------------------------------------------
 
+class CarouselController;
 class TextPromptController;
 class Scene;
 class LabUpdater final: public IUpdater
@@ -40,18 +41,13 @@ private:
     void CreateSceneObjects();
     void PositionCarouselObject(SceneObject& carouselObject, const int objectIndex) const;
     void OnCarouselMovementStart();
-    void OnCarouselStationary();
+    void OnCarouselStationary(const int selectedOptionIndex);
     void OnConfirmationButtonPressed();
     void OnTriggerOptionFlow();
     
     std::string CheckForOptionValidity() const;
     
 private:
-    enum class CarouselState
-    {
-        STATIONARY, MOVING_LEFT, MOVING_RIGHT
-    };
-    
     enum class OptionSelectionState
     {
         OPTION_NOT_SELECTED, OPTION_SELECTED, OPTION_TRIGGERED, OPTION_FLOW_FINISHED, TRANSITIONING_TO_NEXT_SCREEN
@@ -62,11 +58,9 @@ private:
     std::vector<game_constants::LabOptionType> mLabOptions;
     std::unordered_set<game_constants::LabOptionType> mVisitedLabOptions;
     std::unique_ptr<TextPromptController> mTextPromptController;
-    CarouselState mCarouselState;
+    std::unique_ptr<CarouselController> mCarouselController;
     OptionSelectionState mOptionSelectionState;
     game_constants::LabOptionType mSelectedLabOption;
-    float mCarouselRads;
-    float mCarouselTargetRads;
 };
 
 

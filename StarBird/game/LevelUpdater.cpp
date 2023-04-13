@@ -1016,8 +1016,6 @@ void LevelUpdater::UpdateBackground(const float dtMillis)
 
 void LevelUpdater::UpdateBossHealthBar(const float dtMillis)
 {
-    // Player health bar
-    
     // Boss Health bar
     auto bossHealthBarFrameSoOpt = mScene.GetSceneObject(game_constants::BOSS_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME);
     auto bossHealthBarSoOpt = mScene.GetSceneObject(game_constants::BOSS_HEALTH_BAR_SCENE_OBJECT_NAME);

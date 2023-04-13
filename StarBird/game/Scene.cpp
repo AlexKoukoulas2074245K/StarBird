@@ -779,7 +779,7 @@ void Scene::CreateCrossSceneInterfaceObjects()
     
     GameSingletons::SetPlayerDisplayedHealth(playerDef.mHealth);
     GameSingletons::SetPlayerMaxHealth(playerDef.mHealth);
-    GameSingletons::SetPlayerCurrentHealth(playerDef.mHealth);
+    GameSingletons::SetPlayerCurrentHealth(playerDef.mHealth/2);
     GameSingletons::SetPlayerAttackStat(playerDef.mDamage);
     GameSingletons::SetPlayerMovementSpeedStat(1.0f);
     GameSingletons::SetPlayerBulletSpeedStat(1.0f);

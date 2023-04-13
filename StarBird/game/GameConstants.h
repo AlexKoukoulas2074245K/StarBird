@@ -145,7 +145,6 @@ inline const float PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS = 300.0f;
 
 inline const float BASE_PLAYER_SPEED = 0.4f;
 inline const float BACKGROUND_Z = -1.0f;
-inline const float LAB_OPTIONS_Z = 2.0f;
 inline const float WALL_Z = -0.5f;
 inline const float BULLET_Z = -0.5f;
 
