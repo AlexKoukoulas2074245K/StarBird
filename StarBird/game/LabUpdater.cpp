@@ -78,6 +78,7 @@ LabUpdater::LabUpdater(Scene& scene)
 #endif
     
     CreateSceneObjects();
+    OnCarouselStationary();
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -323,7 +324,7 @@ void LabUpdater::CreateSceneObjects()
         labOptionTextures.push_back(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::LAB_OPTION_TYPE_TO_TEXTURE.at(currentLabOption)));
     }
     
-    mCarouselController = std::make_unique<CarouselController>(mScene, labOptionTextures, [&](){ OnCarouselMovementStart(); }, [&](const int selectedOptionIndex){ OnCarouselStationary(selectedOptionIndex); });
+    mCarouselController = std::make_unique<CarouselController>(mScene, labOptionTextures, [&](){ OnCarouselMovementStart(); }, [&](){ OnCarouselStationary(); });
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -337,9 +338,9 @@ void LabUpdater::OnCarouselMovementStart()
 
 ///------------------------------------------------------------------------------------------------
 
-void LabUpdater::OnCarouselStationary(const int selectedOptionIndex)
+void LabUpdater::OnCarouselStationary()
 {
-    mSelectedLabOption = static_cast<game_constants::LabOptionType>(selectedOptionIndex);
+    mSelectedLabOption = static_cast<game_constants::LabOptionType>(mCarouselController->GetSelectedIndex());
     
     auto& resService = resources::ResourceLoadingService::GetInstance();
     

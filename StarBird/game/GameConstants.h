@@ -125,6 +125,7 @@ inline const strutils::StringId DOUBLE_BULLET_UGPRADE_NAME = strutils::StringId(
 inline const strutils::StringId MIRROR_IMAGE_UGPRADE_NAME = strutils::StringId("mirror_image");
 inline const strutils::StringId PLAYER_SHIELD_UPGRADE_NAME = strutils::StringId("player_shield");
 inline const strutils::StringId PLAYER_HEALTH_POTION_UGPRADE_NAME = strutils::StringId("player_health_potion");
+inline const strutils::StringId CRYSTALS_GIFT_UGPRADE_NAME = strutils::StringId("crystal_gift");
 
 inline const strutils::StringId PLAYER_BULLET_TYPE = strutils::StringId("player_bullet");
 inline const strutils::StringId BETTER_PLAYER_BULLET_TYPE = strutils::StringId("player_better_bullet");

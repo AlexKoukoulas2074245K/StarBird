@@ -66,6 +66,18 @@ void LightRepository::RemoveLight(const strutils::StringId& lightName)
 
 ///------------------------------------------------------------------------------------------------
 
+void LightRepository::RemoveAllLights()
+{
+    mAmbientLightName = strutils::StringId();
+    mAmbientLightColor = glm::vec4(0.0f);
+    mPointLightNames.clear();
+    mPointLightColors.clear();
+    mPointLightPositions.clear();
+    mPointLightPowers.clear();
+}
+
+///------------------------------------------------------------------------------------------------
+
 strutils::StringId LightRepository::GetLightName(const int lightIndex) const
 {
     if (lightIndex == INVALID_LIGHT_INDEX)

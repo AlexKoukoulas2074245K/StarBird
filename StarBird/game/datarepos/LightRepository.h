@@ -42,6 +42,7 @@ public:
     int GetLightIndex(const strutils::StringId& lightName) const;
     void AddLight(const LightType lightType, const strutils::StringId& lightName, const glm::vec4& lightColor, const glm::vec3& lightPosition, const float lightPower);
     void RemoveLight(const strutils::StringId& lightName);
+    void RemoveAllLights();
     
     strutils::StringId GetLightName(const int lightIndex) const;
     float GetLightPower(const int lightIndex) const;

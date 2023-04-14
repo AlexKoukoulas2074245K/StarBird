@@ -9,8 +9,6 @@
         <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
     </Wave>
     
-    <!--
-    
     <Wave bossName="Ka'thun" bossHealth="100.0f">
         <Enemy position="0.0f, 20.0f" type="enemies/boss_1/body"/>
         <Enemy position="0.0f, 20.0f" type="enemies/boss_1/top_left_flap"/>
@@ -21,6 +19,7 @@
         <Enemy position="0.0f, 20.0f" type="enemies/boss_1/bottom_right_flap"/>
     </Wave>
     
+    <!--
     <Wave>
         <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
         <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>

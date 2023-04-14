@@ -229,7 +229,7 @@ void UpgradeSelectionGameState::UpdateUpgradeSelection(const float dtMillis)
         if (selectedUpgradeName == game_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME)
         {
             mSelectionState = SelectionState::LEFT_SELECTED;
-            mUpgradesLogicHandler->OnUpgradeEquipped(upgradeSelection.first.mUpgradeName);
+            //mUpgradesLogicHandler->OnUpgradeEquipped(upgradeSelection.first.mUpgradeName);
             equippedUpgrades[upgradeSelection.first.mUpgradeName] = upgradeSelection.first;
             availableUpgrades[upgradeSelection.second.mUpgradeName] = upgradeSelection.second;
             
@@ -242,7 +242,7 @@ void UpgradeSelectionGameState::UpdateUpgradeSelection(const float dtMillis)
         else
         {
             mSelectionState = SelectionState::RIGHT_SELECTED;
-            mUpgradesLogicHandler->OnUpgradeEquipped(upgradeSelection.second.mUpgradeName);
+            //mUpgradesLogicHandler->OnUpgradeEquipped(upgradeSelection.second.mUpgradeName);
             equippedUpgrades[upgradeSelection.second.mUpgradeName] = upgradeSelection.second;
             availableUpgrades[upgradeSelection.first.mUpgradeName] = upgradeSelection.first;
             

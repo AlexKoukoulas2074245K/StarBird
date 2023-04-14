@@ -11,7 +11,9 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "IUpdater.h"
+#include "UpgradesLogicHandler.h"
 #include "StateMachine.h"
+#include "definitions/UpgradeDefinition.h"
 
 #include <memory>
 
@@ -36,15 +38,27 @@ public:
 #endif
     
 private:
+    UpgradeDefinition FindSelectedRewardDefinition() const;
+    void CreateRewardObjects();
+    void OnConfirmationButtonPressed();
+    void OnCarouselStationary();
+    void OnCarouselMovementStart();
+    
+private:
     enum class RewardFlowState
     {
         AWAIT_PRESS,
         SHAKE,
         OPEN_ANIMATION,
-        REWARD_SELECTION
+        REWARD_SELECTION,
+        REWARD_SELECTED_ANIMATION_HIGH,
+        CREATE_REWARD_SELECTED_USAGE_ANIMATION,
+        REWARD_USAGE_ANIMATING,
+        TRANSITIONING,
     };
     
     Scene& mScene;
+    UpgradesLogicHandler mUpgradesLogicHandler;
     StateMachine mStateMachine;
     RewardFlowState mRewardFlowState;
     float mShakeNoiseMag;

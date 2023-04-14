@@ -89,7 +89,7 @@ static const float MIRROR_IMAGE_BULLET_DAMAGE_MULTIPLIER = 0.3f;
 LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& levelDef)
     : mScene(scene)
     , mBox2dWorld(box2dWorld)
-    , mUpgradesLogicHandler(scene, *this)
+    , mUpgradesLogicHandler(scene)
     , mStateMachine(&scene, this, &mUpgradesLogicHandler, &mBox2dWorld)
     , mBossAIController(scene, *this, mStateMachine, mBox2dWorld)
     , mCurrentWaveNumber(0)
@@ -494,7 +494,7 @@ PostStateUpdateDirective LevelUpdater::VUpdate(std::vector<SceneObject>& sceneOb
         }
     }
     
-    mUpgradesLogicHandler.OnUpdate(dtMillis);
+    mUpgradesLogicHandler.Update(dtMillis);
     ApplyShakeToNearlyDeadEntities(sceneObjects);
     UpdateBackground(dtMillis);
     UpdateBossHealthBar(dtMillis);
@@ -859,16 +859,6 @@ void LevelUpdater::LoadLevelInvariantObjects()
         auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
         
         SceneObject playerSO = scene_object_utils::CreateSceneObjectWithBody(playerObjectDef, game_constants::PLAYER_INITIAL_POS, mBox2dWorld, game_constants::PLAYER_SCENE_OBJECT_NAME);
-        
-//        auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
-//        auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
-//
-//        auto mirrorImageUpgradeDef = availableUpgrades.at(game_constants::MIRROR_IMAGE_UGPRADE_NAME);
-//
-//        equippedUpgrades[mirrorImageUpgradeDef.mUpgradeName] = mirrorImageUpgradeDef;
-//        availableUpgrades.erase(mirrorImageUpgradeDef.mUpgradeName);
-        
-//        mUpgradesLogicHandler.OnUpgradeEquipped(mirrorImageUpgradeDef.mUpgradeName);
         
         mScene.AddSceneObject(std::move(playerSO));
     }

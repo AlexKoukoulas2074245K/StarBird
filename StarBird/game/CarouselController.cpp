@@ -20,7 +20,7 @@ static const float CAROUSEL_ROTATION_SPEED = 0.006f;
 
 ///------------------------------------------------------------------------------------------------
 
-CarouselController::CarouselController(Scene& scene, const std::vector<resources::ResourceId>& carouselEntryTextures, std::function<void()> onCarouselMovementStartCallback /* = nullptr */, std::function<void(const int)> onCarouselStationaryCallback /* = nullptr */, const float baseCarouselEntryZ /* = 2.0f */)
+CarouselController::CarouselController(Scene& scene, const std::vector<resources::ResourceId>& carouselEntryTextures, std::function<void()> onCarouselMovementStartCallback /* = nullptr */, std::function<void()> onCarouselStationaryCallback /* = nullptr */, const float baseCarouselEntryZ /* = 2.0f */)
     : mScene(scene)
     , mCarouselEntries(carouselEntryTextures)
     , mOnCarouselMovementStartCallback(onCarouselMovementStartCallback)
@@ -30,16 +30,25 @@ CarouselController::CarouselController(Scene& scene, const std::vector<resources
     , mFingerDownPosition(0.0f)
     , mCarouselRads(0.0f)
     , mCarouselTargetRads(0.0f)
+    , mSelectedEntryIndex(0)
     , mExhaustedMove(false)
+    , mHasInvokedStationaryOnce(false)
 {
     CreateSceneObjects();
-    OnStationary();
 }
 
 ///------------------------------------------------------------------------------------------------
 
 void CarouselController::Update(const float dtMillis)
 {
+    // The first OnStationary should be done in the constructor, however in order to invoke bad access on the callback side asking
+    // for the selected index before the constructor has even finished, we do it once on the first update
+    if (!mHasInvokedStationaryOnce)
+    {
+        OnStationary();
+        mHasInvokedStationaryOnce = true;
+    }
+    
     auto camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
     auto& worldCamera = camOpt->get();
     
@@ -121,6 +130,20 @@ void CarouselController::Update(const float dtMillis)
 
 ///------------------------------------------------------------------------------------------------
 
+std::optional<std::reference_wrapper<SceneObject>> CarouselController::GetSelectedSceneObject() const
+{
+    return mScene.GetSceneObject(strutils::StringId(game_constants::LAB_OPTION_NAME_PREFIX.GetString() + std::to_string(mSelectedEntryIndex)));
+}
+
+///------------------------------------------------------------------------------------------------
+
+int CarouselController::GetSelectedIndex() const
+{
+    return mSelectedEntryIndex;
+}
+
+///------------------------------------------------------------------------------------------------
+
 void CarouselController::CreateSceneObjects()
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
@@ -145,7 +168,7 @@ void CarouselController::OnStationary()
     if (mOnCarouselStationaryCallback)
     {
         auto closestZ = -1.0f;
-        auto selectOptionIndex = 0;
+        mSelectedEntryIndex = 0;
         
         for (int i = 0; i < static_cast<int>(mCarouselEntries.size()); ++i)
         {
@@ -154,11 +177,11 @@ void CarouselController::OnStationary()
             if (carouselEntrySoOpt && carouselEntrySoOpt->get().mPosition.z > closestZ)
             {
                 closestZ = carouselEntrySoOpt->get().mPosition.z;
-                selectOptionIndex = i;
+                mSelectedEntryIndex = i;
             }
         }
         
-        mOnCarouselStationaryCallback(selectOptionIndex);
+        mOnCarouselStationaryCallback();
     }
 }
 

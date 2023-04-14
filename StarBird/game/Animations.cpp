@@ -288,6 +288,15 @@ void ShineAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
     mShineXOffset -= mShineSpeed * dtMillis;
     sceneObject.mShaderFloatUniformValues[game_constants::SHINE_X_OFFSET_UNIFORM_NAME] = mShineXOffset;
+    
+    if (mShineXOffset < -1.0f)
+    {
+        BaseAnimation::VPause();
+        if (mCompletionCallback)
+        {
+            mCompletionCallback();
+        }
+    }
 }
 
 resources::ResourceId ShineAnimation::VGetCurrentEffectTextureResourceId() const

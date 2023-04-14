@@ -41,7 +41,7 @@ private:
     void CreateSceneObjects();
     void PositionCarouselObject(SceneObject& carouselObject, const int objectIndex) const;
     void OnCarouselMovementStart();
-    void OnCarouselStationary(const int selectedOptionIndex);
+    void OnCarouselStationary();
     void OnConfirmationButtonPressed();
     void OnTriggerOptionFlow();
     

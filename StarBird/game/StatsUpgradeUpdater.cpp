@@ -40,23 +40,23 @@ static const std::unordered_map<StatsUpgradeUpdater::StatType, const char*> STAT
 static const std::unordered_map<StatsUpgradeUpdater::StatType, glm::vec3> STAT_CONTROLLER_POSITIONS =
 {
     { StatsUpgradeUpdater::StatType::ATTACK_STAT, glm::vec3(2.93f, 7.80f, 0.5f) },
-    { StatsUpgradeUpdater::StatType::HEALTH_STAT, glm::vec3(2.82f, 2.30f, 0.5f) },
+    { StatsUpgradeUpdater::StatType::HEALTH_STAT, glm::vec3(2.92f, 2.30f, 0.5f) },
     { StatsUpgradeUpdater::StatType::HASTE_STAT, glm::vec3(-3.3f, 4.7f, 0.5f) },
     { StatsUpgradeUpdater::StatType::SPEED_STAT, glm::vec3(-2.89f, -3.63f, 0.5f) }
 };
 
 static const std::unordered_map<StatsUpgradeUpdater::StatType, glm::vec3> STAT_CONTROLLER_ELEMENTS_ADDITION_OFFSETS =
 {
-    { StatsUpgradeUpdater::StatType::ATTACK_STAT, glm::vec3(0.0f) },
-    { StatsUpgradeUpdater::StatType::HEALTH_STAT, glm::vec3(0.0f) },
+    { StatsUpgradeUpdater::StatType::ATTACK_STAT, glm::vec3(-0.1f, 0.0f, 0.0f) },
+    { StatsUpgradeUpdater::StatType::HEALTH_STAT, glm::vec3(-0.1f, 0.0f, 0.0f) },
     { StatsUpgradeUpdater::StatType::HASTE_STAT, glm::vec3(-0.4f, 1.26f, 0.0f) },
     { StatsUpgradeUpdater::StatType::SPEED_STAT, glm::vec3(-1.46f, 0.1f, 0.0f) }
 };
 
 static const std::unordered_map<StatsUpgradeUpdater::StatType, glm::vec3> STAT_CONTROLLER_SCALES =
 {
-    { StatsUpgradeUpdater::StatType::ATTACK_STAT, glm::vec3(6.22f, 4.8f, 1.0f) },
-    { StatsUpgradeUpdater::StatType::HEALTH_STAT, glm::vec3(6.22f, 4.8f, 1.0f) },
+    { StatsUpgradeUpdater::StatType::ATTACK_STAT, glm::vec3(6.5f, 4.8f, 1.0f) },
+    { StatsUpgradeUpdater::StatType::HEALTH_STAT, glm::vec3(6.5f, 4.8f, 1.0f) },
     { StatsUpgradeUpdater::StatType::HASTE_STAT, glm::vec3(5.4f, 7.0f, 1.0f) },
     { StatsUpgradeUpdater::StatType::SPEED_STAT, glm::vec3(-6.22f, -4.8f, 1.0f) }
 };

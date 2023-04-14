@@ -274,6 +274,8 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
         mSceneObjects.clear();
         mSceneObjectsToAdd.clear();
         
+        mLightRepository.RemoveAllLights();
+        
         GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera());
         GameSingletons::SetCameraForSceneObjectType(SceneObjectType::GUIObject, Camera());
         
@@ -325,7 +327,6 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
                 mSceneUpdater = std::make_unique<LevelUpdater>(*this, mBox2dWorld, std::move(levelDef));
             } break;
         }
-        
         
         for (auto& so: crossSceneSceneObjects)
         {
@@ -780,7 +781,7 @@ void Scene::CreateCrossSceneInterfaceObjects()
     
     GameSingletons::SetPlayerDisplayedHealth(playerDef.mHealth);
     GameSingletons::SetPlayerMaxHealth(playerDef.mHealth);
-    GameSingletons::SetPlayerCurrentHealth(playerDef.mHealth/2);
+    GameSingletons::SetPlayerCurrentHealth(playerDef.mHealth);
     GameSingletons::SetPlayerAttackStat(playerDef.mDamage);
     GameSingletons::SetPlayerMovementSpeedStat(1.0f);
     GameSingletons::SetPlayerBulletSpeedStat(1.0f);

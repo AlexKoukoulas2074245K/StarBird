@@ -11,33 +11,38 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "../utils/StringUtils.h"
+#include "RepeatableFlow.h"
+
+#include <vector>
 
 ///------------------------------------------------------------------------------------------------
 
 class Scene;
-class LevelUpdater;
 
 ///------------------------------------------------------------------------------------------------
 
 class UpgradesLogicHandler final
 {
 public:
-    UpgradesLogicHandler(Scene& scene, LevelUpdater& levelUpdater);
+    UpgradesLogicHandler(Scene& scene);
     
-    // Relevant game event callbacks
-    void OnUpgradeEquipped(const strutils::StringId& upgradeId);
-    void OnUpdate(const float dtMillis);
+    void InitializeEquippedUpgrade(const strutils::StringId& upgradeId);
+    void AnimateUpgradeGained(const strutils::StringId& upgradeId);
+    
+    void Update(const float dtMillis);
 
 private:
     void CreateMirrorImageSceneObjects();
     void CreatePlayerShieldSceneObject();
+    
+    void AnimateCrystalGiftUpgradeGained();
     
     void UpdateMirrorImages(const float dtMillis);
     void UpdatePlayerShield(const float dtMillis);
     
 private:
     Scene& mScene;
-    LevelUpdater& mLevelUpdater;
+    std::vector<RepeatableFlow> mFlows;
 };
 
 ///------------------------------------------------------------------------------------------------
