@@ -17,7 +17,7 @@ static const glm::vec3 FULL_SCREEN_OVERLAY_SCALE = glm::vec3(200.0f, 200.0f, 1.0
 
 ///------------------------------------------------------------------------------------------------
 
-FullScreenOverlayController::FullScreenOverlayController(Scene& scene, const float darkeningSpeed, const float maxDarkeningValue, const bool pauseAtMidPoint, CallbackType midwayCallback /* nullptr */, CallbackType completionCallback /* nullptr */)
+FullScreenOverlayController::FullScreenOverlayController(Scene& scene, const float darkeningSpeed, const float maxDarkeningValue, const bool pauseAtMidPoint, CallbackType midwayCallback /* nullptr */, CallbackType completionCallback /* nullptr */, const float customZ /* 3.5f */)
     : mScene(scene)
     , mDarkeningSpeed(darkeningSpeed)
     , mMaxDarkeningValue(maxDarkeningValue)
@@ -35,6 +35,7 @@ FullScreenOverlayController::FullScreenOverlayController(Scene& scene, const flo
     overlaySo.mSceneObjectType = SceneObjectType::GUIObject;
     overlaySo.mScale = FULL_SCREEN_OVERLAY_SCALE;
     overlaySo.mPosition = FULL_SCREEN_OVERLAY_POSITION;
+    overlaySo.mPosition.z = customZ;
     overlaySo.mName = game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME;
     overlaySo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
     overlaySo.mCrossSceneLifetime = true;

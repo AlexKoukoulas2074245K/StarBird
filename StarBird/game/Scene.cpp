@@ -19,6 +19,7 @@
 #include "ObjectTypeDefinitionRepository.h"
 #include "states/DebugConsoleGameState.h"
 #include "dataloaders/LevelDataLoader.h"
+#include "dataloaders/UpgradesLoader.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../resloading/MeshResource.h"
 #include "../resloading/TextureResource.h"
@@ -785,6 +786,8 @@ void Scene::CreateCrossSceneInterfaceObjects()
     GameSingletons::SetPlayerBulletSpeedStat(1.0f);
     GameSingletons::SetCrystalCount(100);
     GameSingletons::SetDisplayedCrystalCount(100);
+    UpgradesLoader loader;
+    GameSingletons::SetAvailableUpgrades(loader.LoadAllUpgrades());
     
     // Player Health Bar Text
     {

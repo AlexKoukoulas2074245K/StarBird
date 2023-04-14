@@ -27,6 +27,7 @@ inline const char* SMALL_CRYSTAL_MESH_FILE_NAME = "crystals/crystal_0.obj";
 
 inline const char* BASIC_SHADER_FILE_NAME = "basic.vs";
 inline const char* HUE_SHIFT_SHADER_FILE_NAME = "hue_shift.vs";
+inline const char* DARKENED_COLOR_SHADER_FILE_NAME = "darkened_color.vs";
 inline const char* DISSOLVE_SHADER_FILE_NAME = "dissolve.vs";
 inline const char* SHINE_SHADER_FILE_NAME = "shine.vs";
 inline const char* NEBULA_SHADER_FILE_NAME = "nebula.vs";
@@ -111,6 +112,7 @@ inline const strutils::StringId MAX_V_UNIFORM_NAME = strutils::StringId("max_v")
 inline const strutils::StringId CUSTOM_ALPHA_UNIFORM_NAME = strutils::StringId("custom_alpha");
 inline const strutils::StringId CUSTOM_COLOR_UNIFORM_NAME = strutils::StringId("custom_color");
 inline const strutils::StringId HUE_SHIFT_UNIFORM_NAME = strutils::StringId("hue_shift");
+inline const strutils::StringId DARKEN_VALUE_UNIFORM_NAME = strutils::StringId("darken_value");
 
 inline const strutils::StringId PLAYER_BULLET_FLOW_NAME = strutils::StringId("PLAYER_BULLET_FLOW");
 inline const strutils::StringId PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME = strutils::StringId("PLAYER_INVINCIBILITY_FLOW");

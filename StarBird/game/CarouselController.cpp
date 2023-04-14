@@ -10,7 +10,6 @@
 #include "GameSingletons.h"
 #include "SceneObject.h"
 #include "Scene.h"
-#include "../resloading/ResourceLoadingService.h"
 
 ///------------------------------------------------------------------------------------------------
 
@@ -18,16 +17,16 @@ static const float CAROUSEL_OBJECT_X_MULTIPLIER = 4.2f;
 static const float CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT = 3.5f;
 static const float CAROUSEL_ROTATION_THRESHOLD = 0.5f;
 static const float CAROUSEL_ROTATION_SPEED = 0.006f;
-static const float CAROUSEL_OPTION_Z = 2.0f;
 
 ///------------------------------------------------------------------------------------------------
 
-CarouselController::CarouselController(Scene& scene, const std::vector<std::string>& carouselEntryTextures, std::function<void()> onCarouselMovementStartCallback /* = nullptr */, std::function<void(const int)> onCarouselStationaryCallback /* = nullptr */)
+CarouselController::CarouselController(Scene& scene, const std::vector<resources::ResourceId>& carouselEntryTextures, std::function<void()> onCarouselMovementStartCallback /* = nullptr */, std::function<void(const int)> onCarouselStationaryCallback /* = nullptr */, const float baseCarouselEntryZ /* = 2.0f */)
     : mScene(scene)
     , mCarouselEntries(carouselEntryTextures)
     , mOnCarouselMovementStartCallback(onCarouselMovementStartCallback)
     , mOnCarouselStationaryCallback(onCarouselStationaryCallback)
     , mCarouselState(CarouselState::STATIONARY)
+    , mBaseCarouselEntryZ(baseCarouselEntryZ)
     , mFingerDownPosition(0.0f)
     , mCarouselRads(0.0f)
     , mCarouselTargetRads(0.0f)
@@ -129,10 +128,11 @@ void CarouselController::CreateSceneObjects()
     for (int i = 0; i < static_cast<int>(mCarouselEntries.size()); ++i)
     {
         SceneObject optionEntrySo;
-        optionEntrySo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + mCarouselEntries.at(i)), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        optionEntrySo.mAnimation = std::make_unique<SingleFrameAnimation>(mCarouselEntries.at(i), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::DARKENED_COLOR_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         optionEntrySo.mSceneObjectType = SceneObjectType::WorldGameObject;
         optionEntrySo.mName = strutils::StringId(game_constants::LAB_OPTION_NAME_PREFIX.GetString() + std::to_string(i));
         optionEntrySo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+        
         PositionCarouselObject(optionEntrySo, i);
         mScene.AddSceneObject(std::move(optionEntrySo));
     }
@@ -168,8 +168,10 @@ void CarouselController::PositionCarouselObject(SceneObject& carouselObject, con
 {
     float optionRadsOffset = objectIndex * (math::PI * 2.0f / mCarouselEntries.size());
     carouselObject.mPosition.x = math::Sinf(mCarouselRads + optionRadsOffset) * CAROUSEL_OBJECT_X_MULTIPLIER;
-    carouselObject.mPosition.z = CAROUSEL_OPTION_Z + math::Cosf(mCarouselRads + optionRadsOffset);
+    carouselObject.mPosition.z = mBaseCarouselEntryZ + math::Cosf(mCarouselRads + optionRadsOffset);
     carouselObject.mScale = glm::vec3(carouselObject.mPosition.z + CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT, carouselObject.mPosition.z + CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT, 1.0f);
+    
+    carouselObject.mShaderFloatUniformValues[game_constants::DARKEN_VALUE_UNIFORM_NAME] = math::Max(((carouselObject.mPosition.z - mBaseCarouselEntryZ)/2.0f) + 0.5f, 0.0f);
 }
 
 ///------------------------------------------------------------------------------------------------

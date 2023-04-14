@@ -350,9 +350,6 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
     
     mBox2dWorld.SetContactListener(&collisionListener);
     
-    UpgradesLoader loader;
-    GameSingletons::SetAvailableUpgrades(loader.LoadAllUpgrades());
-    
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
 #endif
@@ -863,15 +860,15 @@ void LevelUpdater::LoadLevelInvariantObjects()
         
         SceneObject playerSO = scene_object_utils::CreateSceneObjectWithBody(playerObjectDef, game_constants::PLAYER_INITIAL_POS, mBox2dWorld, game_constants::PLAYER_SCENE_OBJECT_NAME);
         
-        auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
-        auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
+//        auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
+//        auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
+//
+//        auto mirrorImageUpgradeDef = availableUpgrades.at(game_constants::MIRROR_IMAGE_UGPRADE_NAME);
+//
+//        equippedUpgrades[mirrorImageUpgradeDef.mUpgradeName] = mirrorImageUpgradeDef;
+//        availableUpgrades.erase(mirrorImageUpgradeDef.mUpgradeName);
         
-        auto mirrorImageUpgradeDef = availableUpgrades.at(game_constants::MIRROR_IMAGE_UGPRADE_NAME);
-        
-        equippedUpgrades[mirrorImageUpgradeDef.mUpgradeName] = mirrorImageUpgradeDef;
-        availableUpgrades.erase(mirrorImageUpgradeDef.mUpgradeName);
-        
-        mUpgradesLogicHandler.OnUpgradeEquipped(mirrorImageUpgradeDef.mUpgradeName);
+//        mUpgradesLogicHandler.OnUpgradeEquipped(mirrorImageUpgradeDef.mUpgradeName);
         
         mScene.AddSceneObject(std::move(playerSO));
     }

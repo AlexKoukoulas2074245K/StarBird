@@ -90,20 +90,21 @@ PostStateUpdateDirective DebugConsoleGameState::VUpdate(const float dtMillis)
         
         if (inputContext.mEventType == SDL_KEYDOWN && mLastEventType != SDL_KEYDOWN)
         {
-            if (inputContext.mKeyCode == SDL_SCANCODE_DOWN && mPastCommandElementIds.size() > 0)
+            if (inputContext.mKeyCode == SDL_SCANCODE_UP && mPastCommandElementIds.size() > 0)
             {
                 mPastCommandHistoryIndex = (mPastCommandHistoryIndex + 1) % mPastCommandElementIds.size();
                 GameSingletons::SetInputContextText(mScene->GetSceneObject(mPastCommandElementIds[mPastCommandElementIds.size() - 1 - mPastCommandHistoryIndex])->get().mText);
             }
-            else if (inputContext.mKeyCode == SDL_SCANCODE_UP && mPastCommandElementIds.size() > 0)
+            else if (inputContext.mKeyCode == SDL_SCANCODE_DOWN && mPastCommandElementIds.size() > 0)
             {
-                mPastCommandHistoryIndex--;
                 if (mPastCommandHistoryIndex < 0) mPastCommandHistoryIndex = static_cast<int>(mPastCommandElementIds.size()) - 1;
                 GameSingletons::SetInputContextText(mScene->GetSceneObject(mPastCommandElementIds[mPastCommandElementIds.size() - 1 - mPastCommandHistoryIndex])->get().mText);
+                mPastCommandHistoryIndex--;
             }
             else if (inputContext.mKeyCode == SDL_SCANCODE_RETURN)
             {
                 ExecuteCommand(inputContext.mText, commandTextSoOpt->get());
+                mPastCommandHistoryIndex = static_cast<int>(mPastCommandElementIds.size() - 1);
             }
         }
     
@@ -525,7 +526,7 @@ void DebugConsoleGameState::RegisterCommands()
             }
             else
             {
-                output.emplace_back(so.mName.GetString() + " at " + strutils::FloatToString(so.mPosition.x, 4) + ", " + strutils::FloatToString(so.mPosition.y, 4));
+                output.emplace_back(so.mName.GetString() + " at " + strutils::FloatToString(so.mPosition.x, 4) + ", " + strutils::FloatToString(so.mPosition.y, 4) + ", "  + strutils::FloatToString(so.mPosition.z, 4));
             }
         }
         

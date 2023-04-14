@@ -6,6 +6,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "Animations.h"
+#include "CarouselController.h"
 #include "ChestRewardUpdater.h"
 #include "FullScreenOverlayController.h"
 #include "GameConstants.h"
@@ -29,10 +30,10 @@ static const strutils::StringId CHEST_BASE_NAME = strutils::StringId("CHEST_BASE
 static const strutils::StringId CHEST_LID_NAME = strutils::StringId("CHEST_LID");
 static const strutils::StringId CHEST_LIGHT_NAME = strutils::StringId("CHEST_LIGHT");
 
-static const glm::vec3 BACKGROUND_POSITION = glm::vec3(0.0f, 0.0f, -5.0f);
-static const glm::vec3 CHEST_BASE_POSITION = glm::vec3(0.0f, -1.576f, 0.20f);
-static const glm::vec3 CHEST_LID_POSITION = glm::vec3(0.0f, 0.183f, 0.20f);
-static const glm::vec3 CHEST_LIGHT_POSITION = glm::vec3(0.0f, -2.5f, -2.0f);
+static const glm::vec3 BACKGROUND_POSITION = glm::vec3(0.0f, 0.0f, -7.0f);
+static const glm::vec3 CHEST_BASE_POSITION = glm::vec3(0.0f, -1.576f, -4.20f);
+static const glm::vec3 CHEST_LID_POSITION = glm::vec3(0.0f, 0.183f, -4.20f);
+static const glm::vec3 CHEST_LIGHT_POSITION = glm::vec3(0.0f, -2.5f, -6.0f);
 static const glm::vec3 CHEST_SCALE = glm::vec3(2.0f, 2.0f, 2.0f);
 
 static const  glm::vec4 CHEST_LIGHT_COLOR = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
@@ -100,6 +101,13 @@ ChestRewardUpdater::ChestRewardUpdater(Scene& scene)
     
     mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, CHEST_LIGHT_NAME, CHEST_LIGHT_COLOR, CHEST_LIGHT_POSITION, CHEST_LIGHT_INIT_POWER);
     mScene.GetLightRepository().AddLight(LightType::AMBIENT_LIGHT, game_constants::AMBIENT_LIGHT_NAME, game_constants::AMBIENT_LIGHT_COLOR, glm::vec3(0.0f), 0.0f);
+}
+
+///------------------------------------------------------------------------------------------------
+
+ChestRewardUpdater::~ChestRewardUpdater()
+{
+    
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -206,8 +214,16 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
                         
                         mScene.AddSceneObject(std::move(rewardScreenTitleSo));
                         
+                        std::vector<resources::ResourceId> upgradeTextureIds;
+                        for (const auto& availableUpgradeMapEntry: GameSingletons::GetAvailableUpgrades())
+                        {
+                            upgradeTextureIds.push_back(availableUpgradeMapEntry.second.mTextureResourceId);
+                        }
+                        
+                        mCarouselController = std::make_unique<CarouselController>(mScene, upgradeTextureIds, nullptr, nullptr, 0.0f);
+                        
                         mRewardFlowState = RewardFlowState::REWARD_SELECTION;
-                    });
+                    }, nullptr, -1.0f);
                 }
             }
         } break;
@@ -219,6 +235,8 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
             {
                 rewardScreenTitleSoOpt->get().mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = math::Min(1.0f, rewardScreenTitleSoOpt->get().mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] + game_constants::TEXT_FADE_IN_ALPHA_SPEED * dtMillis);
             }
+            
+            mCarouselController->Update(dtMillis);
         } break;
     }
     

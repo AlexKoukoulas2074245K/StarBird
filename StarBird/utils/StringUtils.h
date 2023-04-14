@@ -189,12 +189,14 @@ public:
     StringId()
     : mString("")
     , mStringId(0)
+    , mIdCounter(0)
     {
     }
     
     explicit StringId(const std::string& str)
     : mString(str)
     , mStringId(GetStringHash(str))
+    , mIdCounter(GenerateIdCounter())
     {
     }
     
@@ -204,6 +206,7 @@ public:
     bool isEmpty() const { return mStringId == 0; }
     const std::string& GetString() const { return mString; }
     size_t GetStringId() const { return mStringId; }
+    long long GetIdCounter() const { return mIdCounter; }
     
     void fromAddress(const void* address)
     {
@@ -211,18 +214,22 @@ public:
         ss << address;
         mString = ss.str();
         mStringId = GetStringHash(mString);
+        mIdCounter = GenerateIdCounter();
     }
+    
+    static long long GenerateIdCounter();
     
 private:
     std::string mString;
     size_t      mStringId;
+    long long mIdCounter;
 };
 
 ///-----------------------------------------------------------------------------------------------
 /// Custom less operator for StringIds to be used indirectly by stl containers
 inline bool operator < (const StringId& lhs, const StringId& rhs)
 {
-    return lhs.GetStringId() < rhs.GetStringId();
+    return lhs.GetIdCounter() < rhs.GetIdCounter();
 }
 
 ///-----------------------------------------------------------------------------------------------

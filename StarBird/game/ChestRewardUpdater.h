@@ -19,10 +19,12 @@
 
 class Scene;
 class FullScreenOverlayController;
+class CarouselController;
 class ChestRewardUpdater final: public IUpdater
 {
 public:
     ChestRewardUpdater(Scene& scene);
+    ~ChestRewardUpdater();
     
     PostStateUpdateDirective VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis) override;
     void VOnAppStateChange(Uint32 event) override;
@@ -51,6 +53,7 @@ private:
     float mChestLightDtAccum;
     
     std::unique_ptr<FullScreenOverlayController> mScreenOverlayController;
+    std::unique_ptr<CarouselController> mCarouselController;
 };
 
 ///------------------------------------------------------------------------------------------------

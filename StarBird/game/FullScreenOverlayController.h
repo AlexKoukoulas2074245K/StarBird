@@ -20,7 +20,7 @@ class FullScreenOverlayController final
 public:
     using CallbackType = std::function<void()>;
     
-    FullScreenOverlayController(Scene& scene, const float darkeningSpeed, const float maxDarkeningValue, const bool pauseAtMidPoint, CallbackType midwayCallback = nullptr, CallbackType completionCallback = nullptr);
+    FullScreenOverlayController(Scene& scene, const float darkeningSpeed, const float maxDarkeningValue, const bool pauseAtMidPoint, CallbackType midwayCallback = nullptr, CallbackType completionCallback = nullptr, const float customZ = 3.5f);
     
     void Update(const float dtMillis);
     void Resume();

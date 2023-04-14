@@ -314,13 +314,13 @@ void LabUpdater::CreateSceneObjects()
     const auto optionCount = DEFAULT_LAB_OPTIONS.size();
     mLabOptions.resize(optionCount);
     
-    std::vector<std::string> labOptionTextures;
+    std::vector<resources::ResourceId> labOptionTextures;
     
     for (int i = 0; i < static_cast<int>(mLabOptions.size()); ++i)
     {
         game_constants::LabOptionType currentLabOption = static_cast<game_constants::LabOptionType>(i);
         mLabOptions[i] = currentLabOption;
-        labOptionTextures.push_back(game_constants::LAB_OPTION_TYPE_TO_TEXTURE.at(currentLabOption));
+        labOptionTextures.push_back(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::LAB_OPTION_TYPE_TO_TEXTURE.at(currentLabOption)));
     }
     
     mCarouselController = std::make_unique<CarouselController>(mScene, labOptionTextures, [&](){ OnCarouselMovementStart(); }, [&](const int selectedOptionIndex){ OnCarouselStationary(selectedOptionIndex); });

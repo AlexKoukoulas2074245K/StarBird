@@ -11,6 +11,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "../utils/MathUtils.h"
+#include "../resloading/ResourceLoadingService.h"
 
 #include <functional>
 #include <string>
@@ -23,7 +24,7 @@ class SceneObject;
 class CarouselController final
 {
 public:
-    CarouselController(Scene& scene, const std::vector<std::string>& carouselEntryTextures, std::function<void()> onCarouselMovementStartCallback = nullptr, std::function<void(const int)> onCarouselStationaryCallback = nullptr);
+    CarouselController(Scene& scene, const std::vector<resources::ResourceId>& carouselEntryTextures, std::function<void()> onCarouselMovementStartCallback = nullptr, std::function<void(const int)> onCarouselStationaryCallback = nullptr, const float baseCarouselEntryZ = 2.0f);
     
     void Update(const float dtMillis);
 
@@ -40,11 +41,12 @@ private:
     
 private:
     Scene& mScene;
-    std::vector<std::string> mCarouselEntries;
+    std::vector<resources::ResourceId> mCarouselEntries;
     std::function<void()> mOnCarouselMovementStartCallback;
     std::function<void(const int)> mOnCarouselStationaryCallback;
     CarouselState mCarouselState;
     glm::vec3 mFingerDownPosition;
+    const float mBaseCarouselEntryZ;
     float mCarouselRads;
     float mCarouselTargetRads;
     bool mExhaustedMove;
