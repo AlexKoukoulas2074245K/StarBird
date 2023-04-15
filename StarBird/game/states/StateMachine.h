@@ -24,11 +24,11 @@
 class Scene;
 class LevelUpdater;
 class b2World;
-class UpgradesLogicHandler;
+class UpgradesLevelLogicHandler;
 class StateMachine final
 {
 public:
-    StateMachine(Scene* scene, LevelUpdater* levelUpdater, UpgradesLogicHandler* upgradesLogicHandler, b2World* box2dWorld)
+    StateMachine(Scene* scene, LevelUpdater* levelUpdater, UpgradesLevelLogicHandler* upgradesLogicHandler, b2World* box2dWorld)
         : mScene(scene)
         , mLevelUpdater(levelUpdater)
         , mUpgradesLogicHandler(upgradesLogicHandler)
@@ -57,7 +57,7 @@ private:
 private:
     Scene* mScene;
     LevelUpdater* mLevelUpdater;
-    UpgradesLogicHandler* mUpgradesLogicHandler;
+    UpgradesLevelLogicHandler* mUpgradesLogicHandler;
     b2World* mBox2dWorld;
     
     std::unordered_map<strutils::StringId, std::unique_ptr<BaseGameState>, strutils::StringIdHasher> mStateNameToInstanceMap;

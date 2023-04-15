@@ -13,6 +13,8 @@
 
 ///------------------------------------------------------------------------------------------------
 
+inline const strutils::StringId CAROUSEL_OPTION_NAME_PREFIX = strutils::StringId("CAROUSEL_OPTION_");
+
 static const float CAROUSEL_OBJECT_X_MULTIPLIER = 4.2f;
 static const float CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT = 3.5f;
 static const float CAROUSEL_ROTATION_THRESHOLD = 0.5f;
@@ -119,7 +121,7 @@ void CarouselController::Update(const float dtMillis)
     // Give fake perspective to all Lab options
     for (int i = 0; i < static_cast<int>(mCarouselEntries.size()); ++i)
     {
-        auto labOptionSoOpt = mScene.GetSceneObject(strutils::StringId(game_constants::LAB_OPTION_NAME_PREFIX.GetString() + std::to_string(i)));
+        auto labOptionSoOpt = mScene.GetSceneObject(strutils::StringId(CAROUSEL_OPTION_NAME_PREFIX.GetString() + std::to_string(i)));
         if (labOptionSoOpt)
         {
             auto& labOptionSo = labOptionSoOpt->get();
@@ -132,7 +134,7 @@ void CarouselController::Update(const float dtMillis)
 
 std::optional<std::reference_wrapper<SceneObject>> CarouselController::GetSelectedSceneObject() const
 {
-    return mScene.GetSceneObject(strutils::StringId(game_constants::LAB_OPTION_NAME_PREFIX.GetString() + std::to_string(mSelectedEntryIndex)));
+    return mScene.GetSceneObject(strutils::StringId(CAROUSEL_OPTION_NAME_PREFIX.GetString() + std::to_string(mSelectedEntryIndex)));
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -153,7 +155,7 @@ void CarouselController::CreateSceneObjects()
         SceneObject optionEntrySo;
         optionEntrySo.mAnimation = std::make_unique<SingleFrameAnimation>(mCarouselEntries.at(i), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::DARKENED_COLOR_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         optionEntrySo.mSceneObjectType = SceneObjectType::WorldGameObject;
-        optionEntrySo.mName = strutils::StringId(game_constants::LAB_OPTION_NAME_PREFIX.GetString() + std::to_string(i));
+        optionEntrySo.mName = strutils::StringId(CAROUSEL_OPTION_NAME_PREFIX.GetString() + std::to_string(i));
         optionEntrySo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
         
         PositionCarouselObject(optionEntrySo, i);
@@ -172,7 +174,7 @@ void CarouselController::OnStationary()
         
         for (int i = 0; i < static_cast<int>(mCarouselEntries.size()); ++i)
         {
-            auto carouselEntrySoOpt = mScene.GetSceneObject(strutils::StringId(game_constants::LAB_OPTION_NAME_PREFIX.GetString() + std::to_string(i)));
+            auto carouselEntrySoOpt = mScene.GetSceneObject(strutils::StringId(CAROUSEL_OPTION_NAME_PREFIX.GetString() + std::to_string(i)));
             
             if (carouselEntrySoOpt && carouselEntrySoOpt->get().mPosition.z > closestZ)
             {

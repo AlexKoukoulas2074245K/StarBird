@@ -81,7 +81,6 @@
 		9285241529A8D5B9007EA0D9 /* DebugConsoleGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9285241429A8D5B9007EA0D9 /* DebugConsoleGameState.cpp */; };
 		92894E16299D331200605302 /* FontRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92894E12299D331200605302 /* FontRepository.cpp */; };
 		92894E17299D331200605302 /* ObjectTypeDefinitionRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92894E15299D331200605302 /* ObjectTypeDefinitionRepository.cpp */; };
-		92894E1A299D36C500605302 /* UpgradesLogicHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92894E19299D36C500605302 /* UpgradesLogicHandler.cpp */; };
 		92A8517B2985704800C99B61 /* SceneRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A8516E2985704800C99B61 /* SceneRenderer.cpp */; };
 		92AF7B2D29914F1500BCC894 /* UpgradesLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92AF7B2B29914F1500BCC894 /* UpgradesLoader.cpp */; };
 		92B44C07298D247E00191B22 /* FontLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B44C06298D247E00191B22 /* FontLoader.cpp */; };
@@ -112,6 +111,8 @@
 		92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92E8DAE4298E940B00591968 /* PhysicsCollisionListener.cpp */; };
 		92E96A6B29803597004A3120 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92E96A5F29803597004A3120 /* OpenGLES.framework */; };
 		92F5BE5929DD7A4200E2EB14 /* StatUpgradeAreaController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F5BE5829DD7A4200E2EB14 /* StatUpgradeAreaController.cpp */; };
+		92F62EC629EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F62EB729EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.cpp */; };
+		92F62EC729EB27B7006FEC10 /* UpgradesLevelLogicHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F62EC529EB27B7006FEC10 /* UpgradesLevelLogicHandler.cpp */; };
 		92F9EC7C299E6C1A00C263E8 /* StateMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */; };
 		92F9EC7F299E71BB00C263E8 /* FightingWaveGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC7D299E71BB00C263E8 /* FightingWaveGameState.cpp */; };
 		92F9EC82299E799D00C263E8 /* WaveIntroGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC80299E799D00C263E8 /* WaveIntroGameState.cpp */; };
@@ -387,8 +388,6 @@
 		92894E13299D331200605302 /* FontRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontRepository.h; sourceTree = "<group>"; };
 		92894E14299D331200605302 /* ObjectTypeDefinitionRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectTypeDefinitionRepository.h; sourceTree = "<group>"; };
 		92894E15299D331200605302 /* ObjectTypeDefinitionRepository.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectTypeDefinitionRepository.cpp; sourceTree = "<group>"; };
-		92894E18299D36C500605302 /* UpgradesLogicHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradesLogicHandler.h; sourceTree = "<group>"; };
-		92894E19299D36C500605302 /* UpgradesLogicHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradesLogicHandler.cpp; sourceTree = "<group>"; };
 		92A8516E2985704800C99B61 /* SceneRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneRenderer.cpp; sourceTree = "<group>"; };
 		92A8517A2985704800C99B61 /* SceneRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneRenderer.h; sourceTree = "<group>"; };
 		92A8517C298570D200C99B61 /* SceneObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneObject.h; sourceTree = "<group>"; };
@@ -825,6 +824,10 @@
 		92E96BE629805C9D004A3120 /* type_aligned.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = type_aligned.hpp; sourceTree = "<group>"; };
 		92F5BE4C29DD7A4200E2EB14 /* StatUpgradeAreaController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatUpgradeAreaController.h; sourceTree = "<group>"; };
 		92F5BE5829DD7A4200E2EB14 /* StatUpgradeAreaController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StatUpgradeAreaController.cpp; sourceTree = "<group>"; };
+		92F62EB729EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradeUnlockedAnimationHandler.cpp; sourceTree = "<group>"; };
+		92F62EC329EB27B7006FEC10 /* UpgradesLevelLogicHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradesLevelLogicHandler.h; sourceTree = "<group>"; };
+		92F62EC429EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradeUnlockedAnimationHandler.h; sourceTree = "<group>"; };
+		92F62EC529EB27B7006FEC10 /* UpgradesLevelLogicHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradesLevelLogicHandler.cpp; sourceTree = "<group>"; };
 		92F9EC79299E56AD00C263E8 /* BaseGameState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseGameState.h; sourceTree = "<group>"; };
 		92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateMachine.cpp; sourceTree = "<group>"; };
 		92F9EC7B299E6C1A00C263E8 /* StateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateMachine.h; sourceTree = "<group>"; };
@@ -1147,8 +1150,10 @@
 				92F5BE4C29DD7A4200E2EB14 /* StatUpgradeAreaController.h */,
 				9259F35629D7261100850744 /* TextPromptController.cpp */,
 				9259F35729D7261100850744 /* TextPromptController.h */,
-				92894E19299D36C500605302 /* UpgradesLogicHandler.cpp */,
-				92894E18299D36C500605302 /* UpgradesLogicHandler.h */,
+				92F62EB729EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.cpp */,
+				92F62EC429EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.h */,
+				92F62EC529EB27B7006FEC10 /* UpgradesLevelLogicHandler.cpp */,
+				92F62EC329EB27B7006FEC10 /* UpgradesLevelLogicHandler.h */,
 				927FD9B029C35C750012C724 /* bossai */,
 				925FD86929892BE00058E747 /* dataloaders */,
 				92894E11299D331200605302 /* datarepos */,
@@ -2008,6 +2013,7 @@
 				92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */,
 				92C851BA2969A9D70021923F /* main.cpp in Sources */,
 				9254CBEA2969B79A00EFE0CC /* b2CircleContact.cpp in Sources */,
+				92F62EC629EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.cpp in Sources */,
 				92DAA4CE29829A4C0062A438 /* DataFileLoader.cpp in Sources */,
 				9254CBE62969B79A00EFE0CC /* b2ChainAndCircleContact.cpp in Sources */,
 				9254CBFC2969B79A00EFE0CC /* b2Rope.cpp in Sources */,
@@ -2017,7 +2023,6 @@
 				9254CBE42969B79A00EFE0CC /* b2ChainAndPolygonContact.cpp in Sources */,
 				92DAA4CD29829A4C0062A438 /* ShaderLoader.cpp in Sources */,
 				92C851BF2969AAA10021923F /* SDL_uikit_main.c in Sources */,
-				92894E1A299D36C500605302 /* UpgradesLogicHandler.cpp in Sources */,
 				92C2198A29842E6A00B2D2C6 /* Game.cpp in Sources */,
 				9254CBF32969B79A00EFE0CC /* b2MotorJoint.cpp in Sources */,
 				9254CC0C2969B79A00EFE0CC /* b2BroadPhase.cpp in Sources */,
@@ -2041,6 +2046,7 @@
 				92F9EC7F299E71BB00C263E8 /* FightingWaveGameState.cpp in Sources */,
 				92F9EC82299E799D00C263E8 /* WaveIntroGameState.cpp in Sources */,
 				9210BFC229E82A2B00D117A6 /* ChestRewardUpdater.cpp in Sources */,
+				92F62EC729EB27B7006FEC10 /* UpgradesLevelLogicHandler.cpp in Sources */,
 				9254CBEB2969B79A00EFE0CC /* b2EdgeAndCircleContact.cpp in Sources */,
 				92DAA4CC29829A4C0062A438 /* DataFileResource.cpp in Sources */,
 				9254CC032969B79A00EFE0CC /* b2Distance.cpp in Sources */,

@@ -32,11 +32,11 @@ UpgradesLoader::UpgradesLoader()
             upgrade.mUpgradeDescription = strutils::StringId(description->value());
         }
         
-        auto* name = node->first_attribute("name");
-        if (name)
+        auto* upgradeNameId = node->first_attribute("nameId");
+        if (upgradeNameId)
         {
-            upgrade.mUpgradeName = strutils::StringId(name->value());
-            mConstructedUpgrades[upgrade.mUpgradeName] = std::move(upgrade);
+            upgrade.mUpgradeNameId = strutils::StringId(upgradeNameId->value());
+            mConstructedUpgrades[upgrade.mUpgradeNameId] = std::move(upgrade);
         }
     });
 }

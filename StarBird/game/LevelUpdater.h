@@ -16,7 +16,7 @@
 #include "LevelDefinition.h"
 #include "RepeatableFlow.h"
 #include "UpgradeDefinition.h"
-#include "UpgradesLogicHandler.h"
+#include "UpgradesLevelLogicHandler.h"
 #include "StateMachine.h"
 #include "../utils/StringUtils.h"
 
@@ -85,7 +85,7 @@ private:
     Scene& mScene;
     b2World& mBox2dWorld;
     LevelDefinition mLevel;
-    UpgradesLogicHandler mUpgradesLogicHandler;
+    UpgradesLevelLogicHandler mUpgradesLogicHandler;
     StateMachine mStateMachine;
     BossAIController mBossAIController;
     PostStateUpdateDirective mLastPostStateMachineUpdateDirective;

@@ -11,7 +11,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "IUpdater.h"
-#include "UpgradesLogicHandler.h"
+#include "UpgradeUnlockedAnimationHandler.h"
 #include "StateMachine.h"
 #include "definitions/UpgradeDefinition.h"
 
@@ -58,7 +58,7 @@ private:
     };
     
     Scene& mScene;
-    UpgradesLogicHandler mUpgradesLogicHandler;
+    UpgradeUnlockedAnimationHandler mUpgradeUnlockedAnimationHandler;
     StateMachine mStateMachine;
     RewardFlowState mRewardFlowState;
     float mShakeNoiseMag;

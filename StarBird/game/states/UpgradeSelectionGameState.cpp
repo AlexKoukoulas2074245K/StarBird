@@ -6,7 +6,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "UpgradeSelectionGameState.h"
-#include "UpgradesLogicHandler.h"
+#include "UpgradesLevelLogicHandler.h"
 #include "WaveIntroGameState.h"
 #include "../GameConstants.h"
 #include "../GameSingletons.h"
@@ -158,7 +158,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         mScene->AddSceneObject(std::move(leftUpgradeSO));
         
         GameSingletons::GetUpgradeSelection().first = upgrade;
-        availableUpgrades.erase(upgrade.mUpgradeName);
+        availableUpgrades.erase(upgrade.mUpgradeNameId);
     }
     
     // Right Upgrade
@@ -177,7 +177,7 @@ void UpgradeSelectionGameState::CreateUpgradeSceneObjects()
         mScene->AddSceneObject(std::move(rightUpgradeSO));
         
         GameSingletons::GetUpgradeSelection().second = upgrade;
-        availableUpgrades.erase(upgrade.mUpgradeName);
+        availableUpgrades.erase(upgrade.mUpgradeNameId);
     }
 }
 
@@ -229,9 +229,9 @@ void UpgradeSelectionGameState::UpdateUpgradeSelection(const float dtMillis)
         if (selectedUpgradeName == game_constants::LEFT_UPGRADE_SCENE_OBJECT_NAME)
         {
             mSelectionState = SelectionState::LEFT_SELECTED;
-            //mUpgradesLogicHandler->OnUpgradeEquipped(upgradeSelection.first.mUpgradeName);
-            equippedUpgrades[upgradeSelection.first.mUpgradeName] = upgradeSelection.first;
-            availableUpgrades[upgradeSelection.second.mUpgradeName] = upgradeSelection.second;
+            //mUpgradesLogicHandler->OnUpgradeEquipped(upgradeSelection.first.mUpgradeNameId);
+            equippedUpgrades[upgradeSelection.first.mUpgradeNameId] = upgradeSelection.first;
+            availableUpgrades[upgradeSelection.second.mUpgradeNameId] = upgradeSelection.second;
             
             if (leftUpgradeSoOpt)
             {
@@ -242,9 +242,9 @@ void UpgradeSelectionGameState::UpdateUpgradeSelection(const float dtMillis)
         else
         {
             mSelectionState = SelectionState::RIGHT_SELECTED;
-            //mUpgradesLogicHandler->OnUpgradeEquipped(upgradeSelection.second.mUpgradeName);
-            equippedUpgrades[upgradeSelection.second.mUpgradeName] = upgradeSelection.second;
-            availableUpgrades[upgradeSelection.first.mUpgradeName] = upgradeSelection.first;
+            //mUpgradesLogicHandler->OnUpgradeEquipped(upgradeSelection.second.mUpgradeNameId);
+            equippedUpgrades[upgradeSelection.second.mUpgradeNameId] = upgradeSelection.second;
+            availableUpgrades[upgradeSelection.first.mUpgradeNameId] = upgradeSelection.first;
             
             if (rightUpgradeSoOpt)
             {

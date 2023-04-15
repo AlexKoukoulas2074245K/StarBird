@@ -73,7 +73,7 @@ static const float CONFIRMATION_BUTTON_TEXT_PULSING_ENLARGEMENT_FACTOR = 1.0f/40
 
 ChestRewardUpdater::ChestRewardUpdater(Scene& scene)
     : mScene(scene)
-    , mUpgradesLogicHandler(scene)
+    , mUpgradeUnlockedAnimationHandler(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
     , mRewardFlowState(RewardFlowState::AWAIT_PRESS)
     , mShakeNoiseMag(0.0f)
@@ -333,17 +333,21 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
             
             auto upgradeDef = FindSelectedRewardDefinition();
             
-            equippedUpgrades[upgradeDef.mUpgradeName] = upgradeDef;
-            availableUpgrades.erase(upgradeDef.mUpgradeName);
+            equippedUpgrades[upgradeDef.mUpgradeNameId] = upgradeDef;
+            availableUpgrades.erase(upgradeDef.mUpgradeNameId);
             
-            mUpgradesLogicHandler.AnimateUpgradeGained(upgradeDef.mUpgradeName);
+            mUpgradeUnlockedAnimationHandler.OnUpgradeGained(upgradeDef.mUpgradeNameId);
             
             mRewardFlowState = RewardFlowState::REWARD_USAGE_ANIMATING;
         } break;
             
         case RewardFlowState::REWARD_USAGE_ANIMATING:
         {
-            mUpgradesLogicHandler.Update(dtMillis);
+            if (mUpgradeUnlockedAnimationHandler.Update(dtMillis) == UpgradeUnlockedAnimationHandler::UpgradeAnimationState::FINISHED)
+            {
+                mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
+                mRewardFlowState = RewardFlowState::TRANSITIONING;
+            }
         } break;
             
         case RewardFlowState::TRANSITIONING:

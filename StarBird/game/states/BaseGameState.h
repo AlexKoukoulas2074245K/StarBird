@@ -24,7 +24,7 @@ enum class PostStateUpdateDirective
 
 class Scene;
 class LevelUpdater;
-class UpgradesLogicHandler;
+class UpgradesLevelLogicHandler;
 class b2World;
 class BaseGameState
 {
@@ -46,7 +46,7 @@ public:
     bool IsComplete() const { return !mNextStateName.isEmpty(); }
     const strutils::StringId& GetNextStateName() const { return mNextStateName; }
     
-    void SetDependencies(Scene* scene, LevelUpdater* levelUpdater, UpgradesLogicHandler* upgradesLogicHandler, b2World* world)
+    void SetDependencies(Scene* scene, LevelUpdater* levelUpdater, UpgradesLevelLogicHandler* upgradesLogicHandler, b2World* world)
     {
         mScene = scene;
         mLevelUpdater = levelUpdater;
@@ -70,7 +70,7 @@ protected:
 protected:
     Scene* mScene;
     LevelUpdater* mLevelUpdater;
-    UpgradesLogicHandler* mUpgradesLogicHandler;
+    UpgradesLevelLogicHandler* mUpgradesLogicHandler;
     b2World* mBox2dWorld;
     
 private:

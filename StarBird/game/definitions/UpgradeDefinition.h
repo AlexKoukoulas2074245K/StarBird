@@ -17,7 +17,7 @@
 
 struct UpgradeDefinition
 {
-    strutils::StringId mUpgradeName = strutils::StringId();
+    strutils::StringId mUpgradeNameId = strutils::StringId();
     strutils::StringId mUpgradeDescription = strutils::StringId();
     resources::ResourceId mTextureResourceId = resources::ResourceId();
 };
