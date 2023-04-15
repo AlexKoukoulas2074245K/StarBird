@@ -57,6 +57,12 @@ void UpgradeUnlockedAnimationHandler::OnUpgradeGained(const strutils::StringId& 
 {
     mCurrentUpgradeNameUnlocked = upgradeId;
     
+    auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
+    auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
+    
+    equippedUpgrades[mCurrentUpgradeNameUnlocked] = availableUpgrades.at(mCurrentUpgradeNameUnlocked);
+    availableUpgrades.erase(mCurrentUpgradeNameUnlocked);
+    
     if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_GIFT_UGPRADE_NAME)
     {
         OnCrystalGiftUpgradeGained();

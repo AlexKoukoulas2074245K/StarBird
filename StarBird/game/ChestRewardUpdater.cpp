@@ -328,16 +328,8 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
             
         case RewardFlowState::CREATE_REWARD_SELECTED_USAGE_ANIMATION:
         {
-            auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
-            auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
-            
             auto upgradeDef = FindSelectedRewardDefinition();
-            
-            equippedUpgrades[upgradeDef.mUpgradeNameId] = upgradeDef;
-            availableUpgrades.erase(upgradeDef.mUpgradeNameId);
-            
             mUpgradeUnlockedAnimationHandler.OnUpgradeGained(upgradeDef.mUpgradeNameId);
-            
             mRewardFlowState = RewardFlowState::REWARD_USAGE_ANIMATING;
         } break;
             
