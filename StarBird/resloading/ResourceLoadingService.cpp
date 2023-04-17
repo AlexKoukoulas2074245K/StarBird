@@ -155,6 +155,7 @@ void ResourceLoadingService::UnloadResource(const std::string& resourcePath)
 
 void ResourceLoadingService::UnloadResource(const ResourceId resourceId)
 {
+    Log(LogType::INFO, "Unloading asset: %s", std::to_string(resourceId).c_str());
     mResourceMap.erase(resourceId);
 }
 

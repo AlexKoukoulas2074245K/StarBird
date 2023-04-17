@@ -45,16 +45,12 @@ std::optional<std::reference_wrapper<const ObjectTypeDefinition>> ObjectTypeDefi
 
 void ObjectTypeDefinitionRepository::LoadObjectTypeDefinition(const strutils::StringId& objectTypeDefName)
 {
-    auto findIter = mObjectTypeDefinitionsMap.find(objectTypeDefName);
-    if (findIter == mObjectTypeDefinitionsMap.end())
+    std::unordered_set<strutils::StringId, strutils::StringIdHasher> subObjectsFound;
+    mObjectTypeDefinitionsMap[objectTypeDefName] = mLoader.LoadObjectTypeDefinition(objectTypeDefName.GetString(), &subObjectsFound);
+    
+    for (const auto& subObjectTypeDefName: subObjectsFound)
     {
-        std::unordered_set<strutils::StringId, strutils::StringIdHasher> subObjectsFound;
-        mObjectTypeDefinitionsMap[objectTypeDefName] = mLoader.LoadObjectTypeDefinition(objectTypeDefName.GetString(), &subObjectsFound);
-        
-        for (const auto& subObjectTypeDefName: subObjectsFound)
-        {
-            LoadObjectTypeDefinition(subObjectTypeDefName);
-        }
+        LoadObjectTypeDefinition(subObjectTypeDefName);
     }
 }
 

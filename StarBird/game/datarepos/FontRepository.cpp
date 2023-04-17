@@ -34,15 +34,7 @@ std::optional<std::reference_wrapper<const FontDefinition>> FontRepository::GetF
 
 void FontRepository::LoadFont(const strutils::StringId& fontName)
 {
-    auto findIter = mFontMap.find(fontName);
-    if (findIter == mFontMap.end())
-    {
-        mFontMap[fontName] = mLoader.LoadFont(fontName.GetString());
-    }
-    else
-    {
-        ospopups::ShowMessageBox(ospopups::MessageBoxType::ERROR, "Cannot find font", fontName.GetString().c_str());
-    }
+    mFontMap[fontName] = mLoader.LoadFont(fontName.GetString());
 }
 
 ///------------------------------------------------------------------------------------------------

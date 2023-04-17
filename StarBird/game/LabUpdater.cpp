@@ -117,6 +117,9 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
                     mOptionSelectionState = OptionSelectionState::OPTION_SELECTED;
                 }
             }
+        
+            // Update carousel
+            mCarouselController->Update(dtMillis);
             
         } break;
             
@@ -170,9 +173,6 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
             return PostStateUpdateDirective::BLOCK_UPDATE;
         } break;
     }
-    
-    // Update carousel
-    mCarouselController->Update(dtMillis);
     
     // Fade in confirmation button
     auto confirmationButtonSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_NAME);

@@ -95,6 +95,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
     , mBossAnimatedHealthBarPerc(0.0f)
     , mAllowInputControl(false)
     , mMovementRotationAllowed(false)
+    , mBossPositioned(false)
 {
     mLevel = levelDef;
     
@@ -684,6 +685,7 @@ void LevelUpdater::VOpenDebugConsole()
 void LevelUpdater::OnBossPositioned()
 {
     mStateMachine.PushState(BossIntroGameState::STATE_NAME);
+    mBossPositioned = true;
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -1267,13 +1269,13 @@ void LevelUpdater::ApplyShakeToNearlyDeadEntities(std::vector<SceneObject>& scen
     }
     
     // For boss SOs calculate a global offset
-    if (mCurrentWaveNumber < mLevel.mWaves.size() && !mLevel.mWaves.at(mCurrentWaveNumber).mBossName.isEmpty() && mWaveEnemies.size() > 0)
+    if (mCurrentWaveNumber < mLevel.mWaves.size() && !mLevel.mWaves.at(mCurrentWaveNumber).mBossName.isEmpty() && mWaveEnemies.size() > 0 && mStateMachine.GetActiveStateName() == FightingWaveGameState::STATE_NAME)
     {
         b2Vec2 randomOffset = b2Vec2(math::RandomFloat(-SHAKE_ENTITY_RANDOM_MAG, SHAKE_ENTITY_RANDOM_MAG), math::RandomFloat(-SHAKE_ENTITY_RANDOM_MAG, SHAKE_ENTITY_RANDOM_MAG));
         
         for (auto& so: sceneObjects)
         {
-            if (scene_object_utils::IsSceneObjectBossPart(so) && GameSingletons::GetBossCurrentHealth()/GameSingletons::GetBossMaxHealth() <= SHAKE_ENTITY_HEALTH_RATIO_THRESHOLD)
+            if (scene_object_utils::IsSceneObjectBossPart(so) && GameSingletons::GetBossCurrentHealth()/GameSingletons::GetBossMaxHealth() <= SHAKE_ENTITY_HEALTH_RATIO_THRESHOLD && mBossPositioned)
             {
                 so.mBody->SetTransform(so.mBody->GetWorldCenter() + randomOffset, 0.0f);
             }

@@ -23,7 +23,7 @@ UpgradesLoader::UpgradesLoader()
         auto* texture = node->first_attribute("texture");
         if (texture)
         {
-            upgrade.mTextureResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + texture->value() + ".bmp");
+            upgrade.mTextureFileName =  texture->value() + std::string(".bmp");
         }
         
         auto* description = node->first_attribute("description");

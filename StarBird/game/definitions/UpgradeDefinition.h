@@ -19,7 +19,7 @@ struct UpgradeDefinition
 {
     strutils::StringId mUpgradeNameId = strutils::StringId();
     strutils::StringId mUpgradeDescription = strutils::StringId();
-    resources::ResourceId mTextureResourceId = resources::ResourceId();
+    std::string mTextureFileName = "";
     bool mIntransient = false;
     bool mEquippable = false;
 };

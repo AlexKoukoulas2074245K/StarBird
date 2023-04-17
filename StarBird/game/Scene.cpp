@@ -225,6 +225,13 @@ const LightRepository& Scene::GetLightRepository() const
 
 void Scene::AddSceneObject(SceneObject&& sceneObject)
 {
+    if (sceneObject.mAnimation)
+    {
+        mAccumulatedResourcesForScene.insert(sceneObject.mAnimation->VGetCurrentTextureResourceId());
+        mAccumulatedResourcesForScene.insert(sceneObject.mAnimation->VGetCurrentMeshResourceId());
+        mAccumulatedResourcesForScene.insert(sceneObject.mAnimation->VGetCurrentShaderResourceId());
+    }
+    
     if (mPreFirstUpdate)
     {
         mSceneObjects.emplace_back(std::move(sceneObject));
@@ -233,7 +240,6 @@ void Scene::AddSceneObject(SceneObject&& sceneObject)
     {
         mSceneObjectsToAdd.emplace_back(std::move(sceneObject));
     }
-        
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -256,25 +262,48 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
     auto sceneCreationLambda = [&]()
     {
         std::vector<SceneObject> crossSceneSceneObjects;
+        std::unordered_set<resources::ResourceId> lockedResourceIds;
+        
         for (auto& so: mSceneObjects)
         {
             if (so.mCrossSceneLifetime)
             {
+                lockedResourceIds.insert(so.mAnimation->VGetCurrentTextureResourceId());
+                lockedResourceIds.insert(so.mAnimation->VGetCurrentShaderResourceId());
+                lockedResourceIds.insert(so.mAnimation->VGetCurrentMeshResourceId());
+                
+                for (auto& extraAnimation: so.mExtraCompoundingAnimations)
+                {
+                    lockedResourceIds.insert(extraAnimation->VGetCurrentTextureResourceId());
+                    lockedResourceIds.insert(extraAnimation->VGetCurrentShaderResourceId());
+                    lockedResourceIds.insert(extraAnimation->VGetCurrentMeshResourceId());
+                }
+                
                 crossSceneSceneObjects.push_back(std::move(so));
             }
-            else
+            else if (so.mBody)
             {
-                if (so.mBody)
-                {
-                    delete static_cast<strutils::StringId*>(so.mBody->GetUserData());
-                    mBox2dWorld.DestroyBody(so.mBody);
-                }
+                delete static_cast<strutils::StringId*>(so.mBody->GetUserData());
+                mBox2dWorld.DestroyBody(so.mBody);
             }
         }
+        
+        for (const auto resourceId: mAccumulatedResourcesForScene)
+        {
+            if (lockedResourceIds.count(resourceId) == 0)
+            {
+                resources::ResourceLoadingService::GetInstance().UnloadResource(resourceId);
+            }
+        }
+        
         mSceneObjects.clear();
         mSceneObjectsToAdd.clear();
+        mAccumulatedResourcesForScene.clear();
         
         mLightRepository.RemoveAllLights();
+        
+        FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_NAME);
+        FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_MM_NAME);
         
         GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera());
         GameSingletons::SetCameraForSceneObjectType(SceneObjectType::GUIObject, Camera());

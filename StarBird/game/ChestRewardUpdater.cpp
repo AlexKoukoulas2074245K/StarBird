@@ -457,7 +457,7 @@ void ChestRewardUpdater::CreateRewardObjects()
     std::vector<resources::ResourceId> upgradeTextureIds;
     for (const auto& upgradeEntry: GameSingletons::GetAvailableUpgrades())
     {
-        upgradeTextureIds.push_back(upgradeEntry.mTextureResourceId);
+        upgradeTextureIds.push_back(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + upgradeEntry.mTextureFileName));
     }
     
     mCarouselController = std::make_unique<CarouselController>(mScene, upgradeTextureIds, [&](){ OnCarouselMovementStart(); }, [&](){ OnCarouselStationary(); }, 0.0f);

@@ -100,6 +100,7 @@ private:
     float mBossAnimatedHealthBarPerc;
     bool mAllowInputControl;
     bool mMovementRotationAllowed;
+    bool mBossPositioned;
 };
 
 ///------------------------------------------------------------------------------------------------

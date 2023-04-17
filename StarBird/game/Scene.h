@@ -22,6 +22,7 @@
 #include <memory>
 #include <optional>
 #include <vector>
+#include <unordered_set>
 #include <Box2D/Box2D.h>
 
 ///------------------------------------------------------------------------------------------------
@@ -93,6 +94,7 @@ public:
     
 private:
     b2World mBox2dWorld;
+    std::unordered_set<resources::ResourceId> mAccumulatedResourcesForScene;
     std::vector<SceneObject> mSceneObjects;
     std::vector<SceneObject> mSceneObjectsToAdd;
     std::vector<strutils::StringId> mNamesOfSceneObjectsToRemove;
