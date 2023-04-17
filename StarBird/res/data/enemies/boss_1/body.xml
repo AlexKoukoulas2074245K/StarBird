@@ -2,5 +2,5 @@
 <ObjectDefinition>
     <Animation state="idle" texture="enemies/boss_1/body" mesh="enemies/boss_1/body_dynamic" shader="basic" scale="2.0f, 2.0f" />
     <Physics bodyOffset="0.0f, -2.5f" bodyScale="2.0f, 0.5f" linearDamping="0.0f" constantVelocity="0.0f, -0.6f" category="boss"/>
-    <GameAttributes movementControllerPattern="constant_velocity" health="10000.0f" damage="2.0f" crystalYield="20.0f" />
+    <GameAttributes movementControllerPattern="constant_velocity" health="10000.0f" damage="2.0f" crystalYield="0.0f" />
 </ObjectDefinition>

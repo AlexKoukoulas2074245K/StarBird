@@ -37,7 +37,7 @@ static const float CONTROL_BUTTON_PULSING_ENLARGMENT_FACTOR = 1.0f/50.0f;
 
 static const float STAT_UPGRADED_SCALE_MULTIPLIER = 0.9f;
 
-static const int STAT_UPGRADE_COST = 10;
+static const int STAT_UPGRADE_COST = 24;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -205,7 +205,7 @@ void StatUpgradeAreaController::Update(const float dtMillis, const float current
     if (plusButtonSoOpt)
     {
         auto& plusButtonSo = plusButtonSoOpt->get();
-        plusButtonSo.mInvisible = currentTotalCost >= GameSingletons::GetCrystalCount();
+        plusButtonSo.mInvisible = currentTotalCost + STAT_UPGRADE_COST > GameSingletons::GetCrystalCount();
         
         if (!plusButtonSo.mInvisible && inputContext.mEventType == SDL_FINGERDOWN && mLastInputContextEventType != SDL_FINGERDOWN && scene_object_utils::IsPointInsideSceneObject(plusButtonSo, originalFingerDownTouchPos))
         {
