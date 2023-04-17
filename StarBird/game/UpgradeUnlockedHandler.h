@@ -1,12 +1,12 @@
 ///------------------------------------------------------------------------------------------------
-///  UpgradeUnlockedAnimationHandler.h
+///  UpgradeUnlockedHandler.h
 ///  StarBird                                                                                            
 ///                                                                                                
 ///  Created by Alex Koukoulas on 15/04/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef UpgradeUnlockedAnimationHandler_h
-#define UpgradeUnlockedAnimationHandler_h
+#ifndef UpgradeUnlockedHandler_h
+#define UpgradeUnlockedHandler_h
 
 ///------------------------------------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ class Scene;
 
 ///------------------------------------------------------------------------------------------------
 
-class UpgradeUnlockedAnimationHandler final
+class UpgradeUnlockedHandler final
 {
 public:
     enum class UpgradeAnimationState
@@ -29,14 +29,17 @@ public:
         ONGOING, FINISHED
     };
     
-    UpgradeUnlockedAnimationHandler(Scene& scene);
+    UpgradeUnlockedHandler(Scene& scene);
     
-    void OnUpgradeGained(const strutils::StringId& upgradeId);
+    void OnUpgradeGained(const strutils::StringId& upgradeNameId);
     UpgradeAnimationState Update(const float dtMillis);
 
 private:
     void OnCrystalGiftUpgradeGained();
+    void OnHealthPotionUpgradeGained();
+    
     UpgradeAnimationState UpdateCrystalGiftUpgradeGained();
+    UpgradeAnimationState UpdateHealthPotionUpgradeGained();
     
 private:
     Scene& mScene;
@@ -47,4 +50,4 @@ private:
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* UpgradeUnlockedAnimationHandler_h */
+#endif /* UpgradeUnlockedHandler_h */

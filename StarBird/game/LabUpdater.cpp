@@ -70,6 +70,7 @@ static const float LAB_CONFIRMATION_BUTTON_ROTATION_SPEED = 0.0002f;
 LabUpdater::LabUpdater(Scene& scene)
     : mScene(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
+    , mUpgradeUnlockedHandler(scene)
     , mOptionSelectionState(OptionSelectionState::OPTION_NOT_SELECTED)
     , mSelectedLabOption(game_constants::LabOptionType::REPAIR)
 {
@@ -135,21 +136,11 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
             {
                 case game_constants::LabOptionType::REPAIR:
                 {
+                    mScene.RemoveAllSceneObjectsWithName(CONFIRMATION_BUTTON_NAME);
+                    mScene.RemoveAllSceneObjectsWithName(CONFIRMATION_BUTTON_TEXT_NAME);
+                    
                     if (GameSingletons::GetPlayerDisplayedHealth() >= GameSingletons::GetPlayerMaxHealth())
                     {
-                        mScene.RemoveAllSceneObjectsWithName(CONFIRMATION_BUTTON_NAME);
-                        mScene.RemoveAllSceneObjectsWithName(CONFIRMATION_BUTTON_TEXT_NAME);
-                        
-                        auto& resService = resources::ResourceLoadingService::GetInstance();
-                        SceneObject arrowSo;
-                        arrowSo.mPosition = LAB_NAVIGATION_ARROW_POSITION;
-                        arrowSo.mScale = LAB_NAVIGATION_ARROW_SCALE;
-                        arrowSo.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + LEFT_NAVIGATION_ARROW_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, LAB_ARROW_PULSING_SPEED, LAB_ARROW_PULSING_ENLARGEMENT_FACTOR, false);
-                        arrowSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-                        arrowSo.mName = game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME;
-                        arrowSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
-                        mScene.AddSceneObject(std::move(arrowSo));
-                        
                         mOptionSelectionState = OptionSelectionState::OPTION_FLOW_FINISHED;
                     }
                 } break;
@@ -167,12 +158,7 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
             
         case OptionSelectionState::OPTION_FLOW_FINISHED:
         {
-            auto& inputContext = GameSingletons::GetInputContext();
-            auto camOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
-            auto& worldCamera = camOpt->get();
-            glm::vec3 originalFingerDownTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
-            auto navigationArrowSoOpt = mScene.GetSceneObject(game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME);
-            if (inputContext.mEventType == SDL_FINGERDOWN && navigationArrowSoOpt && scene_object_utils::IsPointInsideSceneObject(navigationArrowSoOpt->get(), originalFingerDownTouchPos))
+            if (mUpgradeUnlockedHandler.Update(dtMillis) == UpgradeUnlockedHandler::UpgradeAnimationState::FINISHED)
             {
                 mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
                 mOptionSelectionState = OptionSelectionState::TRANSITIONING_TO_NEXT_SCREEN;
@@ -193,10 +179,22 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
     if (confirmationButtonSoOpt)
     {
         auto& confirmationButtonSo = confirmationButtonSoOpt->get();
-        confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
-        if (confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
+        
+        if (mOptionSelectionState == OptionSelectionState::OPTION_NOT_SELECTED)
         {
-            confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+            confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
+            if (confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
+            {
+                confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+            }
+        }
+        else
+        {
+            confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] -= dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
+            if (confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] <= 0.0f)
+            {
+                confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+            }
         }
     }
     
@@ -205,10 +203,22 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
     if (confirmationButtonTextSoOpt)
     {
         auto& confirmationButtonTextSo = confirmationButtonTextSoOpt->get();
-        confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
-        if (confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
+        
+        if (mOptionSelectionState == OptionSelectionState::OPTION_NOT_SELECTED)
         {
-            confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+            confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
+            if (confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
+            {
+                confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+            }
+        }
+        else
+        {
+            confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] -= dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
+            if (confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] <= 0.0f)
+            {
+                confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+            }
         }
     }
     
@@ -426,7 +436,7 @@ void LabUpdater::OnTriggerOptionFlow()
     {
         case game_constants::LabOptionType::REPAIR:
         {
-            GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerMaxHealth());
+            mUpgradeUnlockedHandler.OnUpgradeGained(game_constants::PLAYER_HEALTH_POTION_UGPRADE_NAME);
         } break;
             
         case game_constants::LabOptionType::STATS_UPGRADE:

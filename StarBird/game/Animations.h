@@ -10,14 +10,18 @@
 
 ///------------------------------------------------------------------------------------------------
 
+#include "RepeatableFlow.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../utils/MathUtils.h"
 
-#include <memory>
 #include <functional>
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
 ///------------------------------------------------------------------------------------------------
 
+class Scene;
 class SceneObject;
 class BaseAnimation
 {
@@ -35,7 +39,7 @@ public:
     virtual resources::ResourceId VGetCurrentMeshResourceId() const;
     virtual resources::ResourceId VGetCurrentShaderResourceId() const;
     virtual const glm::vec3& VGetScale() const;
-    virtual float VGetDuration() const;
+    virtual float VGetDurationMillis() const;
     virtual bool VGetBodyRenderingEnabled() const;
     
     void ChangeShaderResourceId(const resources::ResourceId shaderResourceId);
@@ -70,7 +74,7 @@ public:
     
     std::unique_ptr<BaseAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
-    float VGetDuration() const override;
+    float VGetDurationMillis() const override;
     
 private:
     float mDuration;
@@ -107,7 +111,7 @@ public:
     std::unique_ptr<BaseAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
 
-    float VGetDuration() const override;
+    float VGetDurationMillis() const override;
     
 private:
     glm::vec3 mOriginalScale;
@@ -129,7 +133,8 @@ public:
     
     std::unique_ptr<BaseAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
-    float VGetDuration() const override;
+    float VGetDurationMillis() const override;
+    float VGetCurveTraversalProgress() const;
     
 private:
     math::BezierCurve mPathCurve;
@@ -147,7 +152,7 @@ public:
     std::unique_ptr<BaseAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
-    float VGetDuration() const override;
+    float VGetDurationMillis() const override;
     
 private:
     resources::ResourceId mShineTextureResourceId;
@@ -165,7 +170,7 @@ public:
     std::unique_ptr<BaseAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
-    float VGetDuration() const override;
+    float VGetDurationMillis() const override;
     
 private:
     resources::ResourceId mDissolveTextureResourceId;
@@ -209,7 +214,7 @@ public:
     
     std::unique_ptr<BaseAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
-    float VGetDuration() const override;
+    float VGetDurationMillis() const override;
     
 private:
     void OnSingleRotationFinished();
@@ -224,6 +229,24 @@ private:
     bool mLeftHandRotation;
     bool mBodyRenderingEnabled;
     bool mFinishedRotationOnce;
+};
+
+///------------------------------------------------------------------------------------------------
+
+class HealthUpParticlesAnimation final: public BaseAnimation
+{
+public:
+    HealthUpParticlesAnimation(Scene& scene, const glm::vec3& originPosition);
+    
+    std::unique_ptr<BaseAnimation> VClone() const override;
+    void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    float VGetDurationMillis() const override;
+    
+private:
+    Scene& mScene;
+    glm::vec3 mOriginPosition;
+    std::unordered_map<strutils::StringId, float, strutils::StringIdHasher> mHealthParticleNamesToAlphaRadValue;
+    std::vector<RepeatableFlow> mFlows;
 };
 
 ///------------------------------------------------------------------------------------------------

@@ -24,7 +24,6 @@
 #include "states/FightingWaveGameState.h"
 #include "states/WaveIntroGameState.h"
 #include "states/PauseMenuGameState.h"
-#include "states/UpgradeSelectionGameState.h"
 
 #include "../utils/Logging.h"
 #include "../utils/ObjectiveCUtils.h"
@@ -101,9 +100,8 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
     
     mFlows.emplace_back([&]()
     {
-        auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
-        bool hasDoubleBulletUpgrade = equippedUpgrades.count(game_constants::DOUBLE_BULLET_UGPRADE_NAME) != 0;
-        bool hasMirrorImageUpgrade = equippedUpgrades.count(game_constants::MIRROR_IMAGE_UGPRADE_NAME) != 0;
+        bool hasDoubleBulletUpgrade = GameSingletons::HasEquippedUpgrade(game_constants::DOUBLE_BULLET_UGPRADE_NAME);
+        bool hasMirrorImageUpgrade = GameSingletons::HasEquippedUpgrade(game_constants::MIRROR_IMAGE_UGPRADE_NAME);
 
         auto playerOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
         if (playerOpt && GameSingletons::GetPlayerCurrentHealth() > 0.0f)
@@ -212,12 +210,12 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 const auto deathPosition = enemySO.mPosition;
                 const auto crystalYield = enemySceneObjectTypeDef.mCrystalYield;
                 
-                DropCrystals(deathPosition, enemySO.mAnimation->VGetDuration(), crystalYield);
+                DropCrystals(deathPosition, enemySO.mAnimation->VGetDurationMillis(), crystalYield);
                 
                 mFlows.emplace_back([=]()
                 {
                     RemoveWaveEnemy(enemyName);
-                }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
+                }, enemySO.mAnimation->VGetDurationMillis(), RepeatableFlow::RepeatPolicy::ONCE);
                 
                 mActiveLightNames.insert(enemyName);
                 mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_constants::POINT_LIGHT_COLOR, enemySO.mPosition, EXPLOSION_LIGHT_POWER);
@@ -272,7 +270,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 mFlows.emplace_back([=]()
                 {
                     RemoveWaveEnemy(enemyName);
-                }, enemySO.mAnimation->VGetDuration(), RepeatableFlow::RepeatPolicy::ONCE);
+                }, enemySO.mAnimation->VGetDurationMillis(), RepeatableFlow::RepeatPolicy::ONCE);
                 
                 mActiveLightNames.insert(enemyName);
                 mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_constants::POINT_LIGHT_COLOR, enemySO.mPosition, EXPLOSION_LIGHT_POWER);
@@ -359,7 +357,6 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
     mStateMachine.RegisterState<FightingWaveGameState>();
     mStateMachine.RegisterState<WaveIntroGameState>();
     mStateMachine.RegisterState<PauseMenuGameState>();
-    mStateMachine.RegisterState<UpgradeSelectionGameState>();
 
     LoadLevelInvariantObjects();
     mActiveLightNames.clear();

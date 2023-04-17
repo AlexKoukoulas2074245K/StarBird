@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Upgrades>
-    <Upgrade nameId="double_bullet" description="Bullet Flurry" texture="upgrades/double_bullet"/>
-    <Upgrade nameId="mirror_image" description="Mirror Image" texture="upgrades/mirror_image"/>
-    <Upgrade nameId="player_shield" description="Barrier" texture="upgrades/player_shield"/>
-    <Upgrade nameId="player_health_potion" description="Full Heal" texture="upgrades/player_health_potion"/>
-    <Upgrade nameId="crystal_gift" description="+50 Crystals" texture="upgrades/crystal_gift"/>
+    <Upgrade nameId="double_bullet" description="Bullet Flurry" texture="upgrades/double_bullet" intransient="false" equippable="true" />
+    <Upgrade nameId="mirror_image" description="Mirror Image" texture="upgrades/mirror_image" intransient="false" equippable="true" />
+    <Upgrade nameId="player_shield" description="Barrier" texture="upgrades/player_shield" intransient="true" equippable="true" />
+    <Upgrade nameId="player_health_potion" description="Full Heal" texture="upgrades/player_health_potion" intransient="true" equippable="false" />
+    <Upgrade nameId="crystal_gift" description="+50 Crystals" texture="upgrades/crystal_gift" intransient="true" equippable="false" />
 </Upgrades>

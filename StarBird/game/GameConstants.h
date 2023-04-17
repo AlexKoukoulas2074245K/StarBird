@@ -60,6 +60,7 @@ inline const char* MAP_STAR_PATH_TEXTURE_FILE_NAME = "star_path.bmp";
 inline const char* NOISE_PREFIX_TEXTURE_FILE_NAME = "noise_";
 inline const char* BOSS_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_frame.bmp";
 inline const char* BOSS_HEALTH_BAR_TEXTURE_FILE_NAME = "enemy_health_bar.bmp";
+inline const char* HEALTH_PARTICLE_TEXTURE_FILE_NAME = "health_particle.bmp";
 
 inline const strutils::StringId DEFAULT_SCENE_OBJECT_STATE = strutils::StringId("idle");
 inline const strutils::StringId DYING_SCENE_OBJECT_STATE = strutils::StringId("dying");

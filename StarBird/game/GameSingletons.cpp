@@ -13,9 +13,8 @@ InputContext GameSingletons::mInputContext = {};
 SDL_Window* GameSingletons::mWindow = nullptr;
 glm::vec2 GameSingletons::mWindowDimensions = glm::vec2();
 std::unordered_map<SceneObjectType, Camera> GameSingletons::mSceneObjectTypeToCameraMap = {};
-GameSingletons::UpgradeMap GameSingletons::mEquippedUpgrades = {};
-GameSingletons::UpgradeMap GameSingletons::mAvailableUpgrades = {};
-std::pair<UpgradeDefinition, UpgradeDefinition> GameSingletons::mUpgradeSelection = {};
+std::vector<UpgradeDefinition> GameSingletons::mEquippedUpgrades = {};
+std::vector<UpgradeDefinition> GameSingletons::mAvailableUpgrades = {};
 MapCoord GameSingletons::mCurrentMapCoord = MapCoord(0, 2);
 int GameSingletons::mMapGenerationSeed = 0;
 long GameSingletons::mCrystalCount = 0;
@@ -136,37 +135,37 @@ void GameSingletons::SetCameraForSceneObjectType(const SceneObjectType sceneObje
 
 ///------------------------------------------------------------------------------------------------
 
-GameSingletons::UpgradeMap& GameSingletons::GetEquippedUpgrades()
+std::vector<UpgradeDefinition>& GameSingletons::GetEquippedUpgrades()
 {
     return mEquippedUpgrades;
 }
 
 ///------------------------------------------------------------------------------------------------
 
-GameSingletons::UpgradeMap& GameSingletons::GetAvailableUpgrades()
+std::vector<UpgradeDefinition>& GameSingletons::GetAvailableUpgrades()
 {
     return mAvailableUpgrades;
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void GameSingletons::SetEquippedUpgrades(UpgradeMap&& upgrades)
+void GameSingletons::SetEquippedUpgrades(std::vector<UpgradeDefinition>&& upgrades)
 {
     mEquippedUpgrades = upgrades;
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void GameSingletons::SetAvailableUpgrades(UpgradeMap&& upgrades)
+void GameSingletons::SetAvailableUpgrades(std::vector<UpgradeDefinition>&& upgrades)
 {
     mAvailableUpgrades = upgrades;
 }
 
 ///------------------------------------------------------------------------------------------------
 
-std::pair<UpgradeDefinition, UpgradeDefinition>& GameSingletons::GetUpgradeSelection()
+bool GameSingletons::HasEquippedUpgrade(const strutils::StringId& upgradeNameId)
 {
-    return mUpgradeSelection;
+    return std::find_if(mEquippedUpgrades.cbegin(), mEquippedUpgrades.cend(), [&](const UpgradeDefinition& upgradeDefinition){ return upgradeDefinition.mUpgradeNameId == upgradeNameId; }) != mEquippedUpgrades.cend();
 }
 
 ///------------------------------------------------------------------------------------------------

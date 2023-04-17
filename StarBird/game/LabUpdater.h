@@ -12,6 +12,7 @@
 
 #include "IUpdater.h"
 #include "StateMachine.h"
+#include "UpgradeUnlockedHandler.h"
 
 #include <SDL_events.h>
 #include <memory>
@@ -55,6 +56,7 @@ private:
     
     Scene& mScene;
     StateMachine mStateMachine;
+    UpgradeUnlockedHandler mUpgradeUnlockedHandler;
     std::vector<game_constants::LabOptionType> mLabOptions;
     std::unordered_set<game_constants::LabOptionType> mVisitedLabOptions;
     std::unique_ptr<TextPromptController> mTextPromptController;

@@ -11,7 +11,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "IUpdater.h"
-#include "UpgradeUnlockedAnimationHandler.h"
+#include "UpgradeUnlockedHandler.h"
 #include "StateMachine.h"
 #include "definitions/UpgradeDefinition.h"
 
@@ -53,12 +53,12 @@ private:
         REWARD_SELECTION,
         REWARD_SELECTED_ANIMATION_HIGH,
         CREATE_REWARD_SELECTED_USAGE_ANIMATION,
-        REWARD_USAGE_ANIMATING,
+        REWARD_SELECTED_USAGE_ANIMATING,
         TRANSITIONING,
     };
     
     Scene& mScene;
-    UpgradeUnlockedAnimationHandler mUpgradeUnlockedAnimationHandler;
+    UpgradeUnlockedHandler mUpgradeUnlockedHandler;
     StateMachine mStateMachine;
     RewardFlowState mRewardFlowState;
     float mShakeNoiseMag;

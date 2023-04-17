@@ -6,7 +6,6 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "FightingWaveGameState.h"
-#include "UpgradeSelectionGameState.h"
 #include "WaveIntroGameState.h"
 
 #include "../LevelUpdater.h"
@@ -195,15 +194,7 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
     if (mLevelUpdater->GetWaveEnemyCount() == 0 && GameSingletons::GetPlayerCurrentHealth() > 0.0f)
     {
         mLevelUpdater->AdvanceWave();
-        
-//        if (GameSingletons::GetAvailableUpgrades().size() > 1)
-//        {
-//            Complete(UpgradeSelectionGameState::STATE_NAME);
-//        }
-//        else
-//        {
-            Complete(WaveIntroGameState::STATE_NAME);
-//        }
+        Complete(WaveIntroGameState::STATE_NAME);
     }
     
     return PostStateUpdateDirective::CONTINUE;

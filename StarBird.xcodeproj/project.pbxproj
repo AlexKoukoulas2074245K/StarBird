@@ -111,12 +111,11 @@
 		92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92E8DAE4298E940B00591968 /* PhysicsCollisionListener.cpp */; };
 		92E96A6B29803597004A3120 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92E96A5F29803597004A3120 /* OpenGLES.framework */; };
 		92F5BE5929DD7A4200E2EB14 /* StatUpgradeAreaController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F5BE5829DD7A4200E2EB14 /* StatUpgradeAreaController.cpp */; };
-		92F62EC629EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F62EB729EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.cpp */; };
+		92F62EC629EB27B7006FEC10 /* UpgradeUnlockedHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F62EB729EB27B7006FEC10 /* UpgradeUnlockedHandler.cpp */; };
 		92F62EC729EB27B7006FEC10 /* UpgradesLevelLogicHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F62EC529EB27B7006FEC10 /* UpgradesLevelLogicHandler.cpp */; };
 		92F9EC7C299E6C1A00C263E8 /* StateMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */; };
 		92F9EC7F299E71BB00C263E8 /* FightingWaveGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC7D299E71BB00C263E8 /* FightingWaveGameState.cpp */; };
 		92F9EC82299E799D00C263E8 /* WaveIntroGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC80299E799D00C263E8 /* WaveIntroGameState.cpp */; };
-		92F9EC88299E85D500C263E8 /* UpgradeSelectionGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC86299E85D400C263E8 /* UpgradeSelectionGameState.cpp */; };
 		92F9EC8E299E9A5300C263E8 /* PauseMenuGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC8C299E9A5200C263E8 /* PauseMenuGameState.cpp */; };
 		92F9EC90299E9BAA00C263E8 /* BaseGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC8F299E9BAA00C263E8 /* BaseGameState.cpp */; };
 /* End PBXBuildFile section */
@@ -824,9 +823,9 @@
 		92E96BE629805C9D004A3120 /* type_aligned.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = type_aligned.hpp; sourceTree = "<group>"; };
 		92F5BE4C29DD7A4200E2EB14 /* StatUpgradeAreaController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatUpgradeAreaController.h; sourceTree = "<group>"; };
 		92F5BE5829DD7A4200E2EB14 /* StatUpgradeAreaController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StatUpgradeAreaController.cpp; sourceTree = "<group>"; };
-		92F62EB729EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradeUnlockedAnimationHandler.cpp; sourceTree = "<group>"; };
+		92F62EB729EB27B7006FEC10 /* UpgradeUnlockedHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradeUnlockedHandler.cpp; sourceTree = "<group>"; };
 		92F62EC329EB27B7006FEC10 /* UpgradesLevelLogicHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradesLevelLogicHandler.h; sourceTree = "<group>"; };
-		92F62EC429EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradeUnlockedAnimationHandler.h; sourceTree = "<group>"; };
+		92F62EC429EB27B7006FEC10 /* UpgradeUnlockedHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradeUnlockedHandler.h; sourceTree = "<group>"; };
 		92F62EC529EB27B7006FEC10 /* UpgradesLevelLogicHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradesLevelLogicHandler.cpp; sourceTree = "<group>"; };
 		92F9EC79299E56AD00C263E8 /* BaseGameState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseGameState.h; sourceTree = "<group>"; };
 		92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateMachine.cpp; sourceTree = "<group>"; };
@@ -835,8 +834,6 @@
 		92F9EC7E299E71BB00C263E8 /* FightingWaveGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FightingWaveGameState.h; sourceTree = "<group>"; };
 		92F9EC80299E799D00C263E8 /* WaveIntroGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveIntroGameState.cpp; sourceTree = "<group>"; };
 		92F9EC81299E799D00C263E8 /* WaveIntroGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveIntroGameState.h; sourceTree = "<group>"; };
-		92F9EC86299E85D400C263E8 /* UpgradeSelectionGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradeSelectionGameState.cpp; sourceTree = "<group>"; };
-		92F9EC87299E85D400C263E8 /* UpgradeSelectionGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpgradeSelectionGameState.h; sourceTree = "<group>"; };
 		92F9EC8C299E9A5200C263E8 /* PauseMenuGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PauseMenuGameState.cpp; sourceTree = "<group>"; };
 		92F9EC8D299E9A5200C263E8 /* PauseMenuGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PauseMenuGameState.h; sourceTree = "<group>"; };
 		92F9EC8F299E9BAA00C263E8 /* BaseGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseGameState.cpp; sourceTree = "<group>"; };
@@ -1150,8 +1147,8 @@
 				92F5BE4C29DD7A4200E2EB14 /* StatUpgradeAreaController.h */,
 				9259F35629D7261100850744 /* TextPromptController.cpp */,
 				9259F35729D7261100850744 /* TextPromptController.h */,
-				92F62EB729EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.cpp */,
-				92F62EC429EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.h */,
+				92F62EB729EB27B7006FEC10 /* UpgradeUnlockedHandler.cpp */,
+				92F62EC429EB27B7006FEC10 /* UpgradeUnlockedHandler.h */,
 				92F62EC529EB27B7006FEC10 /* UpgradesLevelLogicHandler.cpp */,
 				92F62EC329EB27B7006FEC10 /* UpgradesLevelLogicHandler.h */,
 				927FD9B029C35C750012C724 /* bossai */,
@@ -1731,8 +1728,6 @@
 				92F9EC7E299E71BB00C263E8 /* FightingWaveGameState.h */,
 				92F9EC8C299E9A5200C263E8 /* PauseMenuGameState.cpp */,
 				92F9EC8D299E9A5200C263E8 /* PauseMenuGameState.h */,
-				92F9EC86299E85D400C263E8 /* UpgradeSelectionGameState.cpp */,
-				92F9EC87299E85D400C263E8 /* UpgradeSelectionGameState.h */,
 				92F9EC80299E799D00C263E8 /* WaveIntroGameState.cpp */,
 				92F9EC81299E799D00C263E8 /* WaveIntroGameState.h */,
 			);
@@ -1973,7 +1968,6 @@
 				9254CC062969B79A00EFE0CC /* b2DynamicTree.cpp in Sources */,
 				9254CBE82969B79A00EFE0CC /* b2PolygonContact.cpp in Sources */,
 				92894E16299D331200605302 /* FontRepository.cpp in Sources */,
-				92F9EC88299E85D500C263E8 /* UpgradeSelectionGameState.cpp in Sources */,
 				92F9EC7C299E6C1A00C263E8 /* StateMachine.cpp in Sources */,
 				92693B6829C87D2500157222 /* MapUpdater.cpp in Sources */,
 				92BF79BD29A39002002A52D8 /* Animations.cpp in Sources */,
@@ -2013,7 +2007,7 @@
 				92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */,
 				92C851BA2969A9D70021923F /* main.cpp in Sources */,
 				9254CBEA2969B79A00EFE0CC /* b2CircleContact.cpp in Sources */,
-				92F62EC629EB27B7006FEC10 /* UpgradeUnlockedAnimationHandler.cpp in Sources */,
+				92F62EC629EB27B7006FEC10 /* UpgradeUnlockedHandler.cpp in Sources */,
 				92DAA4CE29829A4C0062A438 /* DataFileLoader.cpp in Sources */,
 				9254CBE62969B79A00EFE0CC /* b2ChainAndCircleContact.cpp in Sources */,
 				9254CBFC2969B79A00EFE0CC /* b2Rope.cpp in Sources */,

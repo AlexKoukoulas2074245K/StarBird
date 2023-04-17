@@ -19,8 +19,8 @@
 #include "../utils/StringUtils.h"
 
 #include <optional>
-#include <map>
 #include <unordered_map>
+#include <vector>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -46,13 +46,11 @@ public:
     static std::optional<std::reference_wrapper<Camera>> GetCameraForSceneObjectType(const SceneObjectType sceneObjectType);
     static void SetCameraForSceneObjectType(const SceneObjectType sceneObjectType, Camera&& camera);
     
-    using UpgradeMap = std::map<strutils::StringId, UpgradeDefinition>;
-    static UpgradeMap& GetEquippedUpgrades();
-    static UpgradeMap& GetAvailableUpgrades();
-    static void SetEquippedUpgrades(UpgradeMap&& upgrades);
-    static void SetAvailableUpgrades(UpgradeMap&& upgrades);
-    
-    static std::pair<UpgradeDefinition, UpgradeDefinition>& GetUpgradeSelection();
+    static std::vector<UpgradeDefinition>& GetEquippedUpgrades();
+    static std::vector<UpgradeDefinition>& GetAvailableUpgrades();
+    static void SetEquippedUpgrades(std::vector<UpgradeDefinition>&& upgrades);
+    static void SetAvailableUpgrades(std::vector<UpgradeDefinition>&& upgrades);
+    static bool HasEquippedUpgrade(const strutils::StringId& upgradeNameId);
     
     static float GetGameSpeedMultiplier();
     static void SetGameSpeedMultiplier(const float gameSpeedMultiplier);
@@ -98,9 +96,8 @@ private:
     static SDL_Window* mWindow;
     static glm::vec2 mWindowDimensions;
     static std::unordered_map<SceneObjectType, Camera> mSceneObjectTypeToCameraMap;
-    static UpgradeMap mEquippedUpgrades;
-    static UpgradeMap mAvailableUpgrades;
-    static std::pair<UpgradeDefinition, UpgradeDefinition> mUpgradeSelection;
+    static std::vector<UpgradeDefinition> mEquippedUpgrades;
+    static std::vector<UpgradeDefinition> mAvailableUpgrades;
     static MapCoord mCurrentMapCoord;
     static int mMapGenerationSeed;
     static long mCrystalCount;

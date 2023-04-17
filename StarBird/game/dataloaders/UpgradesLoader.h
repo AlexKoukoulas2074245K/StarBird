@@ -14,7 +14,7 @@
 #include "../definitions/UpgradeDefinition.h"
 
 #include <string>
-#include <map>
+#include <vector>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -22,10 +22,10 @@ class UpgradesLoader: public BaseGameDataLoader
 {
 public:
     UpgradesLoader();
-    std::map<strutils::StringId, UpgradeDefinition> LoadAllUpgrades();
+    std::vector<UpgradeDefinition> LoadAllUpgrades();
     
 private:
-    std::map<strutils::StringId, UpgradeDefinition> mConstructedUpgrades;
+    std::vector<UpgradeDefinition> mConstructedUpgrades;
 };
 
 ///------------------------------------------------------------------------------------------------

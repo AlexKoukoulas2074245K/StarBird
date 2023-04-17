@@ -32,18 +32,30 @@ UpgradesLoader::UpgradesLoader()
             upgrade.mUpgradeDescription = strutils::StringId(description->value());
         }
         
+        auto* intransient = node->first_attribute("intransient");
+        if (intransient)
+        {
+            upgrade.mIntransient =  strcmp(intransient->value(), "true") == 0;
+        }
+        
+        auto* equippable = node->first_attribute("equippable");
+        if (equippable)
+        {
+            upgrade.mEquippable = strcmp(equippable->value(), "true") == 0;
+        }
+        
         auto* upgradeNameId = node->first_attribute("nameId");
         if (upgradeNameId)
         {
             upgrade.mUpgradeNameId = strutils::StringId(upgradeNameId->value());
-            mConstructedUpgrades[upgrade.mUpgradeNameId] = std::move(upgrade);
+            mConstructedUpgrades.push_back(upgrade);
         }
     });
 }
 
 ///------------------------------------------------------------------------------------------------
 
-std::map<strutils::StringId, UpgradeDefinition> UpgradesLoader::LoadAllUpgrades()
+std::vector<UpgradeDefinition> UpgradesLoader::LoadAllUpgrades()
 {
     BaseGameDataLoader::LoadData("upgrades");
     return mConstructedUpgrades;

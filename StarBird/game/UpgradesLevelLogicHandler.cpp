@@ -57,9 +57,8 @@ void UpgradesLevelLogicHandler::InitializeEquippedUpgrade(const strutils::String
 
 void UpgradesLevelLogicHandler::Update(const float dtMillis)
 {
-    auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
-    bool mirrorImageEquipped = equippedUpgrades.count(game_constants::MIRROR_IMAGE_UGPRADE_NAME) != 0;
-    bool shieldEquipped = equippedUpgrades.count(game_constants::PLAYER_SHIELD_UPGRADE_NAME) != 0;
+    bool mirrorImageEquipped = GameSingletons::HasEquippedUpgrade(game_constants::MIRROR_IMAGE_UGPRADE_NAME);
+    bool shieldEquipped = GameSingletons::HasEquippedUpgrade(game_constants::PLAYER_SHIELD_UPGRADE_NAME);
     
     if (mirrorImageEquipped)
     {

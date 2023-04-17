@@ -1,11 +1,12 @@
 ///------------------------------------------------------------------------------------------------
-///  UpgradeUnlockedAnimationHandler.cpp
+///  UpgradeUnlockedHandler.cpp
 ///  StarBird                                                                                            
 ///                                                                                                
 ///  Created by Alex Koukoulas on 15/04/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#include "UpgradeUnlockedAnimationHandler.h"
+#include "Animations.h"
+#include "UpgradeUnlockedHandler.h"
 #include "GameConstants.h"
 #include "GameSingletons.h"
 #include "Scene.h"
@@ -20,6 +21,7 @@
 
 static const char* PLAYER_SHIELD_TEXTURE_FILE_NAME = "player_shield.bmp";
 static const std::string DROPPED_CRYSTAL_NAME_PREFIX = "DROPPED_CRYSTAL_";
+static const strutils::StringId HEALTH_UP_ANIMATION_SO_NAME = strutils::StringId("HEALTH_UP_ANIMATION");
 
 static const glm::vec3 LEFT_MIRROR_IMAGE_POSITION_OFFSET = glm::vec3(-2.0f, -0.5f, 0.0f);
 static const glm::vec3 LEFT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
@@ -46,32 +48,48 @@ static const int CRYSTALS_REWARD_COUNT = 50;
 
 ///------------------------------------------------------------------------------------------------
 
-UpgradeUnlockedAnimationHandler::UpgradeUnlockedAnimationHandler(Scene& scene)
+UpgradeUnlockedHandler::UpgradeUnlockedHandler(Scene& scene)
     : mScene(scene)
 {
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void UpgradeUnlockedAnimationHandler::OnUpgradeGained(const strutils::StringId& upgradeId)
+void UpgradeUnlockedHandler::OnUpgradeGained(const strutils::StringId& upgradeNameId)
 {
-    mCurrentUpgradeNameUnlocked = upgradeId;
+    mCurrentUpgradeNameUnlocked = upgradeNameId;
     
     auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
     auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
     
-    equippedUpgrades[mCurrentUpgradeNameUnlocked] = availableUpgrades.at(mCurrentUpgradeNameUnlocked);
-    availableUpgrades.erase(mCurrentUpgradeNameUnlocked);
+    const auto availableUpgradeIter = std::find_if(availableUpgrades.begin(), availableUpgrades.end(), [&](const UpgradeDefinition& upgradeDefinition){ return upgradeDefinition.mUpgradeNameId == upgradeNameId; });
+    
+    assert(availableUpgradeIter != availableUpgrades.cend());
+    const auto& upgradeDefinition = *availableUpgradeIter;
+    
+    if (upgradeDefinition.mEquippable)
+    {
+        equippedUpgrades.push_back(upgradeDefinition);
+    }
+    
+    if (upgradeDefinition.mIntransient == false)
+    {
+        availableUpgrades.erase(availableUpgradeIter);
+    }
     
     if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_GIFT_UGPRADE_NAME)
     {
         OnCrystalGiftUpgradeGained();
     }
+    else if (mCurrentUpgradeNameUnlocked == game_constants::PLAYER_HEALTH_POTION_UGPRADE_NAME)
+    {
+        OnHealthPotionUpgradeGained();
+    }
 }
 
 ///------------------------------------------------------------------------------------------------
 
-UpgradeUnlockedAnimationHandler::UpgradeAnimationState UpgradeUnlockedAnimationHandler::Update(const float dtMillis)
+UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::Update(const float dtMillis)
 {
     for (size_t i = 0; i < mFlows.size(); ++i)
     {
@@ -89,13 +107,13 @@ UpgradeUnlockedAnimationHandler::UpgradeAnimationState UpgradeUnlockedAnimationH
     }
     else
     {
-        return UpgradeAnimationState::FINISHED;
+        return UpdateHealthPotionUpgradeGained();
     }
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void UpgradeUnlockedAnimationHandler::OnCrystalGiftUpgradeGained()
+void UpgradeUnlockedHandler::OnCrystalGiftUpgradeGained()
 {
     for (int i = 0; i < CRYSTALS_REWARD_COUNT; ++i)
     {
@@ -151,9 +169,47 @@ void UpgradeUnlockedAnimationHandler::OnCrystalGiftUpgradeGained()
 
 ///------------------------------------------------------------------------------------------------
 
-UpgradeUnlockedAnimationHandler::UpgradeAnimationState UpgradeUnlockedAnimationHandler::UpdateCrystalGiftUpgradeGained()
+void UpgradeUnlockedHandler::OnHealthPotionUpgradeGained()
+{
+    SceneObject healthUpAnimationSo;
+    healthUpAnimationSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
+    healthUpAnimationSo.mName = HEALTH_UP_ANIMATION_SO_NAME;
+    healthUpAnimationSo.mScale = glm::vec3(1.0f);
+    healthUpAnimationSo.mSceneObjectType = SceneObjectType::GUIObject;
+    healthUpAnimationSo.mInvisible = true;
+    healthUpAnimationSo.mAnimation = std::make_unique<HealthUpParticlesAnimation>(mScene, game_constants::PLAYER_HEALTH_BAR_POSITION);
+    mScene.AddSceneObject(std::move(healthUpAnimationSo));
+    
+    GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerMaxHealth());
+}
+
+///------------------------------------------------------------------------------------------------
+
+UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::UpdateCrystalGiftUpgradeGained()
 {
     return mCreatedSceneObjectNames.size() == 0 ? UpgradeAnimationState::FINISHED : UpgradeAnimationState::ONGOING;
+}
+
+///------------------------------------------------------------------------------------------------
+
+UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::UpdateHealthPotionUpgradeGained()
+{
+    auto healthUpAnimationSoOpt = mScene.GetSceneObject(HEALTH_UP_ANIMATION_SO_NAME);
+    if (healthUpAnimationSoOpt)
+    {
+        auto& healthUpAnimationSo = healthUpAnimationSoOpt->get();
+        if (healthUpAnimationSo.mAnimation->VIsPaused())
+        {
+            mScene.RemoveAllSceneObjectsWithName(healthUpAnimationSo.mName);
+            return UpgradeAnimationState::FINISHED;
+        }
+        else
+        {
+            return UpgradeAnimationState::ONGOING;
+        }
+    }
+    
+    return UpgradeAnimationState::FINISHED;
 }
 
 ///------------------------------------------------------------------------------------------------

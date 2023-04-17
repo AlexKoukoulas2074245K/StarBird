@@ -73,7 +73,7 @@ static const float CONFIRMATION_BUTTON_TEXT_PULSING_ENLARGEMENT_FACTOR = 1.0f/40
 
 ChestRewardUpdater::ChestRewardUpdater(Scene& scene)
     : mScene(scene)
-    , mUpgradeUnlockedAnimationHandler(scene)
+    , mUpgradeUnlockedHandler(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
     , mRewardFlowState(RewardFlowState::AWAIT_PRESS)
     , mShakeNoiseMag(0.0f)
@@ -329,13 +329,13 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
         case RewardFlowState::CREATE_REWARD_SELECTED_USAGE_ANIMATION:
         {
             auto upgradeDef = FindSelectedRewardDefinition();
-            mUpgradeUnlockedAnimationHandler.OnUpgradeGained(upgradeDef.mUpgradeNameId);
-            mRewardFlowState = RewardFlowState::REWARD_USAGE_ANIMATING;
+            mUpgradeUnlockedHandler.OnUpgradeGained(upgradeDef.mUpgradeNameId);
+            mRewardFlowState = RewardFlowState::REWARD_SELECTED_USAGE_ANIMATING;
         } break;
             
-        case RewardFlowState::REWARD_USAGE_ANIMATING:
+        case RewardFlowState::REWARD_SELECTED_USAGE_ANIMATING:
         {
-            if (mUpgradeUnlockedAnimationHandler.Update(dtMillis) == UpgradeUnlockedAnimationHandler::UpgradeAnimationState::FINISHED)
+            if (mUpgradeUnlockedHandler.Update(dtMillis) == UpgradeUnlockedHandler::UpgradeAnimationState::FINISHED)
             {
                 mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
                 mRewardFlowState = RewardFlowState::TRANSITIONING;
@@ -432,17 +432,7 @@ void ChestRewardUpdater::VOpenDebugConsole()
 
 UpgradeDefinition ChestRewardUpdater::FindSelectedRewardDefinition() const
 {
-    int upgradeCounter = 0;
-    for (const auto& upgradeEntry: GameSingletons::GetAvailableUpgrades())
-    {
-        if (upgradeCounter++ == mCarouselController->GetSelectedIndex())
-        {
-            return upgradeEntry.second;
-        }
-    }
-    
-    assert(false);
-    return UpgradeDefinition();
+    return GameSingletons::GetAvailableUpgrades()[mCarouselController->GetSelectedIndex()];
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -465,9 +455,9 @@ void ChestRewardUpdater::CreateRewardObjects()
     mScene.AddSceneObject(std::move(rewardScreenTitleSo));
     
     std::vector<resources::ResourceId> upgradeTextureIds;
-    for (const auto& availableUpgradeMapEntry: GameSingletons::GetAvailableUpgrades())
+    for (const auto& upgradeEntry: GameSingletons::GetAvailableUpgrades())
     {
-        upgradeTextureIds.push_back(availableUpgradeMapEntry.second.mTextureResourceId);
+        upgradeTextureIds.push_back(upgradeEntry.mTextureResourceId);
     }
     
     mCarouselController = std::make_unique<CarouselController>(mScene, upgradeTextureIds, [&](){ OnCarouselMovementStart(); }, [&](){ OnCarouselStationary(); }, 0.0f);

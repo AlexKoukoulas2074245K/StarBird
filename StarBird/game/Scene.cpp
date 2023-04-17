@@ -457,7 +457,7 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
             }
             else if (healthPerc > displayedHealthPercentage)
             {
-                GameSingletons::SetPlayerDisplayedHealth((displayedHealthPercentage + game_constants::HEALTH_LOST_SPEED * dtMillis) * GameSingletons::GetPlayerMaxHealth());
+                GameSingletons::SetPlayerDisplayedHealth((displayedHealthPercentage + game_constants::HEALTH_LOST_SPEED/3 * dtMillis) * GameSingletons::GetPlayerMaxHealth());
                 if (GameSingletons::GetPlayerDisplayedHealth()/GameSingletons::GetPlayerMaxHealth() >= healthPerc)
                 {
                     GameSingletons::SetPlayerDisplayedHealth(healthPerc * GameSingletons::GetPlayerMaxHealth());
@@ -781,7 +781,7 @@ void Scene::CreateCrossSceneInterfaceObjects()
     
     GameSingletons::SetPlayerDisplayedHealth(playerDef.mHealth);
     GameSingletons::SetPlayerMaxHealth(playerDef.mHealth);
-    GameSingletons::SetPlayerCurrentHealth(playerDef.mHealth);
+    GameSingletons::SetPlayerCurrentHealth(playerDef.mHealth/2);
     GameSingletons::SetPlayerAttackStat(playerDef.mDamage);
     GameSingletons::SetPlayerMovementSpeedStat(1.0f);
     GameSingletons::SetPlayerBulletSpeedStat(1.0f);

@@ -7,9 +7,11 @@
 
 #include "Animations.h"
 #include "SceneObject.h"
+#include "Scene.h"
+#include "../resloading/TextureResource.h"
 #include "../utils/Logging.h"
 
-#include "../resloading/TextureResource.h"
+#include <SDL.h>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -67,7 +69,7 @@ const glm::vec3& BaseAnimation::VGetScale() const
     return mScale;
 }
 
-float BaseAnimation::VGetDuration() const
+float BaseAnimation::VGetDurationMillis() const
 {
     return 0.0f;
 }
@@ -139,7 +141,7 @@ void MultiFrameAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject
     sceneObject.mShaderFloatUniformValues[game_constants::MAX_V_UNIFORM_NAME] = sheetMetaDataCurrentRow.mColMetadata.at(mAnimationIndex).maxV;
 }
 
-float MultiFrameAnimation::VGetDuration() const
+float MultiFrameAnimation::VGetDurationMillis() const
 {
     return mDuration;
 }
@@ -225,7 +227,7 @@ void PulsingAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
     }
 }
 
-float PulsingAnimation::VGetDuration() const
+float PulsingAnimation::VGetDurationMillis() const
 {
     return mPulsingEnlargementFactor;
 }
@@ -260,9 +262,14 @@ void BezierCurvePathAnimation::VUpdate(const float dtMillis, SceneObject& sceneO
     }
 }
 
-float BezierCurvePathAnimation::VGetDuration() const
+float BezierCurvePathAnimation::VGetDurationMillis() const
 {
     return mCurveTraversalSpeed;
+}
+
+float BezierCurvePathAnimation::VGetCurveTraversalProgress() const
+{
+    return mCurveTraversalProgress;
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -304,7 +311,7 @@ resources::ResourceId ShineAnimation::VGetCurrentEffectTextureResourceId() const
     return mShineTextureResourceId;
 }
 
-float ShineAnimation::VGetDuration() const
+float ShineAnimation::VGetDurationMillis() const
 {
     return math::Abs(game_constants::SHINE_EFFECT_X_OFFSET_END_VAL - game_constants::SHINE_EFFECT_X_OFFSET_INIT_VAL)/mShineSpeed;
 }
@@ -339,7 +346,7 @@ resources::ResourceId DissolveAnimation::VGetCurrentEffectTextureResourceId() co
     return mDissolveTextureResourceId;
 }
 
-float DissolveAnimation::VGetDuration() const
+float DissolveAnimation::VGetDurationMillis() const
 {
     return game_constants::DISSOLVE_EFFECT_Y_INIT_VAL/mDissolveSpeed;
 }
@@ -430,7 +437,7 @@ void RotationAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
     }
 }
 
-float RotationAnimation::VGetDuration() const
+float RotationAnimation::VGetDurationMillis() const
 {
     return math::Abs(mRotationRadians)/mRotationSpeed * (mRotationMode == RotationMode::ROTATE_TO_TARGET_AND_BACK_ONCE ? 2.0f : 1.0f);
 }
@@ -451,6 +458,101 @@ void RotationAnimation::OnSingleRotationFinished()
     }
     
     mFinishedRotationOnce = true;
+}
+
+///------------------------------------------------------------------------------------------------
+
+static const int HEALTH_PARTICLES_COUNT = 18;
+
+static const float HEALTH_PARTICLE_OFFSET_MIN = -2.0f;
+static const float HEALTH_PARTICLE_OFFSET_MAX = 2.0f;
+static const float HEALTH_PARTICLES_STAGGER_DELAY_MILLIS = 150.0f;
+static const float HEALTH_PARTICLES_SPEED = 1.0f/900.0f;
+static const glm::vec3 HEALTH_PARTICLE_SCALE = glm::vec3(1.2f, 1.2f, 1.2f);
+
+static const char* HEALTH_PARTICLE_NAME_PREFIX = "HEALTH_PARTICLE_";
+
+
+HealthUpParticlesAnimation::HealthUpParticlesAnimation(Scene& scene, const glm::vec3& originPosition)
+    : BaseAnimation(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::HEALTH_PARTICLE_TEXTURE_FILE_NAME), resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false)
+    , mScene(scene)
+    , mOriginPosition(originPosition)
+{
+    
+    
+    for (int i = 0; i < HEALTH_PARTICLES_COUNT; ++i)
+    {
+        mFlows.emplace_back([this]()
+        {
+            SceneObject particleSo;
+            
+            glm::vec3 firstControlPoint(mOriginPosition + glm::vec3(math::RandomFloat(HEALTH_PARTICLE_OFFSET_MIN, HEALTH_PARTICLE_OFFSET_MAX), 0.0f, 0.0f));
+            glm::vec3 secondControlPoint(firstControlPoint + glm::vec3(0.0f, 4.0f, 0.0f));
+            
+            firstControlPoint.z = mOriginPosition.z + 0.5f;
+            secondControlPoint.z = mOriginPosition.z + 0.5f;
+        
+            const strutils::StringId healthParticleName = strutils::StringId(HEALTH_PARTICLE_NAME_PREFIX + std::to_string(SDL_GetPerformanceCounter()));
+            
+            particleSo.mAnimation = std::make_unique<BezierCurvePathAnimation>(VGetCurrentTextureResourceId(), VGetCurrentMeshResourceId(), VGetCurrentShaderResourceId(), glm::vec3(1.0f), math::BezierCurve({firstControlPoint, secondControlPoint}), HEALTH_PARTICLES_SPEED, VGetBodyRenderingEnabled());
+            particleSo.mAnimation->SetCompletionCallback([healthParticleName, this]()
+            {
+                mHealthParticleNamesToAlphaRadValue.erase(healthParticleName);
+                mScene.RemoveAllSceneObjectsWithName(healthParticleName);
+            });
+            
+            particleSo.mSceneObjectType = SceneObjectType::GUIObject;
+            particleSo.mPosition = firstControlPoint;
+            particleSo.mScale = HEALTH_PARTICLE_SCALE;
+            particleSo.mName = healthParticleName;
+            particleSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+            mHealthParticleNamesToAlphaRadValue[particleSo.mName] = 0.0f;
+            mScene.AddSceneObject(std::move(particleSo));
+        }, i * HEALTH_PARTICLES_STAGGER_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE);
+    }
+}
+
+std::unique_ptr<BaseAnimation> HealthUpParticlesAnimation::VClone() const
+{
+    return std::make_unique<HealthUpParticlesAnimation>(*this);
+}
+
+void HealthUpParticlesAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
+{
+    for (size_t i = 0; i < mFlows.size(); ++i)
+    {
+        mFlows[i].Update(dtMillis);
+    }
+    
+    mFlows.erase(std::remove_if(mFlows.begin(), mFlows.end(), [](const RepeatableFlow& flow)
+    {
+        return !flow.IsRunning();
+    }), mFlows.end());
+    
+    if (mHealthParticleNamesToAlphaRadValue.empty())
+    {
+        VPause();
+        if (mCompletionCallback)
+        {
+            mCompletionCallback();
+        }
+    }
+    for (auto& healthParticleEntry: mHealthParticleNamesToAlphaRadValue)
+    {
+        auto healthParticleSoOpt = mScene.GetSceneObject(healthParticleEntry.first);
+        if (healthParticleSoOpt)
+        {
+            auto& healthParticleSo = healthParticleSoOpt->get();
+            const auto healthParticleBezierProgress = dynamic_cast<BezierCurvePathAnimation*>(healthParticleSo.mAnimation.get())->VGetCurveTraversalProgress();
+            healthParticleSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = math::Abs(math::Sinf(healthParticleBezierProgress * math::PI))/2.0f;
+        }
+    }
+}
+
+float HealthUpParticlesAnimation::VGetDurationMillis() const
+{
+    static const float ANIMATION_DURATION = 4000.0f;
+    return ANIMATION_DURATION;
 }
 
 ///------------------------------------------------------------------------------------------------
