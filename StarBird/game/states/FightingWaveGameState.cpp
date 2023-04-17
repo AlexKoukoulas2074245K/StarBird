@@ -133,6 +133,13 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
                     {
                         const auto& enemyDef = enemyDefOpt->get();
                         scene_object_utils::ChangeSceneObjectState(*enemySoOpt, enemyDef, game_constants::DYING_SCENE_OBJECT_STATE);
+                        
+                        auto enemyName = enemySoOpt->get().mName;
+                        
+                        mLevelUpdater->AddFlow(RepeatableFlow([this, enemyName]()
+                        {
+                            mLevelUpdater->RemoveWaveEnemy(enemyName);
+                        }, enemySoOpt->get().mAnimation->VGetDurationMillis(), RepeatableFlow::RepeatPolicy::ONCE));
                     }
                 }
                 else if (enemySoOpt && scene_object_utils::IsSceneObjectBossPart(*enemySoOpt))
