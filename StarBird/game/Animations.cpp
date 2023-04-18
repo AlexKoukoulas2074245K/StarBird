@@ -362,7 +362,7 @@ PlayerShieldAnimation::PlayerShieldAnimation(SceneObject* sceneObject, const res
         sceneObject->mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] = 1.0f;
     }
     
-    VPause();
+    mDisolvingInProgress = false;
 }
 
 std::unique_ptr<BaseAnimation> PlayerShieldAnimation::VClone() const
@@ -372,15 +372,47 @@ std::unique_ptr<BaseAnimation> PlayerShieldAnimation::VClone() const
 
 void PlayerShieldAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
-    sceneObject.mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] -= dtMillis * 0.002f;
-    
-    if (sceneObject.mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] <= -1.0f)
+    if (mDisolvingInProgress)
     {
-        if (mCompletionCallback)
+        sceneObject.mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] -= dtMillis * 0.002f;
+        
+        if (sceneObject.mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] <= -1.0f)
         {
-            mCompletionCallback();
+            if (mCompletionCallback)
+            {
+                mCompletionCallback();
+            }
+        }
+        
+        sceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] -= dtMillis * 0.001f;
+        if (sceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] <= 0.0f)
+        {
+            sceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
         }
     }
+    else
+    {
+        sceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * 0.001f;
+        if (sceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
+        {
+            sceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+        }
+    }
+}
+
+bool PlayerShieldAnimation::VIsPaused() const
+{
+    return false;
+}
+
+void PlayerShieldAnimation::VPause()
+{
+    mDisolvingInProgress = false;
+}
+
+void PlayerShieldAnimation::VResume()
+{
+    mDisolvingInProgress = true;
 }
 
 resources::ResourceId PlayerShieldAnimation::VGetCurrentEffectTextureResourceId() const

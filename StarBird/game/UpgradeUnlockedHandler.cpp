@@ -358,7 +358,7 @@ void UpgradeUnlockedHandler::OnDoubleBulletUpgradeGained()
 
 void UpgradeUnlockedHandler::OnPlayerShieldUpgradeGained()
 {
-    GameSingletons::SetPlayerShieldHealth(GameSingletons::GetPlayerMaxHealth() * 0.25f);
+    GameSingletons::SetPlayerShieldHealth(GameSingletons::GetPlayerMaxHealth() * 0.2f);
     
     auto& resService = resources::ResourceLoadingService::GetInstance();
     

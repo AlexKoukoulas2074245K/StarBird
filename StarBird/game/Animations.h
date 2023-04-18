@@ -187,10 +187,14 @@ public:
     
     std::unique_ptr<BaseAnimation> VClone() const override;
     void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
+    bool VIsPaused() const override;
+    void VPause() override;
+    void VResume() override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     
 private:
     resources::ResourceId mAlphaMapTextureResourceId;
+    bool mDisolvingInProgress;
 };
 
 ///------------------------------------------------------------------------------------------------

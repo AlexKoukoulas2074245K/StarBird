@@ -9,6 +9,7 @@ in vec3 interp_pos;
 uniform sampler2D tex;
 uniform sampler2D alphaTex;
 uniform float dissolve_y_offset;
+uniform float custom_alpha;
 uniform vec4 ambient_light_color;
 uniform vec4 point_light_colors[32];
 uniform vec3 point_light_positions[32];
@@ -29,7 +30,7 @@ void main()
     
     if (dissolve_y_offset < interp_pos.y) discard;
     
-    frag_color.a = alpha_color.r;
+    frag_color.a = alpha_color.r * custom_alpha;
     frag_color = clamp(frag_color, 0.0f, 1.0f);
     
     if (affected_by_light)
