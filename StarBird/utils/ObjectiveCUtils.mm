@@ -16,3 +16,17 @@ void objectiveC_utils::Vibrate()
 }
 
 ///------------------------------------------------------------------------------------------------
+
+std::string objectiveC_utils::GetLocalFileSaveLocation()
+{
+    return std::string(getenv("HOME")) + "/Documents/";
+}
+
+///------------------------------------------------------------------------------------------------
+
+std::string objectiveC_utils::BuildLocalFileSaveLocation(const std::string& fileName)
+{
+    return std::string(getenv("HOME")) + "/Documents/" + fileName;
+}
+
+///------------------------------------------------------------------------------------------------

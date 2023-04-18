@@ -8,6 +8,7 @@
 #include "BaseGameDataLoader.h"
 #include "../../resloading/DataFileResource.h"
 #include "../../resloading/ResourceLoadingService.h"
+#include "../../utils/ObjectiveCUtils.h"
 #include "../../utils/Logging.h"
 
 #include <rapidxml/rapidxml.hpp>
@@ -49,7 +50,7 @@ void BaseGameDataLoader::SetCallbackForNode(const strutils::StringId& nodeName, 
 void BaseGameDataLoader::LoadData(const std::string& dataFileName)
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
-    auto resourceId = resService.LoadResource(resources::ResourceLoadingService::RES_DATA_ROOT + dataFileName + ".xml");
+    auto resourceId = resService.LoadResource(strutils::StringStartsWith(dataFileName, objectiveC_utils::GetLocalFileSaveLocation()) ? (dataFileName + ".xml") : (resources::ResourceLoadingService::RES_DATA_ROOT + dataFileName + ".xml"));
     auto& xmlLevel = resService.GetResource<resources::DataFileResource>(resourceId);
     auto xmlContents = xmlLevel.GetContents();
     resService.UnloadResource(resourceId);

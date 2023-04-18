@@ -7,10 +7,12 @@
 
 #include "Map.h"
 #include "GameConstants.h"
+#include "ObjectiveCUtils.h"
 #include "SceneObject.h"
 #include "Scene.h"
 #include "../resloading/ResourceLoadingService.h"
 
+#include <fstream>
 #include <unordered_set>
 
 ///------------------------------------------------------------------------------------------------
@@ -45,14 +47,9 @@ Map::Map(Scene& scene, const int generationSeed, const glm::ivec2& mapDimensions
     , mHasSingleEntryPoint(singleEntryPoint)
 {
     math::SetControlSeed(generationSeed);
-    
-    // No map data has been saved to GameSingletons
-    if (mMapData.empty())
-    {
-        GenerateMapData();
-    }
-    
+    GenerateMapData();
     CreateMapSceneObjects();
+    CreateLevelFiles();
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -229,6 +226,52 @@ void Map::CreateMapSceneObjects()
             }
         }
     }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void Map::CreateLevelFiles()
+{
+    for (const auto& mapNodeEntry: mMapData)
+    {
+        switch (mapNodeEntry.second.mNodeType)
+        {
+            case NodeType::NORMAL_ENCOUNTER:
+            case NodeType::HARD_ENCOUNTER:
+            case NodeType::BOSS_ENCOUNTER: GenerateLevelWaves(mapNodeEntry.first, mapNodeEntry.second);
+            
+            default: break;
+        }
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void Map::GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData)
+{
+    std::string levelXml =
+    "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+    "\n<Level>"
+    "\n<Camera type=\"world_cam\" lenseHeight=\"30.0f\"/>"
+    "\n<Camera type=\"gui_cam\" lenseHeight=\"30.0f\"/>";
+    
+    for (int i = 0; i < mapCoord.mCol; ++i)
+    {
+        levelXml +=
+        "\n    <Wave>"
+        "\n        <Enemy position=\"-5.0f, 20.0f\" type=\"enemies/test_enemy_chasing\"/>"
+        "\n        <Enemy position=\" 0.0f, 20.0f\" type=\"enemies/test_enemy_chasing\"/>"
+        "\n        <Enemy position=\" 5.0f, 20.0f\" type=\"enemies/test_enemy_chasing\"/>"
+        "\n    </Wave>";
+    }
+    
+    levelXml += "\n</Level>";
+    
+    auto levelFileName = objectiveC_utils::BuildLocalFileSaveLocation(mapCoord.ToString() + ".xml");
+    
+    std::ofstream outputFile(levelFileName);
+    outputFile << levelXml;
+    outputFile.close();
 }
 
 ///------------------------------------------------------------------------------------------------

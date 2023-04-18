@@ -26,7 +26,7 @@ struct MapCoord
     {
     }
     
-    std::string ToString() const { return std::to_string(mCol) + "," + std::to_string(mRow); }
+    std::string ToString() const { return std::to_string(mCol) + "_" + std::to_string(mRow); }
     
     int mCol;
     int mRow;
@@ -89,6 +89,8 @@ public:
 private:
     void GenerateMapData();
     void CreateMapSceneObjects();
+    void CreateLevelFiles();
+    void GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData);
     bool DetectedCrossedEdge(const MapCoord& currentCoord, const MapCoord& targetTestCoord) const;
     glm::vec3 GenerateNodePositionForCoord(const MapCoord& currentMapCoord) const;
     NodeType SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const;

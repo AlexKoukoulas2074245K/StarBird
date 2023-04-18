@@ -118,7 +118,7 @@ void Game::Run()
 {
     
     Scene scene;
-    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::LEVEL, "test_level_with_boss", false));
+    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "test_level_with_boss", false));
     
     SDL_Event e;
     

@@ -10,6 +10,7 @@
 #include "GameConstants.h"
 #include "GameSingletons.h"
 #include "MapUpdater.h"
+#include "ObjectiveCUtils.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
 #include "states/DebugConsoleGameState.h"
@@ -112,7 +113,7 @@ PostStateUpdateDirective MapUpdater::VUpdate(std::vector<SceneObject>& sceneObje
             assert(NODE_TYPE_TO_SCENE_TYPE.contains(mMap.GetMapData().at(mSelectedMapCoord).mNodeType));
             auto nextSceneType = NODE_TYPE_TO_SCENE_TYPE.at(mMap.GetMapData().at(mSelectedMapCoord).mNodeType);
             
-            mScene.ChangeScene(Scene::TransitionParameters(nextSceneType, nextSceneType == Scene::SceneType::LEVEL ? (mMap.GetMapData().at(mSelectedMapCoord).mNodeType == Map::NodeType::NORMAL_ENCOUNTER ? "test_level" : "test_level_with_boss") : "", true));
+            mScene.ChangeScene(Scene::TransitionParameters(nextSceneType, nextSceneType == Scene::SceneType::LEVEL ? (objectiveC_utils::BuildLocalFileSaveLocation(mSelectedMapCoord.ToString())) : "", true));
             
             return PostStateUpdateDirective::BLOCK_UPDATE;
         }

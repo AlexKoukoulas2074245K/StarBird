@@ -9,6 +9,7 @@
 #include "DataFileLoader.h"
 #include "IResource.h"
 #include "OBJMeshLoader.h"
+#include "ObjectiveCUtils.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
 #include "../utils/FileUtils.h"
@@ -218,7 +219,9 @@ void ResourceLoadingService::LoadResourceInternal(const std::string& resourcePat
     if (loadersIter != mResourceExtensionsToLoadersMap.end())
     {
         auto& selectedLoader = mResourceExtensionsToLoadersMap.at(strutils::StringId(fileutils::GetFileExtension(resourcePath)));
-        auto loadedResource = selectedLoader->VCreateAndLoadResource(RES_ROOT + resourcePath);
+        
+        auto localSaveFilePath = objectiveC_utils::GetLocalFileSaveLocation();
+        auto loadedResource = selectedLoader->VCreateAndLoadResource(strutils::StringStartsWith(resourcePath, localSaveFilePath) ? resourcePath : (RES_ROOT + resourcePath));
         mResourceMap[resourceId] = std::move(loadedResource);
         Log(LogType::INFO, "Loading asset: %s in %s", resourcePath.c_str(), std::to_string(resourceId).c_str());
     }
@@ -231,7 +234,12 @@ void ResourceLoadingService::LoadResourceInternal(const std::string& resourcePat
 ///------------------------------------------------------------------------------------------------
 
 std::string ResourceLoadingService::AdjustResourcePath(const std::string& resourcePath) const
-{    
+{
+    if (strutils::StringStartsWith(resourcePath, objectiveC_utils::GetLocalFileSaveLocation()))
+    {
+        return resourcePath;
+    }
+    
     return !strutils::StringStartsWith(resourcePath, RES_ROOT) ? resourcePath : resourcePath.substr(RES_ROOT.size(), resourcePath.size() - RES_ROOT.size());
 }
 
