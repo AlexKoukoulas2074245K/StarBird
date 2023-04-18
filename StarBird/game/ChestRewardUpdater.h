@@ -22,10 +22,12 @@
 class Scene;
 class FullScreenOverlayController;
 class CarouselController;
+class b2World;
+
 class ChestRewardUpdater final: public IUpdater
 {
 public:
-    ChestRewardUpdater(Scene& scene);
+    ChestRewardUpdater(Scene& scene, b2World& box2dWorld);
     ~ChestRewardUpdater();
     
     PostStateUpdateDirective VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis) override;
@@ -58,6 +60,7 @@ private:
     };
     
     Scene& mScene;
+    b2World& mBox2dWorld;
     UpgradeUnlockedHandler mUpgradeUnlockedHandler;
     StateMachine mStateMachine;
     RewardFlowState mRewardFlowState;

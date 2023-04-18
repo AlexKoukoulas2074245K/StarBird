@@ -317,7 +317,7 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
                 
             case SceneType::LAB:
             {
-                mSceneUpdater = std::make_unique<LabUpdater>(*this);
+                mSceneUpdater = std::make_unique<LabUpdater>(*this, mBox2dWorld);
             } break;
                 
             case SceneType::STATS_UPGRADE:
@@ -327,7 +327,7 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
                 
             case SceneType::CHEST_REWARD:
             {
-                mSceneUpdater = std::make_unique<ChestRewardUpdater>(*this);
+                mSceneUpdater = std::make_unique<ChestRewardUpdater>(*this, mBox2dWorld);
             } break;
                 
             case SceneType::LEVEL:

@@ -23,10 +23,11 @@
 class CarouselController;
 class TextPromptController;
 class Scene;
+class b2World;
 class LabUpdater final: public IUpdater
 {
 public:
-    LabUpdater(Scene& scene);
+    LabUpdater(Scene& scene, b2World& box2dWorld);
     ~LabUpdater();
     
     PostStateUpdateDirective VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis) override;

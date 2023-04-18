@@ -12,6 +12,7 @@
 #include "GameConstants.h"
 #include "GameSingletons.h"
 #include "LightRepository.h"
+#include "ObjectTypeDefinitionRepository.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
 #include "datarepos/FontRepository.h"
@@ -76,9 +77,10 @@ static const float SELECTED_REWARD_SHINE_SPEED = 1.0f/200.0f;
 
 ///------------------------------------------------------------------------------------------------
 
-ChestRewardUpdater::ChestRewardUpdater(Scene& scene)
+ChestRewardUpdater::ChestRewardUpdater(Scene& scene, b2World& box2dWorld)
     : mScene(scene)
-    , mUpgradeUnlockedHandler(scene)
+    , mBox2dWorld(box2dWorld)
+    , mUpgradeUnlockedHandler(scene, mBox2dWorld)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
     , mRewardFlowState(RewardFlowState::AWAIT_PRESS)
     , mShakeNoiseMag(0.0f)
@@ -314,6 +316,7 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
                 confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] -= dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
                 if (confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] <= 0.0f)
                 {
+                    mScene.RemoveAllSceneObjectsWithName(CONFIRMATION_BUTTON_NAME);
                     confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
                 }
             }
@@ -327,6 +330,7 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
                 if (confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] <= 0.0f)
                 {
                     confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+                    mScene.RemoveAllSceneObjectsWithName(CONFIRMATION_BUTTON_TEXT_NAME);
                 }
             }
         } break;
@@ -361,6 +365,22 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
     // Animate all SOs
     for (auto& sceneObject: sceneObjects)
     {
+        // Check if this scene object has a respective family object definition
+        auto sceneObjectTypeDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(sceneObject.mObjectFamilyTypeName);
+        if (sceneObjectTypeDefOpt && !sceneObject.mCustomDrivenMovement)
+        {
+            // Update movement
+            auto& sceneObjectTypeDef = sceneObjectTypeDefOpt->get();
+            switch (sceneObjectTypeDef.mMovementControllerPattern)
+            {
+                case MovementControllerPattern::CONSTANT_VELOCITY:
+                {
+                    sceneObject.mBody->SetLinearVelocity(b2Vec2(sceneObjectTypeDef.mConstantLinearVelocity.x, sceneObjectTypeDef.mConstantLinearVelocity.y));
+                } break;
+                default: break;
+            }
+        }
+        
         if (sceneObject.mAnimation && !sceneObject.mAnimation->VIsPaused())
         {
             sceneObject.mAnimation->VUpdate(dtMillis, sceneObject);

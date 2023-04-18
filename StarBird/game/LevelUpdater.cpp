@@ -5,6 +5,7 @@
 ///  Created by Alex Koukoulas on 30/01/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
+#include "BlueprintFlows.h"
 #include "FontRepository.h"
 #include "GameConstants.h"
 #include "GameSingletons.h"
@@ -55,9 +56,6 @@ static const float JOYSTICK_BOUNDS_Z = 2.0f;
 
 static const float BACKGROUND_SPEED = 1.0f/4000.0f;
 
-static const float PLAYER_BULLET_X_OFFSET = 0.48f;
-static const float MIRROR_IMAGE_BULLET_X_OFFSET = 0.38f;
-
 static const float PLAYER_MOVEMENT_ROLL_CHANCE = 0.333f;
 static const float PLAYER_MOVEMENT_ROLL_SPEED = 0.008f;
 static const float PLAYER_MOVEMENT_ROLL_ANGLE = 180.0f;
@@ -99,75 +97,8 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
 {
     mLevel = levelDef;
     
-    mFlows.emplace_back([&]()
-    {
-        bool hasDoubleBulletUpgrade = GameSingletons::HasEquippedUpgrade(game_constants::DOUBLE_BULLET_UGPRADE_NAME);
-        bool hasMirrorImageUpgrade = GameSingletons::HasEquippedUpgrade(game_constants::MIRROR_IMAGE_UGPRADE_NAME);
-
-        auto playerOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
-        if (playerOpt && GameSingletons::GetPlayerCurrentHealth() > 0.0f)
-        {
-            if (hasDoubleBulletUpgrade)
-            {
-                auto bulletPosition = math::Box2dVec2ToGlmVec3(playerOpt->get().mBody->GetWorldCenter());
-
-                // Left Bullet
-                bulletPosition.x -= PLAYER_BULLET_X_OFFSET;
-                CreateBulletAtPosition(game_constants::PLAYER_BULLET_TYPE, bulletPosition);
-
-                // Right Bullet
-                bulletPosition.x += 2 * PLAYER_BULLET_X_OFFSET;
-                CreateBulletAtPosition(game_constants::PLAYER_BULLET_TYPE, bulletPosition);
-
-                if (hasMirrorImageUpgrade)
-                {
-                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(game_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(game_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-
-                    if (leftMirrorImageSoOpt)
-                    {
-                        auto bulletPosition = leftMirrorImageSoOpt->get().mPosition;
-                        bulletPosition.x -= MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
-
-                        bulletPosition.x += 2 * MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
-                    }
-
-                    if (rightMirrorImageSoOpt)
-                    {
-                        auto bulletPosition = rightMirrorImageSoOpt->get().mPosition;
-                        bulletPosition.x -= MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
-
-                        bulletPosition.x += 2 * MIRROR_IMAGE_BULLET_X_OFFSET;
-                        CreateBulletAtPosition(game_constants::MIRROR_IMAGE_BULLET_TYPE, bulletPosition);
-                    }
-                }
-            }
-            else
-            {
-                CreateBulletAtPosition(game_constants::PLAYER_BULLET_TYPE, math::Box2dVec2ToGlmVec3( playerOpt->get().mBody->GetWorldCenter()));
-
-                if (hasMirrorImageUpgrade)
-                {
-                    auto leftMirrorImageSoOpt = mScene.GetSceneObject(game_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-                    auto rightMirrorImageSoOpt = mScene.GetSceneObject(game_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
-
-                    if (leftMirrorImageSoOpt)
-                    {
-                        CreateBulletAtPosition(game_constants::MIRROR_IMAGE_BULLET_TYPE, leftMirrorImageSoOpt->get().mPosition);
-                    }
-
-                    if (rightMirrorImageSoOpt)
-                    {
-                        CreateBulletAtPosition(game_constants::MIRROR_IMAGE_BULLET_TYPE, rightMirrorImageSoOpt->get().mPosition);
-                    }
-                }
-            }
-        }
-    }, game_constants::BASE_PLAYER_BULLET_FLOW_DELAY_MILLIS / GameSingletons::GetPlayerBulletSpeedStat(), RepeatableFlow::RepeatPolicy::REPEAT, game_constants::PLAYER_BULLET_FLOW_NAME);
-
+    blueprint_flows::CreatePlayerBulletFlow(mFlows, mScene, mBox2dWorld);
+    
     static PhysicsCollisionListener collisionListener;
     collisionListener.RegisterCollisionCallback(UnorderedCollisionCategoryPair(physics_constants::ENEMY_CATEGORY_BIT, physics_constants::PLAYER_BULLET_CATEGORY_BIT), [&](b2Body* firstBody, b2Body* secondBody)
     {
@@ -866,6 +797,11 @@ void LevelUpdater::LoadLevelInvariantObjects()
         SceneObject playerSO = scene_object_utils::CreateSceneObjectWithBody(playerObjectDef, game_constants::PLAYER_INITIAL_POS, mBox2dWorld, game_constants::PLAYER_SCENE_OBJECT_NAME);
         
         mScene.AddSceneObject(std::move(playerSO));
+        
+        for (const auto& upgradeEntry: GameSingletons::GetEquippedUpgrades())
+        {
+            mUpgradesLogicHandler.InitializeEquippedUpgrade(upgradeEntry.mUpgradeNameId);
+        }
     }
     
     const auto& worldCamOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject);
@@ -1286,20 +1222,6 @@ void LevelUpdater::ApplyShakeToNearlyDeadEntities(std::vector<SceneObject>& scen
                 so.mBody->SetTransform(so.mBody->GetWorldCenter() + randomOffset, 0.0f);
             }
         }
-    }
-}
-
-///------------------------------------------------------------------------------------------------
-
-void LevelUpdater::CreateBulletAtPosition(const strutils::StringId& bulletType, const glm::vec3& position)
-{
-    auto bulletDefOpt = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(bulletType);
-    if (bulletDefOpt)
-    {
-        auto& bulletDef = bulletDefOpt->get();
-        auto bulletPos = position;
-        bulletPos.z = game_constants::BULLET_Z;
-        mScene.AddSceneObject(scene_object_utils::CreateSceneObjectWithBody(bulletDef, position, mBox2dWorld));
     }
 }
 

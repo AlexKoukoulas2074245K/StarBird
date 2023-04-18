@@ -41,15 +41,11 @@ static const std::unordered_map<game_constants::LabOptionType, std::string> LAB_
 static const strutils::StringId CONFIRMATION_BUTTON_NAME = strutils::StringId("CONFIRMATION_BUTTON");
 static const strutils::StringId CONFIRMATION_BUTTON_TEXT_NAME = strutils::StringId("CONFIRMATION_BUTTON_TEXT");
 
-static const char* LEFT_NAVIGATION_ARROW_TEXTURE_FILE_NAME = "left_navigation_arrow_mm.bmp";
 static const char* CONFIRMATION_BUTTON_TEXTURE_FILE_NAME = "confirmation_button_mm.bmp";
 static const char* TEXT_PROMPT_TEXTURE_FILE_NAME = "text_prompt_mm.bmp";
 
 static const glm::vec3 LAB_BACKGROUND_POS = glm::vec3(-1.8f, 0.0f, -1.0f);
 static const glm::vec3 LAB_BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
-
-static const glm::vec3 LAB_NAVIGATION_ARROW_SCALE = glm::vec3(3.0f, 2.0f, 0.0f);
-static const glm::vec3 LAB_NAVIGATION_ARROW_POSITION = glm::vec3(0.0f, -6.0f, 0.0f);
 
 static const glm::vec3 LAB_CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -8.0f, 0.0f);
 static const glm::vec3 LAB_CONFIRMATION_BUTTON_SCALE = glm::vec3(3.5f, 3.5f, 0.0f);
@@ -67,10 +63,10 @@ static const float LAB_CONFIRMATION_BUTTON_ROTATION_SPEED = 0.0002f;
 
 ///------------------------------------------------------------------------------------------------
 
-LabUpdater::LabUpdater(Scene& scene)
+LabUpdater::LabUpdater(Scene& scene, b2World& box2dWorld)
     : mScene(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
-    , mUpgradeUnlockedHandler(scene)
+    , mUpgradeUnlockedHandler(scene, box2dWorld)
     , mOptionSelectionState(OptionSelectionState::OPTION_NOT_SELECTED)
     , mSelectedLabOption(game_constants::LabOptionType::REPAIR)
 {

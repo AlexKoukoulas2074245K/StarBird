@@ -150,6 +150,8 @@ inline const float BASE_PLAYER_SPEED = 0.4f;
 inline const float BACKGROUND_Z = -1.0f;
 inline const float WALL_Z = -0.5f;
 inline const float BULLET_Z = -0.5f;
+inline const float PLAYER_BULLET_X_OFFSET = 0.48f;
+inline const float MIRROR_IMAGE_BULLET_X_OFFSET = 0.38f;
 
 static const float GUI_CRYSTAL_ROTATION_SPEED = 0.0004f;
 
@@ -182,6 +184,7 @@ inline const glm::vec3 PLAYER_HEALTH_BAR_POSITION = glm::vec3(0.0f, -12.0f, 0.5f
 inline const glm::vec3 PLAYER_HEALTH_BAR_SCALE = glm::vec3(5.0f, 1.2f, 1.0f);
 
 inline const glm::vec3 PLAYER_INITIAL_POS = glm::vec3(0.0f, -10.0f, 0.0f);
+inline const glm::vec3 PLAYER_CHEST_REWARD_POS = glm::vec3(0.0f, -7.0f, 0.0f);
 inline const glm::vec3 BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
 inline const glm::vec3 MAP_BACKGROUND_SCALE = glm::vec3(120.0f, 120.0f, 1.0f);
 

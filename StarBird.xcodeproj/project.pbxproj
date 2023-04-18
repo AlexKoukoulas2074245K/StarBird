@@ -74,6 +74,7 @@
 		925FD87B298AAF570058E747 /* GameSingletons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 925FD879298AAF570058E747 /* GameSingletons.cpp */; };
 		925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */; };
 		925FD880298AD7D50058E747 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925FD87F298AD7D50058E747 /* AudioToolbox.framework */; };
+		926693E929EEAA4B0013C195 /* BlueprintFlows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 926693DC29EEAA4B0013C195 /* BlueprintFlows.cpp */; };
 		92693B6829C87D2500157222 /* MapUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92693B5B29C87D2500157222 /* MapUpdater.cpp */; };
 		9269AE8629E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9269AE8529E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp */; };
 		927FD9B529C35C750012C724 /* BossAIController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 927FD9B129C35C750012C724 /* BossAIController.cpp */; };
@@ -366,6 +367,8 @@
 		925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ObjectiveCUtils.mm; sourceTree = "<group>"; };
 		925FD87D298AD7050058E747 /* ObjectiveCUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjectiveCUtils.h; sourceTree = "<group>"; };
 		925FD87F298AD7D50058E747 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		926693DC29EEAA4B0013C195 /* BlueprintFlows.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlueprintFlows.cpp; sourceTree = "<group>"; };
+		926693E829EEAA4B0013C195 /* BlueprintFlows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlueprintFlows.h; sourceTree = "<group>"; };
 		92693B5B29C87D2500157222 /* MapUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MapUpdater.cpp; sourceTree = "<group>"; };
 		92693B6729C87D2500157222 /* MapUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapUpdater.h; sourceTree = "<group>"; };
 		92693B6929C8821F00157222 /* IUpdater.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IUpdater.h; sourceTree = "<group>"; };
@@ -1107,6 +1110,8 @@
 			children = (
 				92BF79BC29A39002002A52D8 /* Animations.cpp */,
 				92BF79BB29A39002002A52D8 /* Animations.h */,
+				926693DC29EEAA4B0013C195 /* BlueprintFlows.cpp */,
+				926693E829EEAA4B0013C195 /* BlueprintFlows.h */,
 				92C2198B2984395800B2D2C6 /* Camera.cpp */,
 				92C2198C2984395800B2D2C6 /* Camera.h */,
 				922540F329E85A11001122E3 /* CarouselController.cpp */,
@@ -2021,6 +2026,7 @@
 				9254CBF32969B79A00EFE0CC /* b2MotorJoint.cpp in Sources */,
 				9254CC0C2969B79A00EFE0CC /* b2BroadPhase.cpp in Sources */,
 				9254CC082969B79A00EFE0CC /* b2EdgeShape.cpp in Sources */,
+				926693E929EEAA4B0013C195 /* BlueprintFlows.cpp in Sources */,
 				925FD87229893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp in Sources */,
 				9254CBEC2969B79A00EFE0CC /* b2Contact.cpp in Sources */,
 				92F9EC90299E9BAA00C263E8 /* BaseGameState.cpp in Sources */,

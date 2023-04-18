@@ -11,6 +11,8 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "../utils/StringUtils.h"
+#include "../utils/MathUtils.h"
+
 #include "RepeatableFlow.h"
 
 #include <vector>
@@ -18,6 +20,7 @@
 ///------------------------------------------------------------------------------------------------
 
 class Scene;
+class b2World;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -29,7 +32,7 @@ public:
         ONGOING, FINISHED
     };
     
-    UpgradeUnlockedHandler(Scene& scene);
+    UpgradeUnlockedHandler(Scene& scene, b2World& box2dWorld);
     
     void OnUpgradeGained(const strutils::StringId& upgradeNameId);
     UpgradeAnimationState Update(const float dtMillis);
@@ -37,15 +40,21 @@ public:
 private:
     void OnCrystalGiftUpgradeGained();
     void OnHealthPotionUpgradeGained();
+    void OnMirrorImageUpgradeGained();
+    void OnDoubleBulletUpgradeGained();
     
-    UpgradeAnimationState UpdateCrystalGiftUpgradeGained();
-    UpgradeAnimationState UpdateHealthPotionUpgradeGained();
+    UpgradeAnimationState UpdateCrystalGiftUpgradeGained(const float dtMillis);
+    UpgradeAnimationState UpdateHealthPotionUpgradeGained(const float dtMillis);
+    UpgradeAnimationState UpdateMirrorImageUpgradeGained(const float dtMillis);
+    UpgradeAnimationState UpdateDoubleBulletUpgradeGained(const float dtMillis);
     
 private:
     Scene& mScene;
+    b2World& mBox2dWorld;
     strutils::StringId mCurrentUpgradeNameUnlocked;
     std::vector<RepeatableFlow> mFlows;
     std::vector<strutils::StringId> mCreatedSceneObjectNames;
+    bool mForceFinishAnimation;
 };
 
 ///------------------------------------------------------------------------------------------------
