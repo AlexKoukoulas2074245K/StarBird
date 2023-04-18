@@ -14,7 +14,7 @@ void main()
     
     frag_color = texture(tex, vec2(finalUvX, finalUvY));
     
-    if (frag_color.a < 0.2) discard;
+    if (frag_color.a < 0.25) discard;
 
     frag_color = vec4((vec3(frag_color.r + frag_color.g + frag_color.b)/10.0f).rgb, frag_color.a);
 }

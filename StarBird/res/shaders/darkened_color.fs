@@ -14,6 +14,6 @@ void main()
     float final_uv_y = 1.0 - uv_frag.y;
     frag_color = texture(tex, vec2(final_uv_x, final_uv_y));
     
-    if (frag_color.a < 0.2) discard;
+    if (frag_color.a < 0.25) discard;
     else frag_color.rgb *= darken_value;
 }

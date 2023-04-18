@@ -251,36 +251,39 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             auto& enemySO = enemySceneObjectOpt->get();
             auto enemySceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemySO.mObjectFamilyTypeName)->get();
             
-            // Remove player shield/damage player flow
-            if (mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
+            if (!playerSO.mInvulnerable)
             {
-                mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
-            }
-            else
-            {
-                GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - enemySceneObjectTypeDef.mDamage);
-                OnPlayerDamaged();
-                CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemySceneObjectTypeDef.mDamage);
-            }
-            
-            // Kamikaze everything that isn't a boss part
-            if (!scene_object_utils::IsSceneObjectBossPart(enemySO))
-            {
-                scene_object_utils::ChangeSceneObjectState(enemySO, enemySceneObjectTypeDef, game_constants::DYING_SCENE_OBJECT_STATE);
-                
-                mFlows.emplace_back([=]()
+                // Remove player shield/damage player flow
+                if (mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
                 {
-                    RemoveWaveEnemy(enemyName);
-                }, enemySO.mAnimation->VGetDurationMillis(), RepeatableFlow::RepeatPolicy::ONCE);
+                    mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+                }
+                else
+                {
+                    GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - enemySceneObjectTypeDef.mDamage);
+                    OnPlayerDamaged();
+                    CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemySceneObjectTypeDef.mDamage);
+                }
                 
-                mActiveLightNames.insert(enemyName);
-                mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_constants::POINT_LIGHT_COLOR, enemySO.mPosition, EXPLOSION_LIGHT_POWER);
+                // Kamikaze everything that isn't a boss part
+                if (!scene_object_utils::IsSceneObjectBossPart(enemySO))
+                {
+                    scene_object_utils::ChangeSceneObjectState(enemySO, enemySceneObjectTypeDef, game_constants::DYING_SCENE_OBJECT_STATE);
+                    
+                    mFlows.emplace_back([=]()
+                                        {
+                        RemoveWaveEnemy(enemyName);
+                    }, enemySO.mAnimation->VGetDurationMillis(), RepeatableFlow::RepeatPolicy::ONCE);
+                    
+                    mActiveLightNames.insert(enemyName);
+                    mScene.GetLightRepository().AddLight(LightType::POINT_LIGHT, enemyName, game_constants::POINT_LIGHT_COLOR, enemySO.mPosition, EXPLOSION_LIGHT_POWER);
+                }
+                
+                // Enable invincibility flow
+                mFlows.emplace_back([]()
+                                    {
+                }, game_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
             }
-            
-            // Enable invincibility flow
-            mFlows.emplace_back([]()
-            {
-            }, game_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
         }
     });
     
@@ -302,30 +305,33 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             auto& playerSO = playerSceneObjectOpt->get();
             auto& enemyBulletSO = enemyBulletSceneObjectOpt->get();
             
-            auto enemyBulletSceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemyBulletSO.mObjectFamilyTypeName)->get();
-            
-            if (mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
+            if (!playerSO.mInvulnerable)
             {
-                mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+                auto enemyBulletSceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemyBulletSO.mObjectFamilyTypeName)->get();
+                
+                if (mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
+                {
+                    mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+                }
+                else
+                {
+                    GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - enemyBulletSceneObjectTypeDef.mDamage);
+                    OnPlayerDamaged();
+                    CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemyBulletSceneObjectTypeDef.mDamage);
+                }
+                
+                mFlows.emplace_back([]()
+                {
+                }, game_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
+                
+                // Erase bullet collision mask so that it doesn't also contribute to other
+                // enemy damage until it is removed from b2World
+                auto bulletFilter = secondBody->GetFixtureList()[0].GetFilterData();
+                bulletFilter.maskBits = 0;
+                secondBody->GetFixtureList()[0].SetFilterData(bulletFilter);
+                
+                RemoveWaveEnemy(enemyBulletName);
             }
-            else
-            {
-                GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - enemyBulletSceneObjectTypeDef.mDamage);
-                OnPlayerDamaged();
-                CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemyBulletSceneObjectTypeDef.mDamage);
-            }
-            
-            mFlows.emplace_back([]()
-            {
-            }, game_constants::PLAYER_INVINCIBILITY_FLOW_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, game_constants::PLAYER_DAMAGE_INVINCIBILITY_FLOW_NAME);
-            
-            // Erase bullet collision mask so that it doesn't also contribute to other
-            // enemy damage until it is removed from b2World
-            auto bulletFilter = secondBody->GetFixtureList()[0].GetFilterData();
-            bulletFilter.maskBits = 0;
-            secondBody->GetFixtureList()[0].SetFilterData(bulletFilter);
-            
-            RemoveWaveEnemy(enemyBulletName);
         }
     });
     

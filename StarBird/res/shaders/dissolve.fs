@@ -22,7 +22,7 @@ void main()
     float finalUvY = 1.0 - uv_frag.y;
     frag_color = texture(tex, vec2(finalUvX, finalUvY));
     
-    if (frag_color.a < 0.2) discard;
+    if (frag_color.a < 0.25) discard;
     
     vec4 dissolve_color = texture(dissolveTex, vec2(finalUvX, finalUvY + dissolve_y_offset));
     

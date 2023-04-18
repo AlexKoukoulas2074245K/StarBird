@@ -14,7 +14,7 @@ void main()
     float finalUvY = 1.0 - uv_frag.y;
     frag_color = texture(tex, vec2(finalUvX, finalUvY));
     
-    if (frag_color.a < 0.2) discard;
+    if (frag_color.a < 0.25) discard;
     
     frag_color = custom_color;
 }

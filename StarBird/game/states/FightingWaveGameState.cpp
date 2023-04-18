@@ -165,6 +165,13 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
                 mLevelUpdater->RemoveWaveEnemy(enemyNameToRemoveInstantly);
             }
             
+            auto playerSoOpt = mScene->GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
+            if (playerSoOpt)
+            {
+                auto& playerSo = playerSoOpt->get();
+                playerSo.mInvulnerable = true;
+            }
+            
             mBossDeathAnimationActive = true;
         }
     }

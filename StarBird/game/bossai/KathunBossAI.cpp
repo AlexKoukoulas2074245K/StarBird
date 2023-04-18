@@ -362,7 +362,6 @@ void KathunBossAI::SpawnEnemyAt(const glm::vec3& position, const glm::vec3& dire
         so.mRotation.z = -math::Arctan2(direction.x, direction.y) + math::PI;
         so.mCustomDrivenMovement = true;
         so.mBody->SetLinearVelocity(b2Vec2(direction.x * speed, direction.y * speed));
-        
     }
     
     mLevelUpdater.AddWaveEnemy(enemyName);

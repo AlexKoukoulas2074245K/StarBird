@@ -52,6 +52,7 @@ static const glm::vec3 UPGRADE_TEXT_SCALE = glm::vec3(0.01f, 0.01f, 1.0f);
 
 static const glm::vec3 REWARD_SCREEN_TITLE_POSITION = glm::vec3(-4.8f, 7.8f, 2.0f);
 static const glm::vec3 REWARD_SCREEN_TITLE_SCALE = glm::vec3(0.014f, 0.014f, 1.0f);
+static const glm::vec3 SELECTED_REWARD_VERTICAL_OFFSET = glm::vec3(0.0f, 5.0f, 0.0f);
 
 static const  glm::vec4 CHEST_LIGHT_COLOR = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
 
@@ -68,6 +69,10 @@ static const float CONFIRMATION_BUTTON_ROTATION_SPEED = 0.0002f;
 static const float CONFIRMATION_BUTTON_PULSING_SPEED = 0.02f;
 static const float CONFIRMATION_BUTTON_PULSING_ENLARGEMENT_FACTOR = 1.0f/10.0f;
 static const float CONFIRMATION_BUTTON_TEXT_PULSING_ENLARGEMENT_FACTOR = 1.0f/4000.0f;
+
+static const float SELECTED_REWARD_ROTATION_SPEED = 0.0120f;
+static const float SELECTED_REWARD_VERTICAL_SPEED = 0.0008f;
+static const float SELECTED_REWARD_SHINE_SPEED = 1.0f/200.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -492,19 +497,19 @@ void ChestRewardUpdater::OnConfirmationButtonPressed()
     
     auto& selectedRewardSo = mCarouselController->GetSelectedSceneObject()->get();
     
-    selectedRewardSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(selectedRewardSo.mAnimation->VGetCurrentTextureResourceId(), selectedRewardSo.mAnimation->VGetCurrentMeshResourceId(), selectedRewardSo.mAnimation->VGetCurrentShaderResourceId(), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, game_constants::GUI_CRYSTAL_ROTATION_SPEED * 30, false));
+    selectedRewardSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(selectedRewardSo.mAnimation->VGetCurrentTextureResourceId(), selectedRewardSo.mAnimation->VGetCurrentMeshResourceId(), selectedRewardSo.mAnimation->VGetCurrentShaderResourceId(), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, SELECTED_REWARD_ROTATION_SPEED, false));
     
     glm::vec3 startPos = selectedRewardSo.mPosition;
-    glm::vec3 endPos = startPos + glm::vec3(0.0f, 5.0f, 0.0f);
+    glm::vec3 endPos = startPos + SELECTED_REWARD_VERTICAL_OFFSET;
     math::BezierCurve curve({startPos, endPos});
     
-    selectedRewardSo.mExtraCompoundingAnimations.push_back(std::make_unique<BezierCurvePathAnimation>(selectedRewardSo.mAnimation->VGetCurrentTextureResourceId(), selectedRewardSo.mAnimation->VGetCurrentMeshResourceId(), selectedRewardSo.mAnimation->VGetCurrentShaderResourceId(), glm::vec3(1.0f), curve, 0.0008f, false));
+    selectedRewardSo.mExtraCompoundingAnimations.push_back(std::make_unique<BezierCurvePathAnimation>(selectedRewardSo.mAnimation->VGetCurrentTextureResourceId(), selectedRewardSo.mAnimation->VGetCurrentMeshResourceId(), selectedRewardSo.mAnimation->VGetCurrentShaderResourceId(), glm::vec3(1.0f), curve, SELECTED_REWARD_VERTICAL_SPEED, false));
     selectedRewardSo.mExtraCompoundingAnimations.back()->SetCompletionCallback([&]()
     {
         auto& rewardSo = mCarouselController->GetSelectedSceneObject()->get();
         rewardSo.mRotation.y = 0.0f;
         rewardSo.mExtraCompoundingAnimations.clear();
-        rewardSo.mAnimation = std::make_unique<ShineAnimation>(&rewardSo, rewardSo.mAnimation->VGetCurrentTextureResourceId(), resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME), rewardSo.mAnimation->VGetCurrentMeshResourceId(), resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::SHINE_SHADER_FILE_NAME), glm::vec3(1.0f), 1.0f/200.0f, false);
+        rewardSo.mAnimation = std::make_unique<ShineAnimation>(&rewardSo, rewardSo.mAnimation->VGetCurrentTextureResourceId(), resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME), rewardSo.mAnimation->VGetCurrentMeshResourceId(), resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::SHINE_SHADER_FILE_NAME), glm::vec3(1.0f), SELECTED_REWARD_SHINE_SPEED, false);
         rewardSo.mAnimation->SetCompletionCallback([&]()
         {
             mRewardFlowState = RewardFlowState::CREATE_REWARD_SELECTED_USAGE_ANIMATION;
