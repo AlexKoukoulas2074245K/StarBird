@@ -22,6 +22,7 @@ float GameSingletons::mDisplayedCrystalCount = 0;
 float GameSingletons::mGameSpeedMultiplier = 1.0f;
 float GameSingletons::mBossMaxHealth = 0.0f;
 float GameSingletons::mBossCurrentHealth = 1.0f;
+float GameSingletons::mPlayerShieldHealth = 0.0f;
 float GameSingletons::mPlayerMaxHealth = 1.0f;
 float GameSingletons::mPlayerCurrentHealth = 1.0f;
 float GameSingletons::mPlayerDisplayedHealth = 1.0f;
@@ -208,6 +209,20 @@ float GameSingletons::GetBossCurrentHealth()
 void GameSingletons::SetBossCurrentHealth(const float bossCurrentHealth)
 {
     mBossCurrentHealth = bossCurrentHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetPlayerShieldHealth(const float playerShieldHealth)
+{
+    mPlayerShieldHealth = playerShieldHealth;
+}
+
+///------------------------------------------------------------------------------------------------
+
+float GameSingletons::GetPlayerShieldHealth()
+{
+    return mPlayerShieldHealth;
 }
 
 ///------------------------------------------------------------------------------------------------

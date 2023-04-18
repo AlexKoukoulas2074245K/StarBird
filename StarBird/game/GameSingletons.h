@@ -61,6 +61,9 @@ public:
     static float GetBossCurrentHealth();
     static void SetBossCurrentHealth(const float bossCurrentHealth);
     
+    static float GetPlayerShieldHealth();
+    static void SetPlayerShieldHealth(const float playerShieldHealth);
+    
     static float GetPlayerMaxHealth();
     static void SetPlayerMaxHealth(const float playerMaxHealth);
     
@@ -105,6 +108,7 @@ private:
     static float mGameSpeedMultiplier;
     static float mBossMaxHealth;
     static float mBossCurrentHealth;
+    static float mPlayerShieldHealth;
     static float mPlayerMaxHealth;
     static float mPlayerCurrentHealth;
     static float mPlayerDisplayedHealth;

@@ -113,7 +113,12 @@ void UpgradesLevelLogicHandler::CreatePlayerShieldSceneObject()
         auto& resService = resources::ResourceLoadingService::GetInstance();
         SceneObject playerShieldSo;
         
-        playerShieldSo.mAnimation = std::make_unique<AlphaMappedAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + PLAYER_SHIELD_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + PLAYER_SHIELD_EFFECT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + PLAYER_SHIELD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::ALPHA_MAPPED_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        playerShieldSo.mAnimation = std::make_unique<PlayerShieldAnimation>(&playerShieldSo, resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + PLAYER_SHIELD_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + PLAYER_SHIELD_EFFECT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + PLAYER_SHIELD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::PLAYER_SHIELD_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        playerShieldSo.mAnimation->SetCompletionCallback([&]()
+        {
+            mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+        });
+        
         playerShieldSo.mSceneObjectType = SceneObjectType::WorldGameObject;
         playerShieldSo.mPosition = math::Box2dVec2ToGlmVec3(playerSoOpt->get().mBody->GetWorldCenter()) + PLAYER_SHIELD_POSITION_OFFSET;
         playerShieldSo.mScale = PLAYER_SHIELD_SCALE;

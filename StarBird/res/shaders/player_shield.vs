@@ -18,6 +18,7 @@ uniform float max_v;
 
 out vec2 uv_frag;
 out vec3 frag_unprojected_pos;
+out vec3 interp_pos;
 
 void main()
 {
@@ -34,4 +35,5 @@ void main()
     
     gl_Position = proj * view * world * vec4(position, 1.0);
     frag_unprojected_pos = (world * vec4(position, 1.0f)).rgb;
+    interp_pos = position;
 }

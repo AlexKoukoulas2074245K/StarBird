@@ -353,18 +353,37 @@ float DissolveAnimation::VGetDurationMillis() const
 
 ///------------------------------------------------------------------------------------------------
 
-AlphaMappedAnimation::AlphaMappedAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId alphaMapTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled)
+PlayerShieldAnimation::PlayerShieldAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId alphaMapTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled)
     : BaseAnimation(textureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
     , mAlphaMapTextureResourceId(alphaMapTextureResourceId)
 {
+    if (sceneObject)
+    {
+        sceneObject->mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] = 1.0f;
+    }
+    
+    VPause();
 }
 
-std::unique_ptr<BaseAnimation> AlphaMappedAnimation::VClone() const
+std::unique_ptr<BaseAnimation> PlayerShieldAnimation::VClone() const
 {
-    return std::make_unique<AlphaMappedAnimation>(*this);
+    return std::make_unique<PlayerShieldAnimation>(*this);
 }
 
-resources::ResourceId AlphaMappedAnimation::VGetCurrentEffectTextureResourceId() const
+void PlayerShieldAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
+{
+    sceneObject.mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] -= dtMillis * 0.001f;
+    
+    if (sceneObject.mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] <= -1.0f)
+    {
+        if (mCompletionCallback)
+        {
+            mCompletionCallback();
+        }
+    }
+}
+
+resources::ResourceId PlayerShieldAnimation::VGetCurrentEffectTextureResourceId() const
 {
     return mAlphaMapTextureResourceId;
 }

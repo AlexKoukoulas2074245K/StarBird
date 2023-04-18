@@ -180,12 +180,13 @@ private:
 
 ///------------------------------------------------------------------------------------------------
 
-class AlphaMappedAnimation final: public BaseAnimation
+class PlayerShieldAnimation final: public BaseAnimation
 {
 public:
-    AlphaMappedAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId alphaMapTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled);
+    PlayerShieldAnimation(SceneObject* sceneObject, const resources::ResourceId textureResourceId, const resources::ResourceId alphaMapTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled);
     
     std::unique_ptr<BaseAnimation> VClone() const override;
+    void VUpdate(const float dtMillis, SceneObject& sceneObject) override;
     resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
     
 private:

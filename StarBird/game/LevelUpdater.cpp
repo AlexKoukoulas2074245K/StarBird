@@ -185,9 +185,17 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             if (!playerSO.mInvulnerable)
             {
                 // Remove player shield/damage player flow
-                if (mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
+                if (GameSingletons::GetPlayerShieldHealth() > 0.0f)
                 {
-                    mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+                    GameSingletons::SetPlayerShieldHealth(GameSingletons::GetPlayerShieldHealth() - enemySceneObjectTypeDef.mDamage);
+                    if (GameSingletons::GetPlayerShieldHealth() <= 0.0f)
+                    {
+                        auto playerShieldOpt = mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+                        if (playerShieldOpt)
+                        {
+                            playerShieldOpt->get().mAnimation->VResume();
+                        }
+                    }
                 }
                 else
                 {
@@ -240,9 +248,18 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             {
                 auto enemyBulletSceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemyBulletSO.mObjectFamilyTypeName)->get();
                 
-                if (mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME))
+                // Remove player shield/damage player flow
+                if (GameSingletons::GetPlayerShieldHealth() > 0.0f)
                 {
-                    mScene.RemoveAllSceneObjectsWithName(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+                    GameSingletons::SetPlayerShieldHealth(GameSingletons::GetPlayerShieldHealth() - enemyBulletSceneObjectTypeDef.mDamage);
+                    if (GameSingletons::GetPlayerShieldHealth() <= 0.0f)
+                    {
+                        auto playerShieldOpt = mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
+                        if (playerShieldOpt)
+                        {
+                            playerShieldOpt->get().mAnimation->VResume();
+                        }
+                    }
                 }
                 else
                 {

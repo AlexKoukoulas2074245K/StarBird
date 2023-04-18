@@ -4,6 +4,7 @@ precision mediump float;
 
 in vec2 uv_frag;
 in vec3 frag_unprojected_pos;
+in vec3 interp_pos;
 
 uniform sampler2D tex;
 uniform sampler2D alphaTex;
@@ -25,6 +26,8 @@ void main()
     if (frag_color.a < 0.25) discard;
     
     vec4 alpha_color = texture(alphaTex, vec2(finalUvX, finalUvY + dissolve_y_offset));
+    
+    if (dissolve_y_offset < interp_pos.y) discard;
     
     frag_color.a = alpha_color.r;
     frag_color = clamp(frag_color, 0.0f, 1.0f);
