@@ -123,6 +123,11 @@ void UpgradeUnlockedHandler::OnUpgradeGained(const strutils::StringId& upgradeNa
     
     if (upgradeDefinition.mEquippable)
     {
+        if (!equippedUpgrades.empty())
+        {
+            equippedUpgrades.erase(std::find_if(equippedUpgrades.begin(), equippedUpgrades.end(), [&](const UpgradeDefinition& upgradeDefinition) { return upgradeDefinition.mUpgradeNameId == upgradeNameId; }));
+        }
+        
         equippedUpgrades.push_back(upgradeDefinition);
     }
     
@@ -353,7 +358,7 @@ void UpgradeUnlockedHandler::OnDoubleBulletUpgradeGained()
 
 void UpgradeUnlockedHandler::OnPlayerShieldUpgradeGained()
 {
-    GameSingletons::SetPlayerShieldHealth(GameSingletons::GetPlayerMaxHealth() * 0.2f);
+    GameSingletons::SetPlayerShieldHealth(GameSingletons::GetPlayerMaxHealth() * 0.25f);
     
     auto& resService = resources::ResourceLoadingService::GetInstance();
     

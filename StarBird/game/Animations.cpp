@@ -372,7 +372,7 @@ std::unique_ptr<BaseAnimation> PlayerShieldAnimation::VClone() const
 
 void PlayerShieldAnimation::VUpdate(const float dtMillis, SceneObject& sceneObject)
 {
-    sceneObject.mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] -= dtMillis * 0.001f;
+    sceneObject.mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] -= dtMillis * 0.002f;
     
     if (sceneObject.mShaderFloatUniformValues[game_constants::DISSOLVE_Y_OFFSET_UNIFORM_NAME] <= -1.0f)
     {
@@ -402,6 +402,7 @@ NebulaAnimation::NebulaAnimation(SceneObject* sceneObject, const resources::Reso
     mNoiseMovementDirection.x = math::RandomFloat(-1.0f, 1.0f);
     mNoiseMovementDirection.y = math::RandomFloat(-1.0f, 1.0f);
 }
+
 
 std::unique_ptr<BaseAnimation> NebulaAnimation::VClone() const
 {

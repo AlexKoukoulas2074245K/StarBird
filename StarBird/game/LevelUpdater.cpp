@@ -185,9 +185,11 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             if (!playerSO.mInvulnerable)
             {
                 // Remove player shield/damage player flow
+                auto incomingDamage = enemySceneObjectTypeDef.mDamage - GameSingletons::GetPlayerShieldHealth();
                 if (GameSingletons::GetPlayerShieldHealth() > 0.0f)
                 {
                     GameSingletons::SetPlayerShieldHealth(GameSingletons::GetPlayerShieldHealth() - enemySceneObjectTypeDef.mDamage);
+                    
                     if (GameSingletons::GetPlayerShieldHealth() <= 0.0f)
                     {
                         auto playerShieldOpt = mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
@@ -197,11 +199,12 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                         }
                     }
                 }
-                else
+                
+                if (incomingDamage > 0.0f)
                 {
-                    GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - enemySceneObjectTypeDef.mDamage);
+                    GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - incomingDamage);
                     OnPlayerDamaged();
-                    CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemySceneObjectTypeDef.mDamage);
+                    CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), incomingDamage);
                 }
                 
                 // Kamikaze everything that isn't a boss part
@@ -249,9 +252,11 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 auto enemyBulletSceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemyBulletSO.mObjectFamilyTypeName)->get();
                 
                 // Remove player shield/damage player flow
+                auto incomingDamage = enemyBulletSceneObjectTypeDef.mDamage - GameSingletons::GetPlayerShieldHealth();
                 if (GameSingletons::GetPlayerShieldHealth() > 0.0f)
                 {
                     GameSingletons::SetPlayerShieldHealth(GameSingletons::GetPlayerShieldHealth() - enemyBulletSceneObjectTypeDef.mDamage);
+                    
                     if (GameSingletons::GetPlayerShieldHealth() <= 0.0f)
                     {
                         auto playerShieldOpt = mScene.GetSceneObject(game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME);
@@ -261,11 +266,12 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                         }
                     }
                 }
-                else
+                
+                if (incomingDamage > 0.0f)
                 {
-                    GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - enemyBulletSceneObjectTypeDef.mDamage);
+                    GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - incomingDamage);
                     OnPlayerDamaged();
-                    CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), enemyBulletSceneObjectTypeDef.mDamage);
+                    CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), incomingDamage);
                 }
                 
                 mFlows.emplace_back([]()

@@ -293,8 +293,31 @@ PostStateUpdateDirective StatsUpgradeUpdater::VUpdate(std::vector<SceneObject>& 
             
         case SelectionState::EXPENDING_CRYSTALS:
         {
-            auto crystalNameIter = mCrystalSceneObjectNames.begin();
+            // Fade out confirmation button
+            auto confirmationButtonSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_NAME);
+            if (confirmationButtonSoOpt)
+            {
+                auto& confirmationButtonSo = confirmationButtonSoOpt->get();
+                confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] -= dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
+                if (confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] <= 0.0f)
+                {
+                    confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+                }
+            }
             
+            // & text
+            auto confirmationButtonTextSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_TEXT_NAME);
+            if (confirmationButtonTextSoOpt)
+            {
+                auto& confirmationButtonTextSo = confirmationButtonTextSoOpt->get();
+                confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] -= dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
+                if (confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] <= 0.0f)
+                {
+                    confirmationButtonTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+                }
+            }
+            
+            auto crystalNameIter = mCrystalSceneObjectNames.begin();
             while (crystalNameIter != mCrystalSceneObjectNames.end())
             {
                 auto crystalSoOpt = mScene.GetSceneObject(*crystalNameIter);

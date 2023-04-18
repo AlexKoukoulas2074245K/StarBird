@@ -179,7 +179,7 @@ inline const float NEBULA_ANIMATION_SPEED = 1.0f/15000.0f;
 inline const float TEXT_FADE_IN_ALPHA_SPEED = 0.002f;
 
 static const glm::vec3 HEALTH_BAR_TEXT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
-static const glm::vec3 HEALTH_BAR_TEXT_OFFSET = glm::vec3(0.3f, -0.2f, 0.5f);
+static const glm::vec3 HEALTH_BAR_TEXT_OFFSET = glm::vec3(-0.1f, -0.2f, 0.5f);
 
 inline const glm::vec3 PLAYER_HEALTH_BAR_POSITION = glm::vec3(0.0f, -12.0f, 0.5f);
 inline const glm::vec3 PLAYER_HEALTH_BAR_SCALE = glm::vec3(5.0f, 1.2f, 1.0f);

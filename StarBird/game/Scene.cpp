@@ -502,8 +502,17 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
         }
         
         healthBarTextSo.mText = std::to_string(static_cast<int>(GameSingletons::GetPlayerDisplayedHealth()));
+        
+        if (GameSingletons::GetPlayerShieldHealth() > 0.0f)
+        {
+            healthBarTextSo.mText += "<" + std::to_string(static_cast<int>(GameSingletons::GetPlayerShieldHealth())) + ">";
+        }
+        
+        glm::vec2 botLeftRect, topRightRect;
+        scene_object_utils::GetSceneObjectBoundingRect(healthBarTextSo, botLeftRect, topRightRect);
         healthBarTextSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION + game_constants::HEALTH_BAR_TEXT_OFFSET;
-        healthBarTextSo.mPosition.x -= (healthBarTextSo.mText.size() * 0.5f)/2;
+        
+        healthBarTextSo.mPosition.x -= (math::Abs(botLeftRect.x - topRightRect.x)/2.0f);
     }
     
     // Crystal Count update
@@ -810,7 +819,7 @@ void Scene::CreateCrossSceneInterfaceObjects()
     
     GameSingletons::SetPlayerDisplayedHealth(playerDef.mHealth);
     GameSingletons::SetPlayerMaxHealth(playerDef.mHealth);
-    GameSingletons::SetPlayerCurrentHealth(playerDef.mHealth/2);
+    GameSingletons::SetPlayerCurrentHealth(playerDef.mHealth);
     GameSingletons::SetPlayerAttackStat(playerDef.mDamage);
     GameSingletons::SetPlayerMovementSpeedStat(1.0f);
     GameSingletons::SetPlayerBulletSpeedStat(1.0f);
