@@ -42,11 +42,13 @@ private:
     void OnHealthPotionUpgradeGained();
     void OnMirrorImageUpgradeGained();
     void OnDoubleBulletUpgradeGained();
+    void OnPlayerShieldUpgradeGained();
     
     UpgradeAnimationState UpdateCrystalGiftUpgradeGained(const float dtMillis);
     UpgradeAnimationState UpdateHealthPotionUpgradeGained(const float dtMillis);
     UpgradeAnimationState UpdateMirrorImageUpgradeGained(const float dtMillis);
     UpgradeAnimationState UpdateDoubleBulletUpgradeGained(const float dtMillis);
+    UpgradeAnimationState UpdatePlayerShieldUpgradeGained(const float dtMillis);
     
 private:
     Scene& mScene;

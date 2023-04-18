@@ -180,6 +180,20 @@ private:
 
 ///------------------------------------------------------------------------------------------------
 
+class AlphaMappedAnimation final: public BaseAnimation
+{
+public:
+    AlphaMappedAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId alphaMapTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled);
+    
+    std::unique_ptr<BaseAnimation> VClone() const override;
+    resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
+    
+private:
+    resources::ResourceId mAlphaMapTextureResourceId;
+};
+
+///------------------------------------------------------------------------------------------------
+
 class NebulaAnimation final: public BaseAnimation
 {
 public:

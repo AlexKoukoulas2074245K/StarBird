@@ -23,7 +23,10 @@
 
 ///------------------------------------------------------------------------------------------------
 
-static const char* PLAYER_SHIELD_TEXTURE_FILE_NAME = "player_shield.bmp";
+static const char* PLAYER_SHIELD_TEXTURE_FILE_NAME = "player_shield_texture_mm.bmp";
+static const char* PLAYER_SHIELD_EFFECT_TEXTURE_FILE_NAME = "player_shield_alpha_map_mm.bmp";
+static const char* PLAYER_SHIELD_MESH_FILE_NAME = "planet.obj";
+
 static const std::string DROPPED_CRYSTAL_NAME_PREFIX = "DROPPED_CRYSTAL_";
 static const strutils::StringId HEALTH_UP_ANIMATION_SO_NAME = strutils::StringId("HEALTH_UP_ANIMATION");
 
@@ -38,7 +41,7 @@ static const glm::vec3 RIGHT_MIRROR_IMAGE_POSITION_OFFSET = glm::vec3(2.0f, -0.5
 static const glm::vec3 RIGHT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
 
 static const glm::vec3 PLAYER_SHIELD_POSITION_OFFSET = glm::vec3(0.0f, 0.5f, 0.5f);
-static const glm::vec3 PLAYER_SHIELD_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
+static const glm::vec3 PLAYER_SHIELD_SCALE = glm::vec3(1.5f, 1.5f, 1.5f);
 static const glm::vec3 DROPPED_CRYSTALS_POSITION = glm::vec3(0.0f, 5.0f, 3.0f);
 
 static const float DROPPED_CRYSTAL_SPEED = 0.0009f;
@@ -48,11 +51,11 @@ static const float DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG = 2.0f;
 static const float COLLECTED_CRYSTAL_PULSING_SPEED = 0.02f;
 static const float COLLECTED_CRYSTAL_PULSING_FACTOR = 0.01f;
 
-static const float HEALTH_POTION_HEALTH_GAIN = 100.0f;
-static const float PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR = 1.0f/50.0f;
+static const float PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR = 1.0f/200.0f;
 static const float PLAYER_PULSE_SHIELD_ANIM_SPEED = 0.01f;
 static const float SCENE_OBJECT_FADE_IN_ALPHA_SPEED = 0.001f;
 static const float INTER_ANIMATION_DELAY_MILLIS = 3000.0f;
+static const float PLAYER_SHIELD_ROTATION_SPEED = 0.001f;
 
 static const int CRYSTALS_REWARD_COUNT = 50;
 
@@ -144,6 +147,10 @@ void UpgradeUnlockedHandler::OnUpgradeGained(const strutils::StringId& upgradeNa
     {
         OnDoubleBulletUpgradeGained();
     }
+    else if (mCurrentUpgradeNameUnlocked == game_constants::PLAYER_SHIELD_UPGRADE_NAME)
+    {
+        OnPlayerShieldUpgradeGained();
+    }
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -182,6 +189,10 @@ UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::Update(con
     else if (mCurrentUpgradeNameUnlocked == game_constants::DOUBLE_BULLET_UGPRADE_NAME)
     {
         return UpdateDoubleBulletUpgradeGained(dtMillis);
+    }
+    else if (mCurrentUpgradeNameUnlocked == game_constants::PLAYER_SHIELD_UPGRADE_NAME)
+    {
+        return UpdatePlayerShieldUpgradeGained(dtMillis);
     }
     else
     {
@@ -289,6 +300,58 @@ void UpgradeUnlockedHandler::OnMirrorImageUpgradeGained()
 ///------------------------------------------------------------------------------------------------
 
 void UpgradeUnlockedHandler::OnDoubleBulletUpgradeGained()
+{
+    auto& resService = resources::ResourceLoadingService::GetInstance();
+    
+    // Vessel
+    {
+        auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
+        typeDefRepo.LoadObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
+        typeDefRepo.LoadObjectTypeDefinition(game_constants::PLAYER_BULLET_TYPE);
+        typeDefRepo.LoadObjectTypeDefinition(game_constants::MIRROR_IMAGE_BULLET_TYPE);
+        
+        auto& playerObjectDef = typeDefRepo.GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
+        
+        SceneObject playerSO = scene_object_utils::CreateSceneObjectWithBody(playerObjectDef, game_constants::PLAYER_CHEST_REWARD_POS, mBox2dWorld, game_constants::PLAYER_SCENE_OBJECT_NAME);
+        
+        playerSO.mAnimation = std::make_unique<SingleFrameAnimation>(playerSO.mAnimation->VGetCurrentTextureResourceId(), playerSO.mAnimation->VGetCurrentMeshResourceId(), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), true);
+        playerSO.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+        playerSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
+        
+        mScene.AddSceneObject(std::move(playerSO));
+    }
+    
+    auto playerOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
+    if (playerOpt && GameSingletons::HasEquippedUpgrade(game_constants::MIRROR_IMAGE_UGPRADE_NAME))
+    {
+        auto& playerSo = playerOpt->get();
+        {
+            SceneObject leftMirrorImageSo;
+            leftMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+            leftMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+            leftMirrorImageSo.mPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + LEFT_MIRROR_IMAGE_POSITION_OFFSET;
+            leftMirrorImageSo.mScale = LEFT_MIRROR_IMAGE_SCALE;
+            leftMirrorImageSo.mName = game_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
+            leftMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+            mScene.AddSceneObject(std::move(leftMirrorImageSo));
+        }
+        
+        {
+            SceneObject rightMirrorImageSo;
+            rightMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+            rightMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+            rightMirrorImageSo.mPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + RIGHT_MIRROR_IMAGE_POSITION_OFFSET;
+            rightMirrorImageSo.mScale = RIGHT_MIRROR_IMAGE_SCALE;
+            rightMirrorImageSo.mName = game_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
+            rightMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+            mScene.AddSceneObject(std::move(rightMirrorImageSo));
+        }
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void UpgradeUnlockedHandler::OnPlayerShieldUpgradeGained()
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
@@ -503,6 +566,68 @@ UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::UpdateDoub
                 }, INTER_ANIMATION_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, ANIMATION_END_FLOW_NAME);
                 
             }, INTER_ANIMATION_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, DOUBLE_BULLET_FLOW_CREATION_NAME);
+        }
+    }
+    
+    return UpgradeAnimationState::ONGOING;
+}
+
+///------------------------------------------------------------------------------------------------
+
+UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::UpdatePlayerShieldUpgradeGained(const float dtMillis)
+{
+    auto playerSoOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
+    auto leftMirrorImageSoOpt = mScene.GetSceneObject(game_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+    auto rightMirrorImageSoOpt = mScene.GetSceneObject(game_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME);
+    
+    if (playerSoOpt && mFlows.empty())
+    {
+        auto& playerSo = playerSoOpt->get();
+        
+        if (leftMirrorImageSoOpt)
+        {
+            auto& leftMirrorImageSo = leftMirrorImageSoOpt->get();
+            leftMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * SCENE_OBJECT_FADE_IN_ALPHA_SPEED;
+            if (leftMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 0.5f)
+            {
+                leftMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.5f;
+            }
+        }
+    
+        if (rightMirrorImageSoOpt)
+        {
+            auto& rightMirrorImageSo = rightMirrorImageSoOpt->get();
+            rightMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * SCENE_OBJECT_FADE_IN_ALPHA_SPEED;
+            if (rightMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 0.5f)
+            {
+                rightMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.5f;
+            }
+        }
+        
+        playerSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * SCENE_OBJECT_FADE_IN_ALPHA_SPEED;
+        if (playerSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
+        {
+            playerSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+        
+            SceneObject playerShieldSo;
+            
+            auto& resService = resources::ResourceLoadingService::GetInstance();
+            playerShieldSo.mAnimation = std::make_unique<AlphaMappedAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + PLAYER_SHIELD_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + PLAYER_SHIELD_EFFECT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + PLAYER_SHIELD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::ALPHA_MAPPED_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+            playerShieldSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+            playerShieldSo.mPosition = math::Box2dVec2ToGlmVec3(playerSoOpt->get().mBody->GetWorldCenter()) + PLAYER_SHIELD_POSITION_OFFSET;
+            playerShieldSo.mScale = PLAYER_SHIELD_SCALE;
+            playerShieldSo.mName = game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME;
+            
+            playerShieldSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(playerShieldSo.mAnimation->VGetCurrentTextureResourceId(), playerShieldSo.mAnimation->VGetCurrentMeshResourceId(), playerShieldSo.mAnimation->VGetCurrentShaderResourceId(), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, PLAYER_SHIELD_ROTATION_SPEED, false));
+            
+            playerShieldSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(playerShieldSo.mAnimation->VGetCurrentTextureResourceId(), playerShieldSo.mAnimation->VGetCurrentMeshResourceId(), playerShieldSo.mAnimation->VGetCurrentShaderResourceId(), glm::vec3(1.0f), PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, PLAYER_PULSE_SHIELD_ANIM_SPEED, PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR, false));
+            
+            mScene.AddSceneObject(std::move(playerShieldSo));
+            
+            mFlows.emplace_back([&]()
+            {
+                mForceFinishAnimation = true;
+            }, INTER_ANIMATION_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, ANIMATION_END_FLOW_NAME);
         }
     }
     

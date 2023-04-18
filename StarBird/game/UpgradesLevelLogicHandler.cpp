@@ -18,7 +18,9 @@
 
 ///------------------------------------------------------------------------------------------------
 
-static const char* PLAYER_SHIELD_TEXTURE_FILE_NAME = "player_shield.bmp";
+static const char* PLAYER_SHIELD_TEXTURE_FILE_NAME = "player_shield_texture_mm.bmp";
+static const char* PLAYER_SHIELD_EFFECT_TEXTURE_FILE_NAME = "player_shield_alpha_map_mm.bmp";
+static const char* PLAYER_SHIELD_MESH_FILE_NAME = "planet.obj";
 
 static const glm::vec3 LEFT_MIRROR_IMAGE_POSITION_OFFSET = glm::vec3(-2.0f, -0.5f, 0.0f);
 static const glm::vec3 LEFT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
@@ -27,10 +29,11 @@ static const glm::vec3 RIGHT_MIRROR_IMAGE_POSITION_OFFSET = glm::vec3(2.0f, -0.5
 static const glm::vec3 RIGHT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
 
 static const glm::vec3 PLAYER_SHIELD_POSITION_OFFSET = glm::vec3(0.0f, 0.5f, 0.5f);
-static const glm::vec3 PLAYER_SHIELD_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
+static const glm::vec3 PLAYER_SHIELD_SCALE = glm::vec3(1.5f, 1.5f, 1.5f);
 
-static const float PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR = 1.0f/50.0f;
+static const float PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR = 1.0f/200.0f;
 static const float PLAYER_PULSE_SHIELD_ANIM_SPEED = 0.01f;
+static const float PLAYER_SHIELD_ROTATION_SPEED = 0.001f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -103,17 +106,23 @@ void UpgradesLevelLogicHandler::CreateMirrorImageSceneObjects()
 
 void UpgradesLevelLogicHandler::CreatePlayerShieldSceneObject()
 {
-    auto& resService = resources::ResourceLoadingService::GetInstance();
     auto playerSoOpt = mScene.GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME);
     
     if (playerSoOpt)
     {
+        auto& resService = resources::ResourceLoadingService::GetInstance();
         SceneObject playerShieldSo;
-        playerShieldSo.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + PLAYER_SHIELD_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, PLAYER_PULSE_SHIELD_ANIM_SPEED, PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR, false);
+        
+        playerShieldSo.mAnimation = std::make_unique<AlphaMappedAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + PLAYER_SHIELD_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + PLAYER_SHIELD_EFFECT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + PLAYER_SHIELD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::ALPHA_MAPPED_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         playerShieldSo.mSceneObjectType = SceneObjectType::WorldGameObject;
         playerShieldSo.mPosition = math::Box2dVec2ToGlmVec3(playerSoOpt->get().mBody->GetWorldCenter()) + PLAYER_SHIELD_POSITION_OFFSET;
         playerShieldSo.mScale = PLAYER_SHIELD_SCALE;
         playerShieldSo.mName = game_constants::PLAYER_SHIELD_SCENE_OBJECT_NAME;
+        
+        playerShieldSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(playerShieldSo.mAnimation->VGetCurrentTextureResourceId(), playerShieldSo.mAnimation->VGetCurrentMeshResourceId(), playerShieldSo.mAnimation->VGetCurrentShaderResourceId(), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, PLAYER_SHIELD_ROTATION_SPEED, false));
+        
+        playerShieldSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(playerShieldSo.mAnimation->VGetCurrentTextureResourceId(), playerShieldSo.mAnimation->VGetCurrentMeshResourceId(), playerShieldSo.mAnimation->VGetCurrentShaderResourceId(), glm::vec3(1.0f), PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, PLAYER_PULSE_SHIELD_ANIM_SPEED, PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR, false));
+        
         mScene.AddSceneObject(std::move(playerShieldSo));
     }
 }

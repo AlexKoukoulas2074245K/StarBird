@@ -353,6 +353,24 @@ float DissolveAnimation::VGetDurationMillis() const
 
 ///------------------------------------------------------------------------------------------------
 
+AlphaMappedAnimation::AlphaMappedAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId alphaMapTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled)
+    : BaseAnimation(textureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
+    , mAlphaMapTextureResourceId(alphaMapTextureResourceId)
+{
+}
+
+std::unique_ptr<BaseAnimation> AlphaMappedAnimation::VClone() const
+{
+    return std::make_unique<AlphaMappedAnimation>(*this);
+}
+
+resources::ResourceId AlphaMappedAnimation::VGetCurrentEffectTextureResourceId() const
+{
+    return mAlphaMapTextureResourceId;
+}
+
+///------------------------------------------------------------------------------------------------
+
 NebulaAnimation::NebulaAnimation(SceneObject* sceneObject, const resources::ResourceId noiseTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float noiseMovementSpeed, const bool bodyRenderingEnabled)
     : BaseAnimation(noiseTextureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
     , mNoiseMovementSpeed(noiseMovementSpeed)
