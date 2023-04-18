@@ -7,6 +7,7 @@
 
 #include "BossIntroGameState.h"
 #include "FightingWaveGameState.h"
+#include "SceneObjectUtils.h"
 #include "../Scene.h"
 #include "../LevelUpdater.h"
 #include "../GameConstants.h"
@@ -18,7 +19,7 @@
 
 const strutils::StringId BossIntroGameState::STATE_NAME("BossIntroGameState");
 
-static const glm::vec3 BOSS_INTRO_TEXT_INIT_POS = glm::vec3(-3.0f, 0.0f, 2.0f);
+static const glm::vec3 BOSS_INTRO_TEXT_INIT_POS = glm::vec3(0.0f, 0.0f, 2.0f);
 static const glm::vec3 BOSS_INTRO_TEXT_SCALE = glm::vec3(0.02f, 0.02f, 1.0f);
 
 ///------------------------------------------------------------------------------------------------
@@ -38,6 +39,12 @@ void BossIntroGameState::VInitialize()
     bossNameTextSO.mSceneObjectType = SceneObjectType::GUIObject;
     bossNameTextSO.mName = game_constants::BOSS_INTRO_TEXT_SCENE_OBJECT_NAME;
     bossNameTextSO.mText = mLevelUpdater->GetCurrentLevelDefinition().mWaves[mLevelUpdater->GetCurrentWaveNumber()].mBossName.GetString();
+    
+    glm::vec2 botLeftRect, topRightRect;
+    scene_object_utils::GetSceneObjectBoundingRect(bossNameTextSO, botLeftRect, topRightRect);
+    bossNameTextSO.mPosition = BOSS_INTRO_TEXT_INIT_POS;
+    bossNameTextSO.mPosition.x -= (math::Abs(botLeftRect.x - topRightRect.x)/2.0f);
+    
     bossNameTextSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
     mScene->AddSceneObject(std::move(bossNameTextSO));
     
