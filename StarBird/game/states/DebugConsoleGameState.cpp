@@ -46,6 +46,7 @@ void DebugConsoleGameState::VInitialize()
     
     auto& resService = resources::ResourceLoadingService::GetInstance();
     resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::DEBUG_CONSOLE_FONT_SHADER_FILE_NAME);
+    resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME);
     
     mScene->AddOverlayController(game_constants::FULL_SCREEN_OVERLAY_MENU_DARKENING_SPEED, game_constants::FULL_SCREEN_OVERLAY_MENU_MAX_ALPHA, true);
     

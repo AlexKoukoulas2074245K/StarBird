@@ -77,6 +77,8 @@
 		926693E929EEAA4B0013C195 /* BlueprintFlows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 926693DC29EEAA4B0013C195 /* BlueprintFlows.cpp */; };
 		92693B6829C87D2500157222 /* MapUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92693B5B29C87D2500157222 /* MapUpdater.cpp */; };
 		9269AE8629E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9269AE8529E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp */; };
+		9271958229F2C066001FE7D2 /* WaveBlocksRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9271958129F2C066001FE7D2 /* WaveBlocksRepository.cpp */; };
+		9271958529F2C1A1001FE7D2 /* WaveBlocksLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9271958429F2C1A1001FE7D2 /* WaveBlocksLoader.cpp */; };
 		927FD9B529C35C750012C724 /* BossAIController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 927FD9B129C35C750012C724 /* BossAIController.cpp */; };
 		927FD9B629C35C750012C724 /* KathunBossAI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 927FD9B329C35C750012C724 /* KathunBossAI.cpp */; };
 		9285241529A8D5B9007EA0D9 /* DebugConsoleGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9285241429A8D5B9007EA0D9 /* DebugConsoleGameState.cpp */; };
@@ -374,6 +376,11 @@
 		92693B6929C8821F00157222 /* IUpdater.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IUpdater.h; sourceTree = "<group>"; };
 		9269AE7929E0B481008B9C27 /* ClearedLevelAnimationGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClearedLevelAnimationGameState.h; sourceTree = "<group>"; };
 		9269AE8529E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClearedLevelAnimationGameState.cpp; sourceTree = "<group>"; };
+		9271957429F2BE9D001FE7D2 /* WaveBlockDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WaveBlockDefinition.h; sourceTree = "<group>"; };
+		9271958029F2C066001FE7D2 /* WaveBlocksRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveBlocksRepository.h; sourceTree = "<group>"; };
+		9271958129F2C066001FE7D2 /* WaveBlocksRepository.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveBlocksRepository.cpp; sourceTree = "<group>"; };
+		9271958329F2C1A1001FE7D2 /* WaveBlocksLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveBlocksLoader.h; sourceTree = "<group>"; };
+		9271958429F2C1A1001FE7D2 /* WaveBlocksLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveBlocksLoader.cpp; sourceTree = "<group>"; };
 		927FD9B129C35C750012C724 /* BossAIController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BossAIController.cpp; sourceTree = "<group>"; };
 		927FD9B229C35C750012C724 /* BossAIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BossAIController.h; sourceTree = "<group>"; };
 		927FD9B329C35C750012C724 /* KathunBossAI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KathunBossAI.cpp; sourceTree = "<group>"; };
@@ -1064,6 +1071,8 @@
 				925FD86D29892BE00058E747 /* LevelDataLoader.h */,
 				92AF7B2B29914F1500BCC894 /* UpgradesLoader.cpp */,
 				92AF7B2C29914F1500BCC894 /* UpgradesLoader.h */,
+				9271958429F2C1A1001FE7D2 /* WaveBlocksLoader.cpp */,
+				9271958329F2C1A1001FE7D2 /* WaveBlocksLoader.h */,
 			);
 			path = dataloaders;
 			sourceTree = "<group>";
@@ -1088,6 +1097,7 @@
 				92894E0E299D330A00605302 /* LevelDefinition.h */,
 				92894E0D299D330A00605302 /* ObjectTypeDefinition.h */,
 				92894E10299D330A00605302 /* UpgradeDefinition.h */,
+				9271957429F2BE9D001FE7D2 /* WaveBlockDefinition.h */,
 			);
 			path = definitions;
 			sourceTree = "<group>";
@@ -1101,6 +1111,8 @@
 				9206BAA829AF8BF20013BE69 /* LightRepository.h */,
 				92894E14299D331200605302 /* ObjectTypeDefinitionRepository.h */,
 				92894E15299D331200605302 /* ObjectTypeDefinitionRepository.cpp */,
+				9271958129F2C066001FE7D2 /* WaveBlocksRepository.cpp */,
+				9271958029F2C066001FE7D2 /* WaveBlocksRepository.h */,
 			);
 			path = datarepos;
 			sourceTree = "<group>";
@@ -2008,6 +2020,7 @@
 				9259F35529D4866700850744 /* LabUpdater.cpp in Sources */,
 				925FD86F29892BE00058E747 /* LevelDataLoader.cpp in Sources */,
 				9228C16B299FDA5A00410E49 /* SceneObjectUtils.cpp in Sources */,
+				9271958229F2C066001FE7D2 /* WaveBlocksRepository.cpp in Sources */,
 				9208BE6129B3FD41007C5335 /* BossIntroGameState.cpp in Sources */,
 				92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */,
 				92C851BA2969A9D70021923F /* main.cpp in Sources */,
@@ -2052,6 +2065,7 @@
 				9254CC032969B79A00EFE0CC /* b2Distance.cpp in Sources */,
 				9254CBE12969B79A00EFE0CC /* b2Body.cpp in Sources */,
 				9254CBFD2969B79A00EFE0CC /* b2Draw.cpp in Sources */,
+				9271958529F2C1A1001FE7D2 /* WaveBlocksLoader.cpp in Sources */,
 				9254CBF02969B79A00EFE0CC /* b2FrictionJoint.cpp in Sources */,
 				925FD87B298AAF570058E747 /* GameSingletons.cpp in Sources */,
 				9285241529A8D5B9007EA0D9 /* DebugConsoleGameState.cpp in Sources */,

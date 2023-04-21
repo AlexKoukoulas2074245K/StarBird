@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ObjectDefinition>
     <Animation state="idle" texture="player_starship_mm" mesh="player_dynamic" shader="basic" scale="2.0f" />
-    <Physics bodyScale="0.5f, 1.0f" speed="0.4f" category="player"/>
+    <Physics bodyScale="0.5f, 0.8f" bodyOffset="0.0f, 0.5f" speed="0.4f" category="player"/>
     <GameAttributes movementControllerPattern="input_controlled" health="100.0f" damage="10.0f"/>
 </ObjectDefinition>

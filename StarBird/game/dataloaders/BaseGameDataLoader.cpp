@@ -47,12 +47,18 @@ void BaseGameDataLoader::SetCallbackForNode(const strutils::StringId& nodeName, 
 
 ///------------------------------------------------------------------------------------------------
 
-void BaseGameDataLoader::LoadData(const std::string& dataFileName)
+void BaseGameDataLoader::LoadData(const std::string& dataFileName, bool printOutDataFile /* = false */)
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     auto resourceId = resService.LoadResource(strutils::StringStartsWith(dataFileName, objectiveC_utils::GetLocalFileSaveLocation()) ? (dataFileName + ".xml") : (resources::ResourceLoadingService::RES_DATA_ROOT + dataFileName + ".xml"));
     auto& xmlLevel = resService.GetResource<resources::DataFileResource>(resourceId);
     auto xmlContents = xmlLevel.GetContents();
+    
+    if (printOutDataFile)
+    {
+        Log(LogType::INFO, "Loaded file:\n%s", xmlContents.c_str());
+    }
+    
     resService.UnloadResource(resourceId);
     
     rapidxml::xml_document<> doc;

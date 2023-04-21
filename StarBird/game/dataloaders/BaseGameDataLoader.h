@@ -28,7 +28,7 @@ protected:
     BaseGameDataLoader() = default;
     
     void SetCallbackForNode(const strutils::StringId& nodeName, NodeCallbackType callback);
-    void LoadData(const std::string& dataFileName);
+    void LoadData(const std::string& dataFileName, bool printOutDataFile = false);
     
 private:
     NodeNameToCallbackType mNodeNameToCallbackMap;

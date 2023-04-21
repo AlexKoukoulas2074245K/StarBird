@@ -37,7 +37,7 @@ static const float CONTROL_BUTTON_PULSING_ENLARGMENT_FACTOR = 1.0f/50.0f;
 
 static const float STAT_UPGRADED_SCALE_MULTIPLIER = 0.9f;
 
-static const int STAT_UPGRADE_COST = 24;
+static const int STAT_UPGRADE_COST = 10;
 
 ///------------------------------------------------------------------------------------------------
 

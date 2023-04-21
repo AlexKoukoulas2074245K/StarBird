@@ -18,6 +18,7 @@
 #include "StatsUpgradeUpdater.h"
 #include "ObjectTypeDefinitionRepository.h"
 #include "states/DebugConsoleGameState.h"
+#include "datarepos/WaveBlocksRepository.h"
 #include "dataloaders/LevelDataLoader.h"
 #include "dataloaders/UpgradesLoader.h"
 #include "../resloading/ResourceLoadingService.h"
@@ -813,6 +814,9 @@ void Scene::CreateCrossSceneInterfaceObjects()
         AddSceneObject(std::move(crystalCountSo));
     }
     
+    auto& waveBlocksRepo = WaveBlocksRepository::GetInstance();
+    waveBlocksRepo.LoadWaveBlocks();
+    
     auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
     typeDefRepo.LoadObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
     auto& playerDef = typeDefRepo.GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
@@ -827,6 +831,7 @@ void Scene::CreateCrossSceneInterfaceObjects()
     GameSingletons::SetDisplayedCrystalCount(100);
     UpgradesLoader loader;
     GameSingletons::SetAvailableUpgrades(loader.LoadAllUpgrades());
+    GameSingletons::SetCurrentMapCoord(MapCoord(6,3));
     
     // Player Health Bar Text
     {

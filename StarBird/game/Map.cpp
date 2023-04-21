@@ -11,7 +11,9 @@
 #include "SceneObject.h"
 #include "Scene.h"
 #include "../resloading/ResourceLoadingService.h"
-
+#include "../utils/Logging.h"
+#include "datarepos/WaveBlocksRepository.h"
+#include <SDL.h>
 #include <fstream>
 #include <unordered_set>
 
@@ -232,6 +234,8 @@ void Map::CreateMapSceneObjects()
 
 void Map::CreateLevelFiles()
 {
+    auto startTime = SDL_GetPerformanceCounter();
+    
     for (const auto& mapNodeEntry: mMapData)
     {
         switch (mapNodeEntry.second.mNodeType)
@@ -243,34 +247,76 @@ void Map::CreateLevelFiles()
             default: break;
         }
     }
+    
+    auto currTime = SDL_GetPerformanceCounter();
+    
+    double elapsedTime = static_cast<double>(
+      (currTime - startTime) / static_cast<double>(SDL_GetPerformanceFrequency())
+    );
+    
+    Log(LogType::INFO, "Level generation finished in %.6f millis", elapsedTime * 1000.0f);
 }
 
 ///------------------------------------------------------------------------------------------------
 
 void Map::GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData)
 {
-    std::string levelXml =
-    "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-    "\n<Level>"
-    "\n<Camera type=\"world_cam\" lenseHeight=\"30.0f\"/>"
-    "\n<Camera type=\"gui_cam\" lenseHeight=\"30.0f\"/>";
+    Log(LogType::INFO, "Generating level for map node %s", mapCoord.ToString().c_str());
     
-    for (int i = 0; i < mapCoord.mCol; ++i)
+    std::stringstream levelXml;
+    levelXml <<
+        "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+        "\n<Level>"
+        "\n<Camera type=\"world_cam\" lenseHeight=\"30.0f\"/>"
+        "\n<Camera type=\"gui_cam\" lenseHeight=\"30.0f\"/>";
+    
+    
+    auto difficultyValue = mapCoord.mCol;
+    if (nodeData.mNodeType == NodeType::BOSS_ENCOUNTER)
     {
-        levelXml +=
-        "\n    <Wave>"
-        "\n        <Enemy position=\"-5.0f, 20.0f\" type=\"enemies/test_enemy_chasing\"/>"
-        "\n        <Enemy position=\" 0.0f, 20.0f\" type=\"enemies/test_enemy_chasing\"/>"
-        "\n        <Enemy position=\" 5.0f, 20.0f\" type=\"enemies/test_enemy_chasing\"/>"
-        "\n    </Wave>";
+        difficultyValue *= 1.5f;
+    }
+    else if (nodeData.mNodeType == NodeType::HARD_ENCOUNTER)
+    {
+        difficultyValue *= 2.0f;
     }
     
-    levelXml += "\n</Level>";
+    auto waveCount = math::ControlledRandomInt(2,3) + (difficultyValue / 5);
+    
+    const auto& eligibleBlocks = WaveBlocksRepository::GetInstance().GetEligibleWaveBlocksForDifficulty(difficultyValue);
+    
+    if (eligibleBlocks.size() == 0) return;
+    
+    for (int j = 0; j < waveCount; ++j)
+    {
+        levelXml << "\n    <Wave";
+        auto selectedBlock = eligibleBlocks.at(math::ControlledRandomInt(0, static_cast<int>(eligibleBlocks.size()) - 1));
+        selectedBlock.AdjustForDifficulty(difficultyValue);
+        
+        if (nodeData.mNodeType == NodeType::BOSS_ENCOUNTER && j == waveCount - 1)
+        {
+            selectedBlock = WaveBlocksRepository::GetInstance().GetBossWaveBlock(strutils::StringId("Ka'thun"));
+            levelXml << " bossName=\"" << selectedBlock.mBossName.GetString() << "\" bossHealth=\"" << selectedBlock.mBossHealth << "\"";
+        }
+        
+        levelXml << ">";
+        for (const auto& blockLine: selectedBlock.mWaveBlockLines)
+        {
+            for (const auto& enemy: blockLine.mEnemies)
+            {
+                
+                levelXml << "\n        <Enemy position=\"" << enemy.mPosition.x << ", " << enemy.mPosition.y << "\" type=\"" << enemy.mGameObjectEnemyType.GetString() << "\"/>";
+            }
+        }
+        
+        levelXml << "\n    </Wave>";
+    }
+    
+    levelXml << "\n</Level>";
     
     auto levelFileName = objectiveC_utils::BuildLocalFileSaveLocation(mapCoord.ToString() + ".xml");
-    
     std::ofstream outputFile(levelFileName);
-    outputFile << levelXml;
+    outputFile << levelXml.str();
     outputFile.close();
 }
 

@@ -114,6 +114,7 @@ PostStateUpdateDirective MapUpdater::VUpdate(std::vector<SceneObject>& sceneObje
             auto nextSceneType = NODE_TYPE_TO_SCENE_TYPE.at(mMap.GetMapData().at(mSelectedMapCoord).mNodeType);
             
             mScene.ChangeScene(Scene::TransitionParameters(nextSceneType, nextSceneType == Scene::SceneType::LEVEL ? (objectiveC_utils::BuildLocalFileSaveLocation(mSelectedMapCoord.ToString())) : "", true));
+            //mScene.ChangeScene(Scene::TransitionParameters(nextSceneType, nextSceneType == Scene::SceneType::LEVEL ? "test_level" : "", true));
             
             return PostStateUpdateDirective::BLOCK_UPDATE;
         }
