@@ -57,7 +57,7 @@ static const std::unordered_map<StatsUpgradeUpdater::StatType, glm::vec3> STAT_C
 {
     { StatsUpgradeUpdater::StatType::ATTACK_STAT, glm::vec3(6.5f, 4.8f, 1.0f) },
     { StatsUpgradeUpdater::StatType::HEALTH_STAT, glm::vec3(6.5f, 4.8f, 1.0f) },
-    { StatsUpgradeUpdater::StatType::HASTE_STAT, glm::vec3(5.4f, 7.0f, 1.0f) },
+    { StatsUpgradeUpdater::StatType::HASTE_STAT, glm::vec3(6.0f, 7.0f, 1.0f) },
     { StatsUpgradeUpdater::StatType::SPEED_STAT, glm::vec3(-6.22f, -4.8f, 1.0f) }
 };
 

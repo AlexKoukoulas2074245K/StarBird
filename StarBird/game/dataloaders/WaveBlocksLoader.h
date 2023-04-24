@@ -20,9 +20,13 @@
 
 class WaveBlocksLoader: public BaseGameDataLoader
 {
+    friend class WaveBlocksRepository;
+    
 public:
     WaveBlocksLoader();
-    std::vector<WaveBlockDefinition> LoadAllWaveBlocks();
+    
+private:
+    std::vector<WaveBlockDefinition>& LoadAllWaveBlocks();
     
 private:
     std::vector<WaveBlockDefinition> mWaveBlocks;

@@ -55,7 +55,7 @@ UpgradesLoader::UpgradesLoader()
 
 ///------------------------------------------------------------------------------------------------
 
-std::vector<UpgradeDefinition> UpgradesLoader::LoadAllUpgrades()
+std::vector<UpgradeDefinition>& UpgradesLoader::LoadAllUpgrades()
 {
     BaseGameDataLoader::LoadData("upgrades");
     return mConstructedUpgrades;

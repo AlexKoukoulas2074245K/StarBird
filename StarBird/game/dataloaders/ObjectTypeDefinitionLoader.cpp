@@ -367,7 +367,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
 
 ///------------------------------------------------------------------------------------------------
 
-ObjectTypeDefinition&& ObjectTypeDefinitionLoader::LoadObjectTypeDefinition(const std::string& objectTypeDefinitionFileName, std::unordered_set<strutils::StringId, strutils::StringIdHasher>* subObjectsFound)
+ObjectTypeDefinition& ObjectTypeDefinitionLoader::LoadObjectTypeDefinition(const std::string& objectTypeDefinitionFileName, std::unordered_set<strutils::StringId, strutils::StringIdHasher>* subObjectsFound)
 {
     mConstructedObjectTypeDef = ObjectTypeDefinition();
     mConstructedObjectTypeDef.mName = strutils::StringId(objectTypeDefinitionFileName);
@@ -375,7 +375,7 @@ ObjectTypeDefinition&& ObjectTypeDefinitionLoader::LoadObjectTypeDefinition(cons
     
     BaseGameDataLoader::LoadData(objectTypeDefinitionFileName);
     
-    return std::move(mConstructedObjectTypeDef);
+    return mConstructedObjectTypeDef;
 }
 
 ///------------------------------------------------------------------------------------------------

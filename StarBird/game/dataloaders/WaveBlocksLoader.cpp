@@ -66,7 +66,7 @@ WaveBlocksLoader::WaveBlocksLoader()
 
 ///------------------------------------------------------------------------------------------------
 
-std::vector<WaveBlockDefinition> WaveBlocksLoader::LoadAllWaveBlocks()
+std::vector<WaveBlockDefinition>& WaveBlocksLoader::LoadAllWaveBlocks()
 {
     BaseGameDataLoader::LoadData("wave_blocks");
     

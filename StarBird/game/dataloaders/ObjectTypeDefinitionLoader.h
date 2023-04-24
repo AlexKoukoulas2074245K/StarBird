@@ -26,7 +26,7 @@ public:
     ObjectTypeDefinitionLoader();
 
 private:
-    ObjectTypeDefinition&& LoadObjectTypeDefinition(const std::string& objectTypeDefinitionFileName, std::unordered_set<strutils::StringId, strutils::StringIdHasher>* subObjectsFound);
+    ObjectTypeDefinition& LoadObjectTypeDefinition(const std::string& objectTypeDefinitionFileName, std::unordered_set<strutils::StringId, strutils::StringIdHasher>* subObjectsFound);
     
 private:
     ObjectTypeDefinition mConstructedObjectTypeDef;

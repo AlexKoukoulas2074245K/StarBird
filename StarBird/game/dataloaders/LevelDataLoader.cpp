@@ -84,7 +84,7 @@ LevelDefinition& LevelDataLoader::LoadLevel(const std::string &levelName)
     mConstructedLevel = LevelDefinition();
     mConstructedLevel.mLevelName = strutils::StringId(levelName);
     
-    BaseGameDataLoader::LoadData(levelName, true);
+    BaseGameDataLoader::LoadData(levelName);
     
     return mConstructedLevel;
 }

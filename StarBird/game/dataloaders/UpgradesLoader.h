@@ -22,7 +22,7 @@ class UpgradesLoader: public BaseGameDataLoader
 {
 public:
     UpgradesLoader();
-    std::vector<UpgradeDefinition> LoadAllUpgrades();
+    std::vector<UpgradeDefinition>& LoadAllUpgrades();
     
 private:
     std::vector<UpgradeDefinition> mConstructedUpgrades;

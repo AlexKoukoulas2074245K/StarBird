@@ -831,7 +831,7 @@ void Scene::CreateCrossSceneInterfaceObjects()
     GameSingletons::SetDisplayedCrystalCount(100);
     UpgradesLoader loader;
     GameSingletons::SetAvailableUpgrades(loader.LoadAllUpgrades());
-    GameSingletons::SetCurrentMapCoord(MapCoord(6,3));
+    //GameSingletons::SetCurrentMapCoord(MapCoord(6,3));
     
     // Player Health Bar Text
     {

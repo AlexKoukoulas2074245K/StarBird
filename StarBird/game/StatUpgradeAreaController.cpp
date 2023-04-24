@@ -35,8 +35,6 @@ static const glm::vec3 CRYSTAL_ICON_SCALE = glm::vec3(0.3f);
 static const float CONTROL_BUTTON_PULSING_SPEED = 0.02f;
 static const float CONTROL_BUTTON_PULSING_ENLARGMENT_FACTOR = 1.0f/50.0f;
 
-static const float STAT_UPGRADED_SCALE_MULTIPLIER = 0.9f;
-
 static const int STAT_UPGRADE_COST = 10;
 
 ///------------------------------------------------------------------------------------------------
@@ -255,7 +253,6 @@ void StatUpgradeAreaController::Update(const float dtMillis, const float current
         
         if (mStatValue > mInitialStatValue)
         {
-            statValueSo.mScale = STAT_TEXT_SCALE * STAT_UPGRADED_SCALE_MULTIPLIER;
             statValueSo.mAnimation = std::make_unique<SingleFrameAnimation>(statValueSo.mAnimation->VGetCurrentTextureResourceId(), statValueSo.mAnimation->VGetCurrentMeshResourceId(), resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME), statValueSo.mScale, false);
             statValueSo.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = STAT_UPGRADED_TEXT_COLOR;
         }

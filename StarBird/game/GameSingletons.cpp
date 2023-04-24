@@ -150,14 +150,14 @@ std::vector<UpgradeDefinition>& GameSingletons::GetAvailableUpgrades()
 
 ///------------------------------------------------------------------------------------------------
 
-void GameSingletons::SetEquippedUpgrades(std::vector<UpgradeDefinition>&& upgrades)
+void GameSingletons::SetEquippedUpgrades(std::vector<UpgradeDefinition>& upgrades)
 {
     mEquippedUpgrades = upgrades;
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void GameSingletons::SetAvailableUpgrades(std::vector<UpgradeDefinition>&& upgrades)
+void GameSingletons::SetAvailableUpgrades(std::vector<UpgradeDefinition>& upgrades)
 {
     mAvailableUpgrades = upgrades;
 }

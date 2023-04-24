@@ -48,8 +48,8 @@ public:
     
     static std::vector<UpgradeDefinition>& GetEquippedUpgrades();
     static std::vector<UpgradeDefinition>& GetAvailableUpgrades();
-    static void SetEquippedUpgrades(std::vector<UpgradeDefinition>&& upgrades);
-    static void SetAvailableUpgrades(std::vector<UpgradeDefinition>&& upgrades);
+    static void SetEquippedUpgrades(std::vector<UpgradeDefinition>& upgrades);
+    static void SetAvailableUpgrades(std::vector<UpgradeDefinition>& upgrades);
     static bool HasEquippedUpgrade(const strutils::StringId& upgradeNameId);
     
     static float GetGameSpeedMultiplier();

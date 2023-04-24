@@ -40,7 +40,7 @@ static const glm::vec3 LEFT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
 static const glm::vec3 RIGHT_MIRROR_IMAGE_POSITION_OFFSET = glm::vec3(2.0f, -0.5f, 0.0f);
 static const glm::vec3 RIGHT_MIRROR_IMAGE_SCALE = glm::vec3(1.5f, 1.5f, 1.0f);
 
-static const glm::vec3 PLAYER_SHIELD_POSITION_OFFSET = glm::vec3(0.0f, 0.5f, 0.5f);
+static const glm::vec3 PLAYER_SHIELD_POSITION_OFFSET = glm::vec3(0.0f, 0.0f, 0.5f);
 static const glm::vec3 PLAYER_SHIELD_SCALE = glm::vec3(1.5f, 1.5f, 1.5f);
 static const glm::vec3 DROPPED_CRYSTALS_POSITION = glm::vec3(0.0f, 5.0f, 3.0f);
 

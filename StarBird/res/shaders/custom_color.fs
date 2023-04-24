@@ -16,5 +16,6 @@ void main()
     
     if (frag_color.a < 0.25) discard;
     
-    frag_color = custom_color;
+    frag_color *= custom_color;
+    frag_color = min(vec4(1.0f), frag_color);
 }
