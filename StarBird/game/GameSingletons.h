@@ -97,6 +97,9 @@ public:
     static int GetMapLevel();
     static void SetMapLevel(const int mapLevel);
     
+    static int GetBackgroundIndex();
+    static void SetBackgroundIndex(const int backgroundIndex);
+    
 private:
     static InputContext mInputContext;
     static SDL_Window* mWindow;
@@ -107,6 +110,7 @@ private:
     static MapCoord mCurrentMapCoord;
     static int mMapGenerationSeed;
     static int mMapLevel;
+    static int mBackgroundIndex;
     static long mCrystalCount;
     static float mDisplayedCrystalCount;
     static float mGameSpeedMultiplier;

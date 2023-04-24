@@ -98,7 +98,7 @@ ChestRewardUpdater::ChestRewardUpdater(Scene& scene, b2World& box2dWorld)
         SceneObject bgSO;
         bgSO.mScale = game_constants::MAP_BACKGROUND_SCALE;
         bgSO.mPosition = BACKGROUND_POSITION;
-        bgSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::BACKGROUND_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        bgSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::BACKGROUND_TEXTURE_FILE_PATH + std::to_string(GameSingletons::GetBackgroundIndex()) + ".bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         bgSO.mSceneObjectType = SceneObjectType::WorldGameObject;
         bgSO.mName = game_constants::BACKGROUND_SCENE_OBJECT_NAME;
         bgSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
@@ -348,6 +348,7 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
             {
                 GameSingletons::SetMapLevel(GameSingletons::GetMapLevel() + 1);
                 GameSingletons::SetMapGenerationSeed(math::RandomInt());
+                GameSingletons::SetBackgroundIndex(GameSingletons::GetMapGenerationSeed() % 24);
                 GameSingletons::SetCurrentMapCoord(MapCoord(0, 2));
                 mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
                 mRewardFlowState = RewardFlowState::TRANSITIONING;

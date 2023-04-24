@@ -51,6 +51,7 @@ void LoadFromProgressSaveFile()
                 if (seedValue)
                 {
                     GameSingletons::SetMapGenerationSeed(std::stoi(seedValue->value()));
+                    GameSingletons::SetBackgroundIndex(GameSingletons::GetMapGenerationSeed() % 24);
                 }
             });
             
@@ -96,7 +97,6 @@ void LoadFromProgressSaveFile()
                 if (health)
                 {
                     GameSingletons::SetPlayerCurrentHealth(std::stof(health->value()));
-                    GameSingletons::SetPlayerMaxHealth(std::stof(health->value()));
                     GameSingletons::SetPlayerDisplayedHealth(std::stof(health->value()));
                 }
                 
@@ -184,6 +184,7 @@ void GenerateNewProgressSaveFile()
     GameSingletons::SetDisplayedCrystalCount(GameSingletons::GetCrystalCount());
     GameSingletons::SetCurrentMapCoord(MapCoord(0, 2));
     GameSingletons::SetMapLevel(0);
+    GameSingletons::SetBackgroundIndex(GameSingletons::GetMapGenerationSeed() % 24);
     
     BuildProgressSaveFile();
 }

@@ -39,9 +39,10 @@ inline const char* CUSTOM_COLOR_SHADER_FILE_NAME = "custom_color.vs";
 inline const char* GRAYSCALE_SHADER_FILE_NAME = "grayscale.vs";
 inline const char* DEBUG_CONSOLE_FONT_SHADER_FILE_NAME = "debug_console_font.vs";
 
+inline const char* DEFAULT_BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/bg/0.bmp";
+inline const char* BACKGROUND_TEXTURE_FILE_PATH = "backgrounds/bg/";
 inline const char* UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME = "shine_effect_fxx.bmp";
 inline const char* DISSOLVE_EFFECT_TEXTURE_FILE_NAME = "dissolve_line_fxy_mm.bmp";
-inline const char* BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/blue/0.bmp";
 inline const char* LAB_BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/lab/lab_bg.bmp";
 inline const char* CRYSTALS_TEXTURE_FILE_NAME = "crystal.bmp";
 inline const char* CRYSTAL_HOLDER_TEXTURE_FILE_NAME = "crystal_count_holder.bmp";
