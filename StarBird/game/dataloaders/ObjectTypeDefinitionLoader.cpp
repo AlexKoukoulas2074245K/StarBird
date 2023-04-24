@@ -170,6 +170,7 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             {
                 mConstructedObjectTypeDef.mContactFilter.categoryBits = physics_constants::PLAYER_CATEGORY_BIT;
                 mConstructedObjectTypeDef.mContactFilter.maskBits &= ~(physics_constants::PLAYER_BULLET_CATEGORY_BIT);
+                mConstructedObjectTypeDef.mContactFilter.maskBits &= ~(physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
             }
             else if (strcmp(category->value(), "player_bullet") == 0)
             {

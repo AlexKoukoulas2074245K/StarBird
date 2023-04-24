@@ -16,7 +16,7 @@
 
 const strutils::StringId ClearedLevelAnimationGameState::STATE_NAME("ClearedLevelAnimationGameState");
 
-static const float TRANSITION_Y_THRESHOLD = 12.7f;
+static const float TRANSITION_Y_THRESHOLD = 14.0f;
 
 ///------------------------------------------------------------------------------------------------
 

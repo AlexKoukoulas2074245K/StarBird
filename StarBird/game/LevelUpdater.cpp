@@ -868,6 +868,18 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
     auto joystickBoundsSO = mScene.GetSceneObject(game_constants::JOYSTICK_BOUNDS_SCENE_OBJECT_NAME);
     const auto& inputContext = GameSingletons::GetInputContext();
     
+    if (GameSingletons::GetPlayerCurrentHealth() <= 0.0f)
+    {
+        if (joystickSO && joystickBoundsSO && mAllowInputControl)
+        {
+            joystickSO->get().mInvisible = true;
+            joystickBoundsSO->get().mInvisible = true;
+            sceneObject.mBody->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+        }
+        
+        return;
+    }
+    
     switch (inputContext.mEventType)
     {
         case SDL_FINGERDOWN:
@@ -1013,10 +1025,12 @@ void LevelUpdater::UpdateBossHealthBar(const float dtMillis)
                     mBossAnimatedHealthBarPerc = healthPerc;
                 }
             }
-            
+
             healthBarTextSo.mText = std::to_string(static_cast<int>(mBossAnimatedHealthBarPerc * GameSingletons::GetBossMaxHealth()));
+            glm::vec2 botLeftRect, topRightRect;
+            scene_object_utils::GetSceneObjectBoundingRect(healthBarTextSo, botLeftRect, topRightRect);
             healthBarTextSo.mPosition = game_constants::BOSS_HEALTH_BAR_POSITION + game_constants::HEALTH_BAR_TEXT_OFFSET;
-            healthBarTextSo.mPosition.x -= (healthBarTextSo.mText.size() * 0.5f)/2;
+            healthBarTextSo.mPosition.x -= (math::Abs(botLeftRect.x - topRightRect.x)/2.0f);
         }
     }
 }

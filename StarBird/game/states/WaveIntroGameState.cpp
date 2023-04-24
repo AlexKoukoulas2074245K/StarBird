@@ -32,7 +32,7 @@ void WaveIntroGameState::VInitialize()
     
     SceneObject waveTextSO;
     waveTextSO.mScale = WAVE_INTRO_TEXT_SCALE;
-    waveTextSO.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+    waveTextSO.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME), glm::vec3(1.0f), false);
     waveTextSO.mFontName = game_constants::DEFAULT_FONT_NAME;
     waveTextSO.mSceneObjectType = SceneObjectType::GUIObject;
     waveTextSO.mName = game_constants::WAVE_INTRO_TEXT_SCENE_OBJECT_NAME;
@@ -41,14 +41,15 @@ void WaveIntroGameState::VInitialize()
     {
         waveTextSO.mPosition = CLEARED_TEXT_INIT_POS;
         waveTextSO.mText = "CLEARED";
+        waveTextSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
     }
     else
     {
         waveTextSO.mPosition = WAVE_INTRO_TEXT_INIT_POS;
         waveTextSO.mText = "WAVE " + std::to_string(mLevelUpdater->GetCurrentWaveNumber() + 1);
+        waveTextSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = glm::vec4(1.0f, 1.0f, 1.0f, 0.0f);
     }
     
-    waveTextSO.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
     mScene->AddSceneObject(std::move(waveTextSO));
     
     mLevelUpdater->AddFlow(RepeatableFlow([&]()
@@ -82,11 +83,11 @@ PostStateUpdateDirective WaveIntroGameState::VUpdate(const float dtMillis)
         const auto halfDuration = waveTextIntroFlow.GetDuration()/2;
         if (ticksLeft > halfDuration)
         {
-            waveTextIntroSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f - (ticksLeft - halfDuration)/halfDuration;
+            waveTextIntroSo.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME].a = 1.0f - (ticksLeft - halfDuration)/halfDuration;
         }
         else
         {
-            waveTextIntroSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = ticksLeft/halfDuration;
+            waveTextIntroSo.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME].a = ticksLeft/halfDuration;
         }
     }
     
