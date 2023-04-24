@@ -125,7 +125,14 @@ void UpgradeUnlockedHandler::OnUpgradeGained(const strutils::StringId& upgradeNa
     {
         if (!equippedUpgrades.empty())
         {
-            equippedUpgrades.erase(std::find_if(equippedUpgrades.begin(), equippedUpgrades.end(), [&](const UpgradeDefinition& upgradeDefinition) { return upgradeDefinition.mUpgradeNameId == upgradeNameId; }));
+            for (int i = 0; i < equippedUpgrades.size(); ++i)
+            {
+                if (equippedUpgrades[i].mUpgradeNameId == upgradeNameId)
+                {
+                    equippedUpgrades.erase(equippedUpgrades.begin() + i);
+                    break;
+                }
+            }
         }
         
         equippedUpgrades.push_back(upgradeDefinition);

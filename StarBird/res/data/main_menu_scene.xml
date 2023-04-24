@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Scene>
+    <GUIElement name="title" fontName="font" position="-3.3f, 9.1f, 0.0f" scale="0.02f, 0.02f" shader="basic" text="StarBird" />
+    <GUIElement name="play_button" fontName="font" position="-0.7f, -1.27f, 0.0f" scale="0.01f, 0.01f" shader="basic" text="Play" />
+</Scene>

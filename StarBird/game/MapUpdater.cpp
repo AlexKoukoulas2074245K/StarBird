@@ -10,6 +10,7 @@
 #include "GameConstants.h"
 #include "GameSingletons.h"
 #include "MapUpdater.h"
+#include "PersistenceUtils.h"
 #include "ObjectiveCUtils.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
@@ -49,15 +50,12 @@ static const int TEST_MAP_GENERATION_SEED = 123456;
 MapUpdater::MapUpdater(Scene& scene)
     : mScene(scene)
     , mStateMachine(&scene, nullptr, nullptr, nullptr)
-    , mMap(scene, TEST_MAP_GENERATION_SEED, glm::ivec2(9, 5), GameSingletons::GetCurrentMapCoord(), true)
+    , mMap(scene, GameSingletons::GetMapGenerationSeed(), glm::ivec2(9, 5), GameSingletons::GetCurrentMapCoord(), true)
     , mSelectedMapCoord(0, 0)
     , mTransitioning(false)
     
 {
-    if (GameSingletons::GetMapGenerationSeed() == 0)
-    {
-        GameSingletons::SetMapGenerationSeed(mMap.GetCurrentGenerationSeed());
-    }
+    persistence_utils::BuildProgressSaveFile();
     
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();

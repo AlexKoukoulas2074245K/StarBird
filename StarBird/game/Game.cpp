@@ -8,7 +8,14 @@
 #include "Game.h"
 #include "GameSingletons.h"
 #include "InputContext.h"
+#include "PersistenceUtils.h"
 #include "Scene.h"
+
+#include "dataloaders/UpgradesLoader.h"
+
+#include "datarepos/FontRepository.h"
+#include "datarepos/ObjectTypeDefinitionRepository.h"
+#include "datarepos/WaveBlocksRepository.h"
 
 #include "../resloading/ResourceLoadingService.h"
 
@@ -100,11 +107,6 @@ bool Game::InitSystems()
     GL_CALL(glEnable(GL_DEPTH_TEST));
     GL_CALL(glDepthFunc(GL_LESS));
     
-    // Set fallback assets 
-    resources::ResourceLoadingService::GetInstance().SetFallbackTexture(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "debug.bmp");
-    resources::ResourceLoadingService::GetInstance().SetFallbackMesh(resources::ResourceLoadingService::RES_MESHES_ROOT + "quad.obj");
-    resources::ResourceLoadingService::GetInstance().SetFallbackShader(resources::ResourceLoadingService::RES_SHADERS_ROOT + "basic.vs");
-    
     Log(LogType::INFO, "Vendor     : %s", GL_NO_CHECK_CALL(glGetString(GL_VENDOR)));
     Log(LogType::INFO, "Renderer   : %s", GL_NO_CHECK_CALL(glGetString(GL_RENDERER)));
     Log(LogType::INFO, "Version    : %s", GL_NO_CHECK_CALL(glGetString(GL_VERSION)));
@@ -116,9 +118,10 @@ bool Game::InitSystems()
 
 void Game::Run()
 {
+    InitPersistentData();
     
     Scene scene;
-    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::STATS_UPGRADE, "test_level_with_boss", false));
+    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAIN_MENU, "test_level_with_boss", false));
     
     SDL_Event e;
     
@@ -290,6 +293,29 @@ void Game::Run()
         {
             scene.OnAppStateChange(lastAppForegroundBackgroundEvent);
         }
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void Game::InitPersistentData()
+{
+    auto& waveBlocksRepo = WaveBlocksRepository::GetInstance();
+    waveBlocksRepo.LoadWaveBlocks();
+    
+    UpgradesLoader loader;
+    GameSingletons::SetAvailableUpgrades(loader.LoadAllUpgrades());
+    
+    auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
+    typeDefRepo.LoadObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
+    
+    if (!persistence_utils::ProgressSaveFileExists())
+    {
+        persistence_utils::GenerateNewProgressSaveFile();
+    }
+    else
+    {
+        persistence_utils::LoadFromProgressSaveFile();
     }
 }
 

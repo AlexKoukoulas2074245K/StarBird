@@ -94,6 +94,9 @@ public:
     static int GetMapGenerationSeed();
     static void SetMapGenerationSeed(const int mapGenerationSeed);
     
+    static int GetMapLevel();
+    static void SetMapLevel(const int mapLevel);
+    
 private:
     static InputContext mInputContext;
     static SDL_Window* mWindow;
@@ -103,6 +106,7 @@ private:
     static std::vector<UpgradeDefinition> mAvailableUpgrades;
     static MapCoord mCurrentMapCoord;
     static int mMapGenerationSeed;
+    static int mMapLevel;
     static long mCrystalCount;
     static float mDisplayedCrystalCount;
     static float mGameSpeedMultiplier;

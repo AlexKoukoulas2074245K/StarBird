@@ -75,6 +75,8 @@
 		925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */; };
 		925FD880298AD7D50058E747 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925FD87F298AD7D50058E747 /* AudioToolbox.framework */; };
 		926693E929EEAA4B0013C195 /* BlueprintFlows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 926693DC29EEAA4B0013C195 /* BlueprintFlows.cpp */; };
+		9268C97C29F68C090048C0CB /* MainMenuUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9268C97B29F68C090048C0CB /* MainMenuUpdater.cpp */; };
+		9268C97F29F69B440048C0CB /* PersistenceUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9268C97E29F69B440048C0CB /* PersistenceUtils.cpp */; };
 		92693B6829C87D2500157222 /* MapUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92693B5B29C87D2500157222 /* MapUpdater.cpp */; };
 		9269AE8629E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9269AE8529E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp */; };
 		9271958229F2C066001FE7D2 /* WaveBlocksRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9271958129F2C066001FE7D2 /* WaveBlocksRepository.cpp */; };
@@ -371,6 +373,10 @@
 		925FD87F298AD7D50058E747 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		926693DC29EEAA4B0013C195 /* BlueprintFlows.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlueprintFlows.cpp; sourceTree = "<group>"; };
 		926693E829EEAA4B0013C195 /* BlueprintFlows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlueprintFlows.h; sourceTree = "<group>"; };
+		9268C96F29F68C090048C0CB /* MainMenuUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainMenuUpdater.h; sourceTree = "<group>"; };
+		9268C97B29F68C090048C0CB /* MainMenuUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MainMenuUpdater.cpp; sourceTree = "<group>"; };
+		9268C97D29F69B440048C0CB /* PersistenceUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PersistenceUtils.h; sourceTree = "<group>"; };
+		9268C97E29F69B440048C0CB /* PersistenceUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PersistenceUtils.cpp; sourceTree = "<group>"; };
 		92693B5B29C87D2500157222 /* MapUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MapUpdater.cpp; sourceTree = "<group>"; };
 		92693B6729C87D2500157222 /* MapUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapUpdater.h; sourceTree = "<group>"; };
 		92693B6929C8821F00157222 /* IUpdater.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IUpdater.h; sourceTree = "<group>"; };
@@ -1143,10 +1149,14 @@
 				9259F34829D4866700850744 /* LabUpdater.h */,
 				925FD83829883DD80058E747 /* LevelUpdater.cpp */,
 				925FD84429883DD80058E747 /* LevelUpdater.h */,
+				9268C97B29F68C090048C0CB /* MainMenuUpdater.cpp */,
+				9268C96F29F68C090048C0CB /* MainMenuUpdater.h */,
 				92E417C929CB5860002F016D /* Map.cpp */,
 				92E417D529CB5860002F016D /* Map.h */,
 				92693B5B29C87D2500157222 /* MapUpdater.cpp */,
 				92693B6729C87D2500157222 /* MapUpdater.h */,
+				9268C97E29F69B440048C0CB /* PersistenceUtils.cpp */,
+				9268C97D29F69B440048C0CB /* PersistenceUtils.h */,
 				925FD86729891C390058E747 /* PhysicsConstants.h */,
 				92E8DAE4298E940B00591968 /* PhysicsCollisionListener.cpp */,
 				92E8DAD8298E940B00591968 /* PhysicsCollisionListener.h */,
@@ -2002,6 +2012,7 @@
 				92DAA4DC29829B380062A438 /* MathUtils.cpp in Sources */,
 				923F0D8929CE0BFD007750D4 /* FullScreenOverlayController.cpp in Sources */,
 				9254CC0D2969B79A00EFE0CC /* b2CollideEdge.cpp in Sources */,
+				9268C97C29F68C090048C0CB /* MainMenuUpdater.cpp in Sources */,
 				9254CC012969B79A00EFE0CC /* b2StackAllocator.cpp in Sources */,
 				9228C168299FD15A00410E49 /* GUISceneLoader.cpp in Sources */,
 				9254CBFE2969B79A00EFE0CC /* b2BlockAllocator.cpp in Sources */,
@@ -2029,6 +2040,7 @@
 				92DAA4CE29829A4C0062A438 /* DataFileLoader.cpp in Sources */,
 				9254CBE62969B79A00EFE0CC /* b2ChainAndCircleContact.cpp in Sources */,
 				9254CBFC2969B79A00EFE0CC /* b2Rope.cpp in Sources */,
+				9268C97F29F69B440048C0CB /* PersistenceUtils.cpp in Sources */,
 				92AF7B2D29914F1500BCC894 /* UpgradesLoader.cpp in Sources */,
 				9254CBF42969B79A00EFE0CC /* b2RevoluteJoint.cpp in Sources */,
 				92DAA4CA29829A4C0062A438 /* ShaderResource.cpp in Sources */,

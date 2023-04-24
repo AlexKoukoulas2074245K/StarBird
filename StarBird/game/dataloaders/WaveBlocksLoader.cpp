@@ -33,6 +33,11 @@ WaveBlocksLoader::WaveBlocksLoader()
         {
             mWaveBlocks.back().mDifficulty = std::stoi(node->first_attribute("difficulty")->value());
         }
+        
+        if (node->first_attribute("inflexible"))
+        {
+            mWaveBlocks.back().mInflexible = strcmp(node->first_attribute("inflexible")->value(), "true") == 0;
+        }
     });
     
     BaseGameDataLoader::SetCallbackForNode(strutils::StringId("WaveBlockLine"), [&](const void* n)

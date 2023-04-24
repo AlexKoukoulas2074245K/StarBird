@@ -10,6 +10,7 @@
 
 ///------------------------------------------------------------------------------------------------
 
+#include "definitions/WaveBlockDefinition.h"
 #include "../utils/MathUtils.h"
 #include "../utils/StringUtils.h"
 
@@ -91,6 +92,9 @@ private:
     void CreateMapSceneObjects();
     void CreateLevelFiles();
     void GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData);
+    void AdjustWaveBlockForDifficulty(const int difficulty, WaveBlockDefinition& waveBlock) const;
+    float GetWaveBlockLineHeight(const WaveBlockLine& waveBlockLine) const;
+    
     bool DetectedCrossedEdge(const MapCoord& currentCoord, const MapCoord& targetTestCoord) const;
     glm::vec3 GenerateNodePositionForCoord(const MapCoord& currentMapCoord) const;
     NodeType SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const;

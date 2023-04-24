@@ -19,7 +19,7 @@
 
 const strutils::StringId BossIntroGameState::STATE_NAME("BossIntroGameState");
 
-static const glm::vec3 BOSS_INTRO_TEXT_INIT_POS = glm::vec3(0.0f, 0.0f, 2.0f);
+static const glm::vec3 BOSS_INTRO_TEXT_INIT_POS = glm::vec3(0.5f, 0.0f, 2.0f);
 static const glm::vec3 BOSS_INTRO_TEXT_SCALE = glm::vec3(0.02f, 0.02f, 1.0f);
 
 ///------------------------------------------------------------------------------------------------

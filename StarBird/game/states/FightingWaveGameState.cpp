@@ -11,6 +11,7 @@
 #include "../LevelUpdater.h"
 #include "../GameSingletons.h"
 #include "../GameConstants.h"
+#include "../PersistenceUtils.h"
 #include "../PhysicsConstants.h"
 #include "../Scene.h"
 #include "../SceneObjectUtils.h"
@@ -187,7 +188,8 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
             
             if (playerSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] < 0.0f)
             {
-                mScene->RemoveAllSceneObjectsWithName(game_constants::PLAYER_SCENE_OBJECT_NAME);
+                Complete();
+                mScene->ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAIN_MENU, "", true));
             }
         }
     }
@@ -203,6 +205,7 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
         }
         
         mPlayerDeathAnimationActive = true;
+        mScene->SetProgressResetFlag();
     }
     
     if (mLevelUpdater->GetWaveEnemyCount() == 0 && GameSingletons::GetPlayerCurrentHealth() > 0.0f)

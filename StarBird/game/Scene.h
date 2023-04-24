@@ -33,7 +33,7 @@ class Scene final
 public:
     enum class SceneType
     {
-        MAP, LAB, STATS_UPGRADE, LEVEL, CHEST_REWARD
+        MAIN_MENU, MAP, LAB, STATS_UPGRADE, LEVEL, CHEST_REWARD
     };
     
     class TransitionParameters
@@ -73,6 +73,7 @@ public:
     void AddSceneObject(SceneObject&& sceneObject);
     void RemoveAllSceneObjectsWithName(const strutils::StringId& name);
 
+    void SetProgressResetFlag();
     void ChangeScene(const TransitionParameters& transitionParameters);
     
     void OnAppStateChange(Uint32 event);
@@ -89,8 +90,11 @@ public:
 #ifdef DEBUG
     void OpenDebugConsole();
 #endif
-    
+
+private:
     void CreateCrossSceneInterfaceObjects();
+    void SetHUDVisibility(const bool visibility);
+    void HandleProgressReset();
     
 private:
     b2World mBox2dWorld;
@@ -105,6 +109,7 @@ private:
     SceneRenderer mSceneRenderer;
     bool mPreFirstUpdate;
     bool mSceneEditMode;
+    bool mProgressResetFlag;
 };
 
 ///------------------------------------------------------------------------------------------------

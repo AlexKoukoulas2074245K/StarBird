@@ -11,8 +11,10 @@
 #include "ChestRewardUpdater.h"
 #include "GameConstants.h"
 #include "LabUpdater.h"
+#include "MainMenuUpdater.h"
 #include "MapUpdater.h"
 #include "LevelUpdater.h"
+#include "PersistenceUtils.h"
 #include "PhysicsConstants.h"
 #include "SceneObjectUtils.h"
 #include "StatsUpgradeUpdater.h"
@@ -52,12 +54,18 @@ Scene::Scene()
     , mSceneRenderer(mBox2dWorld)
     , mPreFirstUpdate(true)
     , mSceneEditMode(false)
+    , mProgressResetFlag(false)
 {
     FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_NAME);
     FontRepository::GetInstance().LoadFont(game_constants::DEFAULT_FONT_MM_NAME);
     
     GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera());
     GameSingletons::SetCameraForSceneObjectType(SceneObjectType::GUIObject, Camera());
+    
+    // Set fallback assets
+    resources::ResourceLoadingService::GetInstance().SetFallbackTexture(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "debug.bmp");
+    resources::ResourceLoadingService::GetInstance().SetFallbackMesh(resources::ResourceLoadingService::RES_MESHES_ROOT + "quad.obj");
+    resources::ResourceLoadingService::GetInstance().SetFallbackShader(resources::ResourceLoadingService::RES_SHADERS_ROOT + "basic.vs");
     
     CreateCrossSceneInterfaceObjects();
 }
@@ -66,7 +74,7 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-    
+    HandleProgressReset();
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -253,8 +261,17 @@ void Scene::RemoveAllSceneObjectsWithName(const strutils::StringId& name)
 
 ///------------------------------------------------------------------------------------------------
 
+void Scene::SetProgressResetFlag()
+{
+    mProgressResetFlag = true;
+}
+
+///------------------------------------------------------------------------------------------------
+
 void Scene::ChangeScene(const TransitionParameters& transitionParameters)
 {
+    HandleProgressReset();
+    
     // Need to hold a copy of the transition parameters as in the use case of an overlay
     // the scene creation needs to be deferred, and we don't want the stored lambda
     // to have an invalid reference to this temporary
@@ -309,8 +326,17 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
         GameSingletons::SetCameraForSceneObjectType(SceneObjectType::WorldGameObject, Camera());
         GameSingletons::SetCameraForSceneObjectType(SceneObjectType::GUIObject, Camera());
         
+        resources::ResourceLoadingService::GetInstance().SetFallbackTexture(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "debug.bmp");
+        resources::ResourceLoadingService::GetInstance().SetFallbackMesh(resources::ResourceLoadingService::RES_MESHES_ROOT + "quad.obj");
+        resources::ResourceLoadingService::GetInstance().SetFallbackShader(resources::ResourceLoadingService::RES_SHADERS_ROOT + "basic.vs");
+        
         switch (mTransitionParameters->mSceneType)
         {
+            case SceneType::MAIN_MENU:
+            {
+                mSceneUpdater = std::make_unique<MainMenuUpdater>(*this);
+            } break;
+                 
             case SceneType::MAP:
             {
                 mSceneUpdater = std::make_unique<MapUpdater>(*this);
@@ -362,6 +388,8 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
         {
             AddSceneObject(std::move(so));
         }
+        
+        SetHUDVisibility(mTransitionParameters->mSceneType != SceneType::MAIN_MENU);
     };
     
     if (mTransitionParameters->mUseOverlay)
@@ -378,6 +406,8 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
 
 void Scene::OnAppStateChange(Uint32 event)
 {
+    HandleProgressReset();
+    
     if (mSceneUpdater)
     {
         mSceneUpdater->VOnAppStateChange(event);
@@ -814,25 +844,6 @@ void Scene::CreateCrossSceneInterfaceObjects()
         AddSceneObject(std::move(crystalCountSo));
     }
     
-    auto& waveBlocksRepo = WaveBlocksRepository::GetInstance();
-    waveBlocksRepo.LoadWaveBlocks();
-    
-    auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
-    typeDefRepo.LoadObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
-    auto& playerDef = typeDefRepo.GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
-    
-    GameSingletons::SetPlayerDisplayedHealth(playerDef.mHealth);
-    GameSingletons::SetPlayerMaxHealth(playerDef.mHealth);
-    GameSingletons::SetPlayerCurrentHealth(playerDef.mHealth);
-    GameSingletons::SetPlayerAttackStat(playerDef.mDamage);
-    GameSingletons::SetPlayerMovementSpeedStat(1.0f);
-    GameSingletons::SetPlayerBulletSpeedStat(1.0f);
-    GameSingletons::SetCrystalCount(100);
-    GameSingletons::SetDisplayedCrystalCount(100);
-    UpgradesLoader loader;
-    GameSingletons::SetAvailableUpgrades(loader.LoadAllUpgrades());
-    //GameSingletons::SetCurrentMapCoord(MapCoord(6,3));
-    
     // Player Health Bar Text
     {
         SceneObject healthBarTextSo;
@@ -850,3 +861,34 @@ void Scene::CreateCrossSceneInterfaceObjects()
 
 ///------------------------------------------------------------------------------------------------
 
+void Scene::SetHUDVisibility(const bool visibility)
+{
+    for (auto& sceneObject: mSceneObjects)
+    {
+        if (sceneObject.mCrossSceneLifetime && sceneObject.mName != game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME)
+        {
+            sceneObject.mInvisible = !visibility;
+        }
+    }
+    
+    for (auto& sceneObject: mSceneObjectsToAdd)
+    {
+        if (sceneObject.mCrossSceneLifetime && sceneObject.mName != game_constants::FULL_SCREEN_OVERLAY_SCENE_OBJECT_NAME)
+        {
+            sceneObject.mInvisible = !visibility;
+        }
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void Scene::HandleProgressReset()
+{
+    if (mProgressResetFlag)
+    {
+        persistence_utils::GenerateNewProgressSaveFile();
+        mProgressResetFlag = false;
+    }
+}
+
+///------------------------------------------------------------------------------------------------

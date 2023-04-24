@@ -346,6 +346,9 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
         {
             if (mUpgradeUnlockedHandler.Update(dtMillis) == UpgradeUnlockedHandler::UpgradeAnimationState::FINISHED)
             {
+                GameSingletons::SetMapLevel(GameSingletons::GetMapLevel() + 1);
+                GameSingletons::SetMapGenerationSeed(math::RandomInt());
+                GameSingletons::SetCurrentMapCoord(MapCoord(0, 2));
                 mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
                 mRewardFlowState = RewardFlowState::TRANSITIONING;
             }

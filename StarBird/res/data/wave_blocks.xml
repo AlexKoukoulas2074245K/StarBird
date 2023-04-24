@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <WaveBlocks>
-    <WaveBlock difficulty="1">
+    <WaveBlock difficulty="1" inflexible="false">
         <WaveBlockLine>
             <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
             <Enemy position="-5.0f, 28.0f" type="enemies/test_enemy_chasing"/>
@@ -10,7 +10,7 @@
         </WaveBlockLine>
     </WaveBlock>
     
-    <WaveBlock difficulty="1">
+    <WaveBlock difficulty="1" inflexible="false">
         <WaveBlockLine>
             <Enemy position="-1.0f, 20.0f" type="enemies/small_enemy_chasing"/>
             <Enemy position="-5.0f, 28.0f" type="enemies/small_enemy_chasing"/>
@@ -19,7 +19,7 @@
         </WaveBlockLine>
     </WaveBlock>
     
-    <WaveBlock difficulty="20">
+    <WaveBlock difficulty="20" inflexible="true">
         <WaveBlockLine/>
         
         <WaveBlockLine>
@@ -58,7 +58,7 @@
         <WaveBlockLine/>
     </WaveBlock>
 
-    <WaveBlock difficulty="5">
+    <WaveBlock difficulty="5" inflexible="false">
         <WaveBlockLine/>
         
         <WaveBlockLine>
@@ -97,7 +97,7 @@
         <WaveBlockLine/>
     </WaveBlock>
 
-    <WaveBlock difficulty="5">
+    <WaveBlock difficulty="5" inflexible="false">
         <WaveBlockLine/>
         
         <WaveBlockLine>
@@ -136,7 +136,7 @@
         <WaveBlockLine/>
     </WaveBlock>
 
-    <WaveBlock difficulty="10">
+    <WaveBlock difficulty="10" inflexible="true">
         <WaveBlockLine>
             <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
             <Enemy position="1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
@@ -162,7 +162,7 @@
         </WaveBlockLine>
     </WaveBlock>
 
-    <WaveBlock difficulty="5">
+    <WaveBlock difficulty="5" inflexible="true">
         <WaveBlockLine>
             <Enemy position="-6.0f, 20.0f" type="enemies/enemy_shooting"/>
             <Enemy position="6.0f, 20.0f" type="enemies/enemy_shooting"/>
@@ -173,7 +173,7 @@
         </WaveBlockLine>
     </WaveBlock>
 
-    <WaveBlock difficulty="4">
+    <WaveBlock difficulty="4" inflexible="true">
         <WaveBlockLine/>
         <WaveBlockLine>
             <Enemy position="-2.0f, 20.0f" type="enemies/enemy_shooting"/>
@@ -183,7 +183,7 @@
         <WaveBlockLine/>
     </WaveBlock>
 
-    <WaveBlock difficulty="10">
+    <WaveBlock difficulty="10" inflexible="true">
         <WaveBlockLine>
             <Enemy position="-5.0f, 20.0f" type="enemies/enemy_asteroid"/>
             <Enemy position="-3.0f, 20.0f" type="enemies/enemy_asteroid"/>
@@ -200,7 +200,7 @@
         </WaveBlockLine>
     </WaveBlock>
 
-    <WaveBlock difficulty="15">
+    <WaveBlock difficulty="15" inflexible="true">
         <WaveBlockLine>
             <Enemy position="-5.0f, 20.0f" type="enemies/enemy_asteroid"/>
             <Enemy position="-3.0f, 20.0f" type="enemies/enemy_asteroid"/>
@@ -228,7 +228,7 @@
         </WaveBlockLine>
     </WaveBlock>
     
-    <WaveBlock difficulty="1000000" bossName="Ka'thun" bossHealth="5000.0f">
+    <WaveBlock difficulty="1000000" inflexible="true" bossName="Ka'thun" bossHealth="5000.0f">
         <WaveBlockLine>
             <Enemy position="0.0f, 20.0f" type="enemies/boss_1/body"/>
             <Enemy position="0.0f, 20.0f" type="enemies/boss_1/top_left_flap"/>

@@ -54,8 +54,6 @@ static const glm::vec3 JOYSTICK_BOUNDS_SCALE = glm::vec3(4.0f, 4.0f, 1.0f);
 static const float JOYSTICK_Z = 1.0f;
 static const float JOYSTICK_BOUNDS_Z = 2.0f;
 
-static const float BACKGROUND_SPEED = 1.0f/4000.0f;
-
 static const float PLAYER_MOVEMENT_ROLL_CHANCE = 0.333f;
 static const float PLAYER_MOVEMENT_ROLL_SPEED = 0.008f;
 static const float PLAYER_MOVEMENT_ROLL_ANGLE = 180.0f;
@@ -965,7 +963,7 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
 void LevelUpdater::UpdateBackground(const float dtMillis)
 {
     static float msAccum = 0.0f;
-    msAccum += dtMillis * BACKGROUND_SPEED;
+    msAccum += dtMillis * game_constants::BACKGROUND_SPEED;
     msAccum = std::fmod(msAccum, 1.0f);
     
     auto bgSO = mScene.GetSceneObject(game_constants::BACKGROUND_SCENE_OBJECT_NAME);

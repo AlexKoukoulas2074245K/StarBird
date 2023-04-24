@@ -17,6 +17,7 @@ std::vector<UpgradeDefinition> GameSingletons::mEquippedUpgrades = {};
 std::vector<UpgradeDefinition> GameSingletons::mAvailableUpgrades = {};
 MapCoord GameSingletons::mCurrentMapCoord = MapCoord(0, 2);
 int GameSingletons::mMapGenerationSeed = 0;
+int GameSingletons::mMapLevel = 0;
 long GameSingletons::mCrystalCount = 0;
 float GameSingletons::mDisplayedCrystalCount = 0;
 float GameSingletons::mGameSpeedMultiplier = 1.0f;
@@ -363,6 +364,20 @@ int GameSingletons::GetMapGenerationSeed()
 void GameSingletons::SetMapGenerationSeed(const int mapGenerationSeed)
 {
     mMapGenerationSeed = mapGenerationSeed;
+}
+
+///------------------------------------------------------------------------------------------------
+
+int GameSingletons::GetMapLevel()
+{
+    return mMapLevel;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetMapLevel(const int mapLevel)
+{
+    mMapLevel = mapLevel;
 }
 
 ///------------------------------------------------------------------------------------------------

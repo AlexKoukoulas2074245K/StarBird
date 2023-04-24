@@ -26,6 +26,7 @@ private:
     
 private:
     void OnTextInput(const std::string& text);
+    void InitPersistentData();
     
 private:
     bool mIsFinished;

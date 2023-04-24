@@ -7,6 +7,7 @@
 
 #include "Map.h"
 #include "GameConstants.h"
+#include "GameSingletons.h"
 #include "ObjectiveCUtils.h"
 #include "SceneObject.h"
 #include "Scene.h"
@@ -38,6 +39,8 @@ static const float MAP_PLANET_RING_MAX_Y_ROTATION = +math::PI/10;
 static const float MAP_NODE_ROTATION_SPEED = 0.0002f;
 static const float MAP_NODE_PULSING_SPEED = 0.005f;
 static const float MAP_NODE_PULSING_ENLARGEMENT_FACTOR = 1.0f/200.0f;
+static const float LEVEL_FIRST_WAVE_Y = 20.0f;
+static const float LEVEL_WAVE_Y_INCREMENT = 2.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -281,6 +284,8 @@ void Map::GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData)
         difficultyValue *= 2.0f;
     }
     
+    difficultyValue += GameSingletons::GetMapLevel() * 10;
+    
     auto waveCount = math::ControlledRandomInt(2,3) + (difficultyValue / 5);
     
     const auto& eligibleBlocks = WaveBlocksRepository::GetInstance().GetEligibleWaveBlocksForDifficulty(difficultyValue);
@@ -291,7 +296,10 @@ void Map::GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData)
     {
         levelXml << "\n    <Wave";
         auto selectedBlock = eligibleBlocks.at(math::ControlledRandomInt(0, static_cast<int>(eligibleBlocks.size()) - 1));
-        selectedBlock.AdjustForDifficulty(difficultyValue);
+        if (selectedBlock.mInflexible == false)
+        {
+            AdjustWaveBlockForDifficulty(difficultyValue, selectedBlock);
+        }
         
         if (nodeData.mNodeType == NodeType::BOSS_ENCOUNTER && j == waveCount - 1)
         {
@@ -304,8 +312,8 @@ void Map::GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData)
         {
             for (const auto& enemy: blockLine.mEnemies)
             {
-                
-                levelXml << "\n        <Enemy position=\"" << enemy.mPosition.x << ", " << enemy.mPosition.y << "\" type=\"" << enemy.mGameObjectEnemyType.GetString() << "\"/>";
+                auto positionOffset = selectedBlock.mInflexible ? glm::vec2(0.0f, 0.0f) : glm::vec2(math::RandomFloat(-1.0f, 1.0f), math::RandomFloat(-1.0f, 1.0f));
+                levelXml << "\n        <Enemy position=\"" << enemy.mPosition.x + positionOffset.x << ", " << enemy.mPosition.y + positionOffset.y << "\" type=\"" << enemy.mGameObjectEnemyType.GetString() << "\"/>";
             }
         }
         
@@ -318,6 +326,55 @@ void Map::GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData)
     std::ofstream outputFile(levelFileName);
     outputFile << levelXml.str();
     outputFile.close();
+}
+
+///------------------------------------------------------------------------------------------------
+
+void Map::AdjustWaveBlockForDifficulty(const int difficulty, WaveBlockDefinition& waveBlock) const
+{
+    if (difficulty == waveBlock.mDifficulty) return;
+    
+    // Find largest y in block line enemies
+    auto waveHeight = 0.0f;
+    auto riter = waveBlock.mWaveBlockLines.rbegin();
+    while (riter != waveBlock.mWaveBlockLines.rend())
+    {
+        if (!riter->mEnemies.empty())
+        {
+            waveHeight = riter->mEnemies.back().mPosition.y - LEVEL_FIRST_WAVE_Y;
+            break;
+        }
+        
+        riter++;
+    }
+    
+    auto currentY = LEVEL_FIRST_WAVE_Y + waveHeight + LEVEL_WAVE_Y_INCREMENT;
+    
+    std::vector<WaveBlockLine> additionalLines;
+    auto difficultyDiff = difficulty - waveBlock.mDifficulty;
+    for (int i = 0; i < difficultyDiff; ++i)
+    {
+        auto targetLineCopy = waveBlock.mWaveBlockLines.at(i % waveBlock.mWaveBlockLines.size());
+        auto lineHeight = GetWaveBlockLineHeight(targetLineCopy);
+        
+        for (auto& enemy: targetLineCopy.mEnemies)
+        {
+            enemy.mPosition.y = currentY + enemy.mPosition.y - LEVEL_FIRST_WAVE_Y;
+        }
+        
+        currentY += lineHeight;
+        
+        additionalLines.push_back(targetLineCopy);
+    }
+    
+    waveBlock.mWaveBlockLines.insert(waveBlock.mWaveBlockLines.end(), additionalLines.begin(), additionalLines.end());
+}
+
+///------------------------------------------------------------------------------------------------
+
+float Map::GetWaveBlockLineHeight(const WaveBlockLine& waveBlockLine) const
+{
+    return waveBlockLine.mEnemies.empty() ? 0.0f : waveBlockLine.mEnemies.back().mPosition.y - LEVEL_FIRST_WAVE_Y + LEVEL_WAVE_Y_INCREMENT;
 }
 
 ///------------------------------------------------------------------------------------------------
