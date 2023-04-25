@@ -6,6 +6,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "../utils/ObjectiveCUtils.h"
+#include "../utils/OSMessageBox.h"
 #include "../utils/MathUtils.h"
 #include "../utils/StringUtils.h"
 #include "GameSingletons.h"
@@ -41,6 +42,8 @@ void LoadFromProgressSaveFile()
     class ProgressLoader: public BaseGameDataLoader
     {
     public:
+        bool mCorruptedSaveFlag = false;
+        
         void Load()
         {
             BaseGameDataLoader::SetCallbackForNode(strutils::StringId("Seed"), [&](const void* n)
@@ -52,6 +55,11 @@ void LoadFromProgressSaveFile()
                 {
                     GameSingletons::SetMapGenerationSeed(std::stoi(seedValue->value()));
                     GameSingletons::SetBackgroundIndex(GameSingletons::GetMapGenerationSeed() % 24);
+                    
+                    if (GameSingletons::GetMapGenerationSeed() == 0)
+                    {
+                        mCorruptedSaveFlag = true;
+                    }
                 }
             });
             
@@ -161,6 +169,12 @@ void LoadFromProgressSaveFile()
     
     ProgressLoader pl;
     pl.Load();
+    
+    if (pl.mCorruptedSaveFlag)
+    {
+        ospopups::ShowMessageBox(ospopups::MessageBoxType::WARNING, "Corrupted Save File", "Found corrupted save file with seed " + std::to_string(GameSingletons::GetMapGenerationSeed()) + ". Cleaning up persistent files.");
+        GenerateNewProgressSaveFile();
+    }
 }
 
 ///------------------------------------------------------------------------------------------------
