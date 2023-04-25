@@ -163,6 +163,26 @@ void LoadFromProgressSaveFile()
                 }
             });
             
+            BaseGameDataLoader::SetCallbackForNode(strutils::StringId("AvailableUpgrade"), [&](const void* n)
+            {
+                auto* node = static_cast<const rapidxml::xml_node<>*>(n);
+                
+                auto* upgradeName = node->first_attribute("name");
+                if (upgradeName)
+                {
+                    auto upgradeNameId = strutils::StringId(upgradeName->value());
+                    
+                    auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
+                    
+                    const auto availableUpgradeIter = std::find_if(availableUpgrades.begin(), availableUpgrades.end(), [&](const UpgradeDefinition& upgradeDefinition){ return upgradeDefinition.mUpgradeNameId == upgradeNameId; });
+                    
+                    assert(availableUpgradeIter != availableUpgrades.cend());
+                    auto& upgradeDefinition = *availableUpgradeIter;
+                    
+                    upgradeDefinition.mUnlockCost = std::stoi(node->first_attribute("unlockCost")->value());
+                }
+            });
+            
             BaseGameDataLoader::LoadData(objectiveC_utils::BuildLocalFileSaveLocation(PROGRESS_SAVE_FILE_NAME), true);
         }
     };
@@ -222,8 +242,8 @@ void BuildProgressSaveFile()
     progressSaveFileXml << "bulletSpeed=\"" << std::to_string(GameSingletons::GetPlayerBulletSpeedStat()) << "\" ";
     progressSaveFileXml << "crystals=\"" << GameSingletons::GetCrystalCount() << "\" ";
     progressSaveFileXml << "/>";
-    progressSaveFileXml << "\n    <EquippedUpgrades>";
     
+    progressSaveFileXml << "\n    <EquippedUpgrades>";
     for (const auto& equippedUpgrade: GameSingletons::GetEquippedUpgrades())
     {
         progressSaveFileXml << "\n        <Upgrade name=\"" << equippedUpgrade.mUpgradeNameId.GetString() << "\"";
@@ -235,6 +255,17 @@ void BuildProgressSaveFile()
     }
     
     progressSaveFileXml << "\n    </EquippedUpgrades>";
+    
+    progressSaveFileXml << "\n    <AvailableUpgrades>";
+    for (const auto& availableUpgrade: GameSingletons::GetAvailableUpgrades())
+    {
+        progressSaveFileXml << "\n        <AvailableUpgrade name=\"" << availableUpgrade.mUpgradeNameId.GetString() << "\" ";
+        progressSaveFileXml << " unlockCost=\"" << availableUpgrade.mUnlockCost << "\" ";
+        progressSaveFileXml << " />";
+    }
+    
+    progressSaveFileXml << "\n    </AvailableUpgrades>";
+    
     progressSaveFileXml << "\n</SaveData>";
     
     const auto& progressSaveFileContents = progressSaveFileXml.str();

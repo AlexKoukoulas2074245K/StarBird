@@ -67,6 +67,20 @@ public:
 
 ///------------------------------------------------------------------------------------------------
 
+class SingleFrameAnimationWithEffectTexture final: public BaseAnimation
+{
+public:
+    SingleFrameAnimationWithEffectTexture(const resources::ResourceId textureResourceId, const resources::ResourceId effectTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled);
+    
+    std::unique_ptr<BaseAnimation> VClone() const override;
+    resources::ResourceId VGetCurrentEffectTextureResourceId() const override;
+    
+private:
+    resources::ResourceId mEffectTextureResourceId;
+};
+
+///------------------------------------------------------------------------------------------------
+
 class MultiFrameAnimation final: public BaseAnimation
 {
 public:

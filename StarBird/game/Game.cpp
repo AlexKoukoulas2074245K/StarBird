@@ -121,7 +121,7 @@ void Game::Run()
     InitPersistentData();
     
     Scene scene;
-    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAIN_MENU, "test_level_with_boss", false));
+    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::RESEARCH, "test_level_with_boss", false));
     
     SDL_Event e;
     

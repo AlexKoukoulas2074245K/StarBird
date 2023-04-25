@@ -102,6 +102,25 @@ std::unique_ptr<BaseAnimation> SingleFrameAnimation::VClone() const
     return std::make_unique<SingleFrameAnimation>(*this);
 }
 
+
+///------------------------------------------------------------------------------------------------
+
+SingleFrameAnimationWithEffectTexture::SingleFrameAnimationWithEffectTexture(const resources::ResourceId textureResourceId, const resources::ResourceId effectTextureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const bool bodyRenderingEnabled)
+    : BaseAnimation(textureResourceId, meshResourceId, shaderResourceId, scale, bodyRenderingEnabled)
+    , mEffectTextureResourceId(effectTextureResourceId)
+{
+}
+
+std::unique_ptr<BaseAnimation> SingleFrameAnimationWithEffectTexture::VClone() const
+{
+    return std::make_unique<SingleFrameAnimationWithEffectTexture>(*this);
+}
+
+resources::ResourceId SingleFrameAnimationWithEffectTexture::VGetCurrentEffectTextureResourceId() const
+{
+    return mEffectTextureResourceId;
+}
+
 ///------------------------------------------------------------------------------------------------
 
 MultiFrameAnimation::MultiFrameAnimation(const resources::ResourceId textureResourceId, const resources::ResourceId meshResourceId, const resources::ResourceId shaderResourceId, const glm::vec3& scale, const float duration, const int textureSheetRow, const bool bodyRenderingEnabled)

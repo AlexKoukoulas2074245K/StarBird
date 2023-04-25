@@ -22,6 +22,8 @@ struct UpgradeDefinition
     std::string mTextureFileName = "";
     bool mIntransient = false;
     bool mEquippable = false;
+    long mDefaultUnlockCost = 0;
+    long mUnlockCost = 0;
 };
 
 ///------------------------------------------------------------------------------------------------

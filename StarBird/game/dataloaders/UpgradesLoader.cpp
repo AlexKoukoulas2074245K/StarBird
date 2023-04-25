@@ -44,6 +44,13 @@ UpgradesLoader::UpgradesLoader()
             upgrade.mEquippable = strcmp(equippable->value(), "true") == 0;
         }
         
+        auto* unlockCost = node->first_attribute("unlockCost");
+        if (unlockCost)
+        {
+            upgrade.mDefaultUnlockCost = std::stoi(unlockCost->value());
+            upgrade.mUnlockCost = upgrade.mDefaultUnlockCost;
+        }
+        
         auto* upgradeNameId = node->first_attribute("nameId");
         if (upgradeNameId)
         {

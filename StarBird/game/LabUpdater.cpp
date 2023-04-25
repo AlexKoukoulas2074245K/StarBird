@@ -151,6 +151,8 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
                     
                 case game_constants::LabOptionType::RESEARCH:
                 {
+                    mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::RESEARCH, "", true));
+                    mOptionSelectionState = OptionSelectionState::TRANSITIONING_TO_NEXT_SCREEN;
                 } break;
             }
         } break;
@@ -455,11 +457,7 @@ std::string LabUpdater::CheckForOptionValidity() const
     {
         return "Vessel is not damaged";
     }
-    else if (mSelectedLabOption == game_constants::LabOptionType::RESEARCH)
-    {
-        return "Not implemented";
-    }
-    
+
     return "";
 }
 

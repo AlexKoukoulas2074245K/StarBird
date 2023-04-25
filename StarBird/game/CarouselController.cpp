@@ -13,7 +13,8 @@
 
 ///------------------------------------------------------------------------------------------------
 
-inline const strutils::StringId CAROUSEL_OPTION_NAME_PREFIX = strutils::StringId("CAROUSEL_OPTION_");
+static const char* LOCKED_OPTION_TEXTURE_FILE_NAME = "locked_option_mm.bmp";
+static const strutils::StringId CAROUSEL_OPTION_NAME_PREFIX = strutils::StringId("CAROUSEL_OPTION_");
 
 static const float CAROUSEL_OBJECT_X_MULTIPLIER = 4.2f;
 static const float CAROUSEL_OBJECT_SCALE_CONSTANT_INCREMENT = 3.5f;
@@ -22,9 +23,10 @@ static const float CAROUSEL_ROTATION_SPEED = 0.006f;
 
 ///------------------------------------------------------------------------------------------------
 
-CarouselController::CarouselController(Scene& scene, const std::vector<resources::ResourceId>& carouselEntryTextures, std::function<void()> onCarouselMovementStartCallback /* = nullptr */, std::function<void()> onCarouselStationaryCallback /* = nullptr */, const float baseCarouselEntryZ /* = 2.0f */)
+CarouselController::CarouselController(Scene& scene, const std::vector<resources::ResourceId>& carouselEntryTextures, std::function<void()> onCarouselMovementStartCallback /* = nullptr */, std::function<void()> onCarouselStationaryCallback /* = nullptr */, const float baseCarouselEntryZ /* = 2.0f */, const std::unordered_set<size_t> lockedCarouselEntryIndices /* = {} */)
     : mScene(scene)
     , mCarouselEntries(carouselEntryTextures)
+    , mLockedCarouselEntryIndices(lockedCarouselEntryIndices)
     , mOnCarouselMovementStartCallback(onCarouselMovementStartCallback)
     , mOnCarouselStationaryCallback(onCarouselStationaryCallback)
     , mCarouselState(CarouselState::STATIONARY)
@@ -152,8 +154,10 @@ void CarouselController::CreateSceneObjects()
     
     for (int i = 0; i < static_cast<int>(mCarouselEntries.size()); ++i)
     {
+        bool isLocked = mLockedCarouselEntryIndices.count(i) != 0;
+        
         SceneObject optionEntrySo;
-        optionEntrySo.mAnimation = std::make_unique<SingleFrameAnimation>(mCarouselEntries.at(i), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::DARKENED_COLOR_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        optionEntrySo.mAnimation = std::make_unique<SingleFrameAnimationWithEffectTexture>(mCarouselEntries.at(i), isLocked ? resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + LOCKED_OPTION_TEXTURE_FILE_NAME) : mCarouselEntries.at(i), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::DARKENED_COLOR_SHADER_MULTITEXTURE_FILE_NAME), glm::vec3(1.0f), false);
         optionEntrySo.mSceneObjectType = SceneObjectType::WorldGameObject;
         optionEntrySo.mName = strutils::StringId(CAROUSEL_OPTION_NAME_PREFIX.GetString() + std::to_string(i));
         optionEntrySo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;

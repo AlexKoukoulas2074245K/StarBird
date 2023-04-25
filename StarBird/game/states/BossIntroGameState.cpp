@@ -71,9 +71,9 @@ void BossIntroGameState::VInitialize()
     
     // Player Health Bar Text
     SceneObject healthBarTextSo;
-    healthBarTextSo.mPosition = game_constants::BOSS_HEALTH_BAR_POSITION + game_constants::HEALTH_BAR_TEXT_OFFSET;
-    healthBarTextSo.mScale = game_constants::HEALTH_BAR_TEXT_SCALE;
-    healthBarTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), game_constants::HEALTH_BAR_TEXT_SCALE, false);
+    healthBarTextSo.mPosition = game_constants::BOSS_HEALTH_BAR_POSITION + game_constants::BAR_TEXT_OFFSET;
+    healthBarTextSo.mScale = game_constants::BAR_TEXT_SCALE;
+    healthBarTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), game_constants::BAR_TEXT_SCALE, false);
     healthBarTextSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
     healthBarTextSo.mSceneObjectType = SceneObjectType::GUIObject;
     healthBarTextSo.mName = game_constants::BOSS_HEALTH_BAR_TEXT_SCENE_OBJECT_NAME;

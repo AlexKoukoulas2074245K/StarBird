@@ -16,6 +16,7 @@
 #include "LevelUpdater.h"
 #include "PersistenceUtils.h"
 #include "PhysicsConstants.h"
+#include "ResearchUpdater.h"
 #include "SceneObjectUtils.h"
 #include "StatsUpgradeUpdater.h"
 #include "ObjectTypeDefinitionRepository.h"
@@ -347,6 +348,11 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
                 mSceneUpdater = std::make_unique<LabUpdater>(*this, mBox2dWorld);
             } break;
                 
+            case SceneType::RESEARCH:
+            {
+                mSceneUpdater = std::make_unique<ResearchUpdater>(*this);
+            } break;
+                
             case SceneType::STATS_UPGRADE:
             {
                 mSceneUpdater = std::make_unique<StatsUpgradeUpdater>(*this);
@@ -505,7 +511,7 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
             auto displayedHealthPercentage = GameSingletons::GetPlayerDisplayedHealth()/GameSingletons::GetPlayerMaxHealth();
             
             healthBarSo.mScale.x = game_constants::PLAYER_HEALTH_BAR_SCALE.x * displayedHealthPercentage;
-            healthBarSo.mPosition.x -= (1.0f - displayedHealthPercentage)/game_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_constants::PLAYER_HEALTH_BAR_SCALE.x;
+            healthBarSo.mPosition.x -= (1.0f - displayedHealthPercentage)/game_constants::BAR_POSITION_DIVISOR_MAGIC * game_constants::PLAYER_HEALTH_BAR_SCALE.x;
             
             if (healthPerc < displayedHealthPercentage)
             {
@@ -541,7 +547,7 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
         
         glm::vec2 botLeftRect, topRightRect;
         scene_object_utils::GetSceneObjectBoundingRect(healthBarTextSo, botLeftRect, topRightRect);
-        healthBarTextSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION + game_constants::HEALTH_BAR_TEXT_OFFSET;
+        healthBarTextSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION + game_constants::BAR_TEXT_OFFSET;
         
         healthBarTextSo.mPosition.x -= (math::Abs(botLeftRect.x - topRightRect.x)/2.0f);
     }
@@ -818,7 +824,7 @@ void Scene::CreateCrossSceneInterfaceObjects()
         AddSceneObject(std::move(crystalHolder));
     }
     
-    // Crystsal GUI icon
+    // Crystal GUI icon
     {
         SceneObject crystalIconSo;
         crystalIconSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, game_constants::GUI_CRYSTAL_ROTATION_SPEED, false);
@@ -847,9 +853,9 @@ void Scene::CreateCrossSceneInterfaceObjects()
     // Player Health Bar Text
     {
         SceneObject healthBarTextSo;
-        healthBarTextSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION + game_constants::HEALTH_BAR_TEXT_OFFSET;
-        healthBarTextSo.mScale = game_constants::HEALTH_BAR_TEXT_SCALE;
-        healthBarTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), game_constants::HEALTH_BAR_TEXT_SCALE, false);
+        healthBarTextSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION + game_constants::BAR_TEXT_OFFSET;
+        healthBarTextSo.mScale = game_constants::BAR_TEXT_SCALE;
+        healthBarTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), game_constants::BAR_TEXT_SCALE, false);
         healthBarTextSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
         healthBarTextSo.mSceneObjectType = SceneObjectType::GUIObject;
         healthBarTextSo.mName = game_constants::PLAYER_HEALTH_BAR_TEXT_SCENE_OBJECT_NAME;

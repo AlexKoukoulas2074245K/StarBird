@@ -26,8 +26,9 @@ inline const char* QUAD_MESH_FILE_NAME = "quad.obj";
 inline const char* SMALL_CRYSTAL_MESH_FILE_NAME = "crystals/crystal_0.obj";
 
 inline const char* BASIC_SHADER_FILE_NAME = "basic.vs";
+inline const char* MULTITEXTURE_SHADER_FILE_NAME = "multitexture.vs";
 inline const char* HUE_SHIFT_SHADER_FILE_NAME = "hue_shift.vs";
-inline const char* DARKENED_COLOR_SHADER_FILE_NAME = "darkened_color.vs";
+inline const char* DARKENED_COLOR_SHADER_MULTITEXTURE_FILE_NAME = "darkened_color_multitexture.vs";
 inline const char* DISSOLVE_SHADER_FILE_NAME = "dissolve.vs";
 inline const char* SHINE_SHADER_FILE_NAME = "shine.vs";
 inline const char* NEBULA_SHADER_FILE_NAME = "nebula.vs";
@@ -100,6 +101,7 @@ inline const strutils::StringId DEBUG_BACK_TO_GAME_SCENE_OBJECT_NAME = strutils:
 inline const strutils::StringId GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME = strutils::StringId("CRYSTAL_ICON");
 inline const strutils::StringId GUI_CRYSTAL_COUNT_SCENE_OBJECT_NAME = strutils::StringId("CRYSTAL_COUNT");
 
+inline const strutils::StringId MULTITEXTURE_ALPHA_UNIFORM_NAME = strutils::StringId("multitexture_alpha");
 inline const strutils::StringId TEXTURE_OFFSET_X_UNIFORM_NAME = strutils::StringId("tex_offset_x");
 inline const strutils::StringId TEXTURE_OFFSET_Y_UNIFORM_NAME = strutils::StringId("tex_offset_y");
 inline const strutils::StringId GENERIC_TEXTURE_OFFSET_UNIFORM_NAME = strutils::StringId("tex_offset");
@@ -163,7 +165,7 @@ inline const float HEALTH_LOST_SPEED = 0.0007f;
 inline const float DROPPED_CRYSTALS_CREATION_STAGGER_MILLIS = 25.0f;
 inline const float CRYSTAL_COUNT_CHANGE_SPEED = 0.07f;
 inline const float BOSS_INTRO_ANIMATED_HEALTH_SPEED = 0.05f;
-inline const float HEALTH_BAR_POSITION_DIVISOR_MAGIC = 2.15f;
+inline const float BAR_POSITION_DIVISOR_MAGIC = 2.15f;
 
 inline const float FULL_SCREEN_OVERLAY_TRANSITION_DARKENING_SPEED = 1.0f/800.0f;
 inline const float FULL_SCREEN_OVERLAY_TRANSITION_MAX_ALPHA = 1.0f;
@@ -181,8 +183,8 @@ inline const float TEXT_FADE_IN_ALPHA_SPEED = 0.002f;
 
 inline const float BACKGROUND_SPEED = 1.0f/4000.0f;
 
-inline const glm::vec3 HEALTH_BAR_TEXT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
-inline const glm::vec3 HEALTH_BAR_TEXT_OFFSET = glm::vec3(0.0f, -0.2f, 0.5f);
+inline const glm::vec3 BAR_TEXT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
+inline const glm::vec3 BAR_TEXT_OFFSET = glm::vec3(0.0f, -0.2f, 0.5f);
 
 inline const glm::vec3 PLAYER_HEALTH_BAR_POSITION = glm::vec3(0.0f, -12.0f, 0.5f);
 inline const glm::vec3 PLAYER_HEALTH_BAR_SCALE = glm::vec3(5.0f, 1.2f, 1.0f);

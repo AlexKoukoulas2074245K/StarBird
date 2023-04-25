@@ -16,6 +16,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -24,7 +25,7 @@ class SceneObject;
 class CarouselController final
 {
 public:
-    CarouselController(Scene& scene, const std::vector<resources::ResourceId>& carouselEntryTextures, std::function<void()> onCarouselMovementStartCallback = nullptr, std::function<void()> onCarouselStationaryCallback = nullptr, const float baseCarouselEntryZ = 2.0f);
+    CarouselController(Scene& scene, const std::vector<resources::ResourceId>& carouselEntryTextures, std::function<void()> onCarouselMovementStartCallback = nullptr, std::function<void()> onCarouselStationaryCallback = nullptr, const float baseCarouselEntryZ = 2.0f, const std::unordered_set<size_t> lockedCarouselEntryIndices = {});
     
     void Update(const float dtMillis);
     std::optional<std::reference_wrapper<SceneObject>> GetSelectedSceneObject() const;
@@ -44,6 +45,7 @@ private:
 private:
     Scene& mScene;
     std::vector<resources::ResourceId> mCarouselEntries;
+    std::unordered_set<size_t> mLockedCarouselEntryIndices;
     std::function<void()> mOnCarouselMovementStartCallback;
     std::function<void()> mOnCarouselStationaryCallback;
     CarouselState mCarouselState;

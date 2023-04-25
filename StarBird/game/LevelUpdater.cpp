@@ -1009,7 +1009,7 @@ void LevelUpdater::UpdateBossHealthBar(const float dtMillis)
             double healthPerc = GameSingletons::GetBossCurrentHealth()/GameSingletons::GetBossMaxHealth();
             
             healthBarSo.mScale.x = game_constants::BOSS_HEALTH_BAR_SCALE.x * mBossAnimatedHealthBarPerc;
-            healthBarSo.mPosition.x -= (1.0f - mBossAnimatedHealthBarPerc)/game_constants::HEALTH_BAR_POSITION_DIVISOR_MAGIC * game_constants::BOSS_HEALTH_BAR_SCALE.x;
+            healthBarSo.mPosition.x -= (1.0f - mBossAnimatedHealthBarPerc)/game_constants::BAR_POSITION_DIVISOR_MAGIC * game_constants::BOSS_HEALTH_BAR_SCALE.x;
             
             if (healthPerc < mBossAnimatedHealthBarPerc)
             {
@@ -1031,7 +1031,7 @@ void LevelUpdater::UpdateBossHealthBar(const float dtMillis)
             healthBarTextSo.mText = std::to_string(static_cast<int>(mBossAnimatedHealthBarPerc * GameSingletons::GetBossMaxHealth()));
             glm::vec2 botLeftRect, topRightRect;
             scene_object_utils::GetSceneObjectBoundingRect(healthBarTextSo, botLeftRect, topRightRect);
-            healthBarTextSo.mPosition = game_constants::BOSS_HEALTH_BAR_POSITION + game_constants::HEALTH_BAR_TEXT_OFFSET;
+            healthBarTextSo.mPosition = game_constants::BOSS_HEALTH_BAR_POSITION + game_constants::BAR_TEXT_OFFSET;
             healthBarTextSo.mPosition.x -= (math::Abs(botLeftRect.x - topRightRect.x)/2.0f);
         }
     }
