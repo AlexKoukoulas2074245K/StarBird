@@ -44,7 +44,7 @@ const std::unordered_map<KathunBossAI::State, float> KathunBossAI::MIN_HEALTH_PE
 static const float KATHUN_SET_Y = 7.0f;
 static const std::string KATHUN_ABILITY_FLOW_NAME_POST_FIX = "_ABILITY_FLOW";
 static const strutils::StringId KATHUN_BODY_NAME = strutils::StringId("enemies/boss_1/body");
-static const strutils::StringId KATHUN_SLOW_CHASER_ENEMY_TYPE = strutils::StringId("enemies/test_enemy_chasing");
+static const strutils::StringId KATHUN_SLOW_CHASER_ENEMY_TYPE = strutils::StringId("enemies/medium_enemy_chasing");
 static const strutils::StringId KATHUN_FAST_CHASER_ENEMY_TYPE = strutils::StringId("enemies/small_enemy_chasing");
 static const strutils::StringId KATHUN_BULLET_TYPE = strutils::StringId("enemies/boss_1/bullet");
 

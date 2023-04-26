@@ -12,6 +12,7 @@
 #include "GameSingletons.h"
 #include "PersistenceUtils.h"
 
+#include "dataloaders/UpgradesLoader.h"
 #include "dataloaders/BaseGameDataLoader.h"
 #include "datarepos/ObjectTypeDefinitionRepository.h"
 
@@ -204,6 +205,9 @@ void GenerateNewProgressSaveFile()
     auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
     typeDefRepo.LoadObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);
     auto& playerDef = typeDefRepo.GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
+    
+    UpgradesLoader loader;
+    GameSingletons::SetAvailableUpgrades(loader.LoadAllUpgrades());
     
     GameSingletons::GetEquippedUpgrades().clear();
     GameSingletons::SetMapGenerationSeed(math::RandomInt());

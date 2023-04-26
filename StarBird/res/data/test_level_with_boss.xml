@@ -4,9 +4,9 @@
     <Camera type="gui_cam" lenseHeight="30.0f"/>
     
     <Wave>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 0.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 0.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
     </Wave>
 
     <Wave bossName="Ka'thun" bossHealth="5000.0f">
@@ -21,45 +21,45 @@
     
     <!--
     <Wave>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
     </Wave>
     
     <Wave>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
     </Wave>
     
     <Wave bossName="Ka'thun" bossHealth="10000.0f">
@@ -73,189 +73,189 @@
     </Wave>
     
     <Wave>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
     </Wave>
     
     <Wave>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position="-1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 1.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 3.0f, 20.0f" type="enemies/test_enemy_chasing"/>
-        <Enemy position=" 5.0f, 20.0f" type="enemies/test_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 3.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
+        <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
     </Wave>
     
     <Wave>
