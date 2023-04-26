@@ -765,7 +765,7 @@ void Scene::SetSceneEditResultMessage(const glm::vec3& position, const glm::vec3
         textSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(textSo.mScale), false);
         textSo.mName = SCENE_EDIT_RESULT_TEXT_NAME_2;
         textSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
-        textSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+        textSo.mSceneObjectType = SceneObjectType::GUIObject;
         textSo.mText = positionString.str();
         AddSceneObject(std::move(textSo));
     }

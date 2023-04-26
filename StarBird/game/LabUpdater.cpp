@@ -35,7 +35,7 @@ static const std::unordered_map<game_constants::LabOptionType, std::string> LAB_
 {
     { game_constants::LabOptionType::REPAIR, "REPAIR:\n Fully repairs the vessel to factory state standards." },
     { game_constants::LabOptionType::STATS_UPGRADE, "STATS UPGRADE:\n Uses a small amount of crystals to upgrade individual vessel parts." },
-    { game_constants::LabOptionType::RESEARCH, "RESEARCH:\n Consumes a large amount of crystals to unlock powerful end-of-map upgrades for the vessel." }
+    { game_constants::LabOptionType::RESEARCH, "RESEARCH:\n Consumes the maximum amount of crystals possible to unlock powerful end-of-map upgrades for the vessel." }
 };
 
 static const strutils::StringId CONFIRMATION_BUTTON_NAME = strutils::StringId("CONFIRMATION_BUTTON");
@@ -47,19 +47,21 @@ static const char* TEXT_PROMPT_TEXTURE_FILE_NAME = "text_prompt_mm.bmp";
 static const glm::vec3 LAB_BACKGROUND_POS = glm::vec3(-1.8f, 0.0f, -1.0f);
 static const glm::vec3 LAB_BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
 
-static const glm::vec3 LAB_CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -8.0f, 0.0f);
-static const glm::vec3 LAB_CONFIRMATION_BUTTON_SCALE = glm::vec3(3.5f, 3.5f, 0.0f);
+static const glm::vec3 CONFIRMATION_BUTTON_POSITION = glm::vec3(0.0f, -8.0f, 0.0f);
+static const glm::vec3 CONFIRMATION_BUTTON_SCALE = glm::vec3(3.5f, 3.5f, 0.0f);
 
 static const glm::vec3 LAB_REJECTION_TEXT_POSITION = glm::vec3(-3.5f, -6.4f, 0.5f);
-static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-0.8f, -8.3f, 0.5f);
-static const glm::vec3 LAB_CONFIRMATION_BUTTON_TEXT_SCALE = glm::vec3(0.007f, 0.007f, 1.0f);
+static const glm::vec3 CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-0.8f, -8.3f, 0.5f);
+static const glm::vec3 CONFIRMATION_BUTTON_TEXT_SCALE = glm::vec3(0.007f, 0.007f, 1.0f);
 
 static const glm::vec3 TEXT_PROMPT_POSITION = glm::vec3(0.0f, 7.2f, 0.5f);
 static const glm::vec3 TEXT_PROMPT_SCALE = glm::vec3(12.0f, 10.0f, 1.0f);
 
-static const float LAB_ARROW_PULSING_SPEED = 0.01f;
-static const float LAB_ARROW_PULSING_ENLARGEMENT_FACTOR = 1.0f/100.0f;
-static const float LAB_CONFIRMATION_BUTTON_ROTATION_SPEED = 0.0002f;
+static const float CONFIRMATION_BUTTON_ROTATION_SPEED = 0.0002f;
+
+static const float CONFIRMATION_BUTTON_PULSING_SPEED = 0.02f;
+static const float CONFIRMATION_BUTTON_PULSING_ENLARGEMENT_FACTOR = 1.0f/10.0f;
+static const float CONFIRMATION_BUTTON_TEXT_PULSING_ENLARGEMENT_FACTOR = 1.0f/4000.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -358,7 +360,7 @@ void LabUpdater::OnCarouselStationary()
         // Confirmation button text
         SceneObject rejectionTextSo;
         rejectionTextSo.mPosition = LAB_REJECTION_TEXT_POSITION;
-        rejectionTextSo.mScale = LAB_CONFIRMATION_BUTTON_TEXT_SCALE;
+        rejectionTextSo.mScale = CONFIRMATION_BUTTON_TEXT_SCALE;
         rejectionTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         rejectionTextSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
         rejectionTextSo.mSceneObjectType = SceneObjectType::WorldGameObject;
@@ -371,9 +373,9 @@ void LabUpdater::OnCarouselStationary()
     {
         // Recreate confirmation button
         SceneObject confirmationButtonSo;
-        confirmationButtonSo.mPosition = LAB_CONFIRMATION_BUTTON_POSITION;
-        confirmationButtonSo.mScale = LAB_CONFIRMATION_BUTTON_SCALE;
-        confirmationButtonSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + CONFIRMATION_BUTTON_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Z, 0.0f, LAB_CONFIRMATION_BUTTON_ROTATION_SPEED, false);
+        confirmationButtonSo.mPosition = CONFIRMATION_BUTTON_POSITION;
+        confirmationButtonSo.mScale = CONFIRMATION_BUTTON_SCALE;
+        confirmationButtonSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + CONFIRMATION_BUTTON_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Z, 0.0f, CONFIRMATION_BUTTON_ROTATION_SPEED, false);
         confirmationButtonSo.mSceneObjectType = SceneObjectType::WorldGameObject;
         confirmationButtonSo.mName = CONFIRMATION_BUTTON_NAME;
         confirmationButtonSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
@@ -382,8 +384,8 @@ void LabUpdater::OnCarouselStationary()
         
         // Confirmation button text
         SceneObject confirmationButtonTextSo;
-        confirmationButtonTextSo.mPosition = LAB_CONFIRMATION_BUTTON_TEXT_POSITION;
-        confirmationButtonTextSo.mScale = LAB_CONFIRMATION_BUTTON_TEXT_SCALE;
+        confirmationButtonTextSo.mPosition = CONFIRMATION_BUTTON_TEXT_POSITION;
+        confirmationButtonTextSo.mScale = CONFIRMATION_BUTTON_TEXT_SCALE;
         confirmationButtonTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         confirmationButtonTextSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
         confirmationButtonTextSo.mSceneObjectType = SceneObjectType::WorldGameObject;
@@ -410,19 +412,19 @@ void LabUpdater::OnConfirmationButtonPressed()
     if (confirmationButtonSoOpt)
     {
         auto& confirmationButtonSo = confirmationButtonSoOpt->get();
-        confirmationButtonSo.mScale = LAB_CONFIRMATION_BUTTON_SCALE;
+        confirmationButtonSo.mScale = CONFIRMATION_BUTTON_SCALE;
         
         confirmationButtonSo.mExtraCompoundingAnimations.clear();
-        confirmationButtonSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(confirmationButtonSo.mAnimation->VGetCurrentTextureResourceId(), confirmationButtonSo.mAnimation->VGetCurrentMeshResourceId(), confirmationButtonSo.mAnimation->VGetCurrentShaderResourceId(), LAB_CONFIRMATION_BUTTON_SCALE, PulsingAnimation::PulsingMode::INNER_PULSE_ONCE, 0.0f, LAB_ARROW_PULSING_SPEED * 2, LAB_ARROW_PULSING_ENLARGEMENT_FACTOR * 10, false));
+        confirmationButtonSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(confirmationButtonSo.mAnimation->VGetCurrentTextureResourceId(), confirmationButtonSo.mAnimation->VGetCurrentMeshResourceId(), confirmationButtonSo.mAnimation->VGetCurrentShaderResourceId(), CONFIRMATION_BUTTON_SCALE, PulsingAnimation::PulsingMode::INNER_PULSE_ONCE, 0.0f, CONFIRMATION_BUTTON_PULSING_SPEED, CONFIRMATION_BUTTON_PULSING_ENLARGEMENT_FACTOR, false));
     }
     
     if (confirmationButtonTexSoOpt)
     {
         auto& confirmationButtonTextSo = confirmationButtonTexSoOpt->get();
-        confirmationButtonTextSo.mScale = LAB_CONFIRMATION_BUTTON_TEXT_SCALE;
+        confirmationButtonTextSo.mScale = CONFIRMATION_BUTTON_TEXT_SCALE;
         
         confirmationButtonTextSo.mExtraCompoundingAnimations.clear();
-        confirmationButtonTextSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(confirmationButtonTextSo.mAnimation->VGetCurrentTextureResourceId(), confirmationButtonTextSo.mAnimation->VGetCurrentMeshResourceId(), confirmationButtonTextSo.mAnimation->VGetCurrentShaderResourceId(), LAB_CONFIRMATION_BUTTON_TEXT_SCALE, PulsingAnimation::PulsingMode::INNER_PULSE_ONCE, 0.0f, LAB_ARROW_PULSING_SPEED * 2, LAB_ARROW_PULSING_ENLARGEMENT_FACTOR / 40, false));
+        confirmationButtonTextSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(confirmationButtonTextSo.mAnimation->VGetCurrentTextureResourceId(), confirmationButtonTextSo.mAnimation->VGetCurrentMeshResourceId(), confirmationButtonTextSo.mAnimation->VGetCurrentShaderResourceId(), CONFIRMATION_BUTTON_TEXT_SCALE, PulsingAnimation::PulsingMode::INNER_PULSE_ONCE, 0.0f, CONFIRMATION_BUTTON_PULSING_SPEED, CONFIRMATION_BUTTON_TEXT_PULSING_ENLARGEMENT_FACTOR, false));
     }
 }
 

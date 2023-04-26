@@ -40,6 +40,8 @@ inline const char* CUSTOM_COLOR_SHADER_FILE_NAME = "custom_color.vs";
 inline const char* GRAYSCALE_SHADER_FILE_NAME = "grayscale.vs";
 inline const char* DEBUG_CONSOLE_FONT_SHADER_FILE_NAME = "debug_console_font.vs";
 
+static const char* MAP_PLANET_MESH_FILE_NAME = "planet.obj";
+static const char* MAP_PLANET_RING_MESH_FILE_NAME = "planet_ring.obj";
 inline const char* DEFAULT_BACKGROUND_TEXTURE_FILE_NAME = "backgrounds/bg/0.bmp";
 inline const char* BACKGROUND_TEXTURE_FILE_PATH = "backgrounds/bg/";
 inline const char* UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME = "shine_effect_fxx.bmp";
@@ -185,6 +187,14 @@ inline const float TEXT_FADE_IN_ALPHA_SPEED = 0.002f;
 
 inline const float BACKGROUND_SPEED = 1.0f/4000.0f;
 
+inline const float MAP_STAR_PATH_PULSING_DELAY_MILLIS = 100.0f;
+inline const float MAP_STAR_PATH_PULSING_SPEED = 0.01f;
+inline const float MAP_STAR_PATH_PULSING_ENLARGEMENT_FACTOR = 1.0f/100.0f;
+
+static const float MAP_NODE_ROTATION_SPEED = 0.0002f;
+static const float MAP_NODE_PULSING_SPEED = 0.005f;
+static const float MAP_NODE_PULSING_ENLARGEMENT_FACTOR = 1.0f/200.0f;
+
 inline const glm::vec3 BAR_TEXT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
 inline const glm::vec3 BAR_TEXT_OFFSET = glm::vec3(0.0f, -0.2f, 0.5f);
 
@@ -207,6 +217,8 @@ inline const glm::vec2 MAP_MIN_WORLD_BOUNDS = glm::vec2(-17.0f, -13.0f);
 
 inline const glm::vec3 GUI_CRYSTAL_POSITION = glm::vec3(-4.2f, -10.2f, 2.5f);
 inline const glm::vec3 GUI_CRYSTAL_SCALE = glm::vec3(0.6f, 0.6f, 0.6f);
+
+inline const glm::vec3 MAP_STAR_PATH_SCALE = glm::vec3(0.3f, 0.3f, 1.0f);
 
 enum class LabOptionType
 {

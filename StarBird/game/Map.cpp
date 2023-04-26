@@ -20,25 +20,18 @@
 
 ///------------------------------------------------------------------------------------------------
 
-static const char* MAP_PLANET_MESH_FILE_NAME = "planet.obj";
-static const char* MAP_PLANET_RING_MESH_FILE_NAME = "planet_ring.obj";
 static const char* MAP_LAB_MESH_FILE_NAME = "base.obj";
+static const char* MAP_PATH_NAME_SUFFIX = "_PATH";
 
 static const glm::vec3 MAP_NEBULA_NODE_SCALE = glm::vec3(3.0f, 3.0f, 1.0f);
-static const glm::vec3 MAP_STAR_PATH_SCALE = glm::vec3(0.3f, 0.3f, 1.0f);
 static const glm::vec3 MAP_LAB_SCALE = glm::vec3(0.9, 0.5f, 0.9f);
 
 static const float MAP_BASE_X_ROTATION = 0.6f;
-static const float MAP_STAR_PATH_PULSING_DELAY_MILLIS = 100.0f;
-static const float MAP_STAR_PATH_PULSING_SPEED = 0.01f;
-static const float MAP_STAR_PATH_PULSING_ENLARGEMENT_FACTOR = 1.0f/100.0f;
 static const float MAP_PLANET_RING_MIN_X_ROTATION = 1.8f;
 static const float MAP_PLANET_RING_MAX_X_ROTATION = 2.2f;
 static const float MAP_PLANET_RING_MIN_Y_ROTATION = -math::PI/10;
 static const float MAP_PLANET_RING_MAX_Y_ROTATION = +math::PI/10;
-static const float MAP_NODE_ROTATION_SPEED = 0.0002f;
-static const float MAP_NODE_PULSING_SPEED = 0.005f;
-static const float MAP_NODE_PULSING_ENLARGEMENT_FACTOR = 1.0f/200.0f;
+
 static const float LEVEL_FIRST_WAVE_Y = 20.0f;
 static const float LEVEL_WAVE_Y_INCREMENT = 2.0f;
 
@@ -139,7 +132,7 @@ void Map::CreateMapSceneObjects()
                 SceneObject planetRingSO;
                 
                 auto shaderNameToUse = mapNodeEntry.first.mCol <= mCurrentMapCoord.mCol ? game_constants::GRAYSCALE_SHADER_FILE_NAME : game_constants::BASIC_SHADER_FILE_NAME;
-                planetRingSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_RING_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_PLANET_RING_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + shaderNameToUse), glm::vec3(1.0f), false);
+                planetRingSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_RING_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::MAP_PLANET_RING_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + shaderNameToUse), glm::vec3(1.0f), false);
                 planetRingSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
                 planetRingSO.mSceneObjectType = SceneObjectType::WorldGameObject;
                 planetRingSO.mScale = glm::vec3(1.0f);
@@ -151,7 +144,7 @@ void Map::CreateMapSceneObjects()
                 // Add also pulsing animation if node is active
                 if (mMapData.at(mCurrentMapCoord).mNodeLinks.contains(mapNodeEntry.first))
                 {
-                    planetRingSO.mExtraCompoundingAnimations.push_back( std::make_unique<PulsingAnimation>(planetRingSO.mAnimation->VGetCurrentTextureResourceId(), planetRingSO.mAnimation->VGetCurrentMeshResourceId(), planetRingSO.mAnimation->VGetCurrentShaderResourceId(), planetRingSO.mAnimation->VGetScale(),  PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, MAP_NODE_PULSING_SPEED, MAP_NODE_PULSING_ENLARGEMENT_FACTOR, false));
+                    planetRingSO.mExtraCompoundingAnimations.push_back( std::make_unique<PulsingAnimation>(planetRingSO.mAnimation->VGetCurrentTextureResourceId(), planetRingSO.mAnimation->VGetCurrentMeshResourceId(), planetRingSO.mAnimation->VGetCurrentShaderResourceId(), planetRingSO.mAnimation->VGetScale(),  PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, game_constants::MAP_NODE_PULSING_SPEED, game_constants::MAP_NODE_PULSING_ENLARGEMENT_FACTOR, false));
                 }
                 
                 mScene.AddSceneObject(std::move(planetRingSO));
@@ -160,7 +153,7 @@ void Map::CreateMapSceneObjects()
             {
                 bool shouldRotate = mapNodeEntry.first.mCol > mCurrentMapCoord.mCol;
                 
-                nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_PLANET_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + (shouldRotate ? game_constants::HUE_SHIFT_SHADER_FILE_NAME : game_constants::GRAYSCALE_SHADER_FILE_NAME)), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f,  shouldRotate ? MAP_NODE_ROTATION_SPEED : 0.0f, false);
+                nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_PLANET_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::MAP_PLANET_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + (shouldRotate ? game_constants::HUE_SHIFT_SHADER_FILE_NAME : game_constants::GRAYSCALE_SHADER_FILE_NAME)), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f,  shouldRotate ? game_constants::MAP_NODE_ROTATION_SPEED : 0.0f, false);
                 
                 nodeSo.mShaderFloatUniformValues[game_constants::HUE_SHIFT_UNIFORM_NAME] = math::ControlledRandomFloat(0, 2.0f * math::PI);
                 nodeSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
@@ -170,7 +163,7 @@ void Map::CreateMapSceneObjects()
             {
                 bool shouldRotate = mapNodeEntry.first.mCol > mCurrentMapCoord.mCol;
                 
-                nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_BASE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_LAB_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + (shouldRotate ? game_constants::BASIC_SHADER_FILE_NAME : game_constants::GRAYSCALE_SHADER_FILE_NAME)), MAP_LAB_SCALE, RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, shouldRotate ? MAP_NODE_ROTATION_SPEED : 0.0f, false);
+                nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_BASE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_LAB_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + (shouldRotate ? game_constants::BASIC_SHADER_FILE_NAME : game_constants::GRAYSCALE_SHADER_FILE_NAME)), MAP_LAB_SCALE, RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, shouldRotate ? game_constants::MAP_NODE_ROTATION_SPEED : 0.0f, false);
                 nodeSo.mRotation.x = MAP_BASE_X_ROTATION;
                 nodeSo.mScale = MAP_LAB_SCALE;
             } break;
@@ -194,7 +187,7 @@ void Map::CreateMapSceneObjects()
         // Add also pulsing animation if node is active
         if (mMapData.at(mCurrentMapCoord).mNodeLinks.contains(mapNodeEntry.first))
         {
-            nodeSo.mExtraCompoundingAnimations.push_back( std::make_unique<PulsingAnimation>(nodeSo.mAnimation->VGetCurrentTextureResourceId(), nodeSo.mAnimation->VGetCurrentMeshResourceId(), nodeSo.mAnimation->VGetCurrentShaderResourceId(), nodeSo.mAnimation->VGetScale(),  PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, MAP_NODE_PULSING_SPEED, MAP_NODE_PULSING_ENLARGEMENT_FACTOR, false));
+            nodeSo.mExtraCompoundingAnimations.push_back( std::make_unique<PulsingAnimation>(nodeSo.mAnimation->VGetCurrentTextureResourceId(), nodeSo.mAnimation->VGetCurrentMeshResourceId(), nodeSo.mAnimation->VGetCurrentShaderResourceId(), nodeSo.mAnimation->VGetScale(),  PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, game_constants::MAP_NODE_PULSING_SPEED, game_constants::MAP_NODE_PULSING_ENLARGEMENT_FACTOR, false));
         }
         
         mScene.AddSceneObject(std::move(nodeSo));
@@ -213,19 +206,18 @@ void Map::CreateMapSceneObjects()
                 
                 if (mapNodeEntry.first == mCurrentMapCoord)
                 {
-                    pathSO.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_STAR_PATH_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), MAP_STAR_PATH_SCALE,  PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, MAP_STAR_PATH_PULSING_DELAY_MILLIS * i, MAP_STAR_PATH_PULSING_SPEED, MAP_STAR_PATH_PULSING_ENLARGEMENT_FACTOR, false);
+                    pathSO.mAnimation = std::make_unique<PulsingAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_STAR_PATH_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), game_constants::MAP_STAR_PATH_SCALE,  PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, game_constants::MAP_STAR_PATH_PULSING_DELAY_MILLIS * i, game_constants::MAP_STAR_PATH_PULSING_SPEED, game_constants::MAP_STAR_PATH_PULSING_ENLARGEMENT_FACTOR, false);
                 }
                 else
                 {
-                    pathSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_STAR_PATH_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME), pathSO.mScale, false);
-                    
-                    pathSO.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = glm::vec4(0.5f, 0.5f, 0.5f, 0.8f);
+                    pathSO.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_STAR_PATH_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::GRAYSCALE_SHADER_FILE_NAME), pathSO.mScale, false);
                 }
                 
                 
                 pathSO.mSceneObjectType = SceneObjectType::WorldGameObject;
                 pathSO.mPosition = mMapData.at(mapNodeEntry.first).mPosition + dirToNext * (i/static_cast<float>(pathSegments));
-                pathSO.mScale = MAP_STAR_PATH_SCALE;
+                pathSO.mScale = game_constants::MAP_STAR_PATH_SCALE;
+                pathSO.mName = strutils::StringId(linkedCoord.ToString() + "_" + std::to_string(i) + MAP_PATH_NAME_SUFFIX);
                 pathSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
                 mScene.AddSceneObject(std::move(pathSO));
             }

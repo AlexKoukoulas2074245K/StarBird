@@ -38,13 +38,18 @@ public:
 #endif
 
 private:
-    bool SelectedActiveLevel(const glm::vec3& touchPos);
+    bool CheckForActiveLevelSelection(const glm::vec3& touchPos);
+    void OnLevelSelection();
+    void OnLevelDeselection();
+    void OnConfirmationButtonPressed();
     
 private:
     Scene& mScene;
     StateMachine mStateMachine;
-    Map mMap;    
+    Map mMap;
+    MapCoord mCurrentMapCoord;
     MapCoord mSelectedMapCoord;
+    Uint32 mLastInputContextEventType;
     bool mTransitioning;
 };
 
