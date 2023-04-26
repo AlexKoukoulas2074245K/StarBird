@@ -82,7 +82,7 @@ Scene::~Scene()
 
 std::string Scene::GetSceneStateDescription() const
 {
-    return "SOs: " + std::to_string(mSceneObjects.size()) + " bodies: " + std::to_string(mBox2dWorld.GetBodyCount()) + " enemies: " + (mSceneUpdater ? mSceneUpdater->VGetDescription() : "");
+    return "SOs: " + std::to_string(mSceneObjects.size()) + " bodies: " + std::to_string(mBox2dWorld.GetBodyCount()) + " scene description: " + (mSceneUpdater ? mSceneUpdater->VGetDescription() : "");
 }
 
 ///------------------------------------------------------------------------------------------------

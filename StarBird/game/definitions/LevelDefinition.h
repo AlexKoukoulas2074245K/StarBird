@@ -39,6 +39,8 @@ struct LevelWave
 {
     strutils::StringId mBossName = strutils::StringId();
     float mBossHealth = 0.0f;
+    int mDebugBlockIndex = 0;
+    int mDebugDifficultyValue = 0;
     std::vector<LevelEnemy> mEnemies;
 };
 

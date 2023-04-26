@@ -470,7 +470,14 @@ PostStateUpdateDirective LevelUpdater::VUpdate(std::vector<SceneObject>& sceneOb
 
 std::string LevelUpdater::VGetDescription() const
 {
-    return std::to_string(GetWaveEnemyCount());
+    std::string description = "enemies=" + std::to_string(GetWaveEnemyCount());
+    if (mCurrentWaveNumber < mLevel.mWaves.size())
+    {
+        description += " blockIndex=" + std::to_string(mLevel.mWaves[mCurrentWaveNumber].mDebugBlockIndex);
+        description += " difficulty=" + std::to_string(mLevel.mWaves[mCurrentWaveNumber].mDebugDifficultyValue);
+    }
+    
+    return description;
 }
 
 ///------------------------------------------------------------------------------------------------

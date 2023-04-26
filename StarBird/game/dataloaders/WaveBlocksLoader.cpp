@@ -38,6 +38,11 @@ WaveBlocksLoader::WaveBlocksLoader()
         {
             mWaveBlocks.back().mInflexible = strcmp(node->first_attribute("inflexible")->value(), "true") == 0;
         }
+        
+        if (node->first_attribute("extensible"))
+        {
+            mWaveBlocks.back().mExtensible = strcmp(node->first_attribute("extensible")->value(), "true") == 0;
+        }
     });
     
     BaseGameDataLoader::SetCallbackForNode(strutils::StringId("WaveBlockLine"), [&](const void* n)

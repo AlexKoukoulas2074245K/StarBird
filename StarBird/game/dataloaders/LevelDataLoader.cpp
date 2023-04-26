@@ -50,6 +50,15 @@ LevelDataLoader::LevelDataLoader()
             mConstructedLevel.mWaves.back().mBossHealth = std::stof(node->first_attribute("bossHealth")->value());
         }
         
+        if (node->first_attribute("blockIndex"))
+        {
+            mConstructedLevel.mWaves.back().mDebugBlockIndex = std::stoi(node->first_attribute("blockIndex")->value());
+        }
+        
+        if (node->first_attribute("difficulty"))
+        {
+            mConstructedLevel.mWaves.back().mDebugDifficultyValue = std::stoi(node->first_attribute("difficulty")->value());
+        }
     });
     
     BaseGameDataLoader::SetCallbackForNode(strutils::StringId("Enemy"), [&](const void* n)

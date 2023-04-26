@@ -295,11 +295,14 @@ void Map::GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData)
     for (int j = 0; j < waveCount; ++j)
     {
         levelXml << "\n    <Wave";
-        auto selectedBlock = eligibleBlocks.at(math::ControlledRandomInt(0, static_cast<int>(eligibleBlocks.size()) - 1));
-        if (selectedBlock.mInflexible == false)
+        auto selectedBlockIndex = math::ControlledRandomInt(0, static_cast<int>(eligibleBlocks.size()) - 1);
+        auto selectedBlock = eligibleBlocks.at(selectedBlockIndex);
+        if (selectedBlock.mExtensible)
         {
-            AdjustWaveBlockForDifficulty(difficultyValue, selectedBlock);
+            ExtendWaveBlockForDifficulty(difficultyValue, selectedBlock);
         }
+        
+        levelXml << " blockIndex=\"" << std::to_string(selectedBlockIndex) << "\" difficulty=\"" << std::to_string(difficultyValue) << "\"";
         
         if (nodeData.mNodeType == NodeType::BOSS_ENCOUNTER && j == waveCount - 1)
         {
@@ -330,7 +333,7 @@ void Map::GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData)
 
 ///------------------------------------------------------------------------------------------------
 
-void Map::AdjustWaveBlockForDifficulty(const int difficulty, WaveBlockDefinition& waveBlock) const
+void Map::ExtendWaveBlockForDifficulty(const int difficulty, WaveBlockDefinition& waveBlock) const
 {
     if (difficulty == waveBlock.mDifficulty) return;
     

@@ -39,6 +39,7 @@ struct WaveBlockDefinition
     float mBossHealth = 0.0f;
     int mDifficulty = 0;
     bool mInflexible = true;
+    bool mExtensible = false;
 };
 
 ///------------------------------------------------------------------------------------------------
