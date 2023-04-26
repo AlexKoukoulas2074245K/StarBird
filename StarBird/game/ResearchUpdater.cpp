@@ -67,6 +67,9 @@ static const float NAVIGATION_ARROW_PULSING_ENLARGEMENT_FACTOR = 1.0f/100.0f;
 static const float DROPPED_CRYSTAL_SPEED = 0.0006f;
 static const float DROPPED_CRYSTAL_DISTANCE_FACTOR = 24.0f;
 static const float DROPPED_CRYSTAL_SECOND_CONTROL_POINT_NOISE_MAG = 2.0f;
+static const float UNLOCKED_UPGRADE_SHAKE_SPEED_RAMP = 0.002f;
+static const float UNLOCKED_UPGRADE_MAX_SHAKE_MAGNITUDE = 10.0f;
+static const float UNLOCKED_UPGRADE_SHINE_SPEED = 1.0f/200.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -178,9 +181,39 @@ PostStateUpdateDirective ResearchUpdater::VUpdate(std::vector<SceneObject>& scen
             
         case OptionSelectionState::UNLOCK_SHAKE:
         {
-            
+            mOptionShakeMagnitude += dtMillis * UNLOCKED_UPGRADE_SHAKE_SPEED_RAMP;
+            if (mOptionShakeMagnitude > UNLOCKED_UPGRADE_MAX_SHAKE_MAGNITUDE)
+            {
+                mOptionShakeMagnitude = UNLOCKED_UPGRADE_MAX_SHAKE_MAGNITUDE;
+                
+                // Reposition upgrade
+                mCarouselController->Update(dtMillis);
+                
+                // Change animation to shine
+                auto upgradeSoOpt = mCarouselController->GetSelectedSceneObject();
+                if (upgradeSoOpt)
+                {
+                    auto& upgradeSo = upgradeSoOpt->get();
+                    upgradeSo.mAnimation = std::make_unique<ShineAnimation>(&upgradeSo, upgradeSo.mAnimation->VGetCurrentTextureResourceId(), resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME), upgradeSo.mAnimation->VGetCurrentMeshResourceId(), resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::SHINE_SHADER_FILE_NAME), glm::vec3(1.0f), UNLOCKED_UPGRADE_SHINE_SPEED, false);
+                    upgradeSo.mAnimation->SetCompletionCallback([&]()
+                    {
+                        mFlows.emplace_back(RepeatableFlow([&]()
+                        {
+                            mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
+                            mOptionSelectionState = OptionSelectionState::TRANSITIONING_TO_NEXT_SCREEN;
+                        }, 1000.0f, RepeatableFlow::RepeatPolicy::ONCE));
+                    });
+                }
+                
+                mOptionSelectionState = OptionSelectionState::UNLOCK_TEXTURE_TRANSITION;
+            }
         } break;
             
+        case OptionSelectionState::UNLOCK_TEXTURE_TRANSITION:
+        {
+            
+        } break;
+        
         case OptionSelectionState::TRANSITIONING_TO_NEXT_SCREEN:
         {
             return PostStateUpdateDirective::BLOCK_UPDATE;
@@ -193,7 +226,7 @@ PostStateUpdateDirective ResearchUpdater::VUpdate(std::vector<SceneObject>& scen
         mSelectedUpgrade = mUpgrades.at(mCarouselController->GetSelectedIndex());
         const auto& upgradeDefinition = GameSingletons::GetAvailableUpgrades().at(mCarouselController->GetSelectedIndex());
         
-        if (upgradeDefinition.mUnlockCost > 0)
+        if (upgradeDefinition.mUnlockCost > 0 || mOptionSelectionState == OptionSelectionState::UNLOCK_SHAKE)
         {
             auto currentValue = upgradeDefinition.mDefaultUnlockCost - upgradeDefinition.mUnlockCost;
             
@@ -553,7 +586,7 @@ void ResearchUpdater::UpdateFadeableSceneObjects(const float dtMillis)
                     sceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
                 }
             }
-            else if (fadeableSceneObjectName == CONFIRMATION_BUTTON_CRYSTAL_ICON_NAME || fadeableSceneObjectName == CONFIRMATION_BUTTON_NAME || fadeableSceneObjectName == CONFIRMATION_BUTTON_TEXT_FIRST_LINE_NAME || fadeableSceneObjectName == CONFIRMATION_BUTTON_TEXT_SECOND_LINE_NAME)
+            else if (fadeableSceneObjectName == CONFIRMATION_BUTTON_CRYSTAL_ICON_NAME || fadeableSceneObjectName == CONFIRMATION_BUTTON_NAME || fadeableSceneObjectName == CONFIRMATION_BUTTON_TEXT_FIRST_LINE_NAME || fadeableSceneObjectName == CONFIRMATION_BUTTON_TEXT_SECOND_LINE_NAME || (mOptionSelectionState == OptionSelectionState::UNLOCK_TEXTURE_TRANSITION && fadeableSceneObjectName != UPGRADE_TEXT_NAME))
             {
                 sceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] -= dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
                 if (sceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] <= 0.0f)

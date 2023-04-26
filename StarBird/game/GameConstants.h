@@ -143,6 +143,8 @@ inline const strutils::StringId AMBIENT_LIGHT_NAME = strutils::StringId("AMBIENT
 
 inline const std::string ENEMY_PROJECTILE_FLOW_POSTFIX = std::string("_PROJECTILE_FLOW");
 
+inline const int BACKGROUND_COUNT = 24;
+
 inline const float UPGRADE_MOVEMENT_SPEED = 1.0f/400.0f;
 
 inline const float BOSS_INTRO_DURATION_MILLIS = 3000.0f;
