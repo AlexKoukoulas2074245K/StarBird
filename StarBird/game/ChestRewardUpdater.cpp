@@ -461,6 +461,18 @@ void ChestRewardUpdater::VOpenDebugConsole()
 
 UpgradeDefinition ChestRewardUpdater::FindSelectedRewardDefinition() const
 {
+    int counter = 0;
+    for (const auto& availableUpgrade: GameSingletons::GetAvailableUpgrades())
+    {
+        if (availableUpgrade.mUnlockCost == 0)
+        {
+            if (counter++ == mCarouselController->GetSelectedIndex())
+            {
+                return availableUpgrade;
+            }
+        }
+    }
+    
     return GameSingletons::GetAvailableUpgrades()[mCarouselController->GetSelectedIndex()];
 }
 
