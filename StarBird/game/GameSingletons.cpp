@@ -31,6 +31,7 @@ float GameSingletons::mPlayerDisplayedHealth = 1.0f;
 float GameSingletons::mPlayerAttackStat = 0.0f;
 float GameSingletons::mPlayerBulletSpeedStat = 0.0f;
 float GameSingletons::mPlayerMovementStat = 0.0f;
+bool GameSingletons::mGodMode = false;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -393,6 +394,20 @@ int GameSingletons::GetBackgroundIndex()
 void GameSingletons::SetBackgroundIndex(const int backgroundIndex)
 {
     mBackgroundIndex = backgroundIndex;
+}
+
+///------------------------------------------------------------------------------------------------
+
+bool GameSingletons::GetGodeMode()
+{
+    return mGodMode;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetGodMode(const bool godMode)
+{
+    mGodMode = godMode;
 }
 
 ///------------------------------------------------------------------------------------------------

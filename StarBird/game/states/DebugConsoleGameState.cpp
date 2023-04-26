@@ -235,6 +235,23 @@ void DebugConsoleGameState::RegisterCommands()
         return CommandExecutionResult(true, "Physics Debug turned " + commandComponents[1]);
     };
     
+    mCommandMap[strutils::StringId("god_mode")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: god_mode on|off");
+        
+        if (commandComponents.size() != 2)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        else if (commandComponents[1] != "on" && commandComponents[1] != "off")
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        GameSingletons::SetGodMode(commandComponents[1] == "on");
+        return CommandExecutionResult(true, "God Mode turned " + commandComponents[1]);
+    };
+
     mCommandMap[strutils::StringId("bev")] = [&](const std::vector<std::string>& commandComponents)
     {
         static const std::string USAGE_TEXT("Usage: bev on|off");

@@ -42,6 +42,7 @@ struct ObjectTypeDefinition
     float mSpeed = 0.0f;
     float mLinearDamping = 0.0f;
     float mShootingFrequencyMillis = 0.0f;
+    float mDensity = 0.0f;
     MovementControllerPattern mMovementControllerPattern = MovementControllerPattern::NONE;
 };
 

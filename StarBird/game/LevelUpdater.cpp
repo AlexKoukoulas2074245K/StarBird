@@ -78,6 +78,7 @@ static const float SHAKE_ENTITY_HEALTH_RATIO_THRESHOLD = 0.2f;
 static const float SHAKE_ENTITY_RANDOM_MAG = 0.03f;
 
 static const float MIRROR_IMAGE_BULLET_DAMAGE_MULTIPLIER = 0.3f;
+static const float GOD_MODE_DAMAGE = 999999.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -116,7 +117,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             
             if (!enemySO.mInvulnerable)
             {
-                auto bulletDamage = GameSingletons::GetPlayerAttackStat();
+                auto bulletDamage = GameSingletons::GetGodeMode() ? GOD_MODE_DAMAGE : GameSingletons::GetPlayerAttackStat();
                 if (bulletSceneObjectTypeDef.mName == game_constants::MIRROR_IMAGE_BULLET_TYPE)
                 {
                     bulletDamage *= MIRROR_IMAGE_BULLET_DAMAGE_MULTIPLIER;
@@ -183,7 +184,8 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             if (!playerSO.mInvulnerable)
             {
                 // Remove player shield/damage player flow
-                auto incomingDamage = enemySceneObjectTypeDef.mDamage - GameSingletons::GetPlayerShieldHealth();
+                auto incomingDamage = GameSingletons::GetGodeMode() ? 0.0f : (enemySceneObjectTypeDef.mDamage - GameSingletons::GetPlayerShieldHealth());
+                
                 if (GameSingletons::GetPlayerShieldHealth() > 0.0f)
                 {
                     GameSingletons::SetPlayerShieldHealth(GameSingletons::GetPlayerShieldHealth() - enemySceneObjectTypeDef.mDamage);
@@ -252,7 +254,8 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 auto enemyBulletSceneObjectTypeDef = ObjectTypeDefinitionRepository::GetInstance().GetObjectTypeDefinition(enemyBulletSO.mObjectFamilyTypeName)->get();
                 
                 // Remove player shield/damage player flow
-                auto incomingDamage = enemyBulletSceneObjectTypeDef.mDamage - GameSingletons::GetPlayerShieldHealth();
+                auto incomingDamage = GameSingletons::GetGodeMode() ? 0.0f : (enemyBulletSceneObjectTypeDef.mDamage - GameSingletons::GetPlayerShieldHealth());
+                
                 if (GameSingletons::GetPlayerShieldHealth() > 0.0f)
                 {
                     GameSingletons::SetPlayerShieldHealth(GameSingletons::GetPlayerShieldHealth() - enemyBulletSceneObjectTypeDef.mDamage);

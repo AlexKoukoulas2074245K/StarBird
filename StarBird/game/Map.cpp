@@ -443,8 +443,6 @@ Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
         if (currentMapCoord.mCol == 1)
         {
             availableNodeTypes.erase(NodeType::LAB);
-            //availableNodeTypes.clear();
-            //availableNodeTypes.insert(NodeType::LAB);
         }
         
         // Remove any node types from the immediate previous links except if there are

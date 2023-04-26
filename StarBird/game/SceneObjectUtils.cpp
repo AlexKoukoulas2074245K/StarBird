@@ -205,7 +205,8 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
     fixtureDef.filter = objectDef.mContactFilter;
-    fixtureDef.density = strutils::StringStartsWith(sceneObjectName.GetString(), BOSS_SCENE_OBJECT_NAME_PREFIX) ? physics_constants::BOSS_DENSITY : objectDef.mBodyCustomScale.x * objectDef.mBodyCustomScale.x;
+    fixtureDef.density = objectDef.mDensity;
+    
     body->CreateFixture(&fixtureDef);
     
     so.mObjectFamilyTypeName = objectDef.mName;

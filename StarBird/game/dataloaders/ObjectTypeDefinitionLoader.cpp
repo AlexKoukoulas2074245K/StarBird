@@ -143,6 +143,12 @@ ObjectTypeDefinitionLoader::ObjectTypeDefinitionLoader()
             mConstructedObjectTypeDef.mLinearDamping = std::stof(linearDamping->value());
         }
         
+        auto* density = node->first_attribute("density");
+        if (density)
+        {
+            mConstructedObjectTypeDef.mDensity = std::stof(density->value());
+        }
+        
         auto* linearSpeed = node->first_attribute("speed");
         if (linearSpeed)
         {

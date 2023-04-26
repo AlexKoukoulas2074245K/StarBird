@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ObjectDefinition>
     <Animation state="idle" texture="enemies/boss_1/flap" mesh="enemies/boss_1/bottom_left_flap_dynamic" shader="basic" scale="-2.0f, 2.0f" rotationMode="rotateToTargetAndBackContinually" rotationAxis="z" rotationDegrees="5" rotationSpeed="0.00005f"/>
-    <Physics bodyOffset="4.0f, 20.0f" linearDamping="0.0f" constantVelocity="0.0f, -0.6f" category="boss"/>
+    <Physics bodyOffset="4.0f, 20.0f" density="1000.0f" linearDamping="0.0f" constantVelocity="0.0f, -0.6f" category="boss"/>
     <GameAttributes movementControllerPattern="constant_velocity" health="10000.0f" damage="2.0f" crystalYield="0.0f"/>
 </ObjectDefinition>

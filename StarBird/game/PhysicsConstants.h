@@ -31,7 +31,6 @@ static constexpr uint16 ENEMY_ONLY_WALL_CATEGORY_BIT = 0x80;
 static constexpr int WORLD_VELOCITY_ITERATIONS = 6;
 static constexpr int WORLD_POSITION_ITERATIONS = 2;
 static const float WORLD_STEP = 1.0f / 60.0f;
-static const float BOSS_DENSITY = 1000.0f;
 
 ///------------------------------------------------------------------------------------------------
 

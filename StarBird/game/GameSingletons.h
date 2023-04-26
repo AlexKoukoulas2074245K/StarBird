@@ -100,6 +100,9 @@ public:
     static int GetBackgroundIndex();
     static void SetBackgroundIndex(const int backgroundIndex);
     
+    static bool GetGodeMode();
+    static void SetGodMode(const bool godMode);
+    
 private:
     static InputContext mInputContext;
     static SDL_Window* mWindow;
@@ -123,6 +126,7 @@ private:
     static float mPlayerAttackStat;
     static float mPlayerBulletSpeedStat;
     static float mPlayerMovementStat;
+    static bool mGodMode;
 };
 
 ///------------------------------------------------------------------------------------------------

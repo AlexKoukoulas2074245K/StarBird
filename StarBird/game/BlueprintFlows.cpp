@@ -28,7 +28,7 @@ static void CreateBulletAtPosition(const strutils::StringId& bulletType, const g
         auto& bulletDef = bulletDefOpt->get();
         auto bulletPos = position;
         bulletPos.z = game_constants::BULLET_Z;
-        scene.AddSceneObject(scene_object_utils::CreateSceneObjectWithBody(bulletDef, position, box2dWorld));
+        scene.AddSceneObject(scene_object_utils::CreateSceneObjectWithBody(bulletDef, position, box2dWorld, strutils::StringId()));
     }
 }
 
