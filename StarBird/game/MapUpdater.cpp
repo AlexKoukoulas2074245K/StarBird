@@ -448,7 +448,7 @@ void MapUpdater::OnLevelSelection()
         auto pathSegments = 2 * static_cast<int>(glm::length(dirToNext));
         for (int i = 0; i < pathSegments; ++i)
         {
-            auto pathSegmentName = strutils::StringId(linkedCoord.ToString() + "_" + std::to_string(i) + MAP_PATH_NAME_SUFFIX);
+            auto pathSegmentName = strutils::StringId(mCurrentMapCoord.ToString() + "-" + linkedCoord.ToString() + "_" + std::to_string(i) + MAP_PATH_NAME_SUFFIX);
             auto pathSegmentSoOpt = mScene.GetSceneObject(pathSegmentName);
             if (pathSegmentSoOpt)
             {
@@ -522,7 +522,7 @@ void MapUpdater::OnLevelDeselection()
         auto pathSegments = 2 * static_cast<int>(glm::length(dirToNext));
         for (int i = 0; i < pathSegments; ++i)
         {
-            auto pathSegmentName = strutils::StringId(linkedCoord.ToString() + "_" + std::to_string(i) + MAP_PATH_NAME_SUFFIX);
+            auto pathSegmentName = strutils::StringId(mCurrentMapCoord.ToString() + "-" + linkedCoord.ToString() + "_" + std::to_string(i) + MAP_PATH_NAME_SUFFIX);
             auto pathSegmentSoOpt = mScene.GetSceneObject(pathSegmentName);
             if (pathSegmentSoOpt)
             {

@@ -217,7 +217,7 @@ void Map::CreateMapSceneObjects()
                 pathSO.mSceneObjectType = SceneObjectType::WorldGameObject;
                 pathSO.mPosition = mMapData.at(mapNodeEntry.first).mPosition + dirToNext * (i/static_cast<float>(pathSegments));
                 pathSO.mScale = game_constants::MAP_STAR_PATH_SCALE;
-                pathSO.mName = strutils::StringId(linkedCoord.ToString() + "_" + std::to_string(i) + MAP_PATH_NAME_SUFFIX);
+                pathSO.mName = strutils::StringId(mapNodeEntry.first.ToString() + "-" + linkedCoord.ToString() + "_" + std::to_string(i) + MAP_PATH_NAME_SUFFIX);
                 pathSO.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
                 mScene.AddSceneObject(std::move(pathSO));
             }
