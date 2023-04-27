@@ -20,7 +20,9 @@
 
 ///------------------------------------------------------------------------------------------------
 
-static const strutils::StringId PLAY_TEXT_SCENE_OBJECT_NAME = strutils::StringId("play_button");
+static const strutils::StringId PLAY_TEXT_SCENE_OBJECT_NAME = strutils::StringId("play_continue_button");
+static const strutils::StringId NEW_GAME_TEXT_SCENE_OBJECT_NAME = strutils::StringId("new_game_button");
+static const strutils::StringId SEED_VALUE_SCENE_OBJECT_NAME = strutils::StringId("current_seed_value");
 
 ///------------------------------------------------------------------------------------------------
 
@@ -160,7 +162,7 @@ void MainMenuUpdater::CreateSceneObjects()
         mScene.AddSceneObject(std::move(bgSO));
     }
     
-    // Play Text
+    // GUI Scene Elements
     {
         GUISceneLoader loader;
         const auto& sceneDefinition = loader.LoadGUIScene("main_menu_scene");
@@ -182,6 +184,12 @@ void MainMenuUpdater::CreateSceneObjects()
             }
             
             mScene.AddSceneObject(std::move(guiSceneObject));
+        }
+        
+        auto seedValueSoOpt = mScene.GetSceneObject(SEED_VALUE_SCENE_OBJECT_NAME);
+        if (seedValueSoOpt)
+        {
+            seedValueSoOpt->get().mText = std::to_string(GameSingletons::GetMapGenerationSeed());
         }
     }
 }

@@ -56,6 +56,7 @@ static const float MAX_MAP_VELOCITY_LENGTH = 5.0f;
 static const float MAP_VELOCITY_DAMPING = 0.9f;
 static const float MAP_VELOCITY_INTEGRATION_SPEED = 0.04f;
 static const float CAMERA_MAX_ZOOM_FACTOR = 2.4f;
+static const float CAMERA_INIT_ZOOM_FACTOR = 0.9f;
 static const float CAMERA_MIN_ZOOM_FACTOR = 0.4f;
 static const float CAMERA_ZOOM_SPEED = 0.1f;
 static const float MIN_CAMERA_VELOCITY_TO_START_MOVEMENT = 0.0001f;
@@ -91,6 +92,7 @@ MapUpdater::MapUpdater(Scene& scene)
     }
     
     worldCamera.SetPosition(glm::vec3(positionAccum.x/(activeCoords.size() + 1), positionAccum.y/(activeCoords.size() + 1), 0.0f));
+    worldCamera.SetZoomFactor(CAMERA_INIT_ZOOM_FACTOR);
     
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
@@ -192,6 +194,13 @@ PostStateUpdateDirective MapUpdater::VUpdate(std::vector<SceneObject>& sceneObje
                 {
                     OnLevelDeselection();
                     mSelectedMapCoord = MapCoord(0, 0);
+                        
+                    originTouchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, worldCamera.GetViewMatrix(), worldCamera.GetProjMatrix());
+                    
+                    if (CheckForActiveLevelSelection(originTouchPos))
+                    {
+                        OnLevelSelection();
+                    }
                 }
             }
         }

@@ -35,7 +35,7 @@ static const glm::vec3 CRYSTAL_ICON_SCALE = glm::vec3(0.3f);
 static const float CONTROL_BUTTON_PULSING_SPEED = 0.02f;
 static const float CONTROL_BUTTON_PULSING_ENLARGMENT_FACTOR = 1.0f/50.0f;
 
-static const int STAT_UPGRADE_COST = 5;
+static const int STAT_UPGRADE_COST = 1;
 
 ///------------------------------------------------------------------------------------------------
 
