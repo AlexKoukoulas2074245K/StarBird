@@ -34,7 +34,7 @@ enum class SceneObjectType
 
 ///------------------------------------------------------------------------------------------------
 
-struct SceneObject // 464b
+struct SceneObject // 472b
 {
     // ObjectTypeDefinition name with family attributes
     strutils::StringId mObjectFamilyTypeName = strutils::StringId();
@@ -80,6 +80,9 @@ struct SceneObject // 464b
     
     // Scene object type World/GUI
     SceneObjectType mSceneObjectType = SceneObjectType::WorldGameObject;
+    
+    // Timer used for activating player chasing mode
+    float mDormantMillis = 0.0f;
     
     // A health value to be used by game entities
     float mHealth = 0;

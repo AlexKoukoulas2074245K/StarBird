@@ -32,7 +32,6 @@ static const float MAP_PLANET_RING_MAX_X_ROTATION = 2.2f;
 static const float MAP_PLANET_RING_MIN_Y_ROTATION = -math::PI/10;
 static const float MAP_PLANET_RING_MAX_Y_ROTATION = +math::PI/10;
 
-static const float LEVEL_FIRST_WAVE_Y = 20.0f;
 static const float LEVEL_WAVE_Y_INCREMENT = 2.0f;
 
 ///------------------------------------------------------------------------------------------------
@@ -336,14 +335,14 @@ void Map::ExtendWaveBlockForDifficulty(const int difficulty, WaveBlockDefinition
     {
         if (!riter->mEnemies.empty())
         {
-            waveHeight = riter->mEnemies.back().mPosition.y - LEVEL_FIRST_WAVE_Y;
+            waveHeight = riter->mEnemies.back().mPosition.y - game_constants::LEVEL_WAVE_VISIBLE_Y;
             break;
         }
         
         riter++;
     }
     
-    auto currentY = LEVEL_FIRST_WAVE_Y + waveHeight + LEVEL_WAVE_Y_INCREMENT;
+    auto currentY = game_constants::LEVEL_WAVE_VISIBLE_Y + waveHeight + LEVEL_WAVE_Y_INCREMENT;
     
     std::vector<WaveBlockLine> additionalLines;
     auto difficultyDiff = difficulty - waveBlock.mDifficulty;
@@ -354,7 +353,7 @@ void Map::ExtendWaveBlockForDifficulty(const int difficulty, WaveBlockDefinition
         
         for (auto& enemy: targetLineCopy.mEnemies)
         {
-            enemy.mPosition.y = currentY + enemy.mPosition.y - LEVEL_FIRST_WAVE_Y;
+            enemy.mPosition.y = currentY + enemy.mPosition.y - game_constants::LEVEL_WAVE_VISIBLE_Y;
         }
         
         currentY += lineHeight;
@@ -369,7 +368,7 @@ void Map::ExtendWaveBlockForDifficulty(const int difficulty, WaveBlockDefinition
 
 float Map::GetWaveBlockLineHeight(const WaveBlockLine& waveBlockLine) const
 {
-    return waveBlockLine.mEnemies.empty() ? 0.0f : waveBlockLine.mEnemies.back().mPosition.y - LEVEL_FIRST_WAVE_Y + LEVEL_WAVE_Y_INCREMENT;
+    return waveBlockLine.mEnemies.empty() ? 0.0f : waveBlockLine.mEnemies.back().mPosition.y - game_constants::LEVEL_WAVE_VISIBLE_Y + LEVEL_WAVE_Y_INCREMENT;
 }
 
 ///------------------------------------------------------------------------------------------------

@@ -27,7 +27,7 @@ const strutils::StringId KathunBossAI::BOSS_NAME = strutils::StringId("Ka'thun")
 const std::unordered_map<KathunBossAI::Ability, std::unordered_map<KathunBossAI::State, float>> KathunBossAI::ABILITY_COOLDOWNS_PER_STATE =
 {
     { KathunBossAI::Ability::SPAWN_CHASER, {{ KathunBossAI::State::PHASE_1, 4000.0f }, { KathunBossAI::State::PHASE_2, 4000.0f }, { KathunBossAI::State::PHASE_3, 4000.0f }} },
-    { KathunBossAI::Ability::VERTICAL_BULLET, {{ KathunBossAI::State::PHASE_1, 1000.0f }, { KathunBossAI::State::PHASE_2, 500.0f }, { KathunBossAI::State::PHASE_3, 400.0f }} },
+    { KathunBossAI::Ability::VERTICAL_BULLET, {{ KathunBossAI::State::PHASE_1, 1000.0f }, { KathunBossAI::State::PHASE_2, 500.0f }} },
     { KathunBossAI::Ability::DIAGONAL_BULLET, {{ KathunBossAI::State::PHASE_2, 3000.0f }, { KathunBossAI::State::PHASE_3, 2000.0f }} },
     { KathunBossAI::Ability::INSTA_DEATH, {{ KathunBossAI::State::PHASE_3, 20000.0f }} }
 };
@@ -41,7 +41,7 @@ const std::unordered_map<KathunBossAI::State, float> KathunBossAI::MIN_HEALTH_PE
 
 ///------------------------------------------------------------------------------------------------
 
-static const float KATHUN_SET_Y = 7.0f;
+static const float KATHUN_POSITIONED_Y = 8.0f;
 static const std::string KATHUN_ABILITY_FLOW_NAME_POST_FIX = "_ABILITY_FLOW";
 static const strutils::StringId KATHUN_BODY_NAME = strutils::StringId("enemies/boss_1/body");
 static const strutils::StringId KATHUN_SLOW_CHASER_ENEMY_TYPE = strutils::StringId("enemies/medium_enemy_chasing");
@@ -91,7 +91,7 @@ void KathunBossAI::VUpdateBossAI(const float dtMillis)
             if (bodySoOpt)
             {
                 auto& bossSo = bodySoOpt->get();
-                if (bossSo.mBody->GetWorldCenter().y <= KATHUN_SET_Y)
+                if (bossSo.mBody->GetWorldCenter().y <= KATHUN_POSITIONED_Y)
                 {
                     mLevelUpdater.OnBossPositioned();
                     mState = State::BOSS_POSITIONED;
@@ -300,7 +300,11 @@ void KathunBossAI::OnStateChange(const bool shakeCamera)
         {
             flowOpt->get().SetDuration(abilityStateMapEntry.second.at(mState));
         }
-        // Otherwise create a brand new flow
+        // If flow for ability already exists but ability is no longer present, delete flow
+        else if (flowOpt && !abilityStateMapEntry.second.count(mState))
+        {
+            flowOpt->get().ForceFinish();
+        }
         else if (abilityStateMapEntry.second.count(mState))
         {
             mLevelUpdater.AddFlow(RepeatableFlow([&]()

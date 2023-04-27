@@ -2,7 +2,7 @@
 <Upgrades>
     <Upgrade nameId="double_bullet" description="Bullet Flurry" texture="upgrades/double_bullet" intransient="false" equippable="true" unlockCost="45" />
     <Upgrade nameId="mirror_image" description="Mirror Image" texture="upgrades/mirror_image" intransient="false" equippable="true" unlockCost="30" />
-    <Upgrade nameId="player_shield" description="20% HP Shield" texture="upgrades/player_shield" intransient="true" equippable="true" unlockCost="15" />
+    <Upgrade nameId="player_shield" description="20% HP Shield" texture="upgrades/player_shield" intransient="true" equippable="true" unlockCost="0" />
     <Upgrade nameId="player_health_potion" description="Full Heal" texture="upgrades/player_health_potion" intransient="true" equippable="false" unlockCost="0" />
     <Upgrade nameId="crystal_gift" description="+50 Crystals" texture="upgrades/crystal_gift" intransient="true" equippable="false" unlockCost="0" />
 </Upgrades>

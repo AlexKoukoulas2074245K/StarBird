@@ -191,9 +191,11 @@ inline const float MAP_STAR_PATH_PULSING_DELAY_MILLIS = 100.0f;
 inline const float MAP_STAR_PATH_PULSING_SPEED = 0.01f;
 inline const float MAP_STAR_PATH_PULSING_ENLARGEMENT_FACTOR = 1.0f/100.0f;
 
-static const float MAP_NODE_ROTATION_SPEED = 0.0002f;
-static const float MAP_NODE_PULSING_SPEED = 0.005f;
-static const float MAP_NODE_PULSING_ENLARGEMENT_FACTOR = 1.0f/200.0f;
+inline const float MAP_NODE_ROTATION_SPEED = 0.0002f;
+inline const float MAP_NODE_PULSING_SPEED = 0.005f;
+inline const float MAP_NODE_PULSING_ENLARGEMENT_FACTOR = 1.0f/200.0f;
+
+inline const float LEVEL_WAVE_VISIBLE_Y = 20.0f;
 
 inline const glm::vec3 BAR_TEXT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
 inline const glm::vec3 BAR_TEXT_OFFSET = glm::vec3(0.0f, -0.2f, 0.5f);

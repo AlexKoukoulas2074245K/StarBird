@@ -227,6 +227,11 @@ SceneObject CreateSceneObjectWithBody(const ObjectTypeDefinition& objectDef, con
         so.mName = sceneObjectName;
     }
     
+    if (objectDef.mMovementControllerPattern == MovementControllerPattern::CHASING_PLAYER)
+    {
+        so.mDormantMillis = math::RandomFloat(0.0f, 5000.0f);
+    }
+    
     so.mBody->SetUserData(new strutils::StringId(so.mName));
     
     return so;

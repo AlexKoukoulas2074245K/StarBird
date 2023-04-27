@@ -405,7 +405,23 @@ PostStateUpdateDirective LevelUpdater::VUpdate(std::vector<SceneObject>& sceneOb
         {
             // Update movement
             auto& sceneObjectTypeDef = sceneObjectTypeDefOpt->get();
-            switch (sceneObjectTypeDef.mMovementControllerPattern)
+            
+            auto temporaryMovementPattern = sceneObjectTypeDef.mMovementControllerPattern;
+            if (temporaryMovementPattern == MovementControllerPattern::CHASING_PLAYER)
+            {
+                temporaryMovementPattern = MovementControllerPattern::CONSTANT_VELOCITY;
+                if (sceneObject.mBody && sceneObject.mBody->GetWorldCenter().y <= game_constants::LEVEL_WAVE_VISIBLE_Y)
+                {
+                    sceneObject.mDormantMillis -= dtMillis;
+                    if (sceneObject.mDormantMillis <= 0.0f)
+                    {
+                        sceneObject.mDormantMillis = 0.0f;
+                        temporaryMovementPattern = MovementControllerPattern::CHASING_PLAYER;
+                    }
+                }
+            }
+            
+            switch (temporaryMovementPattern)
             {
                 case MovementControllerPattern::CONSTANT_VELOCITY:
                 {
@@ -673,7 +689,7 @@ void LevelUpdater::CreateLevelWalls(const Camera& cam, const bool invisible)
         b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
 
         b2PolygonShape wallShape;
-        wallShape.SetAsBox(1.0f, cam.GetCameraLenseHeight() * 4);
+        wallShape.SetAsBox(1.0f, cam.GetCameraLenseHeight() * 400);
         
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &wallShape;
@@ -700,7 +716,7 @@ void LevelUpdater::CreateLevelWalls(const Camera& cam, const bool invisible)
         b2Body* wallBody = mBox2dWorld.CreateBody(&wallBodyDef);
 
         b2PolygonShape wallShape;
-        wallShape.SetAsBox(1.0f, cam.GetCameraLenseHeight() * 4);
+        wallShape.SetAsBox(1.0f, cam.GetCameraLenseHeight() * 400);
         
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &wallShape;

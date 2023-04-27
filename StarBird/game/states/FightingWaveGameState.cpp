@@ -200,6 +200,7 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
         {
             auto& playerSo = playerSoOpt->get();
             
+            playerSo.mInvulnerable = true;
             playerSo.mAnimation->ChangeShaderResourceId(resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME));
             playerSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
         }

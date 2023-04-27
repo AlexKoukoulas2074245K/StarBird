@@ -2,7 +2,7 @@
 <Scene>
     <GUIElement name="title" fontName="font" position="-3.3f, 9.1f, 0.0f" scale="0.02f, 0.02f" shader="basic" text="StarBird" />
     <GUIElement name="current_seed_text" fontName="font" position="-3.02f, -10.9f, 0.0f" scale="0.008f, 0.008f" shader="basic" text="Seed: " />
-    <GUIElement name="current_seed_value" fontName="font" position="-0.87f, -10.9f, 0.0f" scale="0.008f, 0.008f" shader="basic" text="1234567" />
+    <GUIElement name="current_seed_value" fontName="font" position="-0.67f, -10.9f, 0.0f" scale="0.008f, 0.008f" shader="basic" text="1234567" />
     <GUIElement name="play_continue_button" fontName="font" position="-0.7f, -0.27f, 0.0f" scale="0.01f, 0.01f" shader="basic" text="Play" />
     <!--<GUIElement name="new_game_button" fontName="font" position="-2.18f, -1.86f, 0.0f" scale="0.01f, 0.01f" shader="basic" text="New Game" />-->
 </Scene>
