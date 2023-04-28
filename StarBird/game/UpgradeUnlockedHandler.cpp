@@ -57,7 +57,7 @@ static const float SCENE_OBJECT_FADE_IN_ALPHA_SPEED = 0.001f;
 static const float INTER_ANIMATION_DELAY_MILLIS = 3000.0f;
 static const float PLAYER_SHIELD_ROTATION_SPEED = 0.001f;
 
-static const int CRYSTALS_REWARD_COUNT = 50;
+static const int CRYSTALS_REWARD_COUNT = 15;
 
 ///------------------------------------------------------------------------------------------------
 
