@@ -28,9 +28,8 @@ namespace scene_object_utils
 /// Computes and returns whether the given point is inside a scene object.
 /// @param[in] sceneObject scene object to test. Will work for both text SOs and Textured SOs
 /// @param[in] point point to test.
-/// @param[in] xyBias (optional) additional bias factor value to multiplicatively take into account in the containment test
 /// @returns whether the point is inside the scene object's bounds.
-bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& point, const glm::vec2 xyBias = glm::vec2(1.0f, 1.0f));
+bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& point);
 
 ///-----------------------------------------------------------------------------------------------
 /// Changes the state of a scene object and assigns the respective animation for that state.

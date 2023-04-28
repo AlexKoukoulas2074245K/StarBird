@@ -60,8 +60,6 @@ static const float CAMERA_INIT_ZOOM_FACTOR = 0.9f;
 static const float CAMERA_MIN_ZOOM_FACTOR = 0.4f;
 static const float CAMERA_ZOOM_SPEED = 0.1f;
 static const float MIN_CAMERA_VELOCITY_TO_START_MOVEMENT = 0.0001f;
-static const float MAP_NODE_CLICK_BIAS = 3.0f;
-
 
 ///------------------------------------------------------------------------------------------------
 
@@ -392,7 +390,7 @@ bool MapUpdater::CheckForActiveLevelSelection(const glm::vec3& touchPos)
     const auto& currentMapCoord = GameSingletons::GetCurrentMapCoord();
     for (const auto& linkedMapCoord: mMap.GetMapData().at(currentMapCoord).mNodeLinks)
     {
-        if (scene_object_utils::IsPointInsideSceneObject(mScene.GetSceneObject(strutils::StringId(linkedMapCoord.ToString()))->get(), glm::vec2(touchPos.x, touchPos.y), glm::vec2(MAP_NODE_CLICK_BIAS)))
+        if (scene_object_utils::IsPointInsideSceneObject(mScene.GetSceneObject(strutils::StringId(linkedMapCoord.ToString()))->get(), glm::vec2(touchPos.x, touchPos.y)))
         {
             mSelectedMapCoord = linkedMapCoord;
             return true;

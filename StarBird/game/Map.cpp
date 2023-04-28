@@ -26,6 +26,7 @@ static const char* MAP_PATH_NAME_SUFFIX = "_PATH";
 
 static const glm::vec3 MAP_NEBULA_NODE_SCALE = glm::vec3(3.0f, 3.0f, 1.0f);
 static const glm::vec3 MAP_LAB_SCALE = glm::vec3(0.9, 0.5f, 0.9f);
+static const glm::vec3 EVENT_SCALE = glm::vec3(2.5f, 2.5f, 1.0f);
 static const glm::vec3 STARTING_LOCATION_SCALE = glm::vec3(4.0, 4.0f, 1.0f);
 
 static const float MAP_BASE_X_ROTATION = 0.6f;
@@ -169,10 +170,14 @@ void Map::CreateMapSceneObjects()
             case NodeType::LAB:
             {
                 bool shouldRotate = mapNodeEntry.first.mCol > mCurrentMapCoord.mCol;
-                
+
                 nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_BASE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_LAB_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + (shouldRotate ? game_constants::BASIC_SHADER_FILE_NAME : game_constants::GRAYSCALE_SHADER_FILE_NAME)), MAP_LAB_SCALE, RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, shouldRotate ? game_constants::MAP_NODE_ROTATION_SPEED : 0.0f, false);
                 nodeSo.mRotation.x = MAP_BASE_X_ROTATION;
                 nodeSo.mScale = MAP_LAB_SCALE;
+                
+//                bool shouldRotate = mapNodeEntry.first.mCol > mCurrentMapCoord.mCol;
+//                nodeSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "event.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + (shouldRotate ? game_constants::BASIC_SHADER_FILE_NAME : game_constants::GRAYSCALE_SHADER_FILE_NAME)), EVENT_SCALE, false);
+//                nodeSo.mScale = EVENT_SCALE;
             } break;
                 
             case NodeType::BOSS_ENCOUNTER:

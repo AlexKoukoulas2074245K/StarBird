@@ -93,41 +93,45 @@ void GetSceneObjectBoundingRect(const SceneObject& sceneObject, glm::vec2& rectB
     // SO with custom position and scale
     else
     {
-        rectBotLeft = glm::vec2(sceneObject.mPosition.x - math::Abs(sceneObject.mScale.x/2), sceneObject.mPosition.y - math::Abs(sceneObject.mScale.y/2));
-        rectTopRight = glm::vec2(sceneObject.mPosition.x + math::Abs(sceneObject.mScale.x/2), sceneObject.mPosition.y + math::Abs(sceneObject.mScale.y/2));
+        static auto sQuadMeshResourceId = resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME);
+                                                                                                   
+        assert(sceneObject.mAnimation);
+        if (sceneObject.mAnimation->VGetCurrentMeshResourceId() == sQuadMeshResourceId)
+        {
+            rectBotLeft = glm::vec2(sceneObject.mPosition.x - math::Abs(sceneObject.mScale.x/2), sceneObject.mPosition.y - math::Abs(sceneObject.mScale.y/2));
+            rectTopRight = glm::vec2(sceneObject.mPosition.x + math::Abs(sceneObject.mScale.x/2), sceneObject.mPosition.y + math::Abs(sceneObject.mScale.y/2));
+        }
+        else
+        {
+            auto& meshResource = resources::ResourceLoadingService::GetInstance().GetResource<resources::MeshResource>(sceneObject.mAnimation->VGetCurrentMeshResourceId());
+            
+            rectBotLeft = glm::vec2(sceneObject.mPosition.x - math::Abs(sceneObject.mScale.x/2 * meshResource.GetDimensions().x), sceneObject.mPosition.y - math::Abs(sceneObject.mScale.y/2 * meshResource.GetDimensions().y));
+            rectTopRight = glm::vec2(sceneObject.mPosition.x + math::Abs(sceneObject.mScale.x/2 * meshResource.GetDimensions().x), sceneObject.mPosition.y + math::Abs(sceneObject.mScale.y/2 * meshResource.GetDimensions().y));
+        }
     }
 }
 
 ///------------------------------------------------------------------------------------------------
 
-bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& point, const glm::vec2 xyBias /* glm::vec2(1.0f, 1.0f) */)
+bool IsPointInsideSceneObject(const SceneObject& sceneObject, const glm::vec2& point)
 {
     glm::vec2 rectBotLeft, rectTopRight;
     GetSceneObjectBoundingRect(sceneObject, rectBotLeft, rectTopRight);
     
-    // Text SO
-    if (!sceneObject.mText.empty())
-    {
-        rectBotLeft.x *= xyBias.x;
-        rectBotLeft.y *= xyBias.y;
-        
-        rectTopRight.x *= xyBias.x;
-        rectTopRight.y *= xyBias.y;
-    }
     // SO with Physical Body or custom position and scale
-    else
+    if (sceneObject.mText.empty())
     {
         rectBotLeft.x += math::Abs(sceneObject.mScale.x/2);
-        rectBotLeft.x -= math::Abs(sceneObject.mScale.x/2) * xyBias.x;
+        rectBotLeft.x -= math::Abs(sceneObject.mScale.x/2);
         
         rectBotLeft.y += math::Abs(sceneObject.mScale.y/2);
-        rectBotLeft.y -= math::Abs(sceneObject.mScale.y/2) * xyBias.y;
+        rectBotLeft.y -= math::Abs(sceneObject.mScale.y/2);
         
         rectTopRight.x -= math::Abs(sceneObject.mScale.x/2);
-        rectTopRight.x += math::Abs(sceneObject.mScale.x/2) * xyBias.x;
+        rectTopRight.x += math::Abs(sceneObject.mScale.x/2);
         
         rectTopRight.y -= math::Abs(sceneObject.mScale.y/2);
-        rectTopRight.y += math::Abs(sceneObject.mScale.y/2) * xyBias.y;
+        rectTopRight.y += math::Abs(sceneObject.mScale.y/2);
     }
     
     return math::IsPointInsideRectangle(rectBotLeft, rectTopRight, point);

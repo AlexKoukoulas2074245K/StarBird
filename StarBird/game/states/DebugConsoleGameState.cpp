@@ -253,6 +253,38 @@ void DebugConsoleGameState::RegisterCommands()
         GameSingletons::SetGodMode(commandComponents[1] == "on");
         return CommandExecutionResult(true, "God Mode turned " + commandComponents[1]);
     };
+    
+    mCommandMap[strutils::StringId("so_rects")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: so_rects on|off");
+        
+        if (commandComponents.size() != 2)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        else if (commandComponents[1] != "on" && commandComponents[1] != "off")
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        if (commandComponents[1] == "on")
+        {
+            for (auto& sceneObject: mScene->GetSceneObjects())
+            {
+                const_cast<SceneObject&>(sceneObject).mDebugEditSelected = true;
+            }
+        }
+        else
+        {
+            for (auto& sceneObject: mScene->GetSceneObjects())
+            {
+                const_cast<SceneObject&>(sceneObject).mDebugEditSelected = false;
+            }
+        }
+        
+        return CommandExecutionResult(true, "Scene Object Interaction Rects turned " + commandComponents[1]);
+    };
+
 
     mCommandMap[strutils::StringId("bev")] = [&](const std::vector<std::string>& commandComponents)
     {
