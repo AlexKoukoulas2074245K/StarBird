@@ -20,11 +20,13 @@
 
 ///------------------------------------------------------------------------------------------------
 
+static const char* STARTING_LOCATION_TEXTURE_FILE_NAME = "octo_star.bmp";
 static const char* MAP_LAB_MESH_FILE_NAME = "base.obj";
 static const char* MAP_PATH_NAME_SUFFIX = "_PATH";
 
 static const glm::vec3 MAP_NEBULA_NODE_SCALE = glm::vec3(3.0f, 3.0f, 1.0f);
 static const glm::vec3 MAP_LAB_SCALE = glm::vec3(0.9, 0.5f, 0.9f);
+static const glm::vec3 STARTING_LOCATION_SCALE = glm::vec3(4.0, 4.0f, 1.0f);
 
 static const float MAP_BASE_X_ROTATION = 0.6f;
 static const float MAP_PLANET_RING_MIN_X_ROTATION = 1.8f;
@@ -126,6 +128,12 @@ void Map::CreateMapSceneObjects()
         
         switch (mapNodeEntry.second.mNodeType)
         {
+            case NodeType::STARTING_LOCATION:
+            {
+                nodeSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + STARTING_LOCATION_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), STARTING_LOCATION_SCALE, false);
+                nodeSo.mScale = STARTING_LOCATION_SCALE;
+            } break;
+                
             case NodeType::HARD_ENCOUNTER:
             {
                 SceneObject planetRingSO;
@@ -186,7 +194,7 @@ void Map::CreateMapSceneObjects()
         // Add also pulsing animation if node is active
         if (mMapData.at(mCurrentMapCoord).mNodeLinks.contains(mapNodeEntry.first))
         {
-            nodeSo.mExtraCompoundingAnimations.push_back( std::make_unique<PulsingAnimation>(nodeSo.mAnimation->VGetCurrentTextureResourceId(), nodeSo.mAnimation->VGetCurrentMeshResourceId(), nodeSo.mAnimation->VGetCurrentShaderResourceId(), nodeSo.mAnimation->VGetScale(),  PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, game_constants::MAP_NODE_PULSING_SPEED, game_constants::MAP_NODE_PULSING_ENLARGEMENT_FACTOR, false));
+            nodeSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(nodeSo.mAnimation->VGetCurrentTextureResourceId(), nodeSo.mAnimation->VGetCurrentMeshResourceId(), nodeSo.mAnimation->VGetCurrentShaderResourceId(), nodeSo.mAnimation->VGetScale(),  PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, game_constants::MAP_NODE_PULSING_SPEED, game_constants::MAP_NODE_PULSING_ENLARGEMENT_FACTOR, false));
         }
         
         mScene.AddSceneObject(std::move(nodeSo));
@@ -419,7 +427,7 @@ Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
     // Forced single entry point and starting coord case
     if (mHasSingleEntryPoint && currentMapCoord == MapCoord(0, mMapDimensions.y/2))
     {
-        return NodeType::NORMAL_ENCOUNTER;
+        return NodeType::STARTING_LOCATION;
     }
     // Last map coord
     else if (currentMapCoord == MapCoord(mMapDimensions.x - 1, mMapDimensions.y/2))
@@ -434,6 +442,9 @@ Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
         {
             availableNodeTypes.insert(static_cast<NodeType>(i));
         }
+        
+        // Only first node is a starting location
+        availableNodeTypes.erase(NodeType::STARTING_LOCATION);
         
         // Only last node can have a boss encounter
         availableNodeTypes.erase(NodeType::BOSS_ENCOUNTER);
