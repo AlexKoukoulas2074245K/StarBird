@@ -220,7 +220,7 @@ void GenerateNewProgressSaveFile()
     GameSingletons::SetPlayerBulletSpeedStat(1.0f);
     GameSingletons::SetCrystalCount(0);
     GameSingletons::SetDisplayedCrystalCount(GameSingletons::GetCrystalCount());
-    GameSingletons::SetCurrentMapCoord(MapCoord(0, 2));
+    GameSingletons::SetCurrentMapCoord(MapCoord(game_constants::DEFAULT_MAP_COORD_COL, game_constants::DEFAULT_MAP_COORD_ROW));
     GameSingletons::SetMapLevel(0);
     GameSingletons::SetBackgroundIndex(GameSingletons::GetMapGenerationSeed() % game_constants::BACKGROUND_COUNT);
     

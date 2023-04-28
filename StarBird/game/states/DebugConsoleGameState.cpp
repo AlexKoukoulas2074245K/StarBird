@@ -61,6 +61,8 @@ void DebugConsoleGameState::VInitialize()
         guiSceneObject.mScale = guiElement.mScale;
         guiSceneObject.mText = guiElement.mText;
         guiSceneObject.mFontName = guiElement.mFontName;
+        guiSceneObject.mInvisible = guiElement.mInvisible;
+        
         guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId, glm::vec3(1.0f), false);
         guiSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
         

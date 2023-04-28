@@ -20,7 +20,8 @@
 
 ///------------------------------------------------------------------------------------------------
 
-static const strutils::StringId PLAY_TEXT_SCENE_OBJECT_NAME = strutils::StringId("play_continue_button");
+static const strutils::StringId PLAY_TEXT_SCENE_OBJECT_NAME = strutils::StringId("play_button");
+static const strutils::StringId CONTINUE_TEXT_SCENE_OBJECT_NAME = strutils::StringId("continue_button");
 static const strutils::StringId NEW_GAME_TEXT_SCENE_OBJECT_NAME = strutils::StringId("new_game_button");
 static const strutils::StringId SEED_VALUE_SCENE_OBJECT_NAME = strutils::StringId("current_seed_value");
 
@@ -175,6 +176,8 @@ void MainMenuUpdater::CreateSceneObjects()
             guiSceneObject.mScale = guiElement.mScale;
             guiSceneObject.mText = guiElement.mText;
             guiSceneObject.mFontName = guiElement.mFontName;
+            guiSceneObject.mInvisible = guiElement.mInvisible;
+            
             guiSceneObject.mAnimation = std::make_unique<SingleFrameAnimation>(guiElement.mTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), guiElement.mShaderResourceId, glm::vec3(1.0f), false);
             guiSceneObject.mSceneObjectType = SceneObjectType::GUIObject;
             
@@ -190,6 +193,25 @@ void MainMenuUpdater::CreateSceneObjects()
         if (seedValueSoOpt)
         {
             seedValueSoOpt->get().mText = std::to_string(GameSingletons::GetMapGenerationSeed());
+        }
+        
+        auto playButtonSoOpt = mScene.GetSceneObject(PLAY_TEXT_SCENE_OBJECT_NAME);
+        auto continueButtonSoOpt = mScene.GetSceneObject(CONTINUE_TEXT_SCENE_OBJECT_NAME);
+        
+        // Detect new game
+        if (GameSingletons::GetMapLevel() == 0 && GameSingletons::GetCurrentMapCoord() == MapCoord(game_constants::DEFAULT_MAP_COORD_COL, game_constants::DEFAULT_MAP_COORD_ROW))
+        {
+            if (playButtonSoOpt)
+            {
+                playButtonSoOpt->get().mInvisible = false;
+            }
+        }
+        else
+        {
+            if (continueButtonSoOpt)
+            {
+                continueButtonSoOpt->get().mInvisible = false;
+            }
         }
     }
 }

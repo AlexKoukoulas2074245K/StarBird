@@ -349,7 +349,7 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
                 GameSingletons::SetMapLevel(GameSingletons::GetMapLevel() + 1);
                 GameSingletons::SetMapGenerationSeed(math::RandomInt());
                 GameSingletons::SetBackgroundIndex(GameSingletons::GetMapGenerationSeed() % game_constants::BACKGROUND_COUNT);
-                GameSingletons::SetCurrentMapCoord(MapCoord(0, 2));
+                GameSingletons::SetCurrentMapCoord(MapCoord(game_constants::DEFAULT_MAP_COORD_COL, game_constants::DEFAULT_MAP_COORD_ROW));
                 mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
                 mRewardFlowState = RewardFlowState::TRANSITIONING;
             }

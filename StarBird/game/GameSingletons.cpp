@@ -6,6 +6,7 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "GameSingletons.h"
+#include "GameConstants.h"
 
 ///------------------------------------------------------------------------------------------------
 
@@ -15,7 +16,7 @@ glm::vec2 GameSingletons::mWindowDimensions = glm::vec2();
 std::unordered_map<SceneObjectType, Camera> GameSingletons::mSceneObjectTypeToCameraMap = {};
 std::vector<UpgradeDefinition> GameSingletons::mEquippedUpgrades = {};
 std::vector<UpgradeDefinition> GameSingletons::mAvailableUpgrades = {};
-MapCoord GameSingletons::mCurrentMapCoord = MapCoord(0, 2);
+MapCoord GameSingletons::mCurrentMapCoord = MapCoord(game_constants::DEFAULT_MAP_COORD_COL, game_constants::DEFAULT_MAP_COORD_ROW);
 int GameSingletons::mMapGenerationSeed = 0;
 int GameSingletons::mMapLevel = 0;
 int GameSingletons::mBackgroundIndex = 0;

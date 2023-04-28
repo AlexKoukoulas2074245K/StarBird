@@ -22,11 +22,12 @@ struct GUIElementDefinition
 {
     strutils::StringId mFontName;
     strutils::StringId mSceneObjectName;
-    glm::vec3 mPosition;
-    glm::vec3 mScale;
+    glm::vec3 mPosition = glm::vec3(0.0f);
+    glm::vec3 mScale = glm::vec3(1.0f);
     resources::ResourceId mShaderResourceId;
     resources::ResourceId mTextureResourceId;
     std::string mText;
+    bool mInvisible = false;
 };
 
 ///------------------------------------------------------------------------------------------------

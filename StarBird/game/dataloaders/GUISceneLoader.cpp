@@ -68,6 +68,12 @@ GUISceneLoader::GUISceneLoader()
             guiElement.mText = std::string(text->value());
         }
         
+        auto* invisible = node->first_attribute("invisible");
+        if (invisible)
+        {
+            guiElement.mInvisible = strcmp(invisible->value(), "true") == 0;
+        }
+        
         mConstructedScene.mGUIElements.push_back(guiElement);
     });
 }
