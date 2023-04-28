@@ -32,7 +32,8 @@ static const std::unordered_map<Map::NodeType, Scene::SceneType> NODE_TYPE_TO_SC
     { Map::NodeType::NORMAL_ENCOUNTER, Scene::SceneType::LEVEL },
     { Map::NodeType::HARD_ENCOUNTER, Scene::SceneType::LEVEL },
     { Map::NodeType::BOSS_ENCOUNTER, Scene::SceneType::LEVEL },
-    { Map::NodeType::LAB, Scene::SceneType::LAB }
+    { Map::NodeType::LAB, Scene::SceneType::LAB },
+    { Map::NodeType::EVENT, Scene::SceneType::LAB },
 };
 
 static const strutils::StringId CONFIRMATION_BUTTON_NAME = strutils::StringId("CONFIRMATION_BUTTON");
@@ -489,6 +490,7 @@ void MapUpdater::OnLevelDeselection()
                 } break;
                 
                 case Map::NodeType::LAB:
+                case Map::NodeType::EVENT:
                 {
                     nodeSo.mAnimation->ChangeShaderResourceId(resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME));
                 } break;

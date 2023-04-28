@@ -70,8 +70,9 @@ public:
         HARD_ENCOUNTER = 1,
         BOSS_ENCOUNTER = 2,
         LAB = 3,
-        STARTING_LOCATION = 4,
-        COUNT = 5
+        EVENT = 4,
+        STARTING_LOCATION = 5,
+        COUNT = 6
     };
     
     struct NodeData

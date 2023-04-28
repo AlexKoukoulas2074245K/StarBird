@@ -21,11 +21,13 @@
 ///------------------------------------------------------------------------------------------------
 
 static const char* STARTING_LOCATION_TEXTURE_FILE_NAME = "octo_star.bmp";
-static const char* MAP_LAB_MESH_FILE_NAME = "base.obj";
+static const char* LAB_TEXTURE_FILE_NAME = "lab_mm.bmp";
+static const char* EVENT_TEXTURE_FILE_NAME = "event_mm.bmp";
 static const char* MAP_PATH_NAME_SUFFIX = "_PATH";
 
 static const glm::vec3 MAP_NEBULA_NODE_SCALE = glm::vec3(3.0f, 3.0f, 1.0f);
 static const glm::vec3 MAP_LAB_SCALE = glm::vec3(0.9, 0.5f, 0.9f);
+static const glm::vec3 LAB_SCALE = glm::vec3(2.5f, 2.5f, 1.0f);
 static const glm::vec3 EVENT_SCALE = glm::vec3(2.5f, 2.5f, 1.0f);
 static const glm::vec3 STARTING_LOCATION_SCALE = glm::vec3(4.0, 4.0f, 1.0f);
 
@@ -166,18 +168,19 @@ void Map::CreateMapSceneObjects()
                 nodeSo.mShaderFloatUniformValues[game_constants::HUE_SHIFT_UNIFORM_NAME] = math::ControlledRandomFloat(0, 2.0f * math::PI);
                 nodeSo.mShaderBoolUniformValues[game_constants::IS_AFFECTED_BY_LIGHT_UNIFORM_NAME] = false;
             } break;
-               
+            
+            case NodeType::EVENT:
+            {
+                bool shouldUseGrayscale = mapNodeEntry.first.mCol <= mCurrentMapCoord.mCol;
+                nodeSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + EVENT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + (shouldUseGrayscale ? game_constants::GRAYSCALE_SHADER_FILE_NAME : game_constants::BASIC_SHADER_FILE_NAME)), EVENT_SCALE, false);
+                nodeSo.mScale = EVENT_SCALE;
+            } break;
+                
             case NodeType::LAB:
             {
-                bool shouldRotate = mapNodeEntry.first.mCol > mCurrentMapCoord.mCol;
-
-                nodeSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MAP_BASE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + MAP_LAB_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + (shouldRotate ? game_constants::BASIC_SHADER_FILE_NAME : game_constants::GRAYSCALE_SHADER_FILE_NAME)), MAP_LAB_SCALE, RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, shouldRotate ? game_constants::MAP_NODE_ROTATION_SPEED : 0.0f, false);
-                nodeSo.mRotation.x = MAP_BASE_X_ROTATION;
-                nodeSo.mScale = MAP_LAB_SCALE;
-                
-//                bool shouldRotate = mapNodeEntry.first.mCol > mCurrentMapCoord.mCol;
-//                nodeSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + "event.bmp"), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + (shouldRotate ? game_constants::BASIC_SHADER_FILE_NAME : game_constants::GRAYSCALE_SHADER_FILE_NAME)), EVENT_SCALE, false);
-//                nodeSo.mScale = EVENT_SCALE;
+                bool shouldUseGrayscale = mapNodeEntry.first.mCol <= mCurrentMapCoord.mCol;
+                nodeSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + LAB_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + (shouldUseGrayscale ? game_constants::GRAYSCALE_SHADER_FILE_NAME : game_constants::BASIC_SHADER_FILE_NAME)), LAB_SCALE, false);
+                nodeSo.mScale = LAB_SCALE;
             } break;
                 
             case NodeType::BOSS_ENCOUNTER:
@@ -460,11 +463,11 @@ Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
             availableNodeTypes.erase(NodeType::LAB);
         }
         
-        // Remove any node types from the immediate previous links except if there are
-        // normal encounters
+        // Remove any node types from the immediate previous links except if they are
+        // normal encounters or events
         for (const auto& mapEntry: mMapData)
         {
-            if (mapEntry.second.mNodeType == NodeType::NORMAL_ENCOUNTER) continue;
+            if (mapEntry.second.mNodeType == NodeType::NORMAL_ENCOUNTER || mapEntry.second.mNodeType == NodeType::EVENT) continue;
             
             if (mapEntry.second.mNodeLinks.contains(currentMapCoord))
             {

@@ -60,7 +60,6 @@ inline const char* PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_ba
 inline const char* PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME = "player_health_bar.bmp";
 inline const char* MAP_PLANET_TEXTURE_FILE_NAME = "planet_mm.bmp";
 inline const char* MAP_PLANET_RING_TEXTURE_FILE_NAME = "planet_ring_mm.bmp";
-inline const char* MAP_BASE_TEXTURE_FILE_NAME = "base_mm.bmp";
 inline const char* MAP_STAR_PATH_TEXTURE_FILE_NAME = "star_path.bmp";
 inline const char* NOISE_PREFIX_TEXTURE_FILE_NAME = "noise_";
 inline const char* BOSS_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_frame.bmp";
