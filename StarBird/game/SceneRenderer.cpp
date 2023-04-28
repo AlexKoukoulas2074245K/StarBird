@@ -249,10 +249,12 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
         
         if (so.mDebugEditSelected)
         {
-            currentMesh = &(resService.GetResource<resources::MeshResource>(resources::ResourceLoadingService::FALLBACK_MESH_ID));
+            currentMeshReourceId = resources::ResourceLoadingService::FALLBACK_MESH_ID;
+            currentMesh = &(resService.GetResource<resources::MeshResource>(currentMeshReourceId));
             GL_CALL(glBindVertexArray(currentMesh->GetVertexArrayObject()));
             
-            currentShader = &(resService.GetResource<resources::ShaderResource>(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME));
+            currentShaderResourceId = resService.GetResourceIdFromPath(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME);
+            currentShader = &(resService.GetResource<resources::ShaderResource>(currentShaderResourceId));
             
             GL_CALL(glUseProgram(currentShader->GetProgramId()));
             
@@ -292,10 +294,12 @@ void SceneRenderer::Render(std::vector<SceneObject>& sceneObjects, const LightRe
         
         for (const auto& debugQuad: mPhysicsDebugQuads)
         {
-            currentMesh = &(resService.GetResource<resources::MeshResource>(resources::ResourceLoadingService::FALLBACK_MESH_ID));
+            currentMeshReourceId = resources::ResourceLoadingService::FALLBACK_MESH_ID;
+            currentMesh = &(resService.GetResource<resources::MeshResource>(currentMeshReourceId));
             GL_CALL(glBindVertexArray(currentMesh->GetVertexArrayObject()));
             
-            currentShader = &(resService.GetResource<resources::ShaderResource>(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME));
+            currentShaderResourceId = resService.GetResourceIdFromPath(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME);
+            currentShader = &(resService.GetResource<resources::ShaderResource>(currentShaderResourceId));
             
             GL_CALL(glUseProgram(currentShader->GetProgramId()));
             
