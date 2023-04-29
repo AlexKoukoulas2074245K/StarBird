@@ -21,6 +21,8 @@
 #include <fstream>
 #include <cassert>
 
+//#define UNZIP_FLOW
+
 ///------------------------------------------------------------------------------------------------
 
 namespace resources
@@ -43,6 +45,8 @@ const ResourceId ResourceLoadingService::FALLBACK_TEXTURE_ID = 0;
 const ResourceId ResourceLoadingService::FALLBACK_SHADER_ID  = 1;
 const ResourceId ResourceLoadingService::FALLBACK_MESH_ID    = 2;
 
+static const std::string ZIPPED_ASSETS_FILE_NAME = "assets.zip";
+
 ///------------------------------------------------------------------------------------------------
 
 ResourceLoadingService& ResourceLoadingService::GetInstance()
@@ -63,6 +67,10 @@ ResourceLoadingService::~ResourceLoadingService()
 void ResourceLoadingService::Initialize()
 {
     using namespace strutils;
+    
+#ifdef UNZIP_FLOW
+    objectiveC_utils::UnzipAssets((RES_ROOT + ZIPPED_ASSETS_FILE_NAME).c_str(), RES_ROOT.c_str());
+#endif
     
     // No make unique due to constructing the loaders with their private constructors
     // via friendship

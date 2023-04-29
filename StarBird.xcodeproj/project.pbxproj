@@ -116,6 +116,11 @@
 		92E417D629CB5860002F016D /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92E417C929CB5860002F016D /* Map.cpp */; };
 		92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92E8DAE4298E940B00591968 /* PhysicsCollisionListener.cpp */; };
 		92E96A6B29803597004A3120 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92E96A5F29803597004A3120 /* OpenGLES.framework */; };
+		92ED638429FD2C71004C4CEE /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 92ED637029FD2C71004C4CEE /* unzip.c */; };
+		92ED638529FD2C71004C4CEE /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 92ED637129FD2C71004C4CEE /* zip.c */; };
+		92ED638629FD2C71004C4CEE /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 92ED637229FD2C71004C4CEE /* ioapi.c */; };
+		92ED638729FD2C71004C4CEE /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 92ED637329FD2C71004C4CEE /* mztools.c */; };
+		92ED638A29FD2C84004C4CEE /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 92ED638829FD2C83004C4CEE /* SSZipArchive.m */; };
 		92F5BE5929DD7A4200E2EB14 /* StatUpgradeAreaController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F5BE5829DD7A4200E2EB14 /* StatUpgradeAreaController.cpp */; };
 		92F62EC629EB27B7006FEC10 /* UpgradeUnlockedHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F62EB729EB27B7006FEC10 /* UpgradeUnlockedHandler.cpp */; };
 		92F62EC729EB27B7006FEC10 /* UpgradesLevelLogicHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F62EC529EB27B7006FEC10 /* UpgradesLevelLogicHandler.cpp */; };
@@ -840,6 +845,17 @@
 		92E96BE429805C9D004A3120 /* rotate_normalized_axis.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rotate_normalized_axis.hpp; sourceTree = "<group>"; };
 		92E96BE529805C9D004A3120 /* projection.inl */ = {isa = PBXFileReference; lastKnownFileType = text; path = projection.inl; sourceTree = "<group>"; };
 		92E96BE629805C9D004A3120 /* type_aligned.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = type_aligned.hpp; sourceTree = "<group>"; };
+		92ED637029FD2C71004C4CEE /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		92ED637129FD2C71004C4CEE /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		92ED637229FD2C71004C4CEE /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		92ED637329FD2C71004C4CEE /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		92ED637429FD2C71004C4CEE /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		92ED637529FD2C71004C4CEE /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		92ED637629FD2C71004C4CEE /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		92ED637729FD2C71004C4CEE /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		92ED637829FD2C71004C4CEE /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		92ED638829FD2C83004C4CEE /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
+		92ED638929FD2C84004C4CEE /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
 		92F5BE4C29DD7A4200E2EB14 /* StatUpgradeAreaController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatUpgradeAreaController.h; sourceTree = "<group>"; };
 		92F5BE5829DD7A4200E2EB14 /* StatUpgradeAreaController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StatUpgradeAreaController.cpp; sourceTree = "<group>"; };
 		92F62EB729EB27B7006FEC10 /* UpgradeUnlockedHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpgradeUnlockedHandler.cpp; sourceTree = "<group>"; };
@@ -1312,12 +1328,15 @@
 				92DAA4D329829B380062A438 /* StringUtils.h */,
 				924DA00D29E963D800CFAF47 /* StringUtils.cpp */,
 				92DAA4D429829B380062A438 /* Logging.h */,
+				92ED636F29FD2C71004C4CEE /* minizip */,
 				925FD87C298AD7050058E747 /* ObjectiveCUtils.mm */,
 				925FD87D298AD7050058E747 /* ObjectiveCUtils.h */,
 				92DAA4D729829B380062A438 /* OSMessageBox.h */,
 				92DAA4D829829B380062A438 /* MathUtils.cpp */,
 				92DAA4DA29829B380062A438 /* MathUtils.h */,
 				92DAA4DE29829CF90062A438 /* OpenGL.h */,
+				92ED638929FD2C84004C4CEE /* SSZipArchive.h */,
+				92ED638829FD2C83004C4CEE /* SSZipArchive.m */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1743,6 +1762,22 @@
 			path = gtx;
 			sourceTree = "<group>";
 		};
+		92ED636F29FD2C71004C4CEE /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				92ED637029FD2C71004C4CEE /* unzip.c */,
+				92ED637129FD2C71004C4CEE /* zip.c */,
+				92ED637229FD2C71004C4CEE /* ioapi.c */,
+				92ED637329FD2C71004C4CEE /* mztools.c */,
+				92ED637429FD2C71004C4CEE /* crypt.h */,
+				92ED637529FD2C71004C4CEE /* zip.h */,
+				92ED637629FD2C71004C4CEE /* unzip.h */,
+				92ED637729FD2C71004C4CEE /* mztools.h */,
+				92ED637829FD2C71004C4CEE /* ioapi.h */,
+			);
+			path = minizip;
+			sourceTree = "<group>";
+		};
 		92F9EC77299E565500C263E8 /* states */ = {
 			isa = PBXGroup;
 			children = (
@@ -2019,6 +2054,7 @@
 				9254CC0D2969B79A00EFE0CC /* b2CollideEdge.cpp in Sources */,
 				9268C97C29F68C090048C0CB /* MainMenuUpdater.cpp in Sources */,
 				9254CC012969B79A00EFE0CC /* b2StackAllocator.cpp in Sources */,
+				92ED638529FD2C71004C4CEE /* zip.c in Sources */,
 				9228C168299FD15A00410E49 /* GUISceneLoader.cpp in Sources */,
 				9254CBFE2969B79A00EFE0CC /* b2BlockAllocator.cpp in Sources */,
 				9254CBE22969B79A00EFE0CC /* b2World.cpp in Sources */,
@@ -2027,6 +2063,7 @@
 				9254CBEE2969B79A00EFE0CC /* b2WeldJoint.cpp in Sources */,
 				9254CC0B2969B79A00EFE0CC /* b2TimeOfImpact.cpp in Sources */,
 				9254CBED2969B79A00EFE0CC /* b2WorldCallbacks.cpp in Sources */,
+				92ED638629FD2C71004C4CEE /* ioapi.c in Sources */,
 				92DAA4C529829A4C0062A438 /* OBJMeshLoader.cpp in Sources */,
 				9254CC0A2969B79A00EFE0CC /* b2PolygonShape.cpp in Sources */,
 				9254CBF92969B79A00EFE0CC /* b2RopeJoint.cpp in Sources */,
@@ -2052,6 +2089,7 @@
 				9254CBE42969B79A00EFE0CC /* b2ChainAndPolygonContact.cpp in Sources */,
 				92DAA4CD29829A4C0062A438 /* ShaderLoader.cpp in Sources */,
 				92C851BF2969AAA10021923F /* SDL_uikit_main.c in Sources */,
+				92ED638429FD2C71004C4CEE /* unzip.c in Sources */,
 				92C2198A29842E6A00B2D2C6 /* Game.cpp in Sources */,
 				9254CBF32969B79A00EFE0CC /* b2MotorJoint.cpp in Sources */,
 				9254CC0C2969B79A00EFE0CC /* b2BroadPhase.cpp in Sources */,
@@ -2059,6 +2097,8 @@
 				926693E929EEAA4B0013C195 /* BlueprintFlows.cpp in Sources */,
 				927D3B6329F8207000143375 /* ResearchUpdater.cpp in Sources */,
 				925FD87229893CAF0058E747 /* ObjectTypeDefinitionLoader.cpp in Sources */,
+				92ED638A29FD2C84004C4CEE /* SSZipArchive.m in Sources */,
+				92ED638729FD2C71004C4CEE /* mztools.c in Sources */,
 				9254CBEC2969B79A00EFE0CC /* b2Contact.cpp in Sources */,
 				92F9EC90299E9BAA00C263E8 /* BaseGameState.cpp in Sources */,
 				92B44C07298D247E00191B22 /* FontLoader.cpp in Sources */,

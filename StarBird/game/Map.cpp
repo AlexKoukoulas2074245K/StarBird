@@ -26,12 +26,10 @@ static const char* EVENT_TEXTURE_FILE_NAME = "event_mm.bmp";
 static const char* MAP_PATH_NAME_SUFFIX = "_PATH";
 
 static const glm::vec3 MAP_NEBULA_NODE_SCALE = glm::vec3(3.0f, 3.0f, 1.0f);
-static const glm::vec3 MAP_LAB_SCALE = glm::vec3(0.9, 0.5f, 0.9f);
 static const glm::vec3 LAB_SCALE = glm::vec3(2.5f, 2.5f, 1.0f);
 static const glm::vec3 EVENT_SCALE = glm::vec3(2.5f, 2.5f, 1.0f);
 static const glm::vec3 STARTING_LOCATION_SCALE = glm::vec3(4.0, 4.0f, 1.0f);
 
-static const float MAP_BASE_X_ROTATION = 0.6f;
 static const float MAP_PLANET_RING_MIN_X_ROTATION = 1.8f;
 static const float MAP_PLANET_RING_MAX_X_ROTATION = 2.2f;
 static const float MAP_PLANET_RING_MIN_Y_ROTATION = -math::PI/10;

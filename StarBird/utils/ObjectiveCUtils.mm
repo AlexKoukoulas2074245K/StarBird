@@ -6,7 +6,20 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "ObjectiveCUtils.h"
+#import "SSZipArchive.h"
 #import <AudioToolbox/AudioServices.h>
+
+///------------------------------------------------------------------------------------------------
+
+void objectiveC_utils::UnzipAssets(const char* zippedFolderPath, const char* resFolderPath)
+{
+    NSString* zipPath = [NSString stringWithCString:zippedFolderPath
+                                       encoding:[NSString defaultCStringEncoding]];
+    NSString* resPath = [NSString stringWithCString:resFolderPath
+                                           encoding:[NSString defaultCStringEncoding]];
+    
+    [SSZipArchive unzipFileAtPath:zipPath toDestination:resPath];
+}
 
 ///------------------------------------------------------------------------------------------------
 

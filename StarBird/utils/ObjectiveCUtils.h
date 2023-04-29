@@ -16,6 +16,7 @@
 
 namespace objectiveC_utils
 {
+    void UnzipAssets(const char* zippedFolderPath, const char* resFolderPath);
     void Vibrate();
     std::string GetLocalFileSaveLocation();
     std::string BuildLocalFileSaveLocation(const std::string& fileName);
