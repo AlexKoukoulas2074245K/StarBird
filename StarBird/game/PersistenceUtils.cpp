@@ -184,7 +184,7 @@ void LoadFromProgressSaveFile()
                 }
             });
             
-            BaseGameDataLoader::LoadData(objectiveC_utils::BuildLocalFileSaveLocation(PROGRESS_SAVE_FILE_NAME), true);
+            BaseGameDataLoader::LoadData(objectiveC_utils::BuildLocalFileSaveLocation(PROGRESS_SAVE_FILE_NAME));
         }
     };
     

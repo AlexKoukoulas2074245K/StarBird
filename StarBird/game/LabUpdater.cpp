@@ -42,7 +42,6 @@ static const strutils::StringId CONFIRMATION_BUTTON_NAME = strutils::StringId("C
 static const strutils::StringId CONFIRMATION_BUTTON_TEXT_NAME = strutils::StringId("CONFIRMATION_BUTTON_TEXT");
 
 static const char* CONFIRMATION_BUTTON_TEXTURE_FILE_NAME = "confirmation_button_mm.bmp";
-static const char* TEXT_PROMPT_TEXTURE_FILE_NAME = "text_prompt_mm.bmp";
 
 static const glm::vec3 LAB_BACKGROUND_POS = glm::vec3(-1.8f, 0.0f, -1.0f);
 static const glm::vec3 LAB_BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
@@ -54,7 +53,7 @@ static const glm::vec3 LAB_REJECTION_TEXT_POSITION = glm::vec3(-3.5f, -6.4f, 0.5
 static const glm::vec3 CONFIRMATION_BUTTON_TEXT_POSITION = glm::vec3(-0.8f, -8.3f, 0.5f);
 static const glm::vec3 CONFIRMATION_BUTTON_TEXT_SCALE = glm::vec3(0.007f, 0.007f, 1.0f);
 
-static const glm::vec3 TEXT_PROMPT_POSITION = glm::vec3(0.0f, 7.2f, 0.5f);
+static const glm::vec3 TEXT_PROMPT_POSITION = glm::vec3(0.0f, 4.0f, 0.5f);
 static const glm::vec3 TEXT_PROMPT_SCALE = glm::vec3(12.0f, 10.0f, 1.0f);
 
 static const float CONFIRMATION_BUTTON_ROTATION_SPEED = 0.0002f;
@@ -78,6 +77,7 @@ LabUpdater::LabUpdater(Scene& scene, b2World& box2dWorld)
     
     CreateSceneObjects();
     OnCarouselStationary();
+    mVisitedLabOptions.clear();
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -396,8 +396,7 @@ void LabUpdater::OnCarouselStationary()
     }
     
     // Text Prompt
-    mTextPromptController = std::make_unique<TextPromptController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + TEXT_PROMPT_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false), TEXT_PROMPT_POSITION, TEXT_PROMPT_SCALE, !mVisitedLabOptions.contains(mSelectedLabOption), LAB_OPTION_DESCRIPTIONS.at(mSelectedLabOption));
-    
+    mTextPromptController = std::make_unique<TextPromptController>(mScene, TEXT_PROMPT_POSITION, TEXT_PROMPT_SCALE, TextPromptController::CharsAnchorMode::BOT_ANCHORED, (mVisitedLabOptions.empty() || !mVisitedLabOptions.contains(mSelectedLabOption)), LAB_OPTION_DESCRIPTIONS.at(mSelectedLabOption));
     
     mVisitedLabOptions.insert(mSelectedLabOption);
 }

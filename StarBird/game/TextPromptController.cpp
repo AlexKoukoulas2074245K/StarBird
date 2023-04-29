@@ -15,11 +15,18 @@
 ///------------------------------------------------------------------------------------------------
 
 static const float GLYPH_SCALE_INFERENCE_MAGIC = 1350.0f;
-static const float LEFT_BOUND_MAGIC = 0.43f;
-static const float RIGHT_BOUND_MAGIC = 0.41f;
+static const float RIGHT_BOUND_MAGIC = 0.9f;
 static const float TEXT_WRAP_Y_OFFSET_MAGIC = 100.0f;
-static const float INIT_Y_OFFSET_MAGIC = 0.25f;
-static const float FADE_IN_DELAY_MULTIPLIER_MILLIS = 20.0f;
+static const float FADE_IN_DELAY_MULTIPLIER_MILLIS = 10.0f;
+
+///------------------------------------------------------------------------------------------------
+
+struct TextPromptSentence
+{
+    std::string mSentence;
+    std::vector<glm::vec2> mGlyphPositions;
+    float mSentenceWidth;
+};
 
 ///------------------------------------------------------------------------------------------------
 
@@ -35,21 +42,9 @@ static std::unordered_map<char, Glyph>::const_iterator GetGlyphIter(char c, cons
 
 ///------------------------------------------------------------------------------------------------
 
-TextPromptController::TextPromptController(Scene& scene, std::unique_ptr<BaseAnimation> textPromptAreaAnimation, const glm::vec3& position, const glm::vec3& scale, bool fadeIn, const std::string& text)
+TextPromptController::TextPromptController(Scene& scene, const glm::vec3& charsAnchorOrigin, const glm::vec3& scale, const CharsAnchorMode charsAnchorMode, const bool fadeIn, const std::string& text)
     : mScene(scene)
 {
-    // Text prompt background
-    SceneObject textPromptSo;
-    textPromptSo.mPosition = position;
-    textPromptSo.mScale = scale;
-    textPromptSo.mAnimation = std::move(textPromptAreaAnimation);
-    textPromptSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-    textPromptSo.mName = game_constants::TEXT_PROMPT_NAME;
-    textPromptSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-    mSceneObjectNamesToTransparencyDelayMillis[textPromptSo.mName] = 0.0f;
-    
-    mScene.AddSceneObject(std::move(textPromptSo));
-    
     auto fontOpt = FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME);
     if (fontOpt)
     {
@@ -57,11 +52,11 @@ TextPromptController::TextPromptController(Scene& scene, std::unique_ptr<BaseAni
         
         // Define constants
         const float glyphScale = ((scale.x + scale.y)/2.0f)/GLYPH_SCALE_INFERENCE_MAGIC;
-        const float xCutoff = position.x + scale.x * RIGHT_BOUND_MAGIC;
+        const float xCutoff = charsAnchorOrigin.x + scale.x * RIGHT_BOUND_MAGIC;
         
         // and initial positions
-        float xCursor = position.x - scale.x * LEFT_BOUND_MAGIC;
-        float yCursor = position.y + scale.y * INIT_Y_OFFSET_MAGIC;
+        float xCursor = 0.0f;
+        float yCursor = 0.0f;
         
         // Split text to words and re-add space to the end of each word
         auto words = strutils::StringSplit(text, ' ');
@@ -75,7 +70,17 @@ TextPromptController::TextPromptController(Scene& scene, std::unique_ptr<BaseAni
             words[i] += " ";
         }
         
-        auto charCounter = 0;
+        // Build final sentences, calculate their widths and exact glyph positions
+        std::vector<TextPromptSentence> sentences(1);
+        
+        auto onLineWrapLambda = [&]()
+        {
+            sentences.back().mSentenceWidth = xCursor;
+            sentences.emplace_back();
+            xCursor = 0.0f;
+            yCursor -= glyphScale * TEXT_WRAP_Y_OFFSET_MAGIC;
+        };
+    
         for (size_t i = 0; i < words.size(); ++i)
         {
             // Look forward to see if word fits in current line
@@ -89,8 +94,7 @@ TextPromptController::TextPromptController(Scene& scene, std::unique_ptr<BaseAni
                 cursorCopy += (glyph.mWidthPixels * glyphScale) * 0.5f + (nextGlyph.mWidthPixels * glyphScale) * 0.5f;
                 if (cursorCopy > xCutoff)
                 {
-                    xCursor = position.x - scale.x * LEFT_BOUND_MAGIC;
-                    yCursor -= glyphScale * TEXT_WRAP_Y_OFFSET_MAGIC;
+                    onLineWrapLambda();
                     break;
                 }
             }
@@ -100,25 +104,14 @@ TextPromptController::TextPromptController(Scene& scene, std::unique_ptr<BaseAni
             {
                 if (currentWord[j] == '\n')
                 {
-                    xCursor = position.x - scale.x * LEFT_BOUND_MAGIC;
-                    yCursor -= glyphScale * TEXT_WRAP_Y_OFFSET_MAGIC;
+                    onLineWrapLambda();
                     continue;
                 }
                 
-                const auto& glyph = GetGlyphIter(currentWord[j], font)->second;
-                auto& resService = resources::ResourceLoadingService::GetInstance();
+                sentences.back().mSentence += currentWord[j];
+                sentences.back().mGlyphPositions.push_back(glm::vec2(xCursor, yCursor));
                 
-                SceneObject glyphSO;
-                glyphSO.mPosition = glm::vec3(xCursor, yCursor, position.z + 0.5f);
-                glyphSO.mScale = glm::vec3(glyphScale, glyphScale, position.z + 0.5f);
-                glyphSO.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(glyphScale), false);
-                glyphSO.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = fadeIn ? 0.0f : 1.0f;
-                glyphSO.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
-                glyphSO.mSceneObjectType = SceneObjectType::WorldGameObject;
-                glyphSO.mName = strutils::StringId(std::to_string(charCounter));
-                glyphSO.mText = std::string(1, currentWord[j]);
-                mSceneObjectNamesToTransparencyDelayMillis[glyphSO.mName] = charCounter * FADE_IN_DELAY_MULTIPLIER_MILLIS;
-                mScene.AddSceneObject(std::move(glyphSO));
+                const auto& glyph = GetGlyphIter(currentWord[j], font)->second;
                 
                 if (i != words.size() - 1 || j != currentWord.size() - 1)
                 {
@@ -127,9 +120,48 @@ TextPromptController::TextPromptController(Scene& scene, std::unique_ptr<BaseAni
                     const auto& nextGlyph = GetGlyphIter(currentWord[j + 1], font)->second;
                     xCursor += (glyph.mWidthPixels * glyphScale) * 0.5f + (nextGlyph.mWidthPixels * glyphScale) * 0.5f;
                 }
+            }
+        }
+        
+        // Last sentence built does not go through the width calculation flow
+        sentences.back().mSentenceWidth = xCursor;
+        
+        // Render each glyph (can't be done inline before, since the calculations are ongoing)
+        auto charCounter = 0;
+        for (const auto& sentence: sentences)
+        {
+            for (int i = 0; i < sentence.mSentence.size(); ++i)
+            {
+                auto& resService = resources::ResourceLoadingService::GetInstance();
+                
+                SceneObject glyphSO;
+                
+                switch (charsAnchorMode)
+                {
+                    case CharsAnchorMode::TOP_ANCHORED:
+                    {
+                        glyphSO.mPosition = glm::vec3(sentence.mGlyphPositions[i].x - sentence.mSentenceWidth/2, charsAnchorOrigin.y + sentence.mGlyphPositions[i].y, charsAnchorOrigin.z + 0.5f);
+                    } break;
+                        
+                    case CharsAnchorMode::BOT_ANCHORED:
+                    {
+                        glyphSO.mPosition = glm::vec3(sentence.mGlyphPositions[i].x - sentence.mSentenceWidth/2, charsAnchorOrigin.y - yCursor + sentence.mGlyphPositions[i].y, charsAnchorOrigin.z + 0.5f);
+                    } break;
+                }
+                
+                glyphSO.mScale = glm::vec3(glyphScale, glyphScale, 1.0f);
+                glyphSO.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(glyphScale), false);
+                glyphSO.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = fadeIn ? 0.0f : 1.0f;
+                glyphSO.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
+                glyphSO.mSceneObjectType = SceneObjectType::WorldGameObject;
+                glyphSO.mName = strutils::StringId(std::to_string(charCounter));
+                glyphSO.mText = std::string(1, sentence.mSentence[i]);
+                mSceneObjectNamesToTransparencyDelayMillis[glyphSO.mName] = charCounter * FADE_IN_DELAY_MULTIPLIER_MILLIS;
+                mScene.AddSceneObject(std::move(glyphSO));
                 
                 charCounter++;
             }
+            
         }
     }
 }

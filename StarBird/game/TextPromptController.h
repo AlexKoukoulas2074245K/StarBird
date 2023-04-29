@@ -25,7 +25,12 @@ class SceneObject;
 class TextPromptController final
 {
 public:
-    TextPromptController(Scene& scene, std::unique_ptr<BaseAnimation> textPromptAreaAnimation, const glm::vec3& position, const glm::vec3& scale, bool fadeIn, const std::string& text);
+    enum class CharsAnchorMode
+    {
+        TOP_ANCHORED, BOT_ANCHORED
+    };
+    
+    TextPromptController(Scene& scene, const glm::vec3& charsAnchorOrigin, const glm::vec3& scale, const CharsAnchorMode charsAnchorMode, const bool fadeIn, const std::string& text);
     ~TextPromptController();
     
     void Update(const float dtMillis);

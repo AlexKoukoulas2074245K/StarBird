@@ -12,7 +12,6 @@
 #include "ResearchUpdater.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
-#include "TextPromptController.h"
 #include "states/DebugConsoleGameState.h"
 #include "datarepos/FontRepository.h"
 #include "datarepos/ObjectTypeDefinitionRepository.h"
