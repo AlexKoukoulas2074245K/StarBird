@@ -579,7 +579,11 @@ void MapUpdater::OnEventNodeSelected()
         0.1f, // Level
         0.8f, // Event
     };
-
+    
+    // Avoid same event for the whole map since the seed is set each time the map
+    // gets created
+    for (int i = 0; i < mCurrentMapCoord.mCol; ++i) math::ControlledRandomInt();
+    
     auto selectedIndex = math::ControlledIndexSelectionFromDistribution(probDist);
     
     switch (selectedIndex)
