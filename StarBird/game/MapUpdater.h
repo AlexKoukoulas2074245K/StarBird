@@ -42,6 +42,7 @@ private:
     void OnLevelSelection();
     void OnLevelDeselection();
     void OnConfirmationButtonPressed();
+    void OnEventNodeSelected();
     
 private:
     Scene& mScene;

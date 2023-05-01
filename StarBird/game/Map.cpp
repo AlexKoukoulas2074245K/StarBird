@@ -421,8 +421,8 @@ glm::vec3 Map::GenerateNodePositionForCoord(const MapCoord& currentMapCoord) con
      );
     
     // Add noise
-    result.x += math::ControlledRandomFloat(-1.0f, 1.0f);
-    result.y += math::ControlledRandomFloat(-1.0f, 1.0f);
+    result.x += math::ControlledRandomFloat(-0.5f, 0.5f);
+    result.y += math::ControlledRandomFloat(-0.5f, 0.5f);
     return result;
 }
 

@@ -51,6 +51,7 @@ static const glm::vec3 Z_AXIS = glm::vec3(0.0f, 0.0f, 1.0f);
 ///-----------------------------------------------------------------------------------------------
 
 using Frustum = std::array<glm::vec4, FRUSTUM_SIDES>;
+using ProbabilityDistribution = std::vector<float>;
 
 ///-----------------------------------------------------------------------------------------------
 
@@ -374,9 +375,32 @@ inline int ControlledRandomInt(const int min = 0, const int max = RAND_MAX)
 /// @param[in] min the minimum value (inclusive) that the function can return (defaults to 0.0f).
 /// @param[in] max the maximum value (inclusive) that the function can return (defaults to 1.0f).
 /// @returns a random float that respects the given bounds.
-inline int ControlledRandomFloat(const float min = 0.0f, const float max = 1.0f)
+inline float ControlledRandomFloat(const float min = 0.0f, const float max = 1.0f)
 {
     return min + static_cast <float> (ControlledRandomInt()) / (static_cast <float> (RAND_MAX / (max - min)));
+}
+
+///-----------------------------------------------------------------------------------------------
+/// Selects an entry from a probability distribution vector based on the control seed specified at SetCRandomSeed.
+/// The sum of probabilities of the entries should naturally be 1, although this is not enforced.
+/// @param[in] probDist a vector containing probability floats in the range of [0,1].
+/// @returns the index of the selected entry
+inline int ControlledIndexSelectionFromDistribution(const ProbabilityDistribution& probDist)
+{
+    assert(!probDist.empty());
+    
+    auto randomFloat = ControlledRandomFloat();
+    auto probSum = 0.0f;
+    for (int i = 0; i < static_cast<int>(probDist.size()); ++i)
+    {
+        probSum += probDist[i];
+        if (randomFloat < probSum)
+        {
+            return i;
+        }
+    }
+    
+    return -1;
 }
 
 ///-----------------------------------------------------------------------------------------------

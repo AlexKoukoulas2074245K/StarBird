@@ -184,10 +184,19 @@ PostStateUpdateDirective MapUpdater::VUpdate(std::vector<SceneObject>& sceneObje
                     GameSingletons::SetCurrentMapCoord(mSelectedMapCoord);
                     mTransitioning = true;
                     
-                    assert(NODE_TYPE_TO_SCENE_TYPE.contains(mMap.GetMapData().at(mSelectedMapCoord).mNodeType));
-                    auto nextSceneType = NODE_TYPE_TO_SCENE_TYPE.at(mMap.GetMapData().at(mSelectedMapCoord).mNodeType);
+                    auto selectedNodeType = mMap.GetMapData().at(mSelectedMapCoord).mNodeType;
                     
-                    mScene.ChangeScene(Scene::TransitionParameters(nextSceneType, nextSceneType == Scene::SceneType::LEVEL ? (objectiveC_utils::BuildLocalFileSaveLocation(mSelectedMapCoord.ToString())) : "", true));
+                    assert(NODE_TYPE_TO_SCENE_TYPE.contains(selectedNodeType));
+                    auto nextSceneType = NODE_TYPE_TO_SCENE_TYPE.at(selectedNodeType);
+                    
+                    if (selectedNodeType == Map::NodeType::EVENT)
+                    {
+                        OnEventNodeSelected();
+                    }
+                    else
+                    {
+                        mScene.ChangeScene(Scene::TransitionParameters(nextSceneType, nextSceneType == Scene::SceneType::LEVEL ? (objectiveC_utils::BuildLocalFileSaveLocation(mSelectedMapCoord.ToString())) : "", true));
+                    }
                 }
                 else
                 {
@@ -557,6 +566,39 @@ void MapUpdater::OnConfirmationButtonPressed()
         
         confirmationButtonTextSo.mExtraCompoundingAnimations.clear();
         confirmationButtonTextSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(confirmationButtonTextSo.mAnimation->VGetCurrentTextureResourceId(), confirmationButtonTextSo.mAnimation->VGetCurrentMeshResourceId(), confirmationButtonTextSo.mAnimation->VGetCurrentShaderResourceId(), CONFIRMATION_BUTTON_TEXT_SCALE, PulsingAnimation::PulsingMode::INNER_PULSE_ONCE, 0.0f, CONFIRMATION_BUTTON_PULSING_SPEED, CONFIRMATION_BUTTON_TEXT_PULSING_ENLARGEMENT_FACTOR, false));
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void MapUpdater::OnEventNodeSelected()
+{
+    static const math::ProbabilityDistribution probDist =
+    {
+        0.1f, // Lab
+        0.1f, // Level
+        0.8f, // Event
+    };
+    
+    auto selectedIndex = math::ControlledIndexSelectionFromDistribution(probDist);
+    
+    switch (selectedIndex)
+    {
+        case 0:
+        {
+            mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::LAB, "", true));
+        } break;
+            
+        case 1:
+        {
+            mMap.GenerateLevelWaves(mSelectedMapCoord, mMap.GetMapData().at(mSelectedMapCoord));
+            mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::LEVEL, objectiveC_utils::BuildLocalFileSaveLocation(mSelectedMapCoord.ToString()), true));
+        } break;
+            
+        case 2:
+        {
+            mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::EVENT, "", true));
+        }break;
     }
 }
 

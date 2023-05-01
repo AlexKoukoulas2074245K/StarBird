@@ -9,6 +9,7 @@
 #include "GameSingletons.h"
 #include "Scene.h"
 #include "ChestRewardUpdater.h"
+#include "EventUpdater.h"
 #include "GameConstants.h"
 #include "LabUpdater.h"
 #include "MainMenuUpdater.h"
@@ -346,6 +347,11 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
             case SceneType::LAB:
             {
                 mSceneUpdater = std::make_unique<LabUpdater>(*this, mBox2dWorld);
+            } break;
+                
+            case SceneType::EVENT:
+            {
+                mSceneUpdater = std::make_unique<EventUpdater>(*this, mBox2dWorld);
             } break;
                 
             case SceneType::RESEARCH:

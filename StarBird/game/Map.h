@@ -85,6 +85,8 @@ public:
 public:
     Map(Scene& scene, const int generationSeed, const glm::ivec2& mapDimensions, const MapCoord& currentMapCoord, const bool singleEntryPoint);
     
+    void GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData);
+    
     int GetCurrentGenerationSeed() const;
     const std::map<MapCoord, Map::NodeData>& GetMapData() const;
     const glm::ivec2& GetMapDimensions() const;
@@ -93,7 +95,6 @@ private:
     void GenerateMapData();
     void CreateMapSceneObjects();
     void CreateLevelFiles();
-    void GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData);
     void ExtendWaveBlockForDifficulty(const int difficulty, WaveBlockDefinition& waveBlock) const;
     float GetWaveBlockLineHeight(const WaveBlockLine& waveBlockLine) const;
     
