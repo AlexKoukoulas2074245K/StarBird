@@ -16,6 +16,52 @@ namespace math
 
 ///-----------------------------------------------------------------------------------------------
 
+static int controlledRandomSeed = 0;
+static int internalRand();
+
+///-----------------------------------------------------------------------------------------------
+
+void SetControlSeed(const int seed)
+{
+    controlledRandomSeed = seed;
+}
+
+///-----------------------------------------------------------------------------------------------
+
+int ControlledRandomInt(const int min /* = 0 */, const int max /* = RAND_MAX */)
+{
+    return static_cast<int>(internalRand() % (static_cast<long>(max) + 1 - min) + min);
+}
+
+///-----------------------------------------------------------------------------------------------
+
+float ControlledRandomFloat(const float min /* = 0.0f */, const float max /* = 1.0f */)
+{
+    return min + static_cast<float>(ControlledRandomInt())/(static_cast <float> (RAND_MAX / (max - min)));
+}
+
+///-----------------------------------------------------------------------------------------------
+
+int ControlledIndexSelectionFromDistribution(const ProbabilityDistribution& probDist)
+{
+    assert(!probDist.empty());
+    
+    auto randomFloat = ControlledRandomFloat();
+    auto probSum = 0.0f;
+    for (int i = 0; i < static_cast<int>(probDist.size()); ++i)
+    {
+        probSum += probDist[i];
+        if (randomFloat < probSum)
+        {
+            return i;
+        }
+    }
+    
+    return -1;
+}
+
+///-----------------------------------------------------------------------------------------------
+
 std::mt19937& GetRandomEngine()
 {
     static std::random_device rd;
@@ -172,6 +218,33 @@ glm::vec3 BezierCurve::ComputePointForT(const float t)
     }
     
     return workingPoints[0];
+}
+
+///------------------------------------------------------------------------------------------------
+
+// https://stackoverflow.com/questions/1026327/what-common-algorithms-are-used-for-cs-rand
+int internalRand()
+{
+    unsigned int next = controlledRandomSeed;
+    int result;
+
+    next *= 1103515245;
+    next += 12345;
+    result = (unsigned int) (next / 65536) % 2048;
+
+    next *= 1103515245;
+    next += 12345;
+    result <<= 10;
+    result ^= (unsigned int) (next / 65536) % 1024;
+
+    next *= 1103515245;
+    next += 12345;
+    result <<= 10;
+    result ^= (unsigned int) (next / 65536) % 1024;
+
+    controlledRandomSeed = next;
+
+    return result;
 }
 
 ///------------------------------------------------------------------------------------------------

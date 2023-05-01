@@ -38,7 +38,7 @@ public:
     UpgradeAnimationState Update(const float dtMillis);
 
 private:
-    void OnCrystalGiftUpgradeGained();
+    void OnCrystalGiftUpgradeGained(const int crystalCount);
     void OnHealthPotionUpgradeGained();
     void OnMirrorImageUpgradeGained();
     void OnDoubleBulletUpgradeGained();

@@ -11,8 +11,10 @@
 ///------------------------------------------------------------------------------------------------
 
 #include "IUpdater.h"
+#include "RepeatableFlow.h"
 #include "SceneObject.h"
 #include "StateMachine.h"
+#include "UpgradeUnlockedHandler.h"
 #include "../utils/MathUtils.h"
 
 #include <SDL_events.h>
@@ -21,11 +23,13 @@
 ///------------------------------------------------------------------------------------------------
 
 class Scene;
+class TextPromptController;
 class b2World;
 class EventUpdater final: public IUpdater
 {
 public:
     EventUpdater(Scene& scene, b2World& box2dWorld);
+    ~EventUpdater();
     
     PostStateUpdateDirective VUpdate(std::vector<SceneObject>& sceneObjects, const float dtMillis) override;
     void VOnAppStateChange(Uint32 event) override;
@@ -37,12 +41,61 @@ public:
 #endif
 
 private:
+    class EventOption
+    {
+    public:
+        EventOption(const std::string& optionText, const size_t nextStateIndex, std::function<void()> selectionCallback)
+            : mOptionText(optionText)
+            , mNextStateIndex(nextStateIndex)
+            , mSelectionCallback(selectionCallback)
+            
+        {
+        }
+        
+    public:
+        const std::string mOptionText;
+        const std::function<void()> mSelectionCallback;
+        const size_t mNextStateIndex;
+    };
+    
+    class EventDescription
+    {
+    public:
+        EventDescription(const std::vector<std::string>& eventBackgroundTextureNames, const std::vector<std::string>& eventDescriptionTexts, const std::vector<std::vector<EventOption>>& eventOptions)
+            : mEventBackgroundTextureNames(eventBackgroundTextureNames)
+            , mEventDescriptionTexts(eventDescriptionTexts)
+            , mEventOptions(eventOptions)
+        {
+        }
+        
+        inline size_t GetStateCount() const { return mEventDescriptionTexts.size(); }
+        
+    public:
+        const std::vector<std::string> mEventBackgroundTextureNames;
+        const std::vector<std::string> mEventDescriptionTexts;
+        const std::vector<std::vector<EventOption>> mEventOptions;
+    };
+    
+private:
+    void RegisterEvents();
+    void SelectRandomEvent();
     void CreateSceneObjects();
+    void CreateEventSceneObjectsForCurrentState();
+    void CreateCrystalsTowardTargetPosition(const long crystalCount, const glm::vec3& position);
     
 private:
     Scene& mScene;
     StateMachine mStateMachine;
+    UpgradeUnlockedHandler mUpgradeUnlockedHandler;
+    EventDescription* mSelectedEvent;
+    size_t mEventProgressionStateIndex;
+    size_t mPreviousEventProgressionStateIndex;
     bool mTransitioning;
+    bool mFadeInOptions;
+    bool mEventCompleted;
+    std::unique_ptr<TextPromptController> mTextPromptController;
+    std::vector<EventDescription> mRegisteredEvents;
+    std::vector<RepeatableFlow> mFlows;
 };
 
 ///------------------------------------------------------------------------------------------------

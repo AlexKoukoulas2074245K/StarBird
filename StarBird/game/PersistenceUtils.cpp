@@ -177,10 +177,15 @@ void LoadFromProgressSaveFile()
                     
                     const auto availableUpgradeIter = std::find_if(availableUpgrades.begin(), availableUpgrades.end(), [&](const UpgradeDefinition& upgradeDefinition){ return upgradeDefinition.mUpgradeNameId == upgradeNameId; });
                     
-                    assert(availableUpgradeIter != availableUpgrades.cend());
-                    auto& upgradeDefinition = *availableUpgradeIter;
-                    
-                    upgradeDefinition.mUnlockCost = std::stoi(node->first_attribute("unlockCost")->value());
+                    if (availableUpgradeIter == availableUpgrades.end())
+                    {
+                        ospopups::ShowMessageBox(ospopups::MessageBoxType::WARNING, "Unknown upgrade", "Unknown upgrade name " + upgradeNameId.GetString() + " found in save file. Ignoring");
+                    }
+                    else
+                    {
+                        auto& upgradeDefinition = *availableUpgradeIter;
+                        upgradeDefinition.mUnlockCost = std::stoi(node->first_attribute("unlockCost")->value());
+                    }
                 }
             });
             
@@ -207,8 +212,16 @@ void GenerateNewProgressSaveFile()
     auto& playerDef = typeDefRepo.GetObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME)->get();
     
     UpgradesLoader loader;
-    GameSingletons::SetAvailableUpgrades(loader.LoadAllUpgrades());
+    const auto& allUpgrades = loader.LoadAllUpgrades();
     
+    std::vector<UpgradeDefinition> availableUpgrades;
+    std::vector<UpgradeDefinition> eventOnlyUpgrades;
+    
+    std::copy_if(allUpgrades.begin(), allUpgrades.end(), std::back_inserter(availableUpgrades), [](const UpgradeDefinition& def) { return def.mEventOnly == false; });
+    std::copy_if(allUpgrades.begin(), allUpgrades.end(), std::back_inserter(eventOnlyUpgrades), [](const UpgradeDefinition& def) { return def.mEventOnly == true; });
+    
+    GameSingletons::SetAvailableUpgrades(availableUpgrades);
+    GameSingletons::SetEventOnlyUpgrades(eventOnlyUpgrades);
     GameSingletons::GetEquippedUpgrades().clear();
     GameSingletons::SetMapGenerationSeed(math::RandomInt());
     GameSingletons::SetPlayerDisplayedHealth(playerDef.mHealth);

@@ -220,6 +220,21 @@ void DebugConsoleGameState::RegisterCommands()
         return CommandExecutionResult(true, output);
     };
     
+    mCommandMap[strutils::StringId("wipe_progress")] = [&](const std::vector<std::string>& commandComponents)
+    {
+        static const std::string USAGE_TEXT("Usage: wipe_progress");
+        
+        if (commandComponents.size() != 1)
+        {
+            return CommandExecutionResult(false, USAGE_TEXT);
+        }
+        
+        mScene->SetProgressResetFlag();
+        
+        return CommandExecutionResult(true, "Progress wiped.");
+    };
+    
+    
     mCommandMap[strutils::StringId("physx")] = [&](const std::vector<std::string>& commandComponents)
     {
         static const std::string USAGE_TEXT("Usage: physx on|off");

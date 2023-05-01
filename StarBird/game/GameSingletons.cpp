@@ -16,6 +16,7 @@ glm::vec2 GameSingletons::mWindowDimensions = glm::vec2();
 std::unordered_map<SceneObjectType, Camera> GameSingletons::mSceneObjectTypeToCameraMap = {};
 std::vector<UpgradeDefinition> GameSingletons::mEquippedUpgrades = {};
 std::vector<UpgradeDefinition> GameSingletons::mAvailableUpgrades = {};
+std::vector<UpgradeDefinition> GameSingletons::mEventOnlyUpgrades = {};
 MapCoord GameSingletons::mCurrentMapCoord = MapCoord(game_constants::DEFAULT_MAP_COORD_COL, game_constants::DEFAULT_MAP_COORD_ROW);
 int GameSingletons::mMapGenerationSeed = 0;
 int GameSingletons::mMapLevel = 0;
@@ -154,16 +155,30 @@ std::vector<UpgradeDefinition>& GameSingletons::GetAvailableUpgrades()
 
 ///------------------------------------------------------------------------------------------------
 
-void GameSingletons::SetEquippedUpgrades(std::vector<UpgradeDefinition>& upgrades)
+const std::vector<UpgradeDefinition>& GameSingletons::GetEventOnlyUpgrades()
+{
+    return mEventOnlyUpgrades;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetEquippedUpgrades(const std::vector<UpgradeDefinition>& upgrades)
 {
     mEquippedUpgrades = upgrades;
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void GameSingletons::SetAvailableUpgrades(std::vector<UpgradeDefinition>& upgrades)
+void GameSingletons::SetAvailableUpgrades(const std::vector<UpgradeDefinition>& upgrades)
 {
     mAvailableUpgrades = upgrades;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetEventOnlyUpgrades(const std::vector<UpgradeDefinition>& upgrades)
+{
+    mEventOnlyUpgrades = upgrades;
 }
 
 ///------------------------------------------------------------------------------------------------

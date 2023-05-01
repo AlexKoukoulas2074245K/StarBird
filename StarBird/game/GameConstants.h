@@ -130,7 +130,8 @@ inline const strutils::StringId DOUBLE_BULLET_UGPRADE_NAME = strutils::StringId(
 inline const strutils::StringId MIRROR_IMAGE_UGPRADE_NAME = strutils::StringId("mirror_image");
 inline const strutils::StringId PLAYER_SHIELD_UPGRADE_NAME = strutils::StringId("player_shield");
 inline const strutils::StringId PLAYER_HEALTH_POTION_UGPRADE_NAME = strutils::StringId("player_health_potion");
-inline const strutils::StringId CRYSTALS_GIFT_UGPRADE_NAME = strutils::StringId("crystal_gift");
+inline const strutils::StringId CRYSTALS_BOSS_UGPRADE_NAME = strutils::StringId("boss_crystals");
+inline const strutils::StringId CRYSTALS_SMALL_EVENT_UPGRADE_NAME = strutils::StringId("small_event_crystal_gift");
 
 inline const strutils::StringId PLAYER_BULLET_TYPE = strutils::StringId("player_bullet");
 inline const strutils::StringId BETTER_PLAYER_BULLET_TYPE = strutils::StringId("player_better_bullet");
@@ -205,7 +206,7 @@ inline const glm::vec3 PLAYER_HEALTH_BAR_POSITION = glm::vec3(0.0f, -12.0f, 0.5f
 inline const glm::vec3 PLAYER_HEALTH_BAR_SCALE = glm::vec3(5.0f, 1.2f, 1.0f);
 
 inline const glm::vec3 PLAYER_INITIAL_POS = glm::vec3(0.0f, -10.0f, 0.0f);
-inline const glm::vec3 PLAYER_CHEST_REWARD_POS = glm::vec3(0.0f, -7.0f, 0.0f);
+inline const glm::vec3 PLAYER_CHEST_REWARD_POS = glm::vec3(0.0f, -6.0f, 0.0f);
 inline const glm::vec3 BACKGROUND_SCALE = glm::vec3(28.0f, 28.0f, 1.0f);
 inline const glm::vec3 MAP_BACKGROUND_SCALE = glm::vec3(120.0f, 120.0f, 1.0f);
 

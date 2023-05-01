@@ -121,7 +121,7 @@ void Game::Run()
     InitPersistentData();
     
     Scene scene;
-    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAIN_MENU, "test_level_with_boss", false));
+    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::EVENT, "test_level_with_boss", false));
     
     SDL_Event e;
     
@@ -257,7 +257,7 @@ void Game::Run()
                 } break;
             }
         }
-//        
+        
         auto maxFoundPinchDistance = 0.0f;
         if (multiTouchMotionframeFingerIDsToTouchPositions.size() > 1)
         {
@@ -304,7 +304,16 @@ void Game::InitPersistentData()
     waveBlocksRepo.LoadWaveBlocks();
     
     UpgradesLoader loader;
-    GameSingletons::SetAvailableUpgrades(loader.LoadAllUpgrades());
+    const auto& allUpgrades = loader.LoadAllUpgrades();
+    
+    std::vector<UpgradeDefinition> availableUpgrades;
+    std::vector<UpgradeDefinition> eventOnlyUpgrades;
+    
+    std::copy_if(allUpgrades.begin(), allUpgrades.end(), std::back_inserter(availableUpgrades), [](const UpgradeDefinition& def) { return def.mEventOnly == false; });
+    std::copy_if(allUpgrades.begin(), allUpgrades.end(), std::back_inserter(eventOnlyUpgrades), [](const UpgradeDefinition& def) { return def.mEventOnly == true; });
+    
+    GameSingletons::SetAvailableUpgrades(availableUpgrades);
+    GameSingletons::SetEventOnlyUpgrades(eventOnlyUpgrades);
     
     auto& typeDefRepo = ObjectTypeDefinitionRepository::GetInstance();
     typeDefRepo.LoadObjectTypeDefinition(game_constants::PLAYER_OBJECT_TYPE_DEF_NAME);

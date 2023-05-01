@@ -57,13 +57,15 @@ static const float SCENE_OBJECT_FADE_IN_ALPHA_SPEED = 0.001f;
 static const float INTER_ANIMATION_DELAY_MILLIS = 3000.0f;
 static const float PLAYER_SHIELD_ROTATION_SPEED = 0.001f;
 
-static const int CRYSTALS_REWARD_COUNT = 15;
+static const int CRYSTALS_BOSS_REWARD_COUNT = 15;
+static const int CRYSTALS_SMALL_EVENT_REWARD_COUNT = 5;
 
 ///------------------------------------------------------------------------------------------------
 
 UpgradeUnlockedHandler::UpgradeUnlockedHandler(Scene& scene, b2World& box2dWorld)
     : mScene(scene)
     , mBox2dWorld(box2dWorld)
+    , mCurrentUpgradeNameUnlocked()
     , mForceFinishAnimation(false)
 {
     // BULLET_TOP_WALL
@@ -105,6 +107,8 @@ UpgradeUnlockedHandler::UpgradeUnlockedHandler(Scene& scene, b2World& box2dWorld
     });
     
     mBox2dWorld.SetContactListener(&collisionListener);
+    mScene.GetLightRepository().AddLight(LightType::AMBIENT_LIGHT, game_constants::AMBIENT_LIGHT_NAME, game_constants::AMBIENT_LIGHT_COLOR, glm::vec3(0.0f), 0.0f);
+    
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -113,55 +117,67 @@ void UpgradeUnlockedHandler::OnUpgradeGained(const strutils::StringId& upgradeNa
 {
     mCurrentUpgradeNameUnlocked = upgradeNameId;
     
+    const auto& eventOnlyUpgrades = GameSingletons::GetEventOnlyUpgrades();
     auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
     auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
     
+    const auto eventOnlyUpgradeIter = std::find_if(eventOnlyUpgrades.cbegin(), eventOnlyUpgrades.cend(), [&](const UpgradeDefinition& upgradeDefinition){ return upgradeDefinition.mUpgradeNameId == upgradeNameId; });
     const auto availableUpgradeIter = std::find_if(availableUpgrades.begin(), availableUpgrades.end(), [&](const UpgradeDefinition& upgradeDefinition){ return upgradeDefinition.mUpgradeNameId == upgradeNameId; });
     
-    assert(availableUpgradeIter != availableUpgrades.cend());
-    const auto& upgradeDefinition = *availableUpgradeIter;
-    
-    if (upgradeDefinition.mEquippable)
+    if (eventOnlyUpgradeIter != eventOnlyUpgrades.cend())
     {
-        if (!equippedUpgrades.empty())
+        if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_SMALL_EVENT_UPGRADE_NAME)
         {
-            for (int i = 0; i < equippedUpgrades.size(); ++i)
+            OnCrystalGiftUpgradeGained(CRYSTALS_SMALL_EVENT_REWARD_COUNT);
+        }
+    }
+    else
+    {
+        assert(availableUpgradeIter != availableUpgrades.cend());
+        const auto& upgradeDefinition = *availableUpgradeIter;
+        
+        if (upgradeDefinition.mEquippable)
+        {
+            if (!equippedUpgrades.empty())
             {
-                if (equippedUpgrades[i].mUpgradeNameId == upgradeNameId)
+                for (int i = 0; i < equippedUpgrades.size(); ++i)
                 {
-                    equippedUpgrades.erase(equippedUpgrades.begin() + i);
-                    break;
+                    if (equippedUpgrades[i].mUpgradeNameId == upgradeNameId)
+                    {
+                        equippedUpgrades.erase(equippedUpgrades.begin() + i);
+                        break;
+                    }
                 }
             }
+            
+            equippedUpgrades.push_back(upgradeDefinition);
         }
         
-        equippedUpgrades.push_back(upgradeDefinition);
-    }
-    
-    if (upgradeDefinition.mIntransient == false)
-    {
-        availableUpgrades.erase(availableUpgradeIter);
-    }
-    
-    if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_GIFT_UGPRADE_NAME)
-    {
-        OnCrystalGiftUpgradeGained();
-    }
-    else if (mCurrentUpgradeNameUnlocked == game_constants::PLAYER_HEALTH_POTION_UGPRADE_NAME)
-    {
-        OnHealthPotionUpgradeGained();
-    }
-    else if (mCurrentUpgradeNameUnlocked == game_constants::MIRROR_IMAGE_UGPRADE_NAME)
-    {
-        OnMirrorImageUpgradeGained();
-    }
-    else if (mCurrentUpgradeNameUnlocked == game_constants::DOUBLE_BULLET_UGPRADE_NAME)
-    {
-        OnDoubleBulletUpgradeGained();
-    }
-    else if (mCurrentUpgradeNameUnlocked == game_constants::PLAYER_SHIELD_UPGRADE_NAME)
-    {
-        OnPlayerShieldUpgradeGained();
+        if (upgradeDefinition.mIntransient == false)
+        {
+            availableUpgrades.erase(availableUpgradeIter);
+        }
+        
+        if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_BOSS_UGPRADE_NAME)
+        {
+            OnCrystalGiftUpgradeGained(CRYSTALS_BOSS_REWARD_COUNT);
+        }
+        else if (mCurrentUpgradeNameUnlocked == game_constants::PLAYER_HEALTH_POTION_UGPRADE_NAME)
+        {
+            OnHealthPotionUpgradeGained();
+        }
+        else if (mCurrentUpgradeNameUnlocked == game_constants::MIRROR_IMAGE_UGPRADE_NAME)
+        {
+            OnMirrorImageUpgradeGained();
+        }
+        else if (mCurrentUpgradeNameUnlocked == game_constants::DOUBLE_BULLET_UGPRADE_NAME)
+        {
+            OnDoubleBulletUpgradeGained();
+        }
+        else if (mCurrentUpgradeNameUnlocked == game_constants::PLAYER_SHIELD_UPGRADE_NAME)
+        {
+            OnPlayerShieldUpgradeGained();
+        }
     }
 }
 
@@ -186,7 +202,12 @@ UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::Update(con
         return UpgradeAnimationState::FINISHED;
     }
     
-    if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_GIFT_UGPRADE_NAME)
+    if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_SMALL_EVENT_UPGRADE_NAME)
+    {
+        return UpdateCrystalGiftUpgradeGained(dtMillis);
+    }
+    
+    if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_BOSS_UGPRADE_NAME)
     {
         return UpdateCrystalGiftUpgradeGained(dtMillis);
     }
@@ -214,9 +235,9 @@ UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::Update(con
 
 ///------------------------------------------------------------------------------------------------
 
-void UpgradeUnlockedHandler::OnCrystalGiftUpgradeGained()
+void UpgradeUnlockedHandler::OnCrystalGiftUpgradeGained(const int crystalCount)
 {
-    for (int i = 0; i < CRYSTALS_REWARD_COUNT; ++i)
+    for (int i = 0; i < crystalCount; ++i)
     {
         mFlows.emplace_back([this]()
         {
@@ -391,27 +412,24 @@ void UpgradeUnlockedHandler::OnPlayerShieldUpgradeGained()
     if (playerOpt && GameSingletons::HasEquippedUpgrade(game_constants::MIRROR_IMAGE_UGPRADE_NAME))
     {
         auto& playerSo = playerOpt->get();
-        {
-            SceneObject leftMirrorImageSo;
-            leftMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
-            leftMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-            leftMirrorImageSo.mPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + LEFT_MIRROR_IMAGE_POSITION_OFFSET;
-            leftMirrorImageSo.mScale = LEFT_MIRROR_IMAGE_SCALE;
-            leftMirrorImageSo.mName = game_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
-            leftMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-            mScene.AddSceneObject(std::move(leftMirrorImageSo));
-        }
+        SceneObject leftMirrorImageSo;
+        leftMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        leftMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+        leftMirrorImageSo.mPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + LEFT_MIRROR_IMAGE_POSITION_OFFSET;
+        leftMirrorImageSo.mScale = LEFT_MIRROR_IMAGE_SCALE;
+        leftMirrorImageSo.mName = game_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
+        leftMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+   
+        SceneObject rightMirrorImageSo;
+        rightMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        rightMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
+        rightMirrorImageSo.mPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + RIGHT_MIRROR_IMAGE_POSITION_OFFSET;
+        rightMirrorImageSo.mScale = RIGHT_MIRROR_IMAGE_SCALE;
+        rightMirrorImageSo.mName = game_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
+        rightMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
         
-        {
-            SceneObject rightMirrorImageSo;
-            rightMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
-            rightMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
-            rightMirrorImageSo.mPosition = math::Box2dVec2ToGlmVec3(playerSo.mBody->GetWorldCenter()) + RIGHT_MIRROR_IMAGE_POSITION_OFFSET;
-            rightMirrorImageSo.mScale = RIGHT_MIRROR_IMAGE_SCALE;
-            rightMirrorImageSo.mName = game_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
-            rightMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-            mScene.AddSceneObject(std::move(rightMirrorImageSo));
-        }
+        mScene.AddSceneObject(std::move(leftMirrorImageSo));
+        mScene.AddSceneObject(std::move(rightMirrorImageSo));
     }
 }
 

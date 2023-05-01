@@ -39,7 +39,7 @@
 static const strutils::StringId SCENE_EDIT_RESULT_TEXT_NAME_1 = strutils::StringId("SCENE_EDIT_RESULT_TEXT_1");
 static const strutils::StringId SCENE_EDIT_RESULT_TEXT_NAME_2 = strutils::StringId("SCENE_EDIT_RESULT_TEXT_2");
 
-static const glm::vec3 SCENE_EDIT_MAX_SO_SCALE_ELIGIBILITY = glm::vec3(10.0f, 10.0f, 10.0f);
+static const glm::vec3 SCENE_EDIT_MAX_SO_SCALE_ELIGIBILITY = glm::vec3(15.0f, 15.0f, 15.0f);
 
 static const glm::vec3 GUI_CRYSTAL_COUNT_HOLDER_SCALE = glm::vec3(2.5f, 3.5f, 1.0f);
 static const glm::vec3 GUI_CRYSTAL_COUNT_HOLDER_POSITION = glm::vec3(-4.2f, -10.9f, 2.0f);
@@ -272,8 +272,6 @@ void Scene::SetProgressResetFlag()
 
 void Scene::ChangeScene(const TransitionParameters& transitionParameters)
 {
-    HandleProgressReset();
-    
     // Need to hold a copy of the transition parameters as in the use case of an overlay
     // the scene creation needs to be deferred, and we don't want the stored lambda
     // to have an invalid reference to this temporary
@@ -281,6 +279,8 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
     
     auto sceneCreationLambda = [&]()
     {
+        HandleProgressReset();
+        
         std::vector<SceneObject> crossSceneSceneObjects;
         std::unordered_set<resources::ResourceId> lockedResourceIds;
         

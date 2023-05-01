@@ -579,7 +579,7 @@ void MapUpdater::OnEventNodeSelected()
         0.1f, // Level
         0.8f, // Event
     };
-    
+
     auto selectedIndex = math::ControlledIndexSelectionFromDistribution(probDist);
     
     switch (selectedIndex)

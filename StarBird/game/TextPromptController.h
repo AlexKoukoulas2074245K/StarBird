@@ -30,7 +30,7 @@ public:
         TOP_ANCHORED, BOT_ANCHORED
     };
     
-    TextPromptController(Scene& scene, const glm::vec3& charsAnchorOrigin, const glm::vec3& scale, const CharsAnchorMode charsAnchorMode, const bool fadeIn, const std::string& text);
+    TextPromptController(Scene& scene, const glm::vec3& charsAnchorOrigin, const glm::vec3& scale, const CharsAnchorMode charsAnchorMode, const bool fadeIn, const std::string& text, std::function<void()> onFadeInCompleteCallback = nullptr);
     ~TextPromptController();
     
     void Update(const float dtMillis);
@@ -38,6 +38,7 @@ public:
 private:
     Scene& mScene;
     std::unordered_map<strutils::StringId, float, strutils::StringIdHasher> mSceneObjectNamesToTransparencyDelayMillis;
+    std::function<void()> mOnFadeInCompletionCallback;
 };
 
 ///------------------------------------------------------------------------------------------------

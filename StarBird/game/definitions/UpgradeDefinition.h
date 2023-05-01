@@ -21,6 +21,7 @@ struct UpgradeDefinition
     strutils::StringId mUpgradeDescription = strutils::StringId();
     std::string mTextureFileName = "";
     bool mIntransient = false;
+    bool mEventOnly = false;
     bool mEquippable = false;
     long mDefaultUnlockCost = 0;
     long mUnlockCost = 0;

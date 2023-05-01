@@ -48,8 +48,10 @@ public:
     
     static std::vector<UpgradeDefinition>& GetEquippedUpgrades();
     static std::vector<UpgradeDefinition>& GetAvailableUpgrades();
-    static void SetEquippedUpgrades(std::vector<UpgradeDefinition>& upgrades);
-    static void SetAvailableUpgrades(std::vector<UpgradeDefinition>& upgrades);
+    static const std::vector<UpgradeDefinition>& GetEventOnlyUpgrades();
+    static void SetEquippedUpgrades(const std::vector<UpgradeDefinition>& upgrades);
+    static void SetAvailableUpgrades(const std::vector<UpgradeDefinition>& upgrades);
+    static void SetEventOnlyUpgrades(const std::vector<UpgradeDefinition>& upgrades);
     static bool HasEquippedUpgrade(const strutils::StringId& upgradeNameId);
     
     static float GetGameSpeedMultiplier();
@@ -110,6 +112,7 @@ private:
     static std::unordered_map<SceneObjectType, Camera> mSceneObjectTypeToCameraMap;
     static std::vector<UpgradeDefinition> mEquippedUpgrades;
     static std::vector<UpgradeDefinition> mAvailableUpgrades;
+    static std::vector<UpgradeDefinition> mEventOnlyUpgrades;
     static MapCoord mCurrentMapCoord;
     static int mMapGenerationSeed;
     static int mMapLevel;

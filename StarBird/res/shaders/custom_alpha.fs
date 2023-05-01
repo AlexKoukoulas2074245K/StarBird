@@ -15,5 +15,5 @@ void main()
     frag_color = texture(tex, vec2(final_uv_x, final_uv_y));
     
     if (frag_color.a < 0.25f) discard;
-    else frag_color.w = custom_alpha;
+    else frag_color.w = max(0.0f, custom_alpha);
 }

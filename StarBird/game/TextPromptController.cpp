@@ -42,8 +42,9 @@ static std::unordered_map<char, Glyph>::const_iterator GetGlyphIter(char c, cons
 
 ///------------------------------------------------------------------------------------------------
 
-TextPromptController::TextPromptController(Scene& scene, const glm::vec3& charsAnchorOrigin, const glm::vec3& scale, const CharsAnchorMode charsAnchorMode, const bool fadeIn, const std::string& text)
+TextPromptController::TextPromptController(Scene& scene, const glm::vec3& charsAnchorOrigin, const glm::vec3& scale, const CharsAnchorMode charsAnchorMode, const bool fadeIn, const std::string& text, std::function<void()> onFadeInCompleteCallback /* = nullptr */)
     : mScene(scene)
+    , mOnFadeInCompletionCallback(onFadeInCompleteCallback)
 {
     auto fontOpt = FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME);
     if (fontOpt)
@@ -180,6 +181,7 @@ TextPromptController::~TextPromptController()
 
 void TextPromptController::Update(const float dtMillis)
 {
+    auto fadedInCharCount = 0;
     for (auto& iter: mSceneObjectNamesToTransparencyDelayMillis)
     {
         if (iter.second > 0)
@@ -196,9 +198,16 @@ void TextPromptController::Update(const float dtMillis)
                 if (sceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
                 {
                     sceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+                    fadedInCharCount++;
                 }
             }
         }
+    }
+    
+    if (fadedInCharCount == mSceneObjectNamesToTransparencyDelayMillis.size() && mOnFadeInCompletionCallback)
+    {
+        mOnFadeInCompletionCallback();
+        mOnFadeInCompletionCallback = nullptr;
     }
 }
 

@@ -38,6 +38,12 @@ UpgradesLoader::UpgradesLoader()
             upgrade.mIntransient =  strcmp(intransient->value(), "true") == 0;
         }
         
+        auto* eventOnly = node->first_attribute("eventOnly");
+        if (eventOnly)
+        {
+            upgrade.mEventOnly =  strcmp(eventOnly->value(), "true") == 0;
+        }
+        
         auto* equippable = node->first_attribute("equippable");
         if (equippable)
         {
