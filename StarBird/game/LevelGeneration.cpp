@@ -133,7 +133,14 @@ void ExtendWaveBlockForDifficulty(const int difficulty, WaveBlockDefinition& wav
             enemy.mPosition.y = currentY + enemy.mPosition.y - game_constants::LEVEL_WAVE_VISIBLE_Y;
         }
         
-        currentY += lineHeight;
+        if (!waveBlock.mInflexible)
+        {
+            currentY += lineHeight * math::Max(0.0f, (1.0f - difficultyDiff/20.0f));
+        }
+        else
+        {
+            currentY += lineHeight;
+        }
         
         additionalLines.push_back(targetLineCopy);
     }

@@ -4,8 +4,8 @@
     <WaveBlock difficulty="1" inflexible="false" extensible="true">
         <WaveBlockLine>
             <Enemy position="-1.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
-            <Enemy position="-5.0f, 26.0f" type="enemies/medium_enemy_chasing"/>
-            <Enemy position="5.0f, 26.0f" type="enemies/medium_enemy_chasing"/>
+            <Enemy position="-3.0f, 26.0f" type="enemies/medium_enemy_chasing"/>
+            <Enemy position="3.0f, 26.0f" type="enemies/medium_enemy_chasing"/>
             <Enemy position="1.0f, 32.0f" type="enemies/medium_enemy_chasing"/>
         </WaveBlockLine>
     </WaveBlock>
@@ -13,8 +13,8 @@
     <WaveBlock difficulty="1" inflexible="false" extensible="true">
         <WaveBlockLine>
             <Enemy position="-1.0f, 20.0f" type="enemies/small_enemy_chasing"/>
-            <Enemy position="-5.0f, 26.0f" type="enemies/small_enemy_chasing"/>
-            <Enemy position="5.0f, 26.0f" type="enemies/small_enemy_chasing"/>
+            <Enemy position="-3.0f, 26.0f" type="enemies/small_enemy_chasing"/>
+            <Enemy position="3.0f, 26.0f" type="enemies/small_enemy_chasing"/>
             <Enemy position="1.0f, 32.0f" type="enemies/small_enemy_chasing"/>
         </WaveBlockLine>
     </WaveBlock>
