@@ -62,7 +62,9 @@ PostStateUpdateDirective MainMenuUpdater::VUpdate(std::vector<SceneObject>& scen
         auto touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
         
         auto playSoOpt = mScene.GetSceneObject(PLAY_TEXT_SCENE_OBJECT_NAME);
-        if (playSoOpt && scene_object_utils::IsPointInsideSceneObject(*playSoOpt, touchPos))
+        auto continueSoOpt = mScene.GetSceneObject(CONTINUE_TEXT_SCENE_OBJECT_NAME);
+        if ((playSoOpt && playSoOpt->get().mInvisible == false && scene_object_utils::IsPointInsideSceneObject(*playSoOpt, touchPos)) ||
+            (continueSoOpt && continueSoOpt->get().mInvisible == false && scene_object_utils::IsPointInsideSceneObject(*continueSoOpt, touchPos)))
         {
             mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
             mTransitioning = true;

@@ -61,10 +61,11 @@ private:
     class EventDescription
     {
     public:
-        EventDescription(const std::vector<std::string>& eventBackgroundTextureNames, const std::vector<std::string>& eventDescriptionTexts, const std::vector<std::vector<EventOption>>& eventOptions)
+        EventDescription(const std::vector<std::string>& eventBackgroundTextureNames, const std::vector<std::string>& eventDescriptionTexts, const std::vector<std::vector<EventOption>>& eventOptions, std::function<bool()> eventEligibilityFunc)
             : mEventBackgroundTextureNames(eventBackgroundTextureNames)
             , mEventDescriptionTexts(eventDescriptionTexts)
             , mEventOptions(eventOptions)
+            , mEventEligibilityFunc(eventEligibilityFunc)
         {
         }
         
@@ -74,11 +75,12 @@ private:
         const std::vector<std::string> mEventBackgroundTextureNames;
         const std::vector<std::string> mEventDescriptionTexts;
         const std::vector<std::vector<EventOption>> mEventOptions;
+        const std::function<bool()> mEventEligibilityFunc;
     };
     
 private:
     void RegisterEvents();
-    void SelectRandomEvent();
+    void SelectRandomEligibleEvent();
     void CreateSceneObjects();
     void CreateEventSceneObjectsForCurrentState();
     void CreateCrystalsTowardTargetPosition(const long crystalCount, const glm::vec3& position);

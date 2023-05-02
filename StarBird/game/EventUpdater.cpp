@@ -70,7 +70,7 @@ EventUpdater::EventUpdater(Scene& scene, b2World& box2dWorld)
 #endif
     
     RegisterEvents();
-    SelectRandomEvent();
+    SelectRandomEligibleEvent();
     CreateSceneObjects();
 }
 
@@ -289,7 +289,10 @@ void EventUpdater::RegisterEvents()
             {
                 EventOption("Leave", END_STATE_INDEX, [](){})
             }
-        }
+        },
+     
+     
+        [](){ return GameSingletons::HasEquippedUpgrade(game_constants::PLAYER_SHIELD_UPGRADE_NAME) == false && GameSingletons::GetCrystalCount() > 0; }
     ));
     
     mRegisteredEvents.emplace_back(EventDescription
@@ -329,7 +332,9 @@ void EventUpdater::RegisterEvents()
             {
                 EventOption("Leave", END_STATE_INDEX, [](){})
             }
-        }
+        },
+     
+        [](){ return true; }
     ));
 
     mRegisteredEvents.emplace_back(EventDescription
@@ -357,16 +362,20 @@ void EventUpdater::RegisterEvents()
             {
                 EventOption("Leave.", END_STATE_INDEX, [](){})
             }
-        }
+        },
+     
+        [](){ return true; }
     ));
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void EventUpdater::SelectRandomEvent()
-{
-    //mSelectedEvent = &mRegisteredEvents[0];
-    mSelectedEvent = &mRegisteredEvents[static_cast<size_t>(math::ControlledRandomInt(0, static_cast<int>(mRegisteredEvents.size() - 1)))];
+void EventUpdater::SelectRandomEligibleEvent()
+{    
+    while (!mSelectedEvent || mSelectedEvent->mEventEligibilityFunc() == false)
+    {
+        mSelectedEvent = &mRegisteredEvents[static_cast<size_t>(math::ControlledRandomInt(0, static_cast<int>(mRegisteredEvents.size() - 1)))];
+    }
 }
 
 ///------------------------------------------------------------------------------------------------

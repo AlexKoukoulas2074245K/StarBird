@@ -97,7 +97,7 @@ void Map::GenerateMapData()
             mMapData[currentCoordinate].mNodeLinks.insert(targetCoord);
             currentCoordinate = targetCoord;
             mMapData[currentCoordinate].mPosition = GenerateNodePositionForCoord(currentCoordinate);
-            mMapData[currentCoordinate].mNodeType = SelectNodeTypeForCoord(currentCoordinate);
+            mMapData[currentCoordinate].mNodeType = NodeType::EVENT;// SelectNodeTypeForCoord(currentCoordinate);
         }
     }
 }
