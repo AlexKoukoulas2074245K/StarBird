@@ -35,7 +35,7 @@ static const glm::vec3 CRYSTAL_ICON_SCALE = glm::vec3(0.3f);
 static const float CONTROL_BUTTON_PULSING_SPEED = 0.02f;
 static const float CONTROL_BUTTON_PULSING_ENLARGMENT_FACTOR = 1.0f/50.0f;
 
-static const int STAT_UPGRADE_COST = 1;
+static const int BASE_STAT_UPGRADE_COST = 1;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -46,9 +46,9 @@ StatUpgradeAreaController::StatUpgradeAreaController(Scene& scene, std::unique_p
     , mFloatDisplay(floatDisplay)
     , mStatValue(initialStatValue)
     , mCost(0)
+    , mUpgradeCost(BASE_STAT_UPGRADE_COST * GameSingletons::GetResearchCostMultiplier())
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
-    
     {
         SceneObject statUpgradeBackgroundSo;
         statUpgradeBackgroundSo.mPosition = position;
@@ -203,7 +203,7 @@ void StatUpgradeAreaController::Update(const float dtMillis, const float current
     if (plusButtonSoOpt)
     {
         auto& plusButtonSo = plusButtonSoOpt->get();
-        plusButtonSo.mInvisible = currentTotalCost + STAT_UPGRADE_COST > GameSingletons::GetCrystalCount();
+        plusButtonSo.mInvisible = currentTotalCost + mUpgradeCost > GameSingletons::GetCrystalCount();
         
         if (!plusButtonSo.mInvisible && inputContext.mEventType == SDL_FINGERDOWN && mLastInputContextEventType != SDL_FINGERDOWN && scene_object_utils::IsPointInsideSceneObject(plusButtonSo, originalFingerDownTouchPos))
         {
@@ -211,7 +211,7 @@ void StatUpgradeAreaController::Update(const float dtMillis, const float current
             plusButtonSo.mAnimation = std::make_unique<PulsingAnimation>(plusButtonSo.mAnimation->VGetCurrentTextureResourceId(), plusButtonSo.mAnimation->VGetCurrentMeshResourceId(), plusButtonSo.mAnimation->VGetCurrentShaderResourceId(), CONTROL_BUTTON_SCALE, PulsingAnimation::PulsingMode::INNER_PULSE_ONCE, 0.0f, CONTROL_BUTTON_PULSING_SPEED, CONTROL_BUTTON_PULSING_ENLARGMENT_FACTOR, false);
             
             mStatValue += mStatIncrement;
-            mCost += STAT_UPGRADE_COST;
+            mCost += mUpgradeCost;
         }
     }
     
@@ -226,7 +226,7 @@ void StatUpgradeAreaController::Update(const float dtMillis, const float current
             minusButtonSo.mAnimation = std::make_unique<PulsingAnimation>(minusButtonSo.mAnimation->VGetCurrentTextureResourceId(), minusButtonSo.mAnimation->VGetCurrentMeshResourceId(), minusButtonSo.mAnimation->VGetCurrentShaderResourceId(), CONTROL_BUTTON_SCALE, PulsingAnimation::PulsingMode::INNER_PULSE_ONCE, 0.0f, CONTROL_BUTTON_PULSING_SPEED, CONTROL_BUTTON_PULSING_ENLARGMENT_FACTOR, false);
             
             mStatValue -= mStatIncrement;
-            mCost -= STAT_UPGRADE_COST;
+            mCost -= mUpgradeCost;
         }
     }
     

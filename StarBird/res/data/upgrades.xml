@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Upgrades>
-    <Upgrade nameId="double_bullet" description="Bullet Flurry" texture="upgrades/double_bullet" eventOnly="false" intransient="false" equippable="true" unlockCost="45" />
-    <Upgrade nameId="mirror_image" description="Mirror Image" texture="upgrades/mirror_image" eventOnly="false" intransient="false" equippable="true" unlockCost="30" />
-    <Upgrade nameId="player_shield" description="20% HP Shield" texture="upgrades/player_shield" eventOnly="false" intransient="true" equippable="true" unlockCost="0" />
-    <Upgrade nameId="player_health_potion" description="Full Heal" texture="upgrades/player_health_potion" eventOnly="false" intransient="true" equippable="false" unlockCost="0" />
-    <Upgrade nameId="boss_crystals" description="+15 Crystals" texture="upgrades/crystal_gift" eventOnly="false" intransient="true" equippable="false" unlockCost="0" />
-    <Upgrade nameId="small_event_crystal_gift" description="+5 Crystals" texture="upgrades/crystal_gift" eventOnly="true" intransient="true" equippable="false" unlockCost="0" />
+    <Upgrade nameId="double_bullet" description="Bullet Flurry" texture="upgrades/double_bullet" eventOnly="false" intransient="false" equippable="true" unlockedByDefault="false" unlockCost="45" />
+    <Upgrade nameId="mirror_image" description="Mirror Image" texture="upgrades/mirror_image" eventOnly="false" intransient="false" equippable="true" unlockedByDefault="false" unlockCost="30" />
+    <Upgrade nameId="player_shield" description="20% HP Shield" texture="upgrades/player_shield" eventOnly="false" intransient="true" equippable="true" unlockedByDefault="true" unlockCost="0" />
+    <Upgrade nameId="player_health_potion" description="Full Heal" texture="upgrades/player_health_potion" eventOnly="false" intransient="true" equippable="false" unlockedByDefault="true" unlockCost="0" />
+    <Upgrade nameId="boss_crystals" description="+15 Crystals" texture="upgrades/crystal_gift" eventOnly="false" intransient="true" equippable="false" unlockedByDefault="true"  unlockCost="0" />
+    <Upgrade nameId="small_event_crystal_gift" description="+5 Crystals" texture="upgrades/crystal_gift" eventOnly="true" intransient="true" equippable="false" unlockedByDefault="false" unlockCost="0" />
 </Upgrades>

@@ -150,7 +150,7 @@ PostStateUpdateDirective ResearchUpdater::VUpdate(std::vector<SceneObject>& scen
                 {
                     mScene.RemoveAllSceneObjectsWithName(*crystalNameIter);
                     crystalNameIter = mCrystalSceneObjectNames.erase(crystalNameIter);
-                    upgradeDefinition.mUnlockCost--;
+                    upgradeDefinition.mCrystalUnlockProgress++;
                 }
                 else
                 {
@@ -160,8 +160,9 @@ PostStateUpdateDirective ResearchUpdater::VUpdate(std::vector<SceneObject>& scen
             
             if (mCrystalSceneObjectNames.empty())
             {
-                if (upgradeDefinition.mUnlockCost == 0)
+                if (upgradeDefinition.mCrystalUnlockProgress == upgradeDefinition.mDefaultUnlockCost * GameSingletons::GetResearchCostMultiplier())
                 {
+                    upgradeDefinition.mUnlocked = true;
                     mOptionSelectionState = OptionSelectionState::UNLOCK_SHAKE;
                 }
                 else
@@ -225,11 +226,11 @@ PostStateUpdateDirective ResearchUpdater::VUpdate(std::vector<SceneObject>& scen
         mSelectedUpgrade = mUpgrades.at(mCarouselController->GetSelectedIndex());
         const auto& upgradeDefinition = GameSingletons::GetAvailableUpgrades().at(mCarouselController->GetSelectedIndex());
         
-        if (upgradeDefinition.mUnlockCost > 0 || mOptionSelectionState == OptionSelectionState::UNLOCK_SHAKE)
+        if ((upgradeDefinition.mCrystalUnlockProgress < upgradeDefinition.mDefaultUnlockCost * GameSingletons::GetResearchCostMultiplier() && !upgradeDefinition.mUnlocked) || mOptionSelectionState == OptionSelectionState::UNLOCK_SHAKE)
         {
-            auto currentValue = upgradeDefinition.mDefaultUnlockCost - upgradeDefinition.mUnlockCost;
+            auto currentValue = upgradeDefinition.mCrystalUnlockProgress;
             
-            float unlockPerc = currentValue/static_cast<float>(upgradeDefinition.mDefaultUnlockCost);
+            float unlockPerc = currentValue/static_cast<float>(upgradeDefinition.mDefaultUnlockCost * GameSingletons::GetResearchCostMultiplier());
             if (unlockPerc > 0.75f)
             {
                 float shakeAbsValue = unlockPerc/20.0f;
@@ -371,7 +372,7 @@ void ResearchUpdater::CreateSceneObjects()
     for (size_t i = 0; i < GameSingletons::GetAvailableUpgrades().size(); ++i)
     {
         auto& availableUpgrade = GameSingletons::GetAvailableUpgrades().at(i);
-        if (availableUpgrade.mUnlockCost > 0)
+        if (!availableUpgrade.mUnlocked)
         {
             lockedIndices.insert(i);
         }
@@ -404,11 +405,11 @@ void ResearchUpdater::OnCarouselStationary()
     mSelectedUpgrade = mUpgrades.at(mCarouselController->GetSelectedIndex());
     const auto& upgradeDefinition = GameSingletons::GetAvailableUpgrades().at(mCarouselController->GetSelectedIndex());
     
-    mCurrentOperationCrystalCost = math::Min(upgradeDefinition.mUnlockCost, GameSingletons::GetCrystalCount());
+    mCurrentOperationCrystalCost = math::Min((upgradeDefinition.mDefaultUnlockCost * GameSingletons::GetResearchCostMultiplier()) - upgradeDefinition.mCrystalUnlockProgress, GameSingletons::GetCrystalCount());
     
     auto& resService = resources::ResourceLoadingService::GetInstance();
     
-    if (upgradeDefinition.mUnlockCost > 0)
+    if (!upgradeDefinition.mUnlocked)
     {
         // Recreate confirmation button
         SceneObject confirmationButtonSo;
@@ -492,8 +493,8 @@ void ResearchUpdater::OnCarouselStationary()
         unlockBarTextSo.mName = UNLOCK_BAR_TEXT_NAME;
         unlockBarTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
         
-        auto currentValue = upgradeDefinition.mDefaultUnlockCost - upgradeDefinition.mUnlockCost;
-        unlockBarTextSo.mText = std::to_string(currentValue) + "/" + std::to_string(upgradeDefinition.mDefaultUnlockCost);
+        auto currentValue = upgradeDefinition.mCrystalUnlockProgress;
+        unlockBarTextSo.mText = std::to_string(currentValue) + "/" + std::to_string(upgradeDefinition.mDefaultUnlockCost * GameSingletons::GetResearchCostMultiplier());
         mFadeableSceneObjects.push_back(UNLOCK_BAR_TEXT_NAME);
         mScene.AddSceneObject(std::move(unlockBarTextSo));
     }
@@ -640,9 +641,9 @@ void ResearchUpdater::UpdateUnlockBarSceneObjects(const float dtMillis)
         
         mSelectedUpgrade = mUpgrades.at(mCarouselController->GetSelectedIndex());
         const auto& upgradeDefinition = GameSingletons::GetAvailableUpgrades().at(mCarouselController->GetSelectedIndex());
-        auto currentValue = upgradeDefinition.mDefaultUnlockCost - upgradeDefinition.mUnlockCost;
+        auto currentValue = upgradeDefinition.mCrystalUnlockProgress;
         
-        float unlockPerc = currentValue/static_cast<float>(upgradeDefinition.mDefaultUnlockCost);
+        float unlockPerc = currentValue/static_cast<float>(upgradeDefinition.mDefaultUnlockCost * GameSingletons::GetResearchCostMultiplier());
         
         if (unlockPerc > 0.0f)
         {
@@ -655,7 +656,7 @@ void ResearchUpdater::UpdateUnlockBarSceneObjects(const float dtMillis)
             unlockBarSo.mInvisible = true;
         }
         
-        unlockBarTextSo.mText = std::to_string(currentValue) + "/" + std::to_string(upgradeDefinition.mDefaultUnlockCost);
+        unlockBarTextSo.mText = std::to_string(currentValue) + "/" + std::to_string(upgradeDefinition.mDefaultUnlockCost  * GameSingletons::GetResearchCostMultiplier());
         
         glm::vec2 botLeftRect, topRightRect;
         scene_object_utils::GetSceneObjectBoundingRect(unlockBarTextSo, botLeftRect, topRightRect);

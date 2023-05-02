@@ -21,6 +21,7 @@ MapCoord GameSingletons::mCurrentMapCoord = MapCoord(game_constants::DEFAULT_MAP
 int GameSingletons::mMapGenerationSeed = 0;
 int GameSingletons::mMapLevel = 0;
 int GameSingletons::mBackgroundIndex = 0;
+int GameSingletons::mResearchCostMultiplier = 1;
 long GameSingletons::mCrystalCount = 0;
 float GameSingletons::mDisplayedCrystalCount = 0;
 float GameSingletons::mGameSpeedMultiplier = 1.0f;
@@ -439,6 +440,20 @@ bool GameSingletons::GetErasedLabsOnCurrentMap()
 void GameSingletons::SetErasedLabsOnCurrentMap(const bool erasedLabsOnCurrentMap)
 {
     mErasedLabsOnCurrentMap = erasedLabsOnCurrentMap;
+}
+
+///------------------------------------------------------------------------------------------------
+
+int GameSingletons::GetResearchCostMultiplier()
+{
+    return mResearchCostMultiplier;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetResearchCostMultiplier(const int researchCostMultiplier)
+{
+    mResearchCostMultiplier = researchCostMultiplier;
 }
 
 ///------------------------------------------------------------------------------------------------

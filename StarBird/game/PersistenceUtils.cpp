@@ -103,6 +103,17 @@ void LoadFromProgressSaveFile()
                 }
             });
             
+            BaseGameDataLoader::SetCallbackForNode(strutils::StringId("ResearchCostMultiplier"), [&](const void* n)
+            {
+                auto* node = static_cast<const rapidxml::xml_node<>*>(n);
+                
+                auto* value = node->first_attribute("value");
+                if (value)
+                {
+                    GameSingletons::SetResearchCostMultiplier(std::stoi(value->value()));
+                }
+            });
+                                                   
             BaseGameDataLoader::SetCallbackForNode(strutils::StringId("PlayerData"), [&](const void* n)
             {
                 auto* node = static_cast<const rapidxml::xml_node<>*>(n);
@@ -195,7 +206,8 @@ void LoadFromProgressSaveFile()
                     else
                     {
                         auto& upgradeDefinition = *availableUpgradeIter;
-                        upgradeDefinition.mUnlockCost = std::stoi(node->first_attribute("unlockCost")->value());
+                        upgradeDefinition.mCrystalUnlockProgress = std::stoi(node->first_attribute("crystalUnlockProgress")->value());
+                        upgradeDefinition.mUnlocked = strcmp(node->first_attribute("unlocked")->value(), "true") == 0;
                     }
                 }
             });
@@ -248,6 +260,7 @@ void GenerateNewProgressSaveFile()
     GameSingletons::SetMapLevel(0);
     GameSingletons::SetBackgroundIndex(GameSingletons::GetMapGenerationSeed() % game_constants::BACKGROUND_COUNT);
     GameSingletons::SetErasedLabsOnCurrentMap(false);
+    GameSingletons::SetResearchCostMultiplier(1);
     
     BuildProgressSaveFile();
 }
@@ -265,6 +278,7 @@ void BuildProgressSaveFile()
     progressSaveFileXml << "\n    <CurrentMapCoord col=\"" << GameSingletons::GetCurrentMapCoord().mCol << "\" row=\"" << GameSingletons::GetCurrentMapCoord().mRow << "\" />";
     progressSaveFileXml << "\n    <MapLevel level=\"" << GameSingletons::GetMapLevel() << "\" />";
     progressSaveFileXml << "\n    <ErasedLabsInCurrentMap value=\"" << (GameSingletons::GetErasedLabsOnCurrentMap() ? "true" : "false") << "\" />";
+    progressSaveFileXml << "\n    <ResearchCostMultiplier value=\"" << std::to_string(GameSingletons::GetResearchCostMultiplier()) << "\" />";
     progressSaveFileXml << "\n    <PlayerData maxHealth=\"" << std::to_string(GameSingletons::GetPlayerMaxHealth()) << "\" ";
     progressSaveFileXml << "health=\"" << std::to_string(GameSingletons::GetPlayerCurrentHealth()) << "\" ";
     progressSaveFileXml << "attack=\"" << std::to_string(GameSingletons::GetPlayerAttackStat()) << "\" ";
@@ -289,9 +303,10 @@ void BuildProgressSaveFile()
     progressSaveFileXml << "\n    <AvailableUpgrades>";
     for (const auto& availableUpgrade: GameSingletons::GetAvailableUpgrades())
     {
-        progressSaveFileXml << "\n        <AvailableUpgrade name=\"" << availableUpgrade.mUpgradeNameId.GetString() << "\" ";
-        progressSaveFileXml << " unlockCost=\"" << availableUpgrade.mUnlockCost << "\" ";
-        progressSaveFileXml << " />";
+        progressSaveFileXml << "\n        <AvailableUpgrade name=\"" << availableUpgrade.mUpgradeNameId.GetString() << "\"";
+        progressSaveFileXml << " crystalUnlockProgress=\"" << availableUpgrade.mCrystalUnlockProgress << "\"";
+        progressSaveFileXml << " unlocked=\"" << (availableUpgrade.mUnlocked ? "true" : "false") << "\" ";
+        progressSaveFileXml << "/>";
     }
     
     progressSaveFileXml << "\n    </AvailableUpgrades>";

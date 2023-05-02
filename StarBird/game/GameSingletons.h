@@ -108,6 +108,9 @@ public:
     static bool GetErasedLabsOnCurrentMap();
     static void SetErasedLabsOnCurrentMap(const bool erasedLabsOnCurrentMap);
     
+    static int GetResearchCostMultiplier();
+    static void SetResearchCostMultiplier(const int researchCostMultiplier);
+    
 private:
     static InputContext mInputContext;
     static SDL_Window* mWindow;
@@ -120,6 +123,7 @@ private:
     static int mMapGenerationSeed;
     static int mMapLevel;
     static int mBackgroundIndex;
+    static int mResearchCostMultiplier;
     static long mCrystalCount;
     static float mDisplayedCrystalCount;
     static float mGameSpeedMultiplier;

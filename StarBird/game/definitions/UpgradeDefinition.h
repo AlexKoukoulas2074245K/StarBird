@@ -23,8 +23,9 @@ struct UpgradeDefinition
     bool mIntransient = false;
     bool mEventOnly = false;
     bool mEquippable = false;
+    bool mUnlocked = false;
     long mDefaultUnlockCost = 0;
-    long mUnlockCost = 0;
+    long mCrystalUnlockProgress = 0;
 };
 
 ///------------------------------------------------------------------------------------------------

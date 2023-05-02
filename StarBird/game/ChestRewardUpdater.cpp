@@ -465,7 +465,7 @@ UpgradeDefinition ChestRewardUpdater::FindSelectedRewardDefinition() const
     int counter = 0;
     for (const auto& availableUpgrade: GameSingletons::GetAvailableUpgrades())
     {
-        if (availableUpgrade.mUnlockCost == 0)
+        if (availableUpgrade.mUnlocked)
         {
             if (counter++ == mCarouselController->GetSelectedIndex())
             {
@@ -499,7 +499,7 @@ void ChestRewardUpdater::CreateRewardObjects()
     std::vector<resources::ResourceId> upgradeTextureIds;
     for (const auto& upgradeEntry: GameSingletons::GetAvailableUpgrades())
     {
-        if (upgradeEntry.mUnlockCost == 0)
+        if (upgradeEntry.mUnlocked)
         {
             upgradeTextureIds.push_back(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + upgradeEntry.mTextureFileName));
         }

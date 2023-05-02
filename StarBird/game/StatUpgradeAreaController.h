@@ -37,6 +37,7 @@ private:
     Scene& mScene;
     const float mStatIncrement;
     const float mInitialStatValue;
+    const int mUpgradeCost;
     const bool mFloatDisplay;
     glm::vec3 mTargetCrystalPosition;
     float mStatValue;

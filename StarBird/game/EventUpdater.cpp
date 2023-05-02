@@ -263,6 +263,44 @@ void EventUpdater::RegisterEvents()
     mRegisteredEvents.emplace_back(EventDescription
     (
         {
+            "backgrounds/events/7.bmp"
+        },
+
+        {
+            "A distress signal  mentions that research bases have been infiltrated by a group of enemy assassins, causing significant loss of life and disruption to the research equipment.",
+            "You swiftly transfered all your crystal reserves to save the research equipment.",
+            "You decide not to take action, however future research  will definitely yield a larger cost."
+        },
+
+        {
+            {
+                EventOption("Send ALL Crystals for repairs", 1, [&]()
+                {
+                    CreateCrystalsTowardTargetPosition(GameSingletons::GetCrystalCount(), EVENT_BACKGROUND_POSITION);
+                    GameSingletons::SetCrystalCount(0);
+                }),
+                EventOption("Ignore", 2, []()
+                {
+                    GameSingletons::SetResearchCostMultiplier(GameSingletons::GetResearchCostMultiplier() * 2);
+                }),
+            },
+            
+            {
+                EventOption("Leave", END_STATE_INDEX, [](){})
+            },
+            
+            {
+                EventOption("Leave", END_STATE_INDEX, [](){})
+            }
+        },
+     
+     
+        [](){ return GameSingletons::GetCrystalCount() >= 10 && GameSingletons::GetResearchCostMultiplier() < 2.0f; }
+    ));
+    
+    mRegisteredEvents.emplace_back(EventDescription
+    (
+        {
             "backgrounds/events/0.bmp"
         },
 
@@ -299,7 +337,9 @@ void EventUpdater::RegisterEvents()
     mRegisteredEvents.emplace_back(EventDescription
     (
         {
-            "backgrounds/events/2.bmp"
+            "backgrounds/events/2.bmp",
+            "backgrounds/events/2.bmp",
+            "backgrounds/events/6.bmp"
         },
 
         {
@@ -329,7 +369,7 @@ void EventUpdater::RegisterEvents()
         },
      
      
-        [](){ return true; }
+        [](){ return GameSingletons::GetErasedLabsOnCurrentMap() == false; }
     ));
     
     mRegisteredEvents.emplace_back(EventDescription
@@ -405,8 +445,8 @@ void EventUpdater::RegisterEvents()
     ));
     
     {
-        auto eventAttackGain = math::ControlledRandomInt(1, 3);
-        auto eventBulletSpeedGain = math::ControlledRandomFloat(0.1, 0.3);
+        auto eventAttackGain = math::ControlledRandomInt(1, 4);
+        auto eventBulletSpeedGain = math::ControlledRandomFloat(0.1, 0.4);
         
         std::stringstream eventAttackGainDesc;
         eventAttackGainDesc << "Gain +" << std::to_string(eventAttackGain) << " ATTACK.";
@@ -444,6 +484,49 @@ void EventUpdater::RegisterEvents()
             [](){ return GameSingletons::GetPlayerAttackStat() < 15.0f && GameSingletons::GetPlayerBulletSpeedStat() < 1.5f; }
         ));
     }
+    
+    {
+        auto eventMaxHealthGain = math::ControlledRandomInt(20, 50);
+        auto eventSpeedDecrease = math::ControlledRandomFloat(0.1, 0.4);
+        
+        std::stringstream eventMaxHealthGainDesc;
+        eventMaxHealthGainDesc << "Gain +" << std::to_string(eventMaxHealthGain) << " MAX HP & -" << std::fixed << std::setprecision(1) << eventSpeedDecrease << " SPEED.";
+        
+        mRegisteredEvents.emplace_back(EventDescription
+        (
+            {
+                "backgrounds/events/5.bmp"
+            },
+            
+            {
+                "You discover a state-of-the-art alien super-armor. It is extremely durable, but also significantly heavier than the current one.",
+                "Your vessel's HEALTH  was increased and SPEED decreased.",
+                "Your discard the armor and continue  with your mission."
+            },
+            
+            {
+                {
+                    EventOption(eventMaxHealthGainDesc.str(), 1, [=]()
+                    {
+                        GameSingletons::SetPlayerMaxHealth(GameSingletons::GetPlayerMaxHealth() + eventMaxHealthGain);
+                        GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() + eventMaxHealthGain);
+                        GameSingletons::SetPlayerMovementSpeedStat(GameSingletons::GetPlayerMovementSpeedStat() - eventSpeedDecrease);
+                    }),
+                    EventOption("Discard", 2, [](){})
+                },
+                
+                {
+                    EventOption("Leave.", END_STATE_INDEX, [](){})
+                },
+                
+                {
+                    EventOption("Leave.", END_STATE_INDEX, [](){})
+                }
+            },
+            
+            [](){ return GameSingletons::GetPlayerMaxHealth() < 150.0f; }
+        ));
+    }
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -454,6 +537,8 @@ void EventUpdater::SelectRandomEligibleEvent()
     {
         mSelectedEvent = &mRegisteredEvents[static_cast<size_t>(math::ControlledRandomInt(0, static_cast<int>(mRegisteredEvents.size() - 1)))];
     }
+    
+    mSelectedEvent = &mRegisteredEvents[0];
 }
 
 ///------------------------------------------------------------------------------------------------
