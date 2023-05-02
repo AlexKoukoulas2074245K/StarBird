@@ -67,6 +67,7 @@ UpgradeUnlockedHandler::UpgradeUnlockedHandler(Scene& scene, b2World& box2dWorld
     , mBox2dWorld(box2dWorld)
     , mCurrentUpgradeNameUnlocked()
     , mForceFinishAnimation(false)
+    , mSecondStageAnimation(false)
 {
     // BULLET_TOP_WALL
     {
@@ -366,10 +367,7 @@ void UpgradeUnlockedHandler::OnDoubleBulletUpgradeGained()
             leftMirrorImageSo.mScale = LEFT_MIRROR_IMAGE_SCALE;
             leftMirrorImageSo.mName = game_constants::LEFT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
             leftMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
-            mScene.AddSceneObject(std::move(leftMirrorImageSo));
-        }
         
-        {
             SceneObject rightMirrorImageSo;
             rightMirrorImageSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::MIRROR_IMAGE_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
             rightMirrorImageSo.mSceneObjectType = SceneObjectType::WorldGameObject;
@@ -377,6 +375,8 @@ void UpgradeUnlockedHandler::OnDoubleBulletUpgradeGained()
             rightMirrorImageSo.mScale = RIGHT_MIRROR_IMAGE_SCALE;
             rightMirrorImageSo.mName = game_constants::RIGHT_MIRROR_IMAGE_SCENE_OBJECT_NAME;
             rightMirrorImageSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f;
+            
+            mScene.AddSceneObject(std::move(leftMirrorImageSo));
             mScene.AddSceneObject(std::move(rightMirrorImageSo));
         }
     }
@@ -590,15 +590,20 @@ UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::UpdateDoub
             
             mFlows.emplace_back([&]()
             {
-                blueprint_flows::CreatePlayerBulletFlow(mFlows, mScene, mBox2dWorld);
-                
-                mFlows.emplace_back([&]()
-                {
-                    mForceFinishAnimation = true;
-                }, INTER_ANIMATION_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, ANIMATION_END_FLOW_NAME);
-                
+                mSecondStageAnimation = true;
             }, INTER_ANIMATION_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, DOUBLE_BULLET_FLOW_CREATION_NAME);
         }
+    }
+    else if (mSecondStageAnimation)
+    {
+        blueprint_flows::CreatePlayerBulletFlow(mFlows, mScene, mBox2dWorld);
+        
+        mFlows.emplace_back([&]()
+        {
+            mForceFinishAnimation = true;
+        }, INTER_ANIMATION_DELAY_MILLIS, RepeatableFlow::RepeatPolicy::ONCE, ANIMATION_END_FLOW_NAME);
+        
+        mSecondStageAnimation = false;
     }
     
     return UpgradeAnimationState::ONGOING;

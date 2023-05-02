@@ -57,6 +57,7 @@ private:
     std::vector<RepeatableFlow> mFlows;
     std::vector<strutils::StringId> mCreatedSceneObjectNames;
     bool mForceFinishAnimation;
+    bool mSecondStageAnimation;
 };
 
 ///------------------------------------------------------------------------------------------------

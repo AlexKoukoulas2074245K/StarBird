@@ -14,6 +14,7 @@ InputContext GameSingletons::mInputContext = {};
 SDL_Window* GameSingletons::mWindow = nullptr;
 glm::vec2 GameSingletons::mWindowDimensions = glm::vec2();
 std::unordered_map<SceneObjectType, Camera> GameSingletons::mSceneObjectTypeToCameraMap = {};
+std::unordered_set<size_t> GameSingletons::mSeenEventIndices = {};
 std::vector<UpgradeDefinition> GameSingletons::mEquippedUpgrades = {};
 std::vector<UpgradeDefinition> GameSingletons::mAvailableUpgrades = {};
 std::vector<UpgradeDefinition> GameSingletons::mEventOnlyUpgrades = {};
@@ -139,6 +140,20 @@ std::optional<std::reference_wrapper<Camera>> GameSingletons::GetCameraForSceneO
 void GameSingletons::SetCameraForSceneObjectType(const SceneObjectType sceneObjectType, Camera&& camera)
 {
     mSceneObjectTypeToCameraMap[sceneObjectType] = camera;
+}
+
+///------------------------------------------------------------------------------------------------
+
+std::unordered_set<size_t>& GameSingletons::GetSeenEventIndices()
+{
+    return mSeenEventIndices;
+}
+
+///------------------------------------------------------------------------------------------------
+
+bool GameSingletons::HasSeenEventIndex(const size_t eventIndex)
+{
+    return mSeenEventIndices.count(eventIndex) != 0;
 }
 
 ///------------------------------------------------------------------------------------------------

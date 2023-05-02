@@ -20,6 +20,7 @@
 
 #include <optional>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 ///------------------------------------------------------------------------------------------------
@@ -53,6 +54,9 @@ public:
     static void SetAvailableUpgrades(const std::vector<UpgradeDefinition>& upgrades);
     static void SetEventOnlyUpgrades(const std::vector<UpgradeDefinition>& upgrades);
     static bool HasEquippedUpgrade(const strutils::StringId& upgradeNameId);
+    
+    static std::unordered_set<size_t>& GetSeenEventIndices();
+    static bool HasSeenEventIndex(const size_t eventIndex);
     
     static float GetGameSpeedMultiplier();
     static void SetGameSpeedMultiplier(const float gameSpeedMultiplier);
@@ -116,6 +120,7 @@ private:
     static SDL_Window* mWindow;
     static glm::vec2 mWindowDimensions;
     static std::unordered_map<SceneObjectType, Camera> mSceneObjectTypeToCameraMap;
+    static std::unordered_set<size_t> mSeenEventIndices;
     static std::vector<UpgradeDefinition> mEquippedUpgrades;
     static std::vector<UpgradeDefinition> mAvailableUpgrades;
     static std::vector<UpgradeDefinition> mEventOnlyUpgrades;

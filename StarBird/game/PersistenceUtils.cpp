@@ -156,6 +156,17 @@ void LoadFromProgressSaveFile()
                 }
             });
             
+            BaseGameDataLoader::SetCallbackForNode(strutils::StringId("SeenEventIndex"), [&](const void* n)
+            {
+                auto* node = static_cast<const rapidxml::xml_node<>*>(n);
+                
+                auto* eventIndexValue = node->first_attribute("value");
+                if (eventIndexValue)
+                {
+                    GameSingletons::GetSeenEventIndices().insert(std::stoi(eventIndexValue->value()));
+                }
+            });
+            
             BaseGameDataLoader::SetCallbackForNode(strutils::StringId("Upgrade"), [&](const void* n)
             {
                 auto* node = static_cast<const rapidxml::xml_node<>*>(n);
@@ -261,6 +272,7 @@ void GenerateNewProgressSaveFile()
     GameSingletons::SetBackgroundIndex(GameSingletons::GetMapGenerationSeed() % game_constants::BACKGROUND_COUNT);
     GameSingletons::SetErasedLabsOnCurrentMap(false);
     GameSingletons::SetResearchCostMultiplier(1);
+    GameSingletons::GetSeenEventIndices().clear();
     
     BuildProgressSaveFile();
 }
@@ -297,7 +309,6 @@ void BuildProgressSaveFile()
         }
         progressSaveFileXml << " />";
     }
-    
     progressSaveFileXml << "\n    </EquippedUpgrades>";
     
     progressSaveFileXml << "\n    <AvailableUpgrades>";
@@ -308,8 +319,14 @@ void BuildProgressSaveFile()
         progressSaveFileXml << " unlocked=\"" << (availableUpgrade.mUnlocked ? "true" : "false") << "\" ";
         progressSaveFileXml << "/>";
     }
-    
     progressSaveFileXml << "\n    </AvailableUpgrades>";
+    
+    progressSaveFileXml << "\n    <SeenEventIndices>";
+    for (const auto& seenEventIndex: GameSingletons::GetSeenEventIndices())
+    {
+        progressSaveFileXml << "\n        <SeenEventIndex value=\"" << seenEventIndex << "\" />";
+    }
+    progressSaveFileXml << "\n    </SeenEventIndices>";
     
     progressSaveFileXml << "\n</SaveData>";
     
