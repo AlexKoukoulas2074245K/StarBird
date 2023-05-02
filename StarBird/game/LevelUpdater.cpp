@@ -421,11 +421,17 @@ PostStateUpdateDirective LevelUpdater::VUpdate(std::vector<SceneObject>& sceneOb
                 }
             }
             
+            float difficultySpeedFactor = 1.0f + mLevel.mWaves[mCurrentWaveNumber].mDebugDifficultyValue/20.0f;
+            
             switch (temporaryMovementPattern)
             {
                 case MovementControllerPattern::CONSTANT_VELOCITY:
                 {
-                    sceneObject.mBody->SetLinearVelocity(b2Vec2(sceneObjectTypeDef.mConstantLinearVelocity.x, sceneObjectTypeDef.mConstantLinearVelocity.y));
+                    if (sceneObjectTypeDef.mContactFilter.categoryBits != physics_constants::ENEMY_CATEGORY_BIT)
+                    {
+                        difficultySpeedFactor = 1.0f;
+                    }
+                    sceneObject.mBody->SetLinearVelocity(b2Vec2(sceneObjectTypeDef.mConstantLinearVelocity.x * difficultySpeedFactor, sceneObjectTypeDef.mConstantLinearVelocity.y * difficultySpeedFactor));
                 } break;
                     
                 case MovementControllerPattern::CHASING_PLAYER:
@@ -435,8 +441,8 @@ PostStateUpdateDirective LevelUpdater::VUpdate(std::vector<SceneObject>& sceneOb
                         b2Vec2 toAttractionPoint = playerSO->get().mBody->GetWorldCenter() - sceneObject.mBody->GetWorldCenter();
                     
                         toAttractionPoint.Normalize();
-                        toAttractionPoint.x *= dtMillis * sceneObjectTypeDef.mSpeed;
-                        toAttractionPoint.y *= dtMillis * sceneObjectTypeDef.mSpeed;
+                        toAttractionPoint.x *= dtMillis * sceneObjectTypeDef.mSpeed * difficultySpeedFactor;
+                        toAttractionPoint.y *= dtMillis * sceneObjectTypeDef.mSpeed * difficultySpeedFactor;
                         sceneObject.mBody->ApplyForceToCenter(toAttractionPoint, true);
                     }
                 } break;
