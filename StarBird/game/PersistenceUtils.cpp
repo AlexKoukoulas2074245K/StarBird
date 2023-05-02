@@ -92,6 +92,17 @@ void LoadFromProgressSaveFile()
                 }
             });
             
+            BaseGameDataLoader::SetCallbackForNode(strutils::StringId("ErasedLabsInCurrentMap"), [&](const void* n)
+            {
+                auto* node = static_cast<const rapidxml::xml_node<>*>(n);
+                
+                auto* value = node->first_attribute("value");
+                if (value)
+                {
+                    GameSingletons::SetErasedLabsOnCurrentMap(strcmp(value->value(), "true") == 0);
+                }
+            });
+            
             BaseGameDataLoader::SetCallbackForNode(strutils::StringId("PlayerData"), [&](const void* n)
             {
                 auto* node = static_cast<const rapidxml::xml_node<>*>(n);
@@ -236,6 +247,7 @@ void GenerateNewProgressSaveFile()
     GameSingletons::SetCurrentMapCoord(MapCoord(game_constants::DEFAULT_MAP_COORD_COL, game_constants::DEFAULT_MAP_COORD_ROW));
     GameSingletons::SetMapLevel(0);
     GameSingletons::SetBackgroundIndex(GameSingletons::GetMapGenerationSeed() % game_constants::BACKGROUND_COUNT);
+    GameSingletons::SetErasedLabsOnCurrentMap(false);
     
     BuildProgressSaveFile();
 }
@@ -252,6 +264,7 @@ void BuildProgressSaveFile()
     progressSaveFileXml << "\n    <Seed value=\"" << GameSingletons::GetMapGenerationSeed() << "\" />";
     progressSaveFileXml << "\n    <CurrentMapCoord col=\"" << GameSingletons::GetCurrentMapCoord().mCol << "\" row=\"" << GameSingletons::GetCurrentMapCoord().mRow << "\" />";
     progressSaveFileXml << "\n    <MapLevel level=\"" << GameSingletons::GetMapLevel() << "\" />";
+    progressSaveFileXml << "\n    <ErasedLabsInCurrentMap value=\"" << (GameSingletons::GetErasedLabsOnCurrentMap() ? "true" : "false") << "\" />";
     progressSaveFileXml << "\n    <PlayerData maxHealth=\"" << std::to_string(GameSingletons::GetPlayerMaxHealth()) << "\" ";
     progressSaveFileXml << "health=\"" << std::to_string(GameSingletons::GetPlayerCurrentHealth()) << "\" ";
     progressSaveFileXml << "attack=\"" << std::to_string(GameSingletons::GetPlayerAttackStat()) << "\" ";

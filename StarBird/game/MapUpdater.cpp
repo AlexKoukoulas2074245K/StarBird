@@ -9,6 +9,7 @@
 #include "FullScreenOverlayController.h"
 #include "GameConstants.h"
 #include "GameSingletons.h"
+#include "LevelGeneration.h"
 #include "MapUpdater.h"
 #include "PersistenceUtils.h"
 #include "ObjectiveCUtils.h"
@@ -595,7 +596,7 @@ void MapUpdater::OnEventNodeSelected()
             
         case 1:
         {
-            mMap.GenerateLevelWaves(mSelectedMapCoord, mMap.GetMapData().at(mSelectedMapCoord));
+            level_generation::GenerateLevel(mSelectedMapCoord, mMap.GetMapData().at(mSelectedMapCoord));
             mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::LEVEL, objectiveC_utils::BuildLocalFileSaveLocation(mSelectedMapCoord.ToString()), true));
         } break;
             

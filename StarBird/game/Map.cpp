@@ -8,12 +8,14 @@
 #include "Map.h"
 #include "GameConstants.h"
 #include "GameSingletons.h"
+#include "LevelGeneration.h"
 #include "ObjectiveCUtils.h"
 #include "SceneObject.h"
 #include "Scene.h"
+#include "datarepos/WaveBlocksRepository.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../utils/Logging.h"
-#include "datarepos/WaveBlocksRepository.h"
+
 #include <SDL.h>
 #include <fstream>
 #include <unordered_set>
@@ -34,8 +36,6 @@ static const float MAP_PLANET_RING_MIN_X_ROTATION = 1.8f;
 static const float MAP_PLANET_RING_MAX_X_ROTATION = 2.2f;
 static const float MAP_PLANET_RING_MIN_Y_ROTATION = -math::PI/10;
 static const float MAP_PLANET_RING_MAX_Y_ROTATION = +math::PI/10;
-
-static const float LEVEL_WAVE_Y_INCREMENT = 2.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -97,9 +97,23 @@ void Map::GenerateMapData()
             mMapData[currentCoordinate].mNodeLinks.insert(targetCoord);
             currentCoordinate = targetCoord;
             mMapData[currentCoordinate].mPosition = GenerateNodePositionForCoord(currentCoordinate);
-            mMapData[currentCoordinate].mNodeType = NodeType::EVENT;// SelectNodeTypeForCoord(currentCoordinate);
+            mMapData[currentCoordinate].mNodeType = SelectNodeTypeForCoord(currentCoordinate);
         }
     }
+    
+    // Handle map distortions
+    if (GameSingletons::GetErasedLabsOnCurrentMap())
+    {
+        for (auto& mapNodeEntry: mMapData)
+        {
+            if (mapNodeEntry.second.mNodeType == NodeType::LAB)
+            {
+                // Replace labs with either normal, hard, or event nodes
+                mapNodeEntry.second.mNodeType = static_cast<NodeType>(math::ControlledRandomInt(0, 2));
+            }
+        }
+    }
+    
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -250,7 +264,7 @@ void Map::CreateLevelFiles()
         {
             case NodeType::NORMAL_ENCOUNTER:
             case NodeType::HARD_ENCOUNTER:
-            case NodeType::BOSS_ENCOUNTER: GenerateLevelWaves(mapNodeEntry.first, mapNodeEntry.second);
+            case NodeType::BOSS_ENCOUNTER: level_generation::GenerateLevel(mapNodeEntry.first, mapNodeEntry.second);
             
             default: break;
         }
@@ -263,126 +277,6 @@ void Map::CreateLevelFiles()
     );
     
     Log(LogType::INFO, "Level generation finished in %.6f millis", elapsedTime * 1000.0f);
-}
-
-///------------------------------------------------------------------------------------------------
-
-void Map::GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData)
-{
-    Log(LogType::INFO, "Generating level for map node %s", mapCoord.ToString().c_str());
-    
-    std::stringstream levelXml;
-    levelXml <<
-        "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-        "\n<Level>"
-        "\n<Camera type=\"world_cam\" lenseHeight=\"30.0f\"/>"
-        "\n<Camera type=\"gui_cam\" lenseHeight=\"30.0f\"/>";
-    
-    
-    auto difficultyValue = mapCoord.mCol;
-    if (nodeData.mNodeType == NodeType::BOSS_ENCOUNTER)
-    {
-        difficultyValue *= 1.5f;
-    }
-    else if (nodeData.mNodeType == NodeType::HARD_ENCOUNTER)
-    {
-        difficultyValue *= 2.0f;
-    }
-    
-    difficultyValue += GameSingletons::GetMapLevel() * 10;
-    
-    auto waveCount = math::ControlledRandomInt(2,3) + (difficultyValue / 5);
-    
-    const auto& eligibleBlocks = WaveBlocksRepository::GetInstance().GetEligibleWaveBlocksForDifficulty(difficultyValue);
-    
-    if (eligibleBlocks.size() == 0) return;
-    
-    for (int j = 0; j < waveCount; ++j)
-    {
-        levelXml << "\n    <Wave";
-        auto selectedBlockIndex = math::ControlledRandomInt(0, static_cast<int>(eligibleBlocks.size()) - 1);
-        auto selectedBlock = eligibleBlocks.at(selectedBlockIndex);
-        if (selectedBlock.mExtensible)
-        {
-            ExtendWaveBlockForDifficulty(difficultyValue, selectedBlock);
-        }
-        
-        levelXml << " blockIndex=\"" << std::to_string(selectedBlockIndex) << "\" difficulty=\"" << std::to_string(difficultyValue) << "\"";
-        
-        if (nodeData.mNodeType == NodeType::BOSS_ENCOUNTER && j == waveCount - 1)
-        {
-            selectedBlock = WaveBlocksRepository::GetInstance().GetBossWaveBlock(strutils::StringId("Ka'thun"));
-            levelXml << " bossName=\"" << selectedBlock.mBossName.GetString() << "\" bossHealth=\"" << selectedBlock.mBossHealth << "\"";
-        }
-        
-        levelXml << ">";
-        for (const auto& blockLine: selectedBlock.mWaveBlockLines)
-        {
-            for (const auto& enemy: blockLine.mEnemies)
-            {
-                auto positionOffset = selectedBlock.mInflexible ? glm::vec2(0.0f, 0.0f) : glm::vec2(math::RandomFloat(-1.0f, 1.0f), math::RandomFloat(-1.0f, 1.0f));
-                levelXml << "\n        <Enemy position=\"" << enemy.mPosition.x + positionOffset.x << ", " << enemy.mPosition.y + positionOffset.y << "\" type=\"" << enemy.mGameObjectEnemyType.GetString() << "\"/>";
-            }
-        }
-        
-        levelXml << "\n    </Wave>";
-    }
-    
-    levelXml << "\n</Level>";
-    
-    auto levelFileName = objectiveC_utils::BuildLocalFileSaveLocation(mapCoord.ToString() + ".xml");
-    std::ofstream outputFile(levelFileName);
-    outputFile << levelXml.str();
-    outputFile.close();
-}
-
-///------------------------------------------------------------------------------------------------
-
-void Map::ExtendWaveBlockForDifficulty(const int difficulty, WaveBlockDefinition& waveBlock) const
-{
-    if (difficulty == waveBlock.mDifficulty) return;
-    
-    // Find largest y in block line enemies
-    auto waveHeight = 0.0f;
-    auto riter = waveBlock.mWaveBlockLines.rbegin();
-    while (riter != waveBlock.mWaveBlockLines.rend())
-    {
-        if (!riter->mEnemies.empty())
-        {
-            waveHeight = riter->mEnemies.back().mPosition.y - game_constants::LEVEL_WAVE_VISIBLE_Y;
-            break;
-        }
-        
-        riter++;
-    }
-    
-    auto currentY = game_constants::LEVEL_WAVE_VISIBLE_Y + waveHeight + LEVEL_WAVE_Y_INCREMENT;
-    
-    std::vector<WaveBlockLine> additionalLines;
-    auto difficultyDiff = difficulty - waveBlock.mDifficulty;
-    for (int i = 0; i < difficultyDiff; ++i)
-    {
-        auto targetLineCopy = waveBlock.mWaveBlockLines.at(i % waveBlock.mWaveBlockLines.size());
-        auto lineHeight = GetWaveBlockLineHeight(targetLineCopy);
-        
-        for (auto& enemy: targetLineCopy.mEnemies)
-        {
-            enemy.mPosition.y = currentY + enemy.mPosition.y - game_constants::LEVEL_WAVE_VISIBLE_Y;
-        }
-        
-        currentY += lineHeight;
-        
-        additionalLines.push_back(targetLineCopy);
-    }
-    
-    waveBlock.mWaveBlockLines.insert(waveBlock.mWaveBlockLines.end(), additionalLines.begin(), additionalLines.end());
-}
-
-///------------------------------------------------------------------------------------------------
-
-float Map::GetWaveBlockLineHeight(const WaveBlockLine& waveBlockLine) const
-{
-    return waveBlockLine.mEnemies.empty() ? 0.0f : waveBlockLine.mEnemies.back().mPosition.y - game_constants::LEVEL_WAVE_VISIBLE_Y + LEVEL_WAVE_Y_INCREMENT;
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -410,13 +304,13 @@ bool Map::DetectedCrossedEdge(const MapCoord& currentCoord, const MapCoord& targ
 
 ///------------------------------------------------------------------------------------------------
 
-glm::vec3 Map::GenerateNodePositionForCoord(const MapCoord& currentMapCoord) const
+glm::vec3 Map::GenerateNodePositionForCoord(const MapCoord& mapCoord) const
 {
     // Base calculation
     glm::vec3 result = glm::vec3
     (
-        game_constants::MAP_MIN_WORLD_BOUNDS.x + 7.0f * currentMapCoord.mCol, // Base horizontal spacing
-        game_constants::MAP_MIN_WORLD_BOUNDS.y + 10.0f - currentMapCoord.mRow * 5.0f + currentMapCoord.mCol * 4.0f, // Base vertical alignment + staircase increment
+        game_constants::MAP_MIN_WORLD_BOUNDS.x + 7.0f * mapCoord.mCol, // Base horizontal spacing
+        game_constants::MAP_MIN_WORLD_BOUNDS.y + 10.0f - mapCoord.mRow * 5.0f + mapCoord.mCol * 4.0f, // Base vertical alignment + staircase increment
         0.0f
      );
     
@@ -428,17 +322,21 @@ glm::vec3 Map::GenerateNodePositionForCoord(const MapCoord& currentMapCoord) con
 
 ///------------------------------------------------------------------------------------------------
 
-Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
+Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& mapCoord) const
 {
     // Forced single entry point and starting coord case
-    if (mHasSingleEntryPoint && currentMapCoord == MapCoord(0, mMapDimensions.y/2))
+    if (mHasSingleEntryPoint && mapCoord == MapCoord(0, mMapDimensions.y/2))
     {
         return NodeType::STARTING_LOCATION;
     }
     // Last map coord
-    else if (currentMapCoord == MapCoord(mMapDimensions.x - 1, mMapDimensions.y/2))
+    else if (mapCoord == MapCoord(mMapDimensions.x - 1, mMapDimensions.y/2))
     {
         return NodeType::BOSS_ENCOUNTER;
+    }
+    else if (mapCoord.mCol == mMapDimensions.x - 2)
+    {
+        return NodeType::LAB;
     }
     else
     {
@@ -456,18 +354,18 @@ Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
         availableNodeTypes.erase(NodeType::BOSS_ENCOUNTER);
         
         // Second node can not have base
-        if (currentMapCoord.mCol == 1)
+        if (mapCoord.mCol == 1)
         {
             availableNodeTypes.erase(NodeType::LAB);
         }
-        
+         
         // Remove any node types from the immediate previous links except if they are
         // normal encounters or events
         for (const auto& mapEntry: mMapData)
         {
             if (mapEntry.second.mNodeType == NodeType::NORMAL_ENCOUNTER || mapEntry.second.mNodeType == NodeType::EVENT) continue;
             
-            if (mapEntry.second.mNodeLinks.contains(currentMapCoord))
+            if (mapEntry.second.mNodeLinks.contains(mapCoord))
             {
                 availableNodeTypes.erase(mapEntry.second.mNodeType);
             }
@@ -487,10 +385,10 @@ Map::NodeType Map::SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const
 
 ///------------------------------------------------------------------------------------------------
 
-MapCoord Map::RandomlySelectNextMapCoord(const MapCoord& currentMapCoord) const
+MapCoord Map::RandomlySelectNextMapCoord(const MapCoord& mapCoord) const
 {
-    auto randRow = math::Max(math::Min(mMapDimensions.y - 1, currentMapCoord.mRow + math::ControlledRandomInt(-1, 1)), 0);
-    return currentMapCoord.mCol == mMapDimensions.x - 2 ? MapCoord(mMapDimensions.x - 1, mMapDimensions.y/2) : MapCoord(currentMapCoord.mCol + 1, randRow);
+    auto randRow = math::Max(math::Min(mMapDimensions.y - 1, mapCoord.mRow + math::ControlledRandomInt(-1, 1)), 0);
+    return mapCoord.mCol == mMapDimensions.x - 2 ? MapCoord(mMapDimensions.x - 1, mMapDimensions.y/2) : MapCoord(mapCoord.mCol + 1, randRow);
 }
 
 ///------------------------------------------------------------------------------------------------

@@ -68,9 +68,9 @@ public:
     {
         NORMAL_ENCOUNTER = 0,
         HARD_ENCOUNTER = 1,
-        BOSS_ENCOUNTER = 2,
-        LAB = 3,
-        EVENT = 4,
+        EVENT = 2,
+        BOSS_ENCOUNTER = 3,
+        LAB = 4,
         STARTING_LOCATION = 5,
         COUNT = 6
     };
@@ -85,8 +85,6 @@ public:
 public:
     Map(Scene& scene, const int generationSeed, const glm::ivec2& mapDimensions, const MapCoord& currentMapCoord, const bool singleEntryPoint);
     
-    void GenerateLevelWaves(const MapCoord& mapCoord, const NodeData& nodeData);
-    
     int GetCurrentGenerationSeed() const;
     const std::map<MapCoord, Map::NodeData>& GetMapData() const;
     const glm::ivec2& GetMapDimensions() const;
@@ -95,13 +93,11 @@ private:
     void GenerateMapData();
     void CreateMapSceneObjects();
     void CreateLevelFiles();
-    void ExtendWaveBlockForDifficulty(const int difficulty, WaveBlockDefinition& waveBlock) const;
-    float GetWaveBlockLineHeight(const WaveBlockLine& waveBlockLine) const;
     
-    bool DetectedCrossedEdge(const MapCoord& currentCoord, const MapCoord& targetTestCoord) const;
-    glm::vec3 GenerateNodePositionForCoord(const MapCoord& currentMapCoord) const;
-    NodeType SelectNodeTypeForCoord(const MapCoord& currentMapCoord) const;
-    MapCoord RandomlySelectNextMapCoord(const MapCoord& currentMapCoord) const;
+    bool DetectedCrossedEdge(const MapCoord& mapCoord, const MapCoord& targetTestCoord) const;
+    glm::vec3 GenerateNodePositionForCoord(const MapCoord& mapCoord) const;
+    NodeType SelectNodeTypeForCoord(const MapCoord& mapCoord) const;
+    MapCoord RandomlySelectNextMapCoord(const MapCoord& mapCoord) const;
     
 private:
     Scene& mScene;

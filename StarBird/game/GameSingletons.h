@@ -105,6 +105,9 @@ public:
     static bool GetGodeMode();
     static void SetGodMode(const bool godMode);
     
+    static bool GetErasedLabsOnCurrentMap();
+    static void SetErasedLabsOnCurrentMap(const bool erasedLabsOnCurrentMap);
+    
 private:
     static InputContext mInputContext;
     static SDL_Window* mWindow;
@@ -130,6 +133,7 @@ private:
     static float mPlayerBulletSpeedStat;
     static float mPlayerMovementStat;
     static bool mGodMode;
+    static bool mErasedLabsOnCurrentMap;
 };
 
 ///------------------------------------------------------------------------------------------------

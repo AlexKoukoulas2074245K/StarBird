@@ -9,6 +9,7 @@
 #include "GameConstants.h"
 #include "GameSingletons.h"
 #include "EventUpdater.h"
+#include "LevelGeneration.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
 #include "TextPromptController.h"
@@ -34,14 +35,14 @@ static const glm::vec3 BACKGROUND_POSITION = glm::vec3(0.0f, 0.0f, -7.0f);
 static const glm::vec3 EVENT_BACKGROUND_POSITION = glm::vec3(0.0f, 7.1f, 1.0f);
 static const glm::vec3 EVENT_BACKGROUND_SCALE = glm::vec3(12.2f, 12.2f, 1.0f);
 
-static const glm::vec3 TEXT_PROMPT_POSITION = glm::vec3(0.0f, -1.0f, 1.0f);
+static const glm::vec3 TEXT_PROMPT_POSITION = glm::vec3(0.0f, -0.15f, 1.0f);
 static const glm::vec3 TEXT_PROMPT_SCALE = glm::vec3(12.0f, 10.0f, 1.0f);
 
 static const glm::vec3 FULL_SCREEN_OVERLAY_POSITION = glm::vec3(0.0f, 0.0f, -3.0f);
 static const glm::vec3 FULL_SCREEN_OVERLAY_SCALE = glm::vec3(200.0f, 200.0f, 1.0f);
 
 static const glm::vec3 EVENT_OPTIONS_FONT_SCALE = glm::vec3(0.007f, 0.007f, 1.0f);
-static const glm::vec3 EVENT_OPTIONS_TEXT_INIT_POSITION = glm::vec3(0.0f, -8.5f, 1.0f);
+static const glm::vec3 EVENT_OPTIONS_TEXT_INIT_POSITION_WITH_UNLOCK_ANIMATION = glm::vec3(0.0f, -8.5f, 1.0f);
 
 static const int END_STATE_INDEX = 100000;
 
@@ -298,6 +299,42 @@ void EventUpdater::RegisterEvents()
     mRegisteredEvents.emplace_back(EventDescription
     (
         {
+            "backgrounds/events/2.bmp"
+        },
+
+        {
+            "A distress call reaches you about human research bases in this galaxy being invaded by enemy vessels.",
+            "You prepare to defend against the invasion.",
+            "You ignore the distress call. You hear faint echoes of war raging against human research bases."
+        },
+
+        {
+            {
+                EventOption("Rush to defend the closest base. (BATTLE)", 1, [&](){}),
+                EventOption("Ignore. (ALL Labs in this galaxy destroyed)", 2, [](){ GameSingletons::SetErasedLabsOnCurrentMap(true); }),
+            },
+            
+            {
+                EventOption("Battle", END_STATE_INDEX, [&]()
+                {
+                    level_generation::GenerateLevel(GameSingletons::GetCurrentMapCoord(), { Map::NodeType::HARD_ENCOUNTER, {}, {} });
+                    mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::LEVEL, objectiveC_utils::BuildLocalFileSaveLocation(GameSingletons::GetCurrentMapCoord().ToString()), true));
+                    mTransitioning = true;
+                })
+            },
+            
+            {
+                EventOption("Leave", END_STATE_INDEX, [](){})
+            }
+        },
+     
+     
+        [](){ return true; }
+    ));
+    
+    mRegisteredEvents.emplace_back(EventDescription
+    (
+        {
             "backgrounds/events/3.bmp"
         },
 
@@ -351,7 +388,7 @@ void EventUpdater::RegisterEvents()
      
         {
             {
-                EventOption("Collect 5 crytals", 1, [&](){ mUpgradeUnlockedHandler.OnUpgradeGained(game_constants::CRYSTALS_SMALL_EVENT_UPGRADE_NAME); }),
+                EventOption("Collect 5 crytals.", 1, [&](){ mUpgradeUnlockedHandler.OnUpgradeGained(game_constants::CRYSTALS_SMALL_EVENT_UPGRADE_NAME); }),
                 EventOption("Ignore.", 2, [](){})
             },
             
@@ -366,12 +403,53 @@ void EventUpdater::RegisterEvents()
      
         [](){ return true; }
     ));
+    
+    {
+        auto eventAttackGain = math::ControlledRandomInt(1, 3);
+        auto eventBulletSpeedGain = math::ControlledRandomFloat(0.1, 0.3);
+        
+        std::stringstream eventAttackGainDesc;
+        eventAttackGainDesc << "Gain +" << std::to_string(eventAttackGain) << " ATTACK.";
+        
+        std::stringstream eventBulletSpeedGainDesc;
+        eventBulletSpeedGainDesc << "Gain +" << std::fixed << std::setprecision(1) << eventBulletSpeedGain << " HASTE.";
+        
+        mRegisteredEvents.emplace_back(EventDescription
+        (
+            {
+                "backgrounds/events/4.bmp"
+            },
+            
+            {
+                "You form an alliance  with a neutral alien race, giving you access to enhanced offensive  weaponry.",
+                "Your vessel's ATTACK  was increased.",
+                "Your vessel's HASTE  was increased."
+            },
+            
+            {
+                {
+                    EventOption(eventAttackGainDesc.str(), 1, [=](){ GameSingletons::SetPlayerAttackStat(GameSingletons::GetPlayerAttackStat() + eventAttackGain); }),
+                    EventOption(eventBulletSpeedGainDesc.str(), 2, [=](){ GameSingletons::SetPlayerBulletSpeedStat(GameSingletons::GetPlayerBulletSpeedStat() + eventBulletSpeedGain); })
+                },
+                
+                {
+                    EventOption("Leave.", END_STATE_INDEX, [](){})
+                },
+                
+                {
+                    EventOption("Leave.", END_STATE_INDEX, [](){})
+                }
+            },
+            
+            [](){ return GameSingletons::GetPlayerAttackStat() < 15.0f && GameSingletons::GetPlayerBulletSpeedStat() < 1.5f; }
+        ));
+    }
 }
 
 ///------------------------------------------------------------------------------------------------
 
 void EventUpdater::SelectRandomEligibleEvent()
-{    
+{
     while (!mSelectedEvent || mSelectedEvent->mEventEligibilityFunc() == false)
     {
         mSelectedEvent = &mRegisteredEvents[static_cast<size_t>(math::ControlledRandomInt(0, static_cast<int>(mRegisteredEvents.size() - 1)))];
@@ -442,6 +520,10 @@ void EventUpdater::CreateEventSceneObjectsForCurrentState()
         mScene.AddSceneObject(std::move(eventBgSo));
     }
     
+    // Text prompt for first progression
+    const auto eventDescriptionIndex = math::Min(mSelectedEvent->mEventDescriptionTexts.size() - 1, mEventProgressionStateIndex);
+    mTextPromptController = std::make_unique<TextPromptController>(mScene, TEXT_PROMPT_POSITION, TEXT_PROMPT_SCALE, TextPromptController::CharsAnchorMode::TOP_ANCHORED, true, mSelectedEvent->mEventDescriptionTexts[eventDescriptionIndex], [&](){ mFadeInOptions = true; });
+    
     // Event options
     {
         const auto eventOptionsIndex = math::Min(mSelectedEvent->mEventOptions.size() - 1, mEventProgressionStateIndex);
@@ -449,7 +531,7 @@ void EventUpdater::CreateEventSceneObjectsForCurrentState()
         for (int i = 0; i < currentEventOptions.size(); ++i)
         {
             SceneObject eventOptionSo;
-            eventOptionSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+            eventOptionSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
             eventOptionSo.mFontName = game_constants::DEFAULT_FONT_NAME;
             eventOptionSo.mSceneObjectType = SceneObjectType::GUIObject;
             eventOptionSo.mName = strutils::StringId(EVENT_OPTION_NAME_PREFIX + std::to_string(i));
@@ -457,11 +539,32 @@ void EventUpdater::CreateEventSceneObjectsForCurrentState()
             
             eventOptionSo.mScale = EVENT_OPTIONS_FONT_SCALE;
             
+            float optionScaleFactor = 1.0f;
+            if (eventOptionSo.mText.size() > 25)
+            {
+                optionScaleFactor *= 0.9f;
+            }
+            
+            if (eventOptionSo.mText.size() > 30)
+            {
+                optionScaleFactor *= 0.9f;
+            }
+            
+            eventOptionSo.mScale *= optionScaleFactor;
+            
             glm::vec2 rectBotLeft, rectTopRight;
             scene_object_utils::GetSceneObjectBoundingRect(eventOptionSo, rectBotLeft, rectTopRight);
             
-            eventOptionSo.mPosition = EVENT_OPTIONS_TEXT_INIT_POSITION;
-            eventOptionSo.mPosition.y -= EVENT_OPTIONS_TEXT_Y_INCREMENT * i;
+            if (mUpgradeUnlockedHandler.Update(0.0f) != UpgradeUnlockedHandler::UpgradeAnimationState::FINISHED)
+            {
+                eventOptionSo.mPosition = EVENT_OPTIONS_TEXT_INIT_POSITION_WITH_UNLOCK_ANIMATION;
+            }
+            else
+            {
+                eventOptionSo.mPosition.y = mTextPromptController->GetTextHeight() - 2.0f;
+            }
+            
+            eventOptionSo.mPosition.y -= EVENT_OPTIONS_TEXT_Y_INCREMENT * i * optionScaleFactor;
             eventOptionSo.mPosition.x -= (math::Abs(rectBotLeft.x - rectTopRight.x)/2.0f);
 
             eventOptionSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f - 0.5f * i;
@@ -469,10 +572,6 @@ void EventUpdater::CreateEventSceneObjectsForCurrentState()
             mScene.AddSceneObject(std::move(eventOptionSo));
         }
     }
-    
-    // Text prompt for first progression
-    const auto eventDescriptionIndex = math::Min(mSelectedEvent->mEventDescriptionTexts.size() - 1, mEventProgressionStateIndex);
-    mTextPromptController = std::make_unique<TextPromptController>(mScene, TEXT_PROMPT_POSITION, TEXT_PROMPT_SCALE, TextPromptController::CharsAnchorMode::TOP_ANCHORED, true, mSelectedEvent->mEventDescriptionTexts[eventDescriptionIndex], [&](){ mFadeInOptions = true; });
 }
 
 ///------------------------------------------------------------------------------------------------

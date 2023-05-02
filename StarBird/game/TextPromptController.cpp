@@ -45,6 +45,7 @@ static std::unordered_map<char, Glyph>::const_iterator GetGlyphIter(char c, cons
 TextPromptController::TextPromptController(Scene& scene, const glm::vec3& charsAnchorOrigin, const glm::vec3& scale, const CharsAnchorMode charsAnchorMode, const bool fadeIn, const std::string& text, std::function<void()> onFadeInCompleteCallback /* = nullptr */)
     : mScene(scene)
     , mOnFadeInCompletionCallback(onFadeInCompleteCallback)
+    , mTextHeight(0.0f)
 {
     auto fontOpt = FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_NAME);
     if (fontOpt)
@@ -123,6 +124,10 @@ TextPromptController::TextPromptController(Scene& scene, const glm::vec3& charsA
                 }
             }
         }
+        
+        // Save height for getter
+        yCursor -= glyphScale * TEXT_WRAP_Y_OFFSET_MAGIC;
+        mTextHeight = yCursor;
         
         // Last sentence built does not go through the width calculation flow
         sentences.back().mSentenceWidth = xCursor;
@@ -209,6 +214,13 @@ void TextPromptController::Update(const float dtMillis)
         mOnFadeInCompletionCallback();
         mOnFadeInCompletionCallback = nullptr;
     }
+}
+
+///------------------------------------------------------------------------------------------------
+
+float TextPromptController::GetTextHeight() const
+{
+    return mTextHeight;
 }
 
 ///------------------------------------------------------------------------------------------------

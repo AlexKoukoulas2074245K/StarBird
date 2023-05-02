@@ -34,11 +34,13 @@ public:
     ~TextPromptController();
     
     void Update(const float dtMillis);
+    float GetTextHeight() const;
     
 private:
     Scene& mScene;
     std::unordered_map<strutils::StringId, float, strutils::StringIdHasher> mSceneObjectNamesToTransparencyDelayMillis;
     std::function<void()> mOnFadeInCompletionCallback;
+    float mTextHeight;
 };
 
 ///------------------------------------------------------------------------------------------------

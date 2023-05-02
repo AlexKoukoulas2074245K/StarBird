@@ -116,6 +116,7 @@
 		92E417D629CB5860002F016D /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92E417C929CB5860002F016D /* Map.cpp */; };
 		92E8DAE5298E940B00591968 /* PhysicsCollisionListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92E8DAE4298E940B00591968 /* PhysicsCollisionListener.cpp */; };
 		92E96A6B29803597004A3120 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92E96A5F29803597004A3120 /* OpenGLES.framework */; };
+		92EA2AAA2A0114B200E8392A /* LevelGeneration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92EA2A9D2A0114B100E8392A /* LevelGeneration.cpp */; };
 		92ED638429FD2C71004C4CEE /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 92ED637029FD2C71004C4CEE /* unzip.c */; };
 		92ED638529FD2C71004C4CEE /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 92ED637129FD2C71004C4CEE /* zip.c */; };
 		92ED638629FD2C71004C4CEE /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 92ED637229FD2C71004C4CEE /* ioapi.c */; };
@@ -846,6 +847,8 @@
 		92E96BE429805C9D004A3120 /* rotate_normalized_axis.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rotate_normalized_axis.hpp; sourceTree = "<group>"; };
 		92E96BE529805C9D004A3120 /* projection.inl */ = {isa = PBXFileReference; lastKnownFileType = text; path = projection.inl; sourceTree = "<group>"; };
 		92E96BE629805C9D004A3120 /* type_aligned.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = type_aligned.hpp; sourceTree = "<group>"; };
+		92EA2A9D2A0114B100E8392A /* LevelGeneration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LevelGeneration.cpp; sourceTree = "<group>"; };
+		92EA2AA92A0114B100E8392A /* LevelGeneration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelGeneration.h; sourceTree = "<group>"; };
 		92ED637029FD2C71004C4CEE /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
 		92ED637129FD2C71004C4CEE /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
 		92ED637229FD2C71004C4CEE /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
@@ -1171,6 +1174,8 @@
 				92693B6929C8821F00157222 /* IUpdater.h */,
 				9259F35429D4866700850744 /* LabUpdater.cpp */,
 				9259F34829D4866700850744 /* LabUpdater.h */,
+				92EA2A9D2A0114B100E8392A /* LevelGeneration.cpp */,
+				92EA2AA92A0114B100E8392A /* LevelGeneration.h */,
 				925FD83829883DD80058E747 /* LevelUpdater.cpp */,
 				925FD84429883DD80058E747 /* LevelUpdater.h */,
 				9268C97B29F68C090048C0CB /* MainMenuUpdater.cpp */,
@@ -2098,6 +2103,7 @@
 				92C2198A29842E6A00B2D2C6 /* Game.cpp in Sources */,
 				9254CBF32969B79A00EFE0CC /* b2MotorJoint.cpp in Sources */,
 				9254CC0C2969B79A00EFE0CC /* b2BroadPhase.cpp in Sources */,
+				92EA2AAA2A0114B200E8392A /* LevelGeneration.cpp in Sources */,
 				9254CC082969B79A00EFE0CC /* b2EdgeShape.cpp in Sources */,
 				926693E929EEAA4B0013C195 /* BlueprintFlows.cpp in Sources */,
 				927D3B6329F8207000143375 /* ResearchUpdater.cpp in Sources */,

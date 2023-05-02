@@ -346,6 +346,7 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
         {
             if (mUpgradeUnlockedHandler.Update(dtMillis) == UpgradeUnlockedHandler::UpgradeAnimationState::FINISHED)
             {
+                GameSingletons::SetErasedLabsOnCurrentMap(false);
                 GameSingletons::SetMapLevel(GameSingletons::GetMapLevel() + 1);
                 GameSingletons::SetMapGenerationSeed(math::RandomInt());
                 GameSingletons::SetBackgroundIndex(GameSingletons::GetMapGenerationSeed() % game_constants::BACKGROUND_COUNT);

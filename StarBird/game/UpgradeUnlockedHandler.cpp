@@ -285,7 +285,7 @@ void UpgradeUnlockedHandler::OnCrystalGiftUpgradeGained(const int crystalCount)
             crystalSo.mName = droppedCrystalName;
             mCreatedSceneObjectNames.push_back(crystalSo.mName);
             mScene.AddSceneObject(std::move(crystalSo));
-        }, i * game_constants::DROPPED_CRYSTALS_CREATION_STAGGER_MILLIS, RepeatableFlow::RepeatPolicy::ONCE);
+        }, (i + 1) * game_constants::DROPPED_CRYSTALS_CREATION_STAGGER_MILLIS, RepeatableFlow::RepeatPolicy::ONCE);
     }
 }
 

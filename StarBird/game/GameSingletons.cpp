@@ -34,6 +34,7 @@ float GameSingletons::mPlayerAttackStat = 0.0f;
 float GameSingletons::mPlayerBulletSpeedStat = 0.0f;
 float GameSingletons::mPlayerMovementStat = 0.0f;
 bool GameSingletons::mGodMode = false;
+bool GameSingletons::mErasedLabsOnCurrentMap = false;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -424,6 +425,20 @@ bool GameSingletons::GetGodeMode()
 void GameSingletons::SetGodMode(const bool godMode)
 {
     mGodMode = godMode;
+}
+
+///------------------------------------------------------------------------------------------------
+
+bool GameSingletons::GetErasedLabsOnCurrentMap()
+{
+    return mErasedLabsOnCurrentMap;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetErasedLabsOnCurrentMap(const bool erasedLabsOnCurrentMap)
+{
+    mErasedLabsOnCurrentMap = erasedLabsOnCurrentMap;
 }
 
 ///------------------------------------------------------------------------------------------------
