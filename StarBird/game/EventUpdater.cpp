@@ -14,6 +14,7 @@
 #include "SceneObjectUtils.h"
 #include "TextPromptController.h"
 #include "states/DebugConsoleGameState.h"
+#include "states/SettingsMenuGameState.h"
 #include "dataloaders/GUISceneLoader.h"
 #include "datarepos/FontRepository.h"
 #include "datarepos/ObjectTypeDefinitionRepository.h"
@@ -69,6 +70,7 @@ EventUpdater::EventUpdater(Scene& scene, b2World& box2dWorld)
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
 #endif
+    mStateMachine.RegisterState<SettingsMenuGameState>();
     
     RegisterEvents();
     SelectRandomEligibleEvent();
@@ -255,6 +257,13 @@ void EventUpdater::VOpenDebugConsole()
     }
 }
 #endif
+
+///------------------------------------------------------------------------------------------------
+
+void EventUpdater::VOpenSettingsMenu()
+{
+    mStateMachine.PushState(SettingsMenuGameState::STATE_NAME);
+}
 
 ///------------------------------------------------------------------------------------------------
 

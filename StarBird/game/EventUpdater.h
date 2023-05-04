@@ -39,6 +39,7 @@ public:
 #ifdef DEBUG
     void VOpenDebugConsole() override;
 #endif
+    void VOpenSettingsMenu() override;
 
 private:
     class EventOption

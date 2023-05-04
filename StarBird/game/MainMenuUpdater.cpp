@@ -11,9 +11,10 @@
 #include "MainMenuUpdater.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
-#include "states/DebugConsoleGameState.h"
 #include "dataloaders/GUISceneLoader.h"
 #include "datarepos/FontRepository.h"
+#include "states/DebugConsoleGameState.h"
+#include "states/SettingsMenuGameState.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../resloading/MeshResource.h"
 #include "../utils/Logging.h"
@@ -23,6 +24,7 @@
 static const strutils::StringId PLAY_TEXT_SCENE_OBJECT_NAME = strutils::StringId("play_button");
 static const strutils::StringId CONTINUE_TEXT_SCENE_OBJECT_NAME = strutils::StringId("continue_button");
 static const strutils::StringId NEW_GAME_TEXT_SCENE_OBJECT_NAME = strutils::StringId("new_game_button");
+static const strutils::StringId SETTINGS_TEXT_SCENE_OBJECT_NAME = strutils::StringId("settings_button");
 static const strutils::StringId SEED_VALUE_SCENE_OBJECT_NAME = strutils::StringId("current_seed_value");
 
 ///------------------------------------------------------------------------------------------------
@@ -36,6 +38,7 @@ MainMenuUpdater::MainMenuUpdater(Scene& scene)
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
 #endif
+    mStateMachine.RegisterState<SettingsMenuGameState>();
     
     CreateSceneObjects();
 }
@@ -68,6 +71,12 @@ PostStateUpdateDirective MainMenuUpdater::VUpdate(std::vector<SceneObject>& scen
         {
             mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
             mTransitioning = true;
+        }
+        
+        auto settingsSoOpt = mScene.GetSceneObject(SETTINGS_TEXT_SCENE_OBJECT_NAME);
+        if (settingsSoOpt && scene_object_utils::IsPointInsideSceneObject(*settingsSoOpt, touchPos))
+        {
+            mStateMachine.PushState(SettingsMenuGameState::STATE_NAME);
         }
     }
     

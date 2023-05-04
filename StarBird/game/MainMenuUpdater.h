@@ -34,7 +34,8 @@ public:
 #ifdef DEBUG
     void VOpenDebugConsole() override;
 #endif
-
+    void VOpenSettingsMenu() override {};
+    
 private:
     void UpdateBackground(const float dtMillis);
     void CreateSceneObjects();

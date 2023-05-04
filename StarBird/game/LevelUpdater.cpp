@@ -24,7 +24,7 @@
 #include "states/DebugConsoleGameState.h"
 #include "states/FightingWaveGameState.h"
 #include "states/WaveIntroGameState.h"
-#include "states/PauseMenuGameState.h"
+#include "states/SettingsMenuGameState.h"
 
 #include "../utils/Logging.h"
 #include "../utils/ObjectiveCUtils.h"
@@ -79,6 +79,12 @@ static const float SHAKE_ENTITY_RANDOM_MAG = 0.03f;
 
 static const float MIRROR_IMAGE_BULLET_DAMAGE_MULTIPLIER = 0.3f;
 static const float GOD_MODE_DAMAGE = 999999.0f;
+
+static const float ACCELEROMETER_CALIBRATION_RESET_THRESHOLD = 0.00001f;
+static const float ACCELEROMETER_Y_COMPENSATION_FACTOR = 3.0f;
+static const float ACCELEROMETER_X_SENSITIVITY_FACTOR = 1000.0f;
+static const float ACCELEROMETER_Y_SENSITIVITY_FACTOR = 2000.0f;
+static const float ACCELEROMETER_ROLL_DIFF_THRESHOLD = 5.0f;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -323,7 +329,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
     mStateMachine.RegisterState<ClearedLevelAnimationGameState>();
     mStateMachine.RegisterState<FightingWaveGameState>();
     mStateMachine.RegisterState<WaveIntroGameState>();
-    mStateMachine.RegisterState<PauseMenuGameState>();
+    mStateMachine.RegisterState<SettingsMenuGameState>();
 
     LoadLevelInvariantObjects();
     mActiveLightNames.clear();
@@ -348,7 +354,7 @@ void LevelUpdater::VOnAppStateChange(Uint32 event)
 #else
             if (mLastPostStateMachineUpdateDirective != PostStateUpdateDirective::BLOCK_UPDATE)
             {
-                mStateMachine.PushState(PauseMenuGameState::STATE_NAME);
+                mStateMachine.PushState(SettingsMenuGameState::STATE_NAME);
             }
 #endif
         } break;
@@ -681,6 +687,13 @@ void LevelUpdater::VOpenDebugConsole()
 
 ///------------------------------------------------------------------------------------------------
 
+void LevelUpdater::VOpenSettingsMenu()
+{
+    mStateMachine.PushState(SettingsMenuGameState::STATE_NAME);
+}
+
+///------------------------------------------------------------------------------------------------
+
 void LevelUpdater::OnBossPositioned()
 {
     mStateMachine.PushState(BossIntroGameState::STATE_NAME);
@@ -921,11 +934,8 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
     
     if (GameSingletons::GetAccelerometerControl())
     {
-        auto sensitivityXValue = 1000.0f;
-        auto sensitivityYValue = 2000.0f;
-
         // Most likely not set for whatever reason
-        if (glm::length(mAccelerometerCalibrationValues) < 0.0001f)
+        if (glm::length(mAccelerometerCalibrationValues) < ACCELEROMETER_CALIBRATION_RESET_THRESHOLD)
         {
             mAccelerometerCalibrationValues = -GameSingletons::GetInputContext().mRawAccelerometerValues;
         }
@@ -933,15 +943,15 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
         // Adjust accelerometer values based on current calibration values (they get reset every time the level updater gets created)
         const auto& accelerometerValues = GameSingletons::GetInputContext().mRawAccelerometerValues + mAccelerometerCalibrationValues;
 
-        auto normalizedXAxisValue = math::Min(sensitivityXValue, math::Max(-sensitivityXValue, accelerometerValues.x))/sensitivityXValue;
-        auto normalizedYAxisValue = math::Min(sensitivityYValue, math::Max(-sensitivityYValue, accelerometerValues.y))/sensitivityYValue;
-        if (normalizedYAxisValue < 0.0f) normalizedYAxisValue = math::Max(-1.0f, normalizedYAxisValue * 3.0f);
+        auto normalizedXAxisValue = math::Min(ACCELEROMETER_X_SENSITIVITY_FACTOR, math::Max(-ACCELEROMETER_X_SENSITIVITY_FACTOR, accelerometerValues.x))/ACCELEROMETER_X_SENSITIVITY_FACTOR;
+        auto normalizedYAxisValue = math::Min(ACCELEROMETER_Y_SENSITIVITY_FACTOR, math::Max(-ACCELEROMETER_Y_SENSITIVITY_FACTOR, accelerometerValues.y))/ACCELEROMETER_Y_SENSITIVITY_FACTOR;
+        if (normalizedYAxisValue < 0.0f) normalizedYAxisValue = math::Max(-1.0f, normalizedYAxisValue * ACCELEROMETER_Y_COMPENSATION_FACTOR);
 
         glm::vec3 motionVec;
         motionVec.x = normalizedXAxisValue * game_constants::BASE_PLAYER_SPEED * GameSingletons::GetPlayerMovementSpeedStat() * dtMillis;
         motionVec.y = normalizedYAxisValue * game_constants::BASE_PLAYER_SPEED * GameSingletons::GetPlayerMovementSpeedStat() * dtMillis;
 
-        if (math::Abs(mPreviousMotionVec.x - motionVec.x) > 5.0f)
+        if (math::Abs(mPreviousMotionVec.x - motionVec.x) > ACCELEROMETER_ROLL_DIFF_THRESHOLD)
         {
             if (motionVec.x > 0.0f && mPreviousMotionVec.x < 0.0f)
             {

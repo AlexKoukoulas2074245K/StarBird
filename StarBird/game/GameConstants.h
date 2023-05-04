@@ -65,6 +65,7 @@ inline const char* NOISE_PREFIX_TEXTURE_FILE_NAME = "noise_";
 inline const char* BOSS_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME = "player_health_bar_frame.bmp";
 inline const char* BOSS_HEALTH_BAR_TEXTURE_FILE_NAME = "enemy_health_bar.bmp";
 inline const char* HEALTH_PARTICLE_TEXTURE_FILE_NAME = "health_particle.bmp";
+inline const char* SETTINGS_ICON_TEXTURE_FILE_NAME = "settings_icon.bmp";
 
 inline const strutils::StringId DEFAULT_SCENE_OBJECT_STATE = strutils::StringId("idle");
 inline const strutils::StringId DYING_SCENE_OBJECT_STATE = strutils::StringId("dying");
@@ -101,6 +102,7 @@ inline const strutils::StringId DEBUG_COMMAND_OUTPUT_SCENE_OBJECT_NAME = strutil
 inline const strutils::StringId DEBUG_BACK_TO_GAME_SCENE_OBJECT_NAME = strutils::StringId("BACK_TO_GAME");
 inline const strutils::StringId GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME = strutils::StringId("CRYSTAL_ICON");
 inline const strutils::StringId GUI_CRYSTAL_COUNT_SCENE_OBJECT_NAME = strutils::StringId("CRYSTAL_COUNT");
+inline const strutils::StringId GUI_SETTINGS_ICON_SCENE_OBJECT_NAME = strutils::StringId("SETTINGS_ICON");
 
 inline const strutils::StringId MULTITEXTURE_ALPHA_UNIFORM_NAME = strutils::StringId("multitexture_alpha");
 inline const strutils::StringId TEXTURE_OFFSET_X_UNIFORM_NAME = strutils::StringId("tex_offset_x");

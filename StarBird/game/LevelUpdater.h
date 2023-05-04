@@ -46,6 +46,7 @@ public:
 #ifdef DEBUG
     void VOpenDebugConsole() override;
 #endif
+    void VOpenSettingsMenu() override;
     
     void AdvanceWave();
     void AddFlow(RepeatableFlow&& flow);

@@ -13,9 +13,10 @@
 #include "Scene.h"
 #include "SceneObjectUtils.h"
 #include "TextPromptController.h"
-#include "states/DebugConsoleGameState.h"
 #include "datarepos/FontRepository.h"
 #include "datarepos/ObjectTypeDefinitionRepository.h"
+#include "states/DebugConsoleGameState.h"
+#include "states/SettingsMenuGameState.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../utils/Logging.h"
 
@@ -74,6 +75,8 @@ LabUpdater::LabUpdater(Scene& scene, b2World& box2dWorld)
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
 #endif
+    
+    mStateMachine.RegisterState<SettingsMenuGameState>();
     
     CreateSceneObjects();
     OnCarouselStationary();
@@ -302,6 +305,13 @@ void LabUpdater::VOpenDebugConsole()
     }
 }
 #endif
+
+///------------------------------------------------------------------------------------------------
+
+void LabUpdater::VOpenSettingsMenu()
+{
+    mStateMachine.PushState(SettingsMenuGameState::STATE_NAME);
+}
 
 ///------------------------------------------------------------------------------------------------
 

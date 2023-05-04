@@ -91,7 +91,7 @@ ChestRewardUpdater::ChestRewardUpdater(Scene& scene, b2World& box2dWorld)
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
 #endif
-
+    
     auto& resService = resources::ResourceLoadingService::GetInstance();
     // Background
     {

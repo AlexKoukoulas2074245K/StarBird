@@ -38,6 +38,7 @@ public:
 #ifdef DEBUG
     void VOpenDebugConsole() override;
 #endif
+    void VOpenSettingsMenu() override {};
     
 private:
     UpgradeDefinition FindSelectedRewardDefinition() const;

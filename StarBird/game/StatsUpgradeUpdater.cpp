@@ -14,6 +14,7 @@
 #include "StatsUpgradeUpdater.h"
 #include "datarepos/ObjectTypeDefinitionRepository.h"
 #include "states/DebugConsoleGameState.h"
+#include "states/SettingsMenuGameState.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../utils/Logging.h"
 
@@ -129,7 +130,8 @@ StatsUpgradeUpdater::StatsUpgradeUpdater(Scene& scene)
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
 #endif
-
+    mStateMachine.RegisterState<SettingsMenuGameState>();
+    
     CreateSceneObjects();
 }
 
@@ -431,6 +433,13 @@ void StatsUpgradeUpdater::VOpenDebugConsole()
     }
 }
 #endif
+
+///------------------------------------------------------------------------------------------------
+
+void StatsUpgradeUpdater::VOpenSettingsMenu()
+{
+    mStateMachine.PushState(SettingsMenuGameState::STATE_NAME);
+}
 
 ///------------------------------------------------------------------------------------------------
 

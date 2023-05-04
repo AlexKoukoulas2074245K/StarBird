@@ -1,12 +1,12 @@
 ///------------------------------------------------------------------------------------------------
-///  PauseMenuGameState.h                                                                                          
+///  SettingsMenuGameState.h
 ///  StarBird                                                                                            
 ///                                                                                                
 ///  Created by Alex Koukoulas on 16/02/2023                                                       
 ///------------------------------------------------------------------------------------------------
 
-#ifndef PauseMenuGameState_h
-#define PauseMenuGameState_h
+#ifndef SettingsMenuGameState_h
+#define SettingsMenuGameState_h
 
 ///------------------------------------------------------------------------------------------------
 
@@ -16,7 +16,7 @@
 
 ///------------------------------------------------------------------------------------------------
 
-class PauseMenuGameState final: public BaseGameState
+class SettingsMenuGameState final: public BaseGameState
 {
 public:
     static const strutils::StringId STATE_NAME;
@@ -25,6 +25,9 @@ public:
     void VInitialize() override;
     PostStateUpdateDirective VUpdate(const float dtMillis) override;
     void VDestroy() override;
+
+private:
+    void UpdateSelectedSettingsColor();
     
 private:
     std::vector<strutils::StringId> mSceneElementIds;
@@ -32,4 +35,4 @@ private:
 
 ///------------------------------------------------------------------------------------------------
 
-#endif /* PauseMenuGameState_h */
+#endif /* SettingsMenuGameState_h */

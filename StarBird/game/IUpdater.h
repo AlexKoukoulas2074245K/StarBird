@@ -32,6 +32,8 @@ public:
 #ifdef DEBUG
     virtual void VOpenDebugConsole() = 0;
 #endif
+    virtual void VOpenSettingsMenu() = 0;
+    
 };
 
 ///------------------------------------------------------------------------------------------------

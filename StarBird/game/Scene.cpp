@@ -47,6 +47,9 @@ static const glm::vec3 GUI_CRYSTAL_COUNT_HOLDER_POSITION = glm::vec3(-4.2f, -10.
 static const glm::vec3 GUI_CRYSTAL_COUNT_POSITION = glm::vec3(-4.0f, -12.1f, 2.5f);
 static const glm::vec3 GUI_CRYSTAL_COUNT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
 
+static const glm::vec3 GUI_SETTINGS_ICON_POSITION = glm::vec3(5.0f, -12.0f, 2.5f);
+static const glm::vec3 GUI_SETTINGS_ICON_SCALE = glm::vec3(1.31f, 1.31f, 1.0f);
+
 ///------------------------------------------------------------------------------------------------
 
 Scene::Scene()
@@ -584,6 +587,22 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
         crystalCountSo.mPosition = GUI_CRYSTAL_COUNT_POSITION;
         crystalCountSo.mPosition.x -= (crystalCountSo.mText.size() * 0.5f)/3.0;
     }
+    
+    // Settings button press check
+    auto settingsButtonSoOpt = GetSceneObject(game_constants::GUI_SETTINGS_ICON_SCENE_OBJECT_NAME);
+    const auto guiCameraOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
+    if (settingsButtonSoOpt && guiCameraOpt && GameSingletons::GetInputContext().mEventType == SDL_FINGERDOWN)
+    {
+        Log(LogType::INFO, "Checking finger down");
+        auto touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, guiCameraOpt->get().GetViewMatrix(), guiCameraOpt->get().GetProjMatrix());
+        if (scene_object_utils::IsPointInsideSceneObject(*settingsButtonSoOpt, touchPos))
+        {
+            if (mSceneUpdater)
+            {
+                mSceneUpdater->VOpenSettingsMenu();
+            }
+        }
+    }
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -662,7 +681,15 @@ void Scene::UpdateOnSceneEditModeOn(const float dtMillis)
             // Scale selected object
             if (inputContext.mPinchDistance > 0.0f && previousPinchDistance > 0.0f && inputContext.mMultiGestureActive)
             {
-                so.mScale += dtMillis * (GameSingletons::GetInputContext().mPinchDistance - previousPinchDistance) * 0.3f;
+                if (so.mText.empty())
+                {
+                    so.mScale += dtMillis * (GameSingletons::GetInputContext().mPinchDistance - previousPinchDistance) * 0.3f;
+                }
+                else
+                {
+                    so.mScale += dtMillis * (GameSingletons::GetInputContext().mPinchDistance - previousPinchDistance) * 0.03f;
+                }
+                
                 SetSceneEditResultMessage(so.mPosition, so.mScale);
             }
             // Translate selected object
@@ -854,6 +881,18 @@ void Scene::CreateCrossSceneInterfaceObjects()
         crystalCountSo.mText = std::to_string(GameSingletons::GetCrystalCount());
         crystalCountSo.mCrossSceneLifetime = true;
         AddSceneObject(std::move(crystalCountSo));
+    }
+    
+    // Settings Icon Text
+    {
+        SceneObject settingsIconSo;
+        settingsIconSo.mPosition = GUI_SETTINGS_ICON_POSITION;
+        settingsIconSo.mScale = GUI_SETTINGS_ICON_SCALE;
+        settingsIconSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::SETTINGS_ICON_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), GUI_SETTINGS_ICON_SCALE, false);
+        settingsIconSo.mSceneObjectType = SceneObjectType::GUIObject;
+        settingsIconSo.mName = game_constants::GUI_SETTINGS_ICON_SCENE_OBJECT_NAME;
+        settingsIconSo.mCrossSceneLifetime = true;
+        AddSceneObject(std::move(settingsIconSo));
     }
     
     // Player Health Bar Text

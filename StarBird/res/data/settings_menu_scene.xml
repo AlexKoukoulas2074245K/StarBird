@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Scene>
+    <GUIElement name="input_method_title" fontName="font" position="-2.6f, 7.0f, 4.0f" scale="0.01f, 0.01f" shader="custom_color" text="Input Method" />
+    <GUIElement name="input_method_accelerometer" fontName="font" position="-4.7f, 4.0f, 4.0f" scale="0.008f, 0.008f" shader="custom_color" text="Phone Tilt" />
+    <GUIElement name="input_method_joystick" fontName="font" position="-0.28f, 4.0f, 4.0f" scale="0.008f, 0.008f" shader="custom_color" text="Virtual Joystick" />
+    <GUIElement name="back_button" fontName="font" position="-3.0f, -6.5f, 4.0f" scale="0.01f, 0.01f" shader="custom_color" text="Back To Game" />
+</Scene>

@@ -47,7 +47,8 @@ public:
 #ifdef DEBUG
     void VOpenDebugConsole() override;
 #endif
-
+    void VOpenSettingsMenu() override;
+    
 private:
     void CreateSceneObjects();
     void CreateCrystalsTowardTargetPosition(const int crystalCount, const glm::vec3& position);

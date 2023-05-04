@@ -16,6 +16,7 @@
 #include "Scene.h"
 #include "SceneObjectUtils.h"
 #include "states/DebugConsoleGameState.h"
+#include "states/SettingsMenuGameState.h"
 #include "datarepos/FontRepository.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../resloading/MeshResource.h"
@@ -80,7 +81,8 @@ MapUpdater::MapUpdater(Scene& scene)
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
 #endif
-
+    mStateMachine.RegisterState<SettingsMenuGameState>();
+    
     auto& worldCamera = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::WorldGameObject)->get();
     
     // Center camera to the midpoint of all available nodes
@@ -393,6 +395,13 @@ void MapUpdater::VOpenDebugConsole()
     }
 }
 #endif
+
+///------------------------------------------------------------------------------------------------
+
+void MapUpdater::VOpenSettingsMenu()
+{
+    mStateMachine.PushState(SettingsMenuGameState::STATE_NAME);
+}
 
 ///------------------------------------------------------------------------------------------------
 

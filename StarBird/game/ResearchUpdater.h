@@ -38,7 +38,8 @@ public:
 #ifdef DEBUG
     void VOpenDebugConsole() override;
 #endif
-    
+    void VOpenSettingsMenu() override;
+
 private:
     void CreateSceneObjects();
     void PositionCarouselObject(SceneObject& carouselObject, const int objectIndex) const;

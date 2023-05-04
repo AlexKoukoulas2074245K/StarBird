@@ -87,6 +87,7 @@
 		9285241529A8D5B9007EA0D9 /* DebugConsoleGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9285241429A8D5B9007EA0D9 /* DebugConsoleGameState.cpp */; };
 		92894E16299D331200605302 /* FontRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92894E12299D331200605302 /* FontRepository.cpp */; };
 		92894E17299D331200605302 /* ObjectTypeDefinitionRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92894E15299D331200605302 /* ObjectTypeDefinitionRepository.cpp */; };
+		92A4F9522A03E30A00D6CA21 /* SettingsMenuGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A4F9512A03E30A00D6CA21 /* SettingsMenuGameState.cpp */; };
 		92A8517B2985704800C99B61 /* SceneRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A8516E2985704800C99B61 /* SceneRenderer.cpp */; };
 		92AF7B2D29914F1500BCC894 /* UpgradesLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92AF7B2B29914F1500BCC894 /* UpgradesLoader.cpp */; };
 		92B44C07298D247E00191B22 /* FontLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B44C06298D247E00191B22 /* FontLoader.cpp */; };
@@ -129,7 +130,6 @@
 		92F9EC7C299E6C1A00C263E8 /* StateMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC7A299E6C1A00C263E8 /* StateMachine.cpp */; };
 		92F9EC7F299E71BB00C263E8 /* FightingWaveGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC7D299E71BB00C263E8 /* FightingWaveGameState.cpp */; };
 		92F9EC82299E799D00C263E8 /* WaveIntroGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC80299E799D00C263E8 /* WaveIntroGameState.cpp */; };
-		92F9EC8E299E9A5300C263E8 /* PauseMenuGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC8C299E9A5200C263E8 /* PauseMenuGameState.cpp */; };
 		92F9EC90299E9BAA00C263E8 /* BaseGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F9EC8F299E9BAA00C263E8 /* BaseGameState.cpp */; };
 /* End PBXBuildFile section */
 
@@ -413,6 +413,8 @@
 		92894E13299D331200605302 /* FontRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontRepository.h; sourceTree = "<group>"; };
 		92894E14299D331200605302 /* ObjectTypeDefinitionRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectTypeDefinitionRepository.h; sourceTree = "<group>"; };
 		92894E15299D331200605302 /* ObjectTypeDefinitionRepository.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectTypeDefinitionRepository.cpp; sourceTree = "<group>"; };
+		92A4F9452A03E30A00D6CA21 /* SettingsMenuGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsMenuGameState.h; sourceTree = "<group>"; };
+		92A4F9512A03E30A00D6CA21 /* SettingsMenuGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SettingsMenuGameState.cpp; sourceTree = "<group>"; };
 		92A8516E2985704800C99B61 /* SceneRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneRenderer.cpp; sourceTree = "<group>"; };
 		92A8517A2985704800C99B61 /* SceneRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneRenderer.h; sourceTree = "<group>"; };
 		92A8517C298570D200C99B61 /* SceneObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneObject.h; sourceTree = "<group>"; };
@@ -875,8 +877,6 @@
 		92F9EC7E299E71BB00C263E8 /* FightingWaveGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FightingWaveGameState.h; sourceTree = "<group>"; };
 		92F9EC80299E799D00C263E8 /* WaveIntroGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveIntroGameState.cpp; sourceTree = "<group>"; };
 		92F9EC81299E799D00C263E8 /* WaveIntroGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveIntroGameState.h; sourceTree = "<group>"; };
-		92F9EC8C299E9A5200C263E8 /* PauseMenuGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PauseMenuGameState.cpp; sourceTree = "<group>"; };
-		92F9EC8D299E9A5200C263E8 /* PauseMenuGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PauseMenuGameState.h; sourceTree = "<group>"; };
 		92F9EC8F299E9BAA00C263E8 /* BaseGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseGameState.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1803,8 +1803,8 @@
 				92F9EC8F299E9BAA00C263E8 /* BaseGameState.cpp */,
 				92F9EC7D299E71BB00C263E8 /* FightingWaveGameState.cpp */,
 				92F9EC7E299E71BB00C263E8 /* FightingWaveGameState.h */,
-				92F9EC8C299E9A5200C263E8 /* PauseMenuGameState.cpp */,
-				92F9EC8D299E9A5200C263E8 /* PauseMenuGameState.h */,
+				92A4F9512A03E30A00D6CA21 /* SettingsMenuGameState.cpp */,
+				92A4F9452A03E30A00D6CA21 /* SettingsMenuGameState.h */,
 				92F9EC80299E799D00C263E8 /* WaveIntroGameState.cpp */,
 				92F9EC81299E799D00C263E8 /* WaveIntroGameState.h */,
 			);
@@ -2033,6 +2033,7 @@
 			files = (
 				92DAA4C229829A4C0062A438 /* TextureLoader.cpp in Sources */,
 				9225410029E85A11001122E3 /* CarouselController.cpp in Sources */,
+				92A4F9522A03E30A00D6CA21 /* SettingsMenuGameState.cpp in Sources */,
 				927FD9B629C35C750012C724 /* KathunBossAI.cpp in Sources */,
 				9254CC0E2969B79A00EFE0CC /* b2Collision.cpp in Sources */,
 				927FD9B529C35C750012C724 /* BossAIController.cpp in Sources */,
@@ -2125,7 +2126,6 @@
 				9269AE8629E0B481008B9C27 /* ClearedLevelAnimationGameState.cpp in Sources */,
 				9254CC052969B79A00EFE0CC /* b2CollidePolygon.cpp in Sources */,
 				925FD87E298AD7050058E747 /* ObjectiveCUtils.mm in Sources */,
-				92F9EC8E299E9A5300C263E8 /* PauseMenuGameState.cpp in Sources */,
 				92F9EC7F299E71BB00C263E8 /* FightingWaveGameState.cpp in Sources */,
 				92F9EC82299E799D00C263E8 /* WaveIntroGameState.cpp in Sources */,
 				9210BFC229E82A2B00D117A6 /* ChestRewardUpdater.cpp in Sources */,

@@ -13,6 +13,7 @@
 #include "Scene.h"
 #include "SceneObjectUtils.h"
 #include "states/DebugConsoleGameState.h"
+#include "states/SettingsMenuGameState.h"
 #include "datarepos/FontRepository.h"
 #include "datarepos/ObjectTypeDefinitionRepository.h"
 #include "../resloading/ResourceLoadingService.h"
@@ -84,6 +85,7 @@ ResearchUpdater::ResearchUpdater(Scene& scene)
 #ifdef DEBUG
     mStateMachine.RegisterState<DebugConsoleGameState>();
 #endif
+    mStateMachine.RegisterState<SettingsMenuGameState>();
     
     CreateSceneObjects();
     OnCarouselStationary();
@@ -333,6 +335,13 @@ void ResearchUpdater::VOpenDebugConsole()
     }
 }
 #endif
+
+///------------------------------------------------------------------------------------------------
+
+void ResearchUpdater::VOpenSettingsMenu()
+{
+    mStateMachine.PushState(SettingsMenuGameState::STATE_NAME);
+}
 
 ///------------------------------------------------------------------------------------------------
 

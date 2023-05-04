@@ -36,7 +36,8 @@ public:
 #ifdef DEBUG
     void VOpenDebugConsole() override;
 #endif
-
+    void VOpenSettingsMenu() override;
+    
 private:
     bool CheckForActiveLevelSelection(const glm::vec3& touchPos);
     void OnLevelSelection();
