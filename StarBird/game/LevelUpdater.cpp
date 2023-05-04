@@ -88,6 +88,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
     , mUpgradesLogicHandler(scene)
     , mStateMachine(&scene, this, &mUpgradesLogicHandler, &mBox2dWorld)
     , mBossAIController(scene, *this, mStateMachine, mBox2dWorld)
+    , mAccelerometerCalibrationValues(-GameSingletons::GetInputContext().mRawAccelerometerValues)
     , mCurrentWaveNumber(0)
     , mBossAnimatedHealthBarPerc(0.0f)
     , mAllowInputControl(false)
@@ -421,7 +422,11 @@ PostStateUpdateDirective LevelUpdater::VUpdate(std::vector<SceneObject>& sceneOb
                 }
             }
             
-            float difficultySpeedFactor = 1.0f + mLevel.mWaves[mCurrentWaveNumber].mDebugDifficultyValue/20.0f;
+            float difficultySpeedFactor = 1.0f;
+            if (mCurrentWaveNumber < mLevel.mWaves.size())
+            {
+                difficultySpeedFactor += mLevel.mWaves[mCurrentWaveNumber].mDebugDifficultyValue/20.0f;
+            }
             
             switch (temporaryMovementPattern)
             {
@@ -904,7 +909,7 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
     
     if (GameSingletons::GetPlayerCurrentHealth() <= 0.0f)
     {
-        if (joystickSO && joystickBoundsSO && mAllowInputControl)
+        if (joystickSO && joystickBoundsSO && (mAllowInputControl || GameSingletons::GetAccelerometerControl()))
         {
             joystickSO->get().mInvisible = true;
             joystickBoundsSO->get().mInvisible = true;
@@ -914,83 +919,131 @@ void LevelUpdater::UpdateInputControlledSceneObject(SceneObject& sceneObject, co
         return;
     }
     
-    switch (inputContext.mEventType)
+    if (GameSingletons::GetAccelerometerControl())
     {
-        case SDL_FINGERDOWN:
-        {
-             if (joystickBoundsSO && joystickSO)
-             {
-                 joystickBoundsSO->get().mPosition = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
-                 joystickBoundsSO->get().mPosition.z = JOYSTICK_Z;
-                 
-                 joystickSO->get().mPosition = joystickBoundsSO->get().mPosition;
-                 joystickSO->get().mPosition.z = JOYSTICK_BOUNDS_Z;
+        auto sensitivityXValue = 1000.0f;
+        auto sensitivityYValue = 2000.0f;
 
-                 mAllowInputControl = true;
-                 
-                 mMovementRotationAllowed = true;
-                 mPreviousMotionVec.x = mPreviousMotionVec.y = 0.0f;
-             }
-        } break;
-            
-        case SDL_FINGERUP:
+        // Most likely not set for whatever reason
+        if (glm::length(mAccelerometerCalibrationValues) < 0.0001f)
         {
-            sceneObject.mBody->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
-        } break;
-            
-        case SDL_FINGERMOTION:
+            mAccelerometerCalibrationValues = -GameSingletons::GetInputContext().mRawAccelerometerValues;
+        }
+        
+        // Adjust accelerometer values based on current calibration values (they get reset every time the level updater gets created)
+        const auto& accelerometerValues = GameSingletons::GetInputContext().mRawAccelerometerValues + mAccelerometerCalibrationValues;
+
+        auto normalizedXAxisValue = math::Min(sensitivityXValue, math::Max(-sensitivityXValue, accelerometerValues.x))/sensitivityXValue;
+        auto normalizedYAxisValue = math::Min(sensitivityYValue, math::Max(-sensitivityYValue, accelerometerValues.y))/sensitivityYValue;
+        if (normalizedYAxisValue < 0.0f) normalizedYAxisValue = math::Max(-1.0f, normalizedYAxisValue * 3.0f);
+
+        glm::vec3 motionVec;
+        motionVec.x = normalizedXAxisValue * game_constants::BASE_PLAYER_SPEED * GameSingletons::GetPlayerMovementSpeedStat() * dtMillis;
+        motionVec.y = normalizedYAxisValue * game_constants::BASE_PLAYER_SPEED * GameSingletons::GetPlayerMovementSpeedStat() * dtMillis;
+
+        if (math::Abs(mPreviousMotionVec.x - motionVec.x) > 5.0f)
         {
-            if (joystickBoundsSO && joystickSO && mAllowInputControl)
+            if (motionVec.x > 0.0f && mPreviousMotionVec.x < 0.0f)
             {
-                auto motionVec = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix()) - joystickBoundsSO->get().mPosition;
-
-                glm::vec3 norm = glm::normalize(motionVec);
-                if (glm::length(motionVec) > glm::length(norm))
+                if (math::RandomFloat() < PLAYER_MOVEMENT_ROLL_CHANCE)
                 {
-                    motionVec = norm;
+                    sceneObject.mExtraCompoundingAnimations.clear();
+                    sceneObject.mExtraCompoundingAnimations.push_back( std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, PLAYER_MOVEMENT_ROLL_ANGLE, PLAYER_MOVEMENT_ROLL_SPEED, true));
                 }
-                
-                joystickSO->get().mPosition = joystickBoundsSO->get().mPosition + motionVec;
-                joystickSO->get().mPosition.z = JOYSTICK_Z;
-                
-                motionVec.x *= game_constants::BASE_PLAYER_SPEED * GameSingletons::GetPlayerMovementSpeedStat() * dtMillis;
-                motionVec.y *= game_constants::BASE_PLAYER_SPEED * GameSingletons::GetPlayerMovementSpeedStat() * dtMillis;
-                
-                if (motionVec.x > 0.0f && mPreviousMotionVec.x <= 0.0f && mMovementRotationAllowed)
-                {
-                    if (math::RandomFloat() < PLAYER_MOVEMENT_ROLL_CHANCE)
-                    {
-                        sceneObject.mExtraCompoundingAnimations.clear();
-                        sceneObject.mExtraCompoundingAnimations.push_back( std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, PLAYER_MOVEMENT_ROLL_ANGLE, PLAYER_MOVEMENT_ROLL_SPEED, true));
-                    }
-                    
-                    mMovementRotationAllowed = false;
-                }
-                else if (motionVec.x < 0.0f && mPreviousMotionVec.x >= 0.0f && mMovementRotationAllowed)
-                {
-                    if (math::RandomFloat() < PLAYER_MOVEMENT_ROLL_CHANCE)
-                    {
-                        sceneObject.mExtraCompoundingAnimations.clear();
-                        sceneObject.mExtraCompoundingAnimations.push_back( std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, -PLAYER_MOVEMENT_ROLL_ANGLE, PLAYER_MOVEMENT_ROLL_SPEED, true));
-                    }
-                    
-                    mMovementRotationAllowed = false;
-                }
-                
-                sceneObject.mBody->SetLinearVelocity(b2Vec2(motionVec.x, motionVec.y));
-                
-                mPreviousMotionVec = motionVec;
             }
-            
-        } break;
-            
-        default: break;
+            else if (motionVec.x < 0.0f && mPreviousMotionVec.x > 0.0f)
+            {
+                if (math::RandomFloat() < PLAYER_MOVEMENT_ROLL_CHANCE)
+                {
+                    sceneObject.mExtraCompoundingAnimations.clear();
+                    sceneObject.mExtraCompoundingAnimations.push_back( std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, -PLAYER_MOVEMENT_ROLL_ANGLE, PLAYER_MOVEMENT_ROLL_SPEED, true));
+                }
+            }
+        }
+
+        sceneObject.mBody->SetLinearVelocity(math::GlmVec3ToBox2dVec2(motionVec));
+        mPreviousMotionVec = motionVec;
     }
-    
-    if (joystickSO && joystickBoundsSO && mAllowInputControl)
+    else
     {
-       joystickSO->get().mInvisible = inputContext.mEventType == SDL_FINGERUP;
-       joystickBoundsSO->get().mInvisible = inputContext.mEventType == SDL_FINGERUP;
+        switch (inputContext.mEventType)
+        {
+            case SDL_FINGERDOWN:
+            {
+                 if (joystickBoundsSO && joystickSO)
+                 {
+                     joystickBoundsSO->get().mPosition = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
+                     joystickBoundsSO->get().mPosition.z = JOYSTICK_Z;
+                     
+                     joystickSO->get().mPosition = joystickBoundsSO->get().mPosition;
+                     joystickSO->get().mPosition.z = JOYSTICK_BOUNDS_Z;
+
+                     mAllowInputControl = true;
+                     
+                     mMovementRotationAllowed = true;
+                     mPreviousMotionVec.x = mPreviousMotionVec.y = 0.0f;
+                 }
+            } break;
+                
+            case SDL_FINGERUP:
+            {
+                sceneObject.mBody->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+            } break;
+                
+            case SDL_FINGERMOTION:
+            {
+                if (joystickBoundsSO && joystickSO && mAllowInputControl)
+                {
+                    auto motionVec = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), inputContext.mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix()) - joystickBoundsSO->get().mPosition;
+
+                    glm::vec3 norm = glm::normalize(motionVec);
+                    if (glm::length(motionVec) > glm::length(norm))
+                    {
+                        motionVec = norm;
+                    }
+                    
+                    joystickSO->get().mPosition = joystickBoundsSO->get().mPosition + motionVec;
+                    joystickSO->get().mPosition.z = JOYSTICK_Z;
+                    
+                    motionVec.x *= game_constants::BASE_PLAYER_SPEED * GameSingletons::GetPlayerMovementSpeedStat() * dtMillis;
+                    motionVec.y *= game_constants::BASE_PLAYER_SPEED * GameSingletons::GetPlayerMovementSpeedStat() * dtMillis;
+                    
+                    if (motionVec.x > 0.0f && mPreviousMotionVec.x <= 0.0f && mMovementRotationAllowed)
+                    {
+                        if (math::RandomFloat() < PLAYER_MOVEMENT_ROLL_CHANCE)
+                        {
+                            sceneObject.mExtraCompoundingAnimations.clear();
+                            sceneObject.mExtraCompoundingAnimations.push_back( std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, PLAYER_MOVEMENT_ROLL_ANGLE, PLAYER_MOVEMENT_ROLL_SPEED, true));
+                        }
+                        
+                        mMovementRotationAllowed = false;
+                    }
+                    else if (motionVec.x < 0.0f && mPreviousMotionVec.x >= 0.0f && mMovementRotationAllowed)
+                    {
+                        if (math::RandomFloat() < PLAYER_MOVEMENT_ROLL_CHANCE)
+                        {
+                            sceneObject.mExtraCompoundingAnimations.clear();
+                            sceneObject.mExtraCompoundingAnimations.push_back( std::make_unique<RotationAnimation>(sceneObject.mAnimation->VGetCurrentTextureResourceId(), sceneObject.mAnimation->VGetCurrentMeshResourceId(), sceneObject.mAnimation->VGetCurrentShaderResourceId(), sceneObject.mAnimation->VGetScale(), RotationAnimation::RotationMode::ROTATE_TO_TARGET_ONCE, RotationAnimation::RotationAxis::Y, -PLAYER_MOVEMENT_ROLL_ANGLE, PLAYER_MOVEMENT_ROLL_SPEED, true));
+                        }
+                        
+                        mMovementRotationAllowed = false;
+                    }
+                    
+                    sceneObject.mBody->SetLinearVelocity(b2Vec2(motionVec.x, motionVec.y));
+                    
+                    mPreviousMotionVec = motionVec;
+                }
+                
+            } break;
+                
+            default: break;
+        }
+        
+        if (joystickSO && joystickBoundsSO && mAllowInputControl)
+        {
+           joystickSO->get().mInvisible = inputContext.mEventType == SDL_FINGERUP;
+           joystickBoundsSO->get().mInvisible = inputContext.mEventType == SDL_FINGERUP;
+        }
     }
 }
 

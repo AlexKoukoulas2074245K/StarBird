@@ -49,7 +49,7 @@ Game::~Game()
 bool Game::InitSystems()
 {
     // Initialize SDL
-    if(SDL_Init( SDL_INIT_VIDEO ) < 0)
+    if(SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
     {
         ospopups::ShowMessageBox(ospopups::MessageBoxType::ERROR, "SDL could not initialize!", SDL_GetError());
         return false;
@@ -111,6 +111,14 @@ bool Game::InitSystems()
     Log(LogType::INFO, "Renderer   : %s", GL_NO_CHECK_CALL(glGetString(GL_RENDERER)));
     Log(LogType::INFO, "Version    : %s", GL_NO_CHECK_CALL(glGetString(GL_VERSION)));
     
+    // Get joystick/accelerometer
+    SDL_Joystick* accelerometer = SDL_JoystickOpen(0);
+    if (!accelerometer)
+    {
+        ospopups::ShowMessageBox(ospopups::MessageBoxType::ERROR, "SDL could not initialize joystick/accelerometer!", SDL_GetError());
+    }
+    GameSingletons::SetInputContextJoystick(accelerometer);
+    
     return true;
 }
 
@@ -121,7 +129,7 @@ void Game::Run()
     InitPersistentData();
     
     Scene scene;
-    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAIN_MENU, "test_level_with_boss", false));
+    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAIN_MENU, "test_level_roaming", false));
     
     SDL_Event e;
     
@@ -278,6 +286,9 @@ void Game::Run()
         }
         
         GameSingletons::SetInputContextPinchDistance(maxFoundPinchDistance);
+        
+        auto* accelerometer = GameSingletons::GetInputContext().mJoystick;
+        GameSingletons::SetInputContextRawAccelerometerValues(glm::vec2(SDL_JoystickGetAxis(accelerometer, 0), -SDL_JoystickGetAxis(accelerometer, 1)));
         
         if (secsAccumulator > 1.0f)
         {

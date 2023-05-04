@@ -37,6 +37,7 @@ float GameSingletons::mPlayerBulletSpeedStat = 0.0f;
 float GameSingletons::mPlayerMovementStat = 0.0f;
 bool GameSingletons::mGodMode = false;
 bool GameSingletons::mErasedLabsOnCurrentMap = false;
+bool GameSingletons::mAccelerometerControl = true;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -78,6 +79,20 @@ void GameSingletons::SetInputContextKey(const SDL_Scancode keyCode)
 void GameSingletons::SetInputContextPinchDistance(const float pinchDistance)
 {
     mInputContext.mPinchDistance = pinchDistance;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetInputContextJoystick(SDL_Joystick* joystick)
+{
+    mInputContext.mJoystick = joystick;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetInputContextRawAccelerometerValues(const glm::vec2& accelerometerValues)
+{
+    mInputContext.mRawAccelerometerValues = accelerometerValues;
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -455,6 +470,20 @@ bool GameSingletons::GetErasedLabsOnCurrentMap()
 void GameSingletons::SetErasedLabsOnCurrentMap(const bool erasedLabsOnCurrentMap)
 {
     mErasedLabsOnCurrentMap = erasedLabsOnCurrentMap;
+}
+
+///------------------------------------------------------------------------------------------------
+
+bool GameSingletons::GetAccelerometerControl()
+{
+    return mAccelerometerControl;
+}
+
+///------------------------------------------------------------------------------------------------
+
+void GameSingletons::SetAccelerometerControl(const bool accelerometerControl)
+{
+    mAccelerometerControl = accelerometerControl;
 }
 
 ///------------------------------------------------------------------------------------------------

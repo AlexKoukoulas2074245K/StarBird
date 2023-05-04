@@ -95,6 +95,7 @@ private:
     std::unordered_set<strutils::StringId, strutils::StringIdHasher> mActiveLightNames;
     
     glm::vec3 mPreviousMotionVec;
+    glm::vec2 mAccelerometerCalibrationValues;
     size_t mCurrentWaveNumber;
     float mBossAnimatedHealthBarPerc;
     bool mAllowInputControl;

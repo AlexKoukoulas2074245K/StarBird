@@ -103,6 +103,17 @@ void LoadFromProgressSaveFile()
                 }
             });
             
+            BaseGameDataLoader::SetCallbackForNode(strutils::StringId("AccelerometerControl"), [&](const void* n)
+            {
+                auto* node = static_cast<const rapidxml::xml_node<>*>(n);
+                
+                auto* value = node->first_attribute("value");
+                if (value)
+                {
+                    GameSingletons::SetAccelerometerControl(strcmp(value->value(), "true") == 0);
+                }
+            });
+            
             BaseGameDataLoader::SetCallbackForNode(strutils::StringId("ResearchCostMultiplier"), [&](const void* n)
             {
                 auto* node = static_cast<const rapidxml::xml_node<>*>(n);
@@ -290,6 +301,7 @@ void BuildProgressSaveFile()
     progressSaveFileXml << "\n    <CurrentMapCoord col=\"" << GameSingletons::GetCurrentMapCoord().mCol << "\" row=\"" << GameSingletons::GetCurrentMapCoord().mRow << "\" />";
     progressSaveFileXml << "\n    <MapLevel level=\"" << GameSingletons::GetMapLevel() << "\" />";
     progressSaveFileXml << "\n    <ErasedLabsInCurrentMap value=\"" << (GameSingletons::GetErasedLabsOnCurrentMap() ? "true" : "false") << "\" />";
+    progressSaveFileXml << "\n    <AccelerometerControl value=\"" << (GameSingletons::GetAccelerometerControl() ? "true" : "false") << "\" />";
     progressSaveFileXml << "\n    <ResearchCostMultiplier value=\"" << std::to_string(GameSingletons::GetResearchCostMultiplier()) << "\" />";
     progressSaveFileXml << "\n    <PlayerData maxHealth=\"" << std::to_string(GameSingletons::GetPlayerMaxHealth()) << "\" ";
     progressSaveFileXml << "health=\"" << std::to_string(GameSingletons::GetPlayerCurrentHealth()) << "\" ";

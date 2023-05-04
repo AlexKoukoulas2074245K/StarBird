@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Level>
+    <Camera type="world_cam" lenseHeight="30.0f"/>
+    <Camera type="gui_cam" lenseHeight="30.0f"/>
+    
+    <Wave>
+        <Enemy position="-5.0f, 2000.0f" type="enemies/medium_enemy_chasing"/>
+    </Wave>
+
+</Level>

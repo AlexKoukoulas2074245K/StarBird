@@ -9,6 +9,7 @@
 #include "../GameConstants.h"
 #include "../GameSingletons.h"
 #include "../LevelUpdater.h"
+#include "../PhysicsConstants.h"
 #include "../Scene.h"
 #include "../../utils/Logging.h"
 
@@ -27,6 +28,11 @@ PostStateUpdateDirective ClearedLevelAnimationGameState::VUpdate(const float dtM
     {
         auto& playerSo = playerSoOpt->get();
         playerSo.mCustomDrivenMovement = true;
+        
+        auto playerFilter = playerSo.mBody->GetFixtureList()[0].GetFilterData();
+        playerFilter.maskBits &= ~(physics_constants::BULLET_ONLY_WALL_CATEGORY_BIT);
+        
+        playerSo.mBody->GetFixtureList()[0].SetFilterData(playerFilter);
         playerSo.mBody->SetLinearVelocity(b2Vec2(0.0f, game_constants::BASE_PLAYER_SPEED * GameSingletons::GetPlayerMovementSpeedStat() * dtMillis));
         
         if (playerSo.mBody->GetWorldCenter().y >= TRANSITION_Y_THRESHOLD)

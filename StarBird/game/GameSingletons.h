@@ -35,6 +35,8 @@ public:
     static void SetInputContextText(const std::string& text);
     static void SetInputContextKey(const SDL_Scancode keyCode);
     static void SetInputContextPinchDistance(const float pinchDistance);
+    static void SetInputContextJoystick(SDL_Joystick* joystick);
+    static void SetInputContextRawAccelerometerValues(const glm::vec2& accelerometerValues);
     static void SetInputContextMultiGestureActive(const bool multiGestureActive);
     static void ConsumeInput();
     
@@ -109,6 +111,9 @@ public:
     static bool GetGodeMode();
     static void SetGodMode(const bool godMode);
     
+    static bool GetAccelerometerControl();
+    static void SetAccelerometerControl(const bool accelerometerControl);
+    
     static bool GetErasedLabsOnCurrentMap();
     static void SetErasedLabsOnCurrentMap(const bool erasedLabsOnCurrentMap);
     
@@ -143,6 +148,7 @@ private:
     static float mPlayerMovementStat;
     static bool mGodMode;
     static bool mErasedLabsOnCurrentMap;
+    static bool mAccelerometerControl;
 };
 
 ///------------------------------------------------------------------------------------------------

@@ -13,7 +13,7 @@
 #include "../utils/MathUtils.h"
 
 #include <string>
-#include <SDL_events.h>
+#include <SDL.h>
 
 ///------------------------------------------------------------------------------------------------
 
@@ -21,8 +21,10 @@ struct InputContext
 {
     std::string mText;
     glm::vec2 mTouchPos;
+    glm::vec2 mRawAccelerometerValues;
     Uint32 mEventType;
     SDL_Scancode mKeyCode;
+    SDL_Joystick* mJoystick;
     float mPinchDistance;
     bool mMultiGestureActive;
 };
