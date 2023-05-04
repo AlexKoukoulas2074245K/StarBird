@@ -593,7 +593,6 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
     const auto guiCameraOpt = GameSingletons::GetCameraForSceneObjectType(SceneObjectType::GUIObject);
     if (settingsButtonSoOpt && guiCameraOpt && GameSingletons::GetInputContext().mEventType == SDL_FINGERDOWN)
     {
-        Log(LogType::INFO, "Checking finger down");
         auto touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, guiCameraOpt->get().GetViewMatrix(), guiCameraOpt->get().GetProjMatrix());
         if (scene_object_utils::IsPointInsideSceneObject(*settingsButtonSoOpt, touchPos))
         {

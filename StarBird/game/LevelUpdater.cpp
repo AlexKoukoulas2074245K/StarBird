@@ -78,6 +78,7 @@ static const float SHAKE_ENTITY_HEALTH_RATIO_THRESHOLD = 0.2f;
 static const float SHAKE_ENTITY_RANDOM_MAG = 0.03f;
 
 static const float MIRROR_IMAGE_BULLET_DAMAGE_MULTIPLIER = 0.3f;
+static const float BULLET_NOISE_DAMAGE_PERCENTAGE = 0.1f;
 static const float GOD_MODE_DAMAGE = 999999.0f;
 
 static const float ACCELEROMETER_CALIBRATION_RESET_THRESHOLD = 0.00001f;
@@ -124,7 +125,18 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
             
             if (!enemySO.mInvulnerable)
             {
-                auto bulletDamage = GameSingletons::GetGodeMode() ? GOD_MODE_DAMAGE : GameSingletons::GetPlayerAttackStat();
+                auto bulletDamage = GameSingletons::GetPlayerAttackStat();
+                if (GameSingletons::GetGodeMode())
+                {
+                    bulletDamage = GOD_MODE_DAMAGE;
+                }
+                else
+                {
+                    // -/+ 10% of damage
+                    float bulletDamageNoise = bulletDamage * BULLET_NOISE_DAMAGE_PERCENTAGE;
+                    bulletDamage += math::RandomInt(static_cast<int>(-bulletDamageNoise), static_cast<int>(bulletDamageNoise));
+                }
+                
                 if (bulletSceneObjectTypeDef.mName == game_constants::MIRROR_IMAGE_BULLET_TYPE)
                 {
                     bulletDamage *= MIRROR_IMAGE_BULLET_DAMAGE_MULTIPLIER;

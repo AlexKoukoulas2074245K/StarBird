@@ -411,47 +411,56 @@ void EventUpdater::RegisterEvents()
         [](){ return GameSingletons::GetErasedLabsOnCurrentMap() == false; }
     ));
     
-    mRegisteredEvents.emplace_back(EventDescription
-    (
-        {
-            "backgrounds/events/3.bmp"
-        },
-
-        {
-            "You discover a space-warping  wormhole that will allow faster movement of the vessel, but  with  most likely some structural damage in the process.",
-            "You travel through the wormhole and significantly increase the vessel's maximum velocity, but also damaging it somewhat.",
-            "You ignore the wormhole and continue with your mission."
-        },
-
-        {
+    {
+        auto eventSpeedGain = math::ControlledRandomFloat(0.2f, 0.6f);
+        auto healthLost = math::ControlledRandomInt(10, 30);
+        
+        std::stringstream eventDesc;
+        eventDesc << "Use it. +" << std::fixed << std::setprecision(1) << eventSpeedGain << " SPEED, -" << healthLost << " HP";
+        
+        mRegisteredEvents.emplace_back(EventDescription
+        (
             {
-                EventOption("Use it. +.5 SPEED, -20 HP", 1, [&]()
+                "backgrounds/events/3.bmp"
+            },
+            
+            {
+                "You discover a space-warping  wormhole that will allow faster movement of the vessel, but  with  most likely some structural damage in the process.",
+                "You travel through the wormhole and significantly increase the vessel's maximum velocity, but also damaging it somewhat.",
+                "You ignore the wormhole and continue with your mission."
+            },
+            
+            {
                 {
-                    GameSingletons::SetPlayerMovementSpeedStat(GameSingletons::GetPlayerMovementSpeedStat() + 0.5f);
-                    GameSingletons::SetPlayerCurrentHealth(math::Max(0.0f, GameSingletons::GetPlayerCurrentHealth() - 10.0f));
-                    objectiveC_utils::Vibrate();
-                    
-                    if (GameSingletons::GetPlayerCurrentHealth() <= 0.0f)
+                    EventOption(eventDesc.str(), 1, [=]()
                     {
-                        mTransitioning = true;
-                        mScene.SetProgressResetFlag();
-                        mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAIN_MENU, "", true));
-                    }
-                }),
-                EventOption("Ignore", 2, [](){}),
+                        GameSingletons::SetPlayerMovementSpeedStat(GameSingletons::GetPlayerMovementSpeedStat() + eventSpeedGain);
+                        GameSingletons::SetPlayerCurrentHealth(math::Max(0.0f, GameSingletons::GetPlayerCurrentHealth() - healthLost));
+                        objectiveC_utils::Vibrate();
+                        
+                        if (GameSingletons::GetPlayerCurrentHealth() <= 0.0f)
+                        {
+                            mTransitioning = true;
+                            mScene.SetProgressResetFlag();
+                            mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAIN_MENU, "", true));
+                        }
+                    }),
+                    
+                    EventOption("Ignore", 2, [](){}),
+                },
+                
+                {
+                    EventOption("Leave", END_STATE_INDEX, [](){})
+                },
+                
+                {
+                    EventOption("Leave", END_STATE_INDEX, [](){})
+                }
             },
             
-            {
-                EventOption("Leave", END_STATE_INDEX, [](){})
-            },
-            
-            {
-                EventOption("Leave", END_STATE_INDEX, [](){})
-            }
-        },
-     
-        [](){ return true; }
-    ));
+            [](){ return true; }
+        ));
+    }
     
     {
         auto eventAttackGain = math::ControlledRandomInt(1, 4);
@@ -496,7 +505,7 @@ void EventUpdater::RegisterEvents()
     
     {
         auto eventMaxHealthGain = math::ControlledRandomInt(20, 50);
-        auto eventSpeedDecrease = math::ControlledRandomFloat(0.1, 0.4);
+        auto eventSpeedDecrease = math::ControlledRandomFloat(0.2, 0.5);
         
         std::stringstream eventMaxHealthGainDesc;
         eventMaxHealthGainDesc << "Gain +" << std::to_string(eventMaxHealthGain) << " MAX HP & -" << std::fixed << std::setprecision(1) << eventSpeedDecrease << " SPEED.";
@@ -542,18 +551,28 @@ void EventUpdater::RegisterEvents()
 
 void EventUpdater::SelectRandomEligibleEvent()
 {
-    size_t selectedIndex = 0U;
-    mSelectedEvent = &mRegisteredEvents[selectedIndex];
-    
     if (GameSingletons::GetSeenEventIndices().size() < mRegisteredEvents.size())
     {
-        while (GameSingletons::HasSeenEventIndex(selectedIndex) || !mSelectedEvent || mSelectedEvent->mEventEligibilityFunc() == false)
+        size_t selectedIndex = 0U;
+        size_t maxIterations = 999;
+        
+        do
         {
             selectedIndex = static_cast<size_t>(math::ControlledRandomInt(0, static_cast<int>(mRegisteredEvents.size() - 1)));
             mSelectedEvent = &mRegisteredEvents[selectedIndex];
+            maxIterations--;
+        } while ((GameSingletons::HasSeenEventIndex(selectedIndex) || mSelectedEvent->mEventEligibilityFunc() == false) && maxIterations > 0);
+        
+        if (maxIterations == 0)
+        {
+            mSelectedEvent = &mRegisteredEvents[0];
         }
         
         GameSingletons::GetSeenEventIndices().insert(selectedIndex);
+    }
+    else
+    {
+        mSelectedEvent = &mRegisteredEvents[0];
     }
 }
 
