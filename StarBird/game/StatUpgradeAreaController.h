@@ -25,7 +25,7 @@ class SceneObject;
 class StatUpgradeAreaController final
 {
 public:
-    StatUpgradeAreaController(Scene& scene, std::unique_ptr<BaseAnimation> statUpgradeBackgroundAnimation, const glm::vec3& position, const glm::vec3& additionalOffsetForContainedSceneObjects, const glm::vec3& scale, const std::string& text, const float initialStatValue, const float statIncrement, const bool floatDisplay);
+    StatUpgradeAreaController(Scene& scene, std::unique_ptr<BaseAnimation> statUpgradeBackgroundAnimation, const glm::vec3& position, const glm::vec3& additionalOffsetForContainedSceneObjects, const glm::vec3& scale, const std::string& text, const float defaultStatValue, const float initialStatValue, const float statIncrement, const bool floatDisplay);
     
     float GetCurrentStatValue() const;
     float GetCurrentCost() const;
@@ -34,14 +34,17 @@ public:
     void Update(const float dtMillis, const float currentTotalCost);
     
 private:
+    int CalculateStatCost(const float statValue);
+
+private:
     Scene& mScene;
     const float mStatIncrement;
+    const float mDefaultStatValue;
     const float mInitialStatValue;
-    const int mUpgradeCost;
     const bool mFloatDisplay;
     glm::vec3 mTargetCrystalPosition;
     float mStatValue;
-    int mCost;
+    int mCurrentCost;
     Uint32 mLastInputContextEventType;
     strutils::StringId mPlusButtonName;
     strutils::StringId mMinusButtonName;

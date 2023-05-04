@@ -62,6 +62,14 @@ static const std::unordered_map<StatsUpgradeUpdater::StatType, glm::vec3> STAT_C
     { StatsUpgradeUpdater::StatType::SPEED_STAT, glm::vec3(-6.22f, -4.8f, 1.0f) }
 };
 
+static const std::unordered_map<StatsUpgradeUpdater::StatType, float> STAT_CONTROLLER_DEFAULT_STAT_VALUES =
+{
+    { StatsUpgradeUpdater::StatType::ATTACK_STAT, game_constants::DEFAULT_PLAYER_ATTACK },
+    { StatsUpgradeUpdater::StatType::HEALTH_STAT, game_constants::DEFAULT_PLAYER_HEALTH },
+    { StatsUpgradeUpdater::StatType::HASTE_STAT, game_constants::DEFAULT_PLAYER_BULLET_SPEED },
+    { StatsUpgradeUpdater::StatType::SPEED_STAT, game_constants::DEFAULT_PLAYER_MOVEMENT_SPEED }
+};
+
 static const std::unordered_map<StatsUpgradeUpdater::StatType, std::function<float()>> STAT_CONTROLLER_STAT_GETTER_FUNCS =
 {
     { StatsUpgradeUpdater::StatType::ATTACK_STAT, GameSingletons::GetPlayerAttackStat },
@@ -524,11 +532,12 @@ void StatsUpgradeUpdater::CreateSceneObjects()
         const auto statControllerPosition = STAT_CONTROLLER_POSITIONS.at(statType);
         const auto statControllerElementsAdditionalOffset = STAT_CONTROLLER_ELEMENTS_ADDITION_OFFSETS.at(statType);
         const auto statControllerScale = STAT_CONTROLLER_SCALES.at(statType);
+        const auto statControllerDefaultValue = STAT_CONTROLLER_DEFAULT_STAT_VALUES.at(statType);
         const auto statControllerStatGetterFunc = STAT_CONTROLLER_STAT_GETTER_FUNCS.at(statType);
         const auto statControllerStatIncrement = STAT_CONTROLLER_STAT_INCREMENTS.at(statType);
         const auto statControllerFloatDisplay = STAT_CONTROLLER_STAT_FLOAT_DISPLAYS.at(statType);
         
-        mStatControllers[statType] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + statControllerTexture), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), statControllerScale, false), statControllerPosition, statControllerElementsAdditionalOffset, statControllerScale, statControllerStatDescription, statControllerStatGetterFunc(), statControllerStatIncrement, statControllerFloatDisplay);
+        mStatControllers[statType] = std::make_unique<StatUpgradeAreaController>(mScene, std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + statControllerTexture), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), statControllerScale, false), statControllerPosition, statControllerElementsAdditionalOffset, statControllerScale, statControllerStatDescription,  statControllerDefaultValue, statControllerStatGetterFunc(), statControllerStatIncrement, statControllerFloatDisplay);
     }
 }
 

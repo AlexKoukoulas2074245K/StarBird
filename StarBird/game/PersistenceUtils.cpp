@@ -269,13 +269,13 @@ void GenerateNewProgressSaveFile()
     GameSingletons::SetEventOnlyUpgrades(eventOnlyUpgrades);
     GameSingletons::GetEquippedUpgrades().clear();
     GameSingletons::SetMapGenerationSeed(math::RandomInt());
-    GameSingletons::SetPlayerDisplayedHealth(playerDef.mHealth);
-    GameSingletons::SetPlayerMaxHealth(playerDef.mHealth);
-    GameSingletons::SetPlayerCurrentHealth(playerDef.mHealth);
+    GameSingletons::SetPlayerDisplayedHealth(game_constants::DEFAULT_PLAYER_HEALTH);
+    GameSingletons::SetPlayerMaxHealth(game_constants::DEFAULT_PLAYER_HEALTH);
+    GameSingletons::SetPlayerCurrentHealth(game_constants::DEFAULT_PLAYER_HEALTH);
     GameSingletons::SetPlayerAttackStat(playerDef.mDamage);
     GameSingletons::SetPlayerShieldHealth(0);
-    GameSingletons::SetPlayerMovementSpeedStat(1.0f);
-    GameSingletons::SetPlayerBulletSpeedStat(1.0f);
+    GameSingletons::SetPlayerMovementSpeedStat(game_constants::DEFAULT_PLAYER_MOVEMENT_SPEED);
+    GameSingletons::SetPlayerBulletSpeedStat(game_constants::DEFAULT_PLAYER_BULLET_SPEED);
     GameSingletons::SetCrystalCount(0);
     GameSingletons::SetDisplayedCrystalCount(GameSingletons::GetCrystalCount());
     GameSingletons::SetCurrentMapCoord(MapCoord(game_constants::DEFAULT_MAP_COORD_COL, game_constants::DEFAULT_MAP_COORD_ROW));

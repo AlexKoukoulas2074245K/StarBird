@@ -201,6 +201,11 @@ inline const float MAP_NODE_PULSING_ENLARGEMENT_FACTOR = 1.0f/200.0f;
 
 inline const float LEVEL_WAVE_VISIBLE_Y = 20.0f;
 
+inline const float DEFAULT_PLAYER_ATTACK = 10.0f;
+inline const float DEFAULT_PLAYER_HEALTH = 100.0f;
+inline const float DEFAULT_PLAYER_MOVEMENT_SPEED = 1.0f;
+inline const float DEFAULT_PLAYER_BULLET_SPEED = 1.0f;
+
 inline const glm::vec3 BAR_TEXT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f);
 inline const glm::vec3 BAR_TEXT_OFFSET = glm::vec3(0.0f, -0.2f, 0.5f);
 
