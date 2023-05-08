@@ -129,7 +129,7 @@ void Game::Run()
     InitPersistentData();
     
     Scene scene;
-    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::LAB, "test_level_roaming", false));
+    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAIN_MENU, "test_level_roaming", false));
     
     SDL_Event e;
     

@@ -245,7 +245,7 @@ void StatUpgradeAreaController::Update(const float dtMillis, const float current
         
         missingCrystalsTextSo.mInvisible = !plusButtonSo.mInvisible;
         missingCrystalsIconSo.mInvisible = !plusButtonSo.mInvisible;
-        missingCrystalsTextSo.mText = "+" + std::to_string(static_cast<int>(GameSingletons::GetCrystalCount() - currentTotalCost + (CalculateStatCost(mStatValue + mStatIncrement))));
+        missingCrystalsTextSo.mText = "+" + std::to_string(-static_cast<int>(GameSingletons::GetCrystalCount() - currentTotalCost - (CalculateStatCost(mStatValue + mStatIncrement))));
         
         if (!plusButtonSo.mInvisible && inputContext.mEventType == SDL_FINGERDOWN && mLastInputContextEventType != SDL_FINGERDOWN && scene_object_utils::IsPointInsideSceneObject(plusButtonSo, originalFingerDownTouchPos))
         {
