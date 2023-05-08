@@ -50,6 +50,23 @@ static const glm::vec3 GUI_CRYSTAL_COUNT_SCALE = glm::vec3(0.006f, 0.006f, 1.0f)
 static const glm::vec3 GUI_SETTINGS_ICON_POSITION = glm::vec3(5.0f, -12.0f, 2.5f);
 static const glm::vec3 GUI_SETTINGS_ICON_SCALE = glm::vec3(1.31f, 1.31f, 1.0f);
 
+static const float GUI_MIN_ALPHA = 0.1f;
+static const float GUI_FADEOUT_LEFT_THRESHOLD = -1.5f;
+static const float GUI_FADEOUT_LEFT_Y_THRESHOLD = -7.8f;
+static const float GUI_FADEOUT_RIGHT_Y_THRESHOLD = -9.8f;
+
+static const std::unordered_set<strutils::StringId, strutils::StringIdHasher> GUI_ELEMENT_NAMES =
+{
+    game_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME,
+    game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME,
+    game_constants::PLAYER_HEALTH_BAR_TEXT_SCENE_OBJECT_NAME,
+    game_constants::GUI_CRYSTAL_HOLDER_SCENE_OBJECT_NAME,
+    game_constants::GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME,
+    game_constants::GUI_CRYSTAL_COUNT_SCENE_OBJECT_NAME,
+    game_constants::GUI_SETTINGS_ICON_SCENE_OBJECT_NAME
+    
+};
+
 ///------------------------------------------------------------------------------------------------
 
 Scene::Scene()
@@ -602,6 +619,49 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
             }
         }
     }
+    
+    // Fade In/Out cross scene GUI SOs depending on player state
+    b2Vec2 playerPosition(0.0f, 0.0f);
+    bool playerEntityExists = GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME).has_value();
+    if (playerEntityExists)
+    {
+        playerPosition = GetSceneObject(game_constants::PLAYER_SCENE_OBJECT_NAME)->get().mBody->GetWorldCenter();
+    }
+    
+    std::for_each(GUI_ELEMENT_NAMES.begin(), GUI_ELEMENT_NAMES.end(), [&](const strutils::StringId& name)
+    {
+        auto soOpt = GetSceneObject(name);
+        if (soOpt)
+        {
+            auto& guiSceneObject = soOpt->get();
+            
+            if (playerEntityExists)
+            {
+                // Fade out threshold
+                if ((playerPosition.x < GUI_FADEOUT_LEFT_THRESHOLD && playerPosition.y < GUI_FADEOUT_LEFT_Y_THRESHOLD) || (playerPosition.x >= GUI_FADEOUT_LEFT_THRESHOLD && playerPosition.y < GUI_FADEOUT_RIGHT_Y_THRESHOLD))
+                {
+                    guiSceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] -= game_constants::TEXT_FADE_IN_ALPHA_SPEED * dtMillis;
+                    if (guiSceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] <= GUI_MIN_ALPHA)
+                    {
+                        guiSceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = GUI_MIN_ALPHA;
+                    }
+                }
+                // Fade in threshold
+                else
+                {
+                    guiSceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += game_constants::TEXT_FADE_IN_ALPHA_SPEED * dtMillis;
+                    if (guiSceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
+                    {
+                        guiSceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+                    }
+                }
+            }
+            else
+            {
+                guiSceneObject.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+            }
+        }
+    });
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -824,11 +884,12 @@ void Scene::CreateCrossSceneInterfaceObjects()
     // Player Health Bar
     {
         SceneObject healthBarSo;
-        healthBarSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        healthBarSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::PLAYER_HEALTH_BAR_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         healthBarSo.mSceneObjectType = SceneObjectType::GUIObject;
         healthBarSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
         healthBarSo.mScale = game_constants::PLAYER_HEALTH_BAR_SCALE;
         healthBarSo.mName = game_constants::PLAYER_HEALTH_BAR_SCENE_OBJECT_NAME;
+        healthBarSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
         healthBarSo.mCrossSceneLifetime = true;
         AddSceneObject(std::move(healthBarSo));
     }
@@ -836,22 +897,40 @@ void Scene::CreateCrossSceneInterfaceObjects()
     // Player Health Bar Frame
     {
         SceneObject healthBarFrameSo;
-        healthBarFrameSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        healthBarFrameSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::PLAYER_HEALTH_BAR_FRAME_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         healthBarFrameSo.mSceneObjectType = SceneObjectType::GUIObject;
         healthBarFrameSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION;
         healthBarFrameSo.mScale = game_constants::PLAYER_HEALTH_BAR_SCALE;
         healthBarFrameSo.mName = game_constants::PLAYER_HEALTH_BAR_FRAME_SCENE_OBJECT_NAME;
+        healthBarFrameSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
         healthBarFrameSo.mCrossSceneLifetime = true;
         AddSceneObject(std::move(healthBarFrameSo));
+    }
+    
+    // Player Health Bar Text
+    {
+        SceneObject healthBarTextSo;
+        healthBarTextSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION + game_constants::BAR_TEXT_OFFSET;
+        healthBarTextSo.mScale = game_constants::BAR_TEXT_SCALE;
+        healthBarTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), game_constants::BAR_TEXT_SCALE, false);
+        healthBarTextSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
+        healthBarTextSo.mSceneObjectType = SceneObjectType::GUIObject;
+        healthBarTextSo.mName = game_constants::PLAYER_HEALTH_BAR_TEXT_SCENE_OBJECT_NAME;
+        healthBarTextSo.mText = std::to_string(static_cast<int>(GameSingletons::GetPlayerDisplayedHealth()));
+        healthBarTextSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+        healthBarTextSo.mCrossSceneLifetime = true;
+        AddSceneObject(std::move(healthBarTextSo));
     }
     
     // Crystsal Holder
     {
         SceneObject crystalHolder;
-        crystalHolder.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTAL_HOLDER_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        crystalHolder.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTAL_HOLDER_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
         crystalHolder.mSceneObjectType = SceneObjectType::GUIObject;
         crystalHolder.mPosition = GUI_CRYSTAL_COUNT_HOLDER_POSITION;
         crystalHolder.mScale = GUI_CRYSTAL_COUNT_HOLDER_SCALE;
+        crystalHolder.mName = game_constants::GUI_CRYSTAL_HOLDER_SCENE_OBJECT_NAME;
+        crystalHolder.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
         crystalHolder.mCrossSceneLifetime = true;
         AddSceneObject(std::move(crystalHolder));
     }
@@ -859,11 +938,12 @@ void Scene::CreateCrossSceneInterfaceObjects()
     // Crystal GUI icon
     {
         SceneObject crystalIconSo;
-        crystalIconSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, game_constants::GUI_CRYSTAL_ROTATION_SPEED, false);
+        crystalIconSo.mAnimation = std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, game_constants::GUI_CRYSTAL_ROTATION_SPEED, false);
         crystalIconSo.mSceneObjectType = SceneObjectType::GUIObject;
         crystalIconSo.mPosition = game_constants::GUI_CRYSTAL_POSITION;
         crystalIconSo.mScale = game_constants::GUI_CRYSTAL_SCALE;
         crystalIconSo.mName = game_constants::GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME;
+        crystalIconSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
         crystalIconSo.mCrossSceneLifetime = true;
         AddSceneObject(std::move(crystalIconSo));
     }
@@ -873,11 +953,12 @@ void Scene::CreateCrossSceneInterfaceObjects()
         SceneObject crystalCountSo;
         crystalCountSo.mPosition = GUI_CRYSTAL_COUNT_POSITION;
         crystalCountSo.mScale = GUI_CRYSTAL_COUNT_SCALE;
-        crystalCountSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), GUI_CRYSTAL_COUNT_SCALE, false);
+        crystalCountSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), GUI_CRYSTAL_COUNT_SCALE, false);
         crystalCountSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
         crystalCountSo.mSceneObjectType = SceneObjectType::GUIObject;
         crystalCountSo.mName = game_constants::GUI_CRYSTAL_COUNT_SCENE_OBJECT_NAME;
         crystalCountSo.mText = std::to_string(GameSingletons::GetCrystalCount());
+        crystalCountSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
         crystalCountSo.mCrossSceneLifetime = true;
         AddSceneObject(std::move(crystalCountSo));
     }
@@ -887,25 +968,12 @@ void Scene::CreateCrossSceneInterfaceObjects()
         SceneObject settingsIconSo;
         settingsIconSo.mPosition = GUI_SETTINGS_ICON_POSITION;
         settingsIconSo.mScale = GUI_SETTINGS_ICON_SCALE;
-        settingsIconSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::SETTINGS_ICON_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), GUI_SETTINGS_ICON_SCALE, false);
+        settingsIconSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::SETTINGS_ICON_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), GUI_SETTINGS_ICON_SCALE, false);
         settingsIconSo.mSceneObjectType = SceneObjectType::GUIObject;
         settingsIconSo.mName = game_constants::GUI_SETTINGS_ICON_SCENE_OBJECT_NAME;
+        settingsIconSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
         settingsIconSo.mCrossSceneLifetime = true;
         AddSceneObject(std::move(settingsIconSo));
-    }
-    
-    // Player Health Bar Text
-    {
-        SceneObject healthBarTextSo;
-        healthBarTextSo.mPosition = game_constants::PLAYER_HEALTH_BAR_POSITION + game_constants::BAR_TEXT_OFFSET;
-        healthBarTextSo.mScale = game_constants::BAR_TEXT_SCALE;
-        healthBarTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), game_constants::BAR_TEXT_SCALE, false);
-        healthBarTextSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
-        healthBarTextSo.mSceneObjectType = SceneObjectType::GUIObject;
-        healthBarTextSo.mName = game_constants::PLAYER_HEALTH_BAR_TEXT_SCENE_OBJECT_NAME;
-        healthBarTextSo.mText = std::to_string(static_cast<int>(GameSingletons::GetPlayerDisplayedHealth()));
-        healthBarTextSo.mCrossSceneLifetime = true;
-        AddSceneObject(std::move(healthBarTextSo));
     }
 }
 

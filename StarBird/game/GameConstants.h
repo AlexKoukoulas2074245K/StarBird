@@ -103,6 +103,7 @@ inline const strutils::StringId DEBUG_BACK_TO_GAME_SCENE_OBJECT_NAME = strutils:
 inline const strutils::StringId GUI_CRYSTAL_ICON_SCENE_OBJECT_NAME = strutils::StringId("CRYSTAL_ICON");
 inline const strutils::StringId GUI_CRYSTAL_COUNT_SCENE_OBJECT_NAME = strutils::StringId("CRYSTAL_COUNT");
 inline const strutils::StringId GUI_SETTINGS_ICON_SCENE_OBJECT_NAME = strutils::StringId("SETTINGS_ICON");
+inline const strutils::StringId GUI_CRYSTAL_HOLDER_SCENE_OBJECT_NAME = strutils::StringId("CRYSTAL_HOLDER");
 
 inline const strutils::StringId MULTITEXTURE_ALPHA_UNIFORM_NAME = strutils::StringId("multitexture_alpha");
 inline const strutils::StringId TEXTURE_OFFSET_X_UNIFORM_NAME = strutils::StringId("tex_offset_x");
@@ -134,6 +135,7 @@ inline const strutils::StringId PLAYER_SHIELD_UPGRADE_NAME = strutils::StringId(
 inline const strutils::StringId PLAYER_HEALTH_POTION_UGPRADE_NAME = strutils::StringId("player_health_potion");
 inline const strutils::StringId CRYSTALS_BOSS_UGPRADE_NAME = strutils::StringId("boss_crystals");
 inline const strutils::StringId CRYSTALS_SMALL_EVENT_UPGRADE_NAME = strutils::StringId("small_event_crystal_gift");
+inline const strutils::StringId LAB_CRYSTALS_UPGRADE_NAME = strutils::StringId("lab_crystal_gift");
 
 inline const strutils::StringId PLAYER_BULLET_TYPE = strutils::StringId("player_bullet");
 inline const strutils::StringId BETTER_PLAYER_BULLET_TYPE = strutils::StringId("player_better_bullet");
@@ -226,21 +228,22 @@ inline const glm::vec4 POINT_LIGHT_COLOR = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
 inline const glm::vec2 MAP_MAX_WORLD_BOUNDS = glm::vec2(40.0f, 20.0f);
 inline const glm::vec2 MAP_MIN_WORLD_BOUNDS = glm::vec2(-17.0f, -13.0f);
 
-inline const glm::vec3 GUI_CRYSTAL_POSITION = glm::vec3(-4.2f, -10.2f, 2.5f);
+inline const glm::vec3 GUI_CRYSTAL_POSITION = glm::vec3(-4.2f, -10.2f, 2.9f);
 inline const glm::vec3 GUI_CRYSTAL_SCALE = glm::vec3(0.6f, 0.6f, 0.6f);
 
 inline const glm::vec3 MAP_STAR_PATH_SCALE = glm::vec3(0.3f, 0.3f, 1.0f);
 
 enum class LabOptionType
 {
-    REPAIR, STATS_UPGRADE, RESEARCH
+    REPAIR, STATS_UPGRADE, RESEARCH, CRYSTALS
 };
 
 inline const std::unordered_map<game_constants::LabOptionType, std::string> LAB_OPTION_TYPE_TO_TEXTURE =
 {
     { LabOptionType::REPAIR, "backgrounds/lab/lab_option_repair.bmp" },
     { LabOptionType::STATS_UPGRADE, "backgrounds/lab/lab_option_crystal_transfer.bmp" },
-    { LabOptionType::RESEARCH, "backgrounds/lab/lab_option_research.bmp" }
+    { LabOptionType::RESEARCH, "backgrounds/lab/lab_option_research.bmp" },
+    { LabOptionType::CRYSTALS, "upgrades/crystal_gift.bmp"}
 };
 
 ///------------------------------------------------------------------------------------------------

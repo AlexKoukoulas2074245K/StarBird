@@ -26,6 +26,8 @@ static const glm::vec3 COST_DESCRIPTION_TEXT_OFFSET = glm::vec3(-1.0f, 0.2f, 0.5
 static const glm::vec3 STAT_VALUE_TEXT_OFFSET = glm::vec3(1.9f, 1.03f, 0.5f);
 static const glm::vec3 COST_VALUE_TEXT_OFFSET = glm::vec3(1.0f, 0.2f, 0.5f);
 static const glm::vec3 PLUS_BUTTON_OFFSET = glm::vec3(-0.13f, -1.3f, 0.5f);
+static const glm::vec3 MISSING_CRYSTALS_TEXT_OFFSET = glm::vec3(-0.03f, -1.5f, 0.5f);
+static const glm::vec3 MISSING_CRYSTALS_ICON_OFFSET = glm::vec3(-0.63f, -1.2f, 0.5f);
 static const glm::vec3 MINUS_BUTTON_OFFSET = glm::vec3(1.57f, -1.3f, 0.5f);
 static const glm::vec3 CRYSTAL_ICON_OFFSET = glm::vec3(2.3f, 0.52f, 0.5f);
 
@@ -145,6 +147,34 @@ StatUpgradeAreaController::StatUpgradeAreaController(Scene& scene, std::unique_p
     }
     
     {
+        SceneObject missingCrystalsTextSo;
+        missingCrystalsTextSo.mPosition = position + MISSING_CRYSTALS_TEXT_OFFSET + additionalOffsetForContainedSceneObjects;
+        missingCrystalsTextSo.mScale = STAT_TEXT_SCALE;
+        missingCrystalsTextSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME), STAT_TEXT_SCALE, false);
+        missingCrystalsTextSo.mFontName = game_constants::DEFAULT_FONT_MM_NAME;
+        missingCrystalsTextSo.mSceneObjectType = SceneObjectType::GUIObject;
+        mMissingCrystalsName = strutils::StringId(text + "MISSING_CRYSTALS");
+        missingCrystalsTextSo.mName = mMissingCrystalsName;
+        missingCrystalsTextSo.mText = std::to_string(0);
+        missingCrystalsTextSo.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+        missingCrystalsTextSo.mInvisible = true;
+        mScene.AddSceneObject(std::move(missingCrystalsTextSo));
+    }
+    
+    {
+        SceneObject missingCrystalsIconSo;
+        missingCrystalsIconSo.mPosition = position + MISSING_CRYSTALS_ICON_OFFSET + additionalOffsetForContainedSceneObjects;
+        missingCrystalsIconSo.mAnimation = std::make_unique<SingleFrameAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+        
+        mMissingCrystalsIconName = strutils::StringId(text + "MISSING_CRYSTALS_ICON");
+        missingCrystalsIconSo.mSceneObjectType = SceneObjectType::GUIObject;
+        missingCrystalsIconSo.mScale = CRYSTAL_ICON_SCALE;
+        missingCrystalsIconSo.mName = mMissingCrystalsIconName;
+        mScene.AddSceneObject(std::move(missingCrystalsIconSo));
+    }
+    
+    
+    {
         SceneObject minusButtonSo;
         minusButtonSo.mPosition = position + MINUS_BUTTON_OFFSET + additionalOffsetForContainedSceneObjects;
         minusButtonSo.mScale = CONTROL_BUTTON_SCALE;
@@ -202,11 +232,20 @@ void StatUpgradeAreaController::Update(const float dtMillis, const float current
     
     auto plusButtonSoOpt = mScene.GetSceneObject(mPlusButtonName);
     auto minusButtonSoOpt = mScene.GetSceneObject(mMinusButtonName);
+    auto missingCrystalsSoOpt = mScene.GetSceneObject(mMissingCrystalsName);
+    auto missingCrystalsIconSoOpt = mScene.GetSceneObject(mMissingCrystalsIconName);
     
-    if (plusButtonSoOpt)
+    if (plusButtonSoOpt && missingCrystalsSoOpt && missingCrystalsIconSoOpt)
     {
         auto& plusButtonSo = plusButtonSoOpt->get();
+        auto& missingCrystalsTextSo = missingCrystalsSoOpt->get();
+        auto& missingCrystalsIconSo = missingCrystalsIconSoOpt->get();
+        
         plusButtonSo.mInvisible = currentTotalCost + (CalculateStatCost(mStatValue + mStatIncrement)) > GameSingletons::GetCrystalCount();
+        
+        missingCrystalsTextSo.mInvisible = !plusButtonSo.mInvisible;
+        missingCrystalsIconSo.mInvisible = !plusButtonSo.mInvisible;
+        missingCrystalsTextSo.mText = "+" + std::to_string(static_cast<int>(GameSingletons::GetCrystalCount() - currentTotalCost + (CalculateStatCost(mStatValue + mStatIncrement))));
         
         if (!plusButtonSo.mInvisible && inputContext.mEventType == SDL_FINGERDOWN && mLastInputContextEventType != SDL_FINGERDOWN && scene_object_utils::IsPointInsideSceneObject(plusButtonSo, originalFingerDownTouchPos))
         {

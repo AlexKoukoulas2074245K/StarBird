@@ -59,6 +59,7 @@ static const float PLAYER_SHIELD_ROTATION_SPEED = 0.001f;
 
 static const int CRYSTALS_BOSS_REWARD_COUNT = 15;
 static const int CRYSTALS_SMALL_EVENT_REWARD_COUNT = 5;
+static const int CRYSTALS_LAB_REWARD_COUNT = 5;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -130,6 +131,10 @@ void UpgradeUnlockedHandler::OnUpgradeGained(const strutils::StringId& upgradeNa
         if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_SMALL_EVENT_UPGRADE_NAME)
         {
             OnCrystalGiftUpgradeGained(CRYSTALS_SMALL_EVENT_REWARD_COUNT);
+        }
+        else if (mCurrentUpgradeNameUnlocked == game_constants::LAB_CRYSTALS_UPGRADE_NAME)
+        {
+            OnCrystalGiftUpgradeGained(CRYSTALS_LAB_REWARD_COUNT);
         }
     }
     else
@@ -207,6 +212,10 @@ UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::Update(con
     {
         return UpdateCrystalGiftUpgradeGained(dtMillis);
     }
+    else if (mCurrentUpgradeNameUnlocked == game_constants::LAB_CRYSTALS_UPGRADE_NAME)
+    {
+        return UpdateCrystalGiftUpgradeGained(dtMillis);
+    }
     
     if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_BOSS_UGPRADE_NAME)
     {
@@ -240,6 +249,8 @@ void UpgradeUnlockedHandler::OnCrystalGiftUpgradeGained(const int crystalCount)
 {
     for (int i = 0; i < crystalCount; ++i)
     {
+        auto offsetIndex = (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_BOSS_UGPRADE_NAME || mCurrentUpgradeNameUnlocked == game_constants::LAB_CRYSTALS_UPGRADE_NAME) ? 0 : 1;
+        
         mFlows.emplace_back([this]()
         {
             auto& resService = resources::ResourceLoadingService::GetInstance();
@@ -286,7 +297,7 @@ void UpgradeUnlockedHandler::OnCrystalGiftUpgradeGained(const int crystalCount)
             crystalSo.mName = droppedCrystalName;
             mCreatedSceneObjectNames.push_back(crystalSo.mName);
             mScene.AddSceneObject(std::move(crystalSo));
-        }, (i + 1) * game_constants::DROPPED_CRYSTALS_CREATION_STAGGER_MILLIS, RepeatableFlow::RepeatPolicy::ONCE);
+        }, (i + offsetIndex) * game_constants::DROPPED_CRYSTALS_CREATION_STAGGER_MILLIS, RepeatableFlow::RepeatPolicy::ONCE);
     }
 }
 

@@ -47,6 +47,8 @@ private:
     int mCurrentCost;
     Uint32 mLastInputContextEventType;
     strutils::StringId mPlusButtonName;
+    strutils::StringId mMissingCrystalsName;
+    strutils::StringId mMissingCrystalsIconName;
     strutils::StringId mMinusButtonName;
     strutils::StringId mStatValueTextName;
     strutils::StringId mUpgradeCostTextName;

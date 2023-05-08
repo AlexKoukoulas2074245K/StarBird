@@ -3,5 +3,5 @@
     <Animation state="idle" texture="enemies/alien_shooting" mesh="quad" shader="basic" scale="2.0f"/>
     <Animation state="dying" texture="explosion_sheet" mesh="quad" shader="basic" scale="2.0f" textureSheetRow="0" duration="150" bodyRenderingEnabled="false"/>
     <Physics bodyScale="1.0f" density="1.0f" linearDamping="0.0f" category="enemy" constantVelocity="0.0f, -3.0f"/>
-    <GameAttributes movementControllerPattern="constant_velocity" health="60.0f" damage="10.0f" projectile="enemies/enemy_bullet" shootingFrequency="2000.0f" crystalYield="0.2f"/>
+    <GameAttributes movementControllerPattern="constant_velocity" health="60.0f" damage="10.0f" projectile="enemies/enemy_bullet" shootingFrequency="2000.0f" crystalYield="0.4f"/>
 </ObjectDefinition>

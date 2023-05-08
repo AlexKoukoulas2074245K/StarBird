@@ -269,36 +269,37 @@ void EventUpdater::VOpenSettingsMenu()
 
 void EventUpdater::RegisterEvents()
 {
-    mRegisteredEvents.emplace_back(EventDescription
-    (
-        {
-            "backgrounds/events/1.bmp"
-        },
-     
-        {
-            "You discover a foreign planet filled  with abundant power crystal reserves that can be used to power the vessel's stats, and future research projects.",
-            "You collected a few crystals and swiftly departed.",
-            "You swiftly departed from the planet, ignoring the countless crystals around you."
-        },
-     
-        {
+    {
+        mRegisteredEvents.emplace_back(EventDescription
+        (
             {
-                EventOption("Collect 5 crytals.", 1, [&](){ mUpgradeUnlockedHandler.OnUpgradeGained(game_constants::CRYSTALS_SMALL_EVENT_UPGRADE_NAME); }),
-                EventOption("Ignore.", 2, [](){})
+                "backgrounds/events/1.bmp"
             },
             
             {
-                EventOption("Leave.", END_STATE_INDEX, [](){})
+                "You discover a foreign planet filled  with abundant power crystal reserves that can be used to power the vessel's stats, and future research projects.",
+                "You collected a few crystals and swiftly departed.",
+                "You swiftly departed from the planet, ignoring the countless crystals around you."
             },
             
             {
-                EventOption("Leave.", END_STATE_INDEX, [](){})
-            }
-        },
-     
-        [](){ return true; }
-    ));
-    
+                {
+                    EventOption("Collect 5 crytals.", 1, [&](){ mUpgradeUnlockedHandler.OnUpgradeGained(game_constants::CRYSTALS_SMALL_EVENT_UPGRADE_NAME); }),
+                    EventOption("Ignore.", 2, [](){})
+                },
+                
+                {
+                    EventOption("Leave.", END_STATE_INDEX, [](){})
+                },
+                
+                {
+                    EventOption("Leave.", END_STATE_INDEX, [](){})
+                }
+            },
+            
+            [](){ return true; }
+        ));
+    }
     mRegisteredEvents.emplace_back(EventDescription
     (
         {
@@ -427,7 +428,7 @@ void EventUpdater::RegisterEvents()
             {
                 "You discover a space-warping  wormhole that will allow faster movement of the vessel, but  with  most likely some structural damage in the process.",
                 "You travel through the wormhole and significantly increase the vessel's maximum velocity, but also damaging it somewhat.",
-                "You ignore the wormhole and continue with your mission."
+                "You ignore the  wormhole and continue  with your mission."
             },
             
             {

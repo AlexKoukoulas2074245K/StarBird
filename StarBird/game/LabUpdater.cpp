@@ -30,13 +30,15 @@ static const std::vector<game_constants::LabOptionType> DEFAULT_LAB_OPTIONS =
     game_constants::LabOptionType::REPAIR,
     game_constants::LabOptionType::STATS_UPGRADE,
     game_constants::LabOptionType::RESEARCH,
+    game_constants::LabOptionType::CRYSTALS
 };
 
 static const std::unordered_map<game_constants::LabOptionType, std::string> LAB_OPTION_DESCRIPTIONS =
 {
     { game_constants::LabOptionType::REPAIR, "REPAIR:\n Fully repairs the vessel to factory state standards." },
     { game_constants::LabOptionType::STATS_UPGRADE, "STATS UPGRADE:\n Uses a small amount of crystals to upgrade individual vessel parts." },
-    { game_constants::LabOptionType::RESEARCH, "RESEARCH:\n Consumes the maximum amount of crystals possible to unlock powerful end-of-map upgrades for the vessel." }
+    { game_constants::LabOptionType::RESEARCH, "RESEARCH:\n Consumes the maximum amount of crystals possible to unlock powerful end-of-map upgrades for the vessel." },
+    { game_constants::LabOptionType::CRYSTALS, "CRYSTALS:\n Collect a small amount of crystals from the research base's reserves." }
 };
 
 static const strutils::StringId CONFIRMATION_BUTTON_NAME = strutils::StringId("CONFIRMATION_BUTTON");
@@ -148,6 +150,7 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
                         mOptionSelectionState = OptionSelectionState::OPTION_FLOW_FINISHED;
                     }
                 } break;
+                    
                 case game_constants::LabOptionType::STATS_UPGRADE:
                 {
                     mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::STATS_UPGRADE, "", true));
@@ -158,6 +161,14 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
                 {
                     mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::RESEARCH, "", true));
                     mOptionSelectionState = OptionSelectionState::TRANSITIONING_TO_NEXT_SCREEN;
+                } break;
+                    
+                case game_constants::LabOptionType::CRYSTALS:
+                {
+                    mScene.RemoveAllSceneObjectsWithName(CONFIRMATION_BUTTON_NAME);
+                    mScene.RemoveAllSceneObjectsWithName(CONFIRMATION_BUTTON_TEXT_NAME);
+                    
+                    mOptionSelectionState = OptionSelectionState::OPTION_FLOW_FINISHED;
                 } break;
             }
         } break;
@@ -332,7 +343,25 @@ void LabUpdater::CreateSceneObjects()
     }
 
     // Options
-    const auto optionCount = DEFAULT_LAB_OPTIONS.size();
+    auto optionCount = DEFAULT_LAB_OPTIONS.size();
+    bool atLeastOneViableOption = false;
+    
+    // Give option to collect crystals if no other option is available
+    for (int i = 0; i < optionCount; ++i)
+    {
+        mSelectedLabOption = static_cast<game_constants::LabOptionType>(i);
+        if (mSelectedLabOption != game_constants::LabOptionType::CRYSTALS && CheckForOptionValidity().empty())
+        {
+            atLeastOneViableOption = true;
+            break;
+        }
+    }
+    if (atLeastOneViableOption)
+    {
+        optionCount -= 1;
+    }
+    
+    mSelectedLabOption = game_constants::LabOptionType::REPAIR;
     mLabOptions.resize(optionCount);
     
     std::vector<resources::ResourceId> labOptionTextures;
@@ -457,6 +486,11 @@ void LabUpdater::OnTriggerOptionFlow()
         {
             
         } break;
+            
+        case game_constants::LabOptionType::CRYSTALS:
+        {
+            mUpgradeUnlockedHandler.OnUpgradeGained(game_constants::LAB_CRYSTALS_UPGRADE_NAME);
+        } break;
     }
 }
 
@@ -467,6 +501,10 @@ std::string LabUpdater::CheckForOptionValidity() const
     if (mSelectedLabOption == game_constants::LabOptionType::REPAIR && GameSingletons::GetPlayerCurrentHealth() == GameSingletons::GetPlayerMaxHealth())
     {
         return "Vessel is not damaged";
+    }
+    else if ((mSelectedLabOption == game_constants::LabOptionType::STATS_UPGRADE || mSelectedLabOption == game_constants::LabOptionType::RESEARCH) && GameSingletons::GetCrystalCount() <= 0)
+    {
+        return "No crystals to expend";
     }
 
     return "";
