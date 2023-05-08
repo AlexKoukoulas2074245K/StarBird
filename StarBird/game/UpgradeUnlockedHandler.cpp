@@ -58,7 +58,6 @@ static const float INTER_ANIMATION_DELAY_MILLIS = 3000.0f;
 static const float PLAYER_SHIELD_ROTATION_SPEED = 0.001f;
 
 static const int CRYSTALS_BOSS_REWARD_COUNT = 15;
-static const int CRYSTALS_SMALL_EVENT_REWARD_COUNT = 5;
 static const int CRYSTALS_LAB_REWARD_COUNT = 5;
 
 ///------------------------------------------------------------------------------------------------
@@ -123,16 +122,16 @@ void UpgradeUnlockedHandler::OnUpgradeGained(const strutils::StringId& upgradeNa
     auto& equippedUpgrades = GameSingletons::GetEquippedUpgrades();
     auto& availableUpgrades = GameSingletons::GetAvailableUpgrades();
     
-    const auto eventOnlyUpgradeIter = std::find_if(eventOnlyUpgrades.cbegin(), eventOnlyUpgrades.cend(), [&](const UpgradeDefinition& upgradeDefinition){ return upgradeDefinition.mUpgradeNameId == upgradeNameId; });
+    auto eventOnlyUpgradeIter = std::find_if(eventOnlyUpgrades.cbegin(), eventOnlyUpgrades.cend(), [&](const UpgradeDefinition& upgradeDefinition){ return upgradeDefinition.mUpgradeNameId == upgradeNameId; });
     const auto availableUpgradeIter = std::find_if(availableUpgrades.begin(), availableUpgrades.end(), [&](const UpgradeDefinition& upgradeDefinition){ return upgradeDefinition.mUpgradeNameId == upgradeNameId; });
     
-    if (eventOnlyUpgradeIter != eventOnlyUpgrades.cend())
+    if (strutils::StringStartsWith(upgradeNameId.GetString(), game_constants::CRYSTALS_EVENT_UPGRADE_NAME_PREFIX) && eventOnlyUpgradeIter == eventOnlyUpgrades.end())
     {
-        if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_SMALL_EVENT_UPGRADE_NAME)
-        {
-            OnCrystalGiftUpgradeGained(CRYSTALS_SMALL_EVENT_REWARD_COUNT);
-        }
-        else if (mCurrentUpgradeNameUnlocked == game_constants::LAB_CRYSTALS_UPGRADE_NAME)
+        OnCrystalGiftUpgradeGained(std::stoi(strutils::StringSplit(upgradeNameId.GetString(), '_').back()));
+    }
+    else if (eventOnlyUpgradeIter != eventOnlyUpgrades.cend())
+    {
+        if (mCurrentUpgradeNameUnlocked == game_constants::LAB_CRYSTALS_UPGRADE_NAME)
         {
             OnCrystalGiftUpgradeGained(CRYSTALS_LAB_REWARD_COUNT);
         }
@@ -208,7 +207,7 @@ UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::Update(con
         return UpgradeAnimationState::FINISHED;
     }
     
-    if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_SMALL_EVENT_UPGRADE_NAME)
+    if (strutils::StringStartsWith(mCurrentUpgradeNameUnlocked.GetString(), game_constants::CRYSTALS_EVENT_UPGRADE_NAME_PREFIX))
     {
         return UpdateCrystalGiftUpgradeGained(dtMillis);
     }
@@ -216,8 +215,7 @@ UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::Update(con
     {
         return UpdateCrystalGiftUpgradeGained(dtMillis);
     }
-    
-    if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_BOSS_UGPRADE_NAME)
+    else if (mCurrentUpgradeNameUnlocked == game_constants::CRYSTALS_BOSS_UGPRADE_NAME)
     {
         return UpdateCrystalGiftUpgradeGained(dtMillis);
     }

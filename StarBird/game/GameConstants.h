@@ -134,7 +134,6 @@ inline const strutils::StringId MIRROR_IMAGE_UGPRADE_NAME = strutils::StringId("
 inline const strutils::StringId PLAYER_SHIELD_UPGRADE_NAME = strutils::StringId("player_shield");
 inline const strutils::StringId PLAYER_HEALTH_POTION_UGPRADE_NAME = strutils::StringId("player_health_potion");
 inline const strutils::StringId CRYSTALS_BOSS_UGPRADE_NAME = strutils::StringId("boss_crystals");
-inline const strutils::StringId CRYSTALS_SMALL_EVENT_UPGRADE_NAME = strutils::StringId("small_event_crystal_gift");
 inline const strutils::StringId LAB_CRYSTALS_UPGRADE_NAME = strutils::StringId("lab_crystal_gift");
 
 inline const strutils::StringId PLAYER_BULLET_TYPE = strutils::StringId("player_bullet");
@@ -147,6 +146,7 @@ inline const strutils::StringId TEXT_PROMPT_NAME = strutils::StringId("TEXT_PROM
 
 inline const strutils::StringId AMBIENT_LIGHT_NAME = strutils::StringId("AMBIENT_LIGHT");
 
+inline const std::string CRYSTALS_EVENT_UPGRADE_NAME_PREFIX = std::string("event_crystal_gift_");
 inline const std::string ENEMY_PROJECTILE_FLOW_POSTFIX = std::string("_PROJECTILE_FLOW");
 
 inline const int BACKGROUND_COUNT = 24;

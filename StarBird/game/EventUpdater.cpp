@@ -272,6 +272,7 @@ void EventUpdater::VOpenSettingsMenu()
 void EventUpdater::RegisterEvents()
 {
     {
+        const auto crystalCount = math::ControlledRandomInt(4, 8);
         mRegisteredEvents.emplace_back(EventDescription
         (
             {
@@ -286,7 +287,7 @@ void EventUpdater::RegisterEvents()
             
             {
                 {
-                    EventOption("Collect 5 crytals.", 1, [&](){ mUpgradeUnlockedHandler.OnUpgradeGained(game_constants::CRYSTALS_SMALL_EVENT_UPGRADE_NAME); }),
+                    EventOption("Collect " + std::to_string(crystalCount) + " crytals.", 1, [=](){ mUpgradeUnlockedHandler.OnUpgradeGained(strutils::StringId(game_constants::CRYSTALS_EVENT_UPGRADE_NAME_PREFIX + std::to_string(crystalCount))); }),
                     EventOption("Ignore.", 2, [](){})
                 },
                 
@@ -577,8 +578,6 @@ void EventUpdater::SelectRandomEligibleEvent()
     {
         mSelectedEvent = &mRegisteredEvents[0];
     }
-    
-    mSelectedEvent = &mRegisteredEvents[1];
 }
 
 ///------------------------------------------------------------------------------------------------
