@@ -45,6 +45,8 @@ static const glm::vec3 FULL_SCREEN_OVERLAY_SCALE = glm::vec3(200.0f, 200.0f, 1.0
 static const glm::vec3 EVENT_OPTIONS_FONT_SCALE = glm::vec3(0.007f, 0.007f, 1.0f);
 static const glm::vec3 EVENT_OPTIONS_TEXT_INIT_POSITION_WITH_UNLOCK_ANIMATION = glm::vec3(0.0f, -8.5f, 1.0f);
 
+static const glm::vec4 EVENT_OPTION_COLOR = glm::vec4(0.0f, 0.81f, 1.0f, 1.0f);
+
 static const int END_STATE_INDEX = 100000;
 
 static const float DROPPED_CRYSTAL_SPEED = 0.0006f;
@@ -173,10 +175,10 @@ PostStateUpdateDirective EventUpdater::VUpdate(std::vector<SceneObject>& sceneOb
             if (optionSoOpt)
             {
                 auto& optionSo = optionSoOpt->get();
-                optionSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] += dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
-                if (optionSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] >= 1.0f)
+                optionSo.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME].a += dtMillis * game_constants::TEXT_FADE_IN_ALPHA_SPEED;
+                if (optionSo.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME].a >= 1.0f)
                 {
-                    optionSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
+                    optionSo.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME].a = 1.0f;
                 }
                 
                 // Check for touch
@@ -319,7 +321,7 @@ void EventUpdater::RegisterEvents()
                     CreateCrystalsTowardTargetPosition(GameSingletons::GetCrystalCount(), EVENT_BACKGROUND_POSITION);
                     GameSingletons::SetCrystalCount(0);
                 }),
-                EventOption("Ignore", 2, []()
+                EventOption("Ignore. (Double Research and Stat+ Cost)", 2, []()
                 {
                     GameSingletons::SetResearchCostMultiplier(GameSingletons::GetResearchCostMultiplier() * 2);
                 }),
@@ -390,7 +392,7 @@ void EventUpdater::RegisterEvents()
 
         {
             {
-                EventOption("Rush to defend the closest base. (BATTLE)", 1, [&](){}),
+                EventOption("Defend the closest base. (BATTLE)", 1, [&](){}),
                 EventOption("Ignore. (ALL Labs in this galaxy destroyed)", 2, [](){ GameSingletons::SetErasedLabsOnCurrentMap(true); }),
             },
             
@@ -575,6 +577,8 @@ void EventUpdater::SelectRandomEligibleEvent()
     {
         mSelectedEvent = &mRegisteredEvents[0];
     }
+    
+    mSelectedEvent = &mRegisteredEvents[1];
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -652,7 +656,7 @@ void EventUpdater::CreateEventSceneObjectsForCurrentState()
         for (int i = 0; i < currentEventOptions.size(); ++i)
         {
             SceneObject eventOptionSo;
-            eventOptionSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_ALPHA_SHADER_FILE_NAME), glm::vec3(1.0f), false);
+            eventOptionSo.mAnimation = std::make_unique<SingleFrameAnimation>(FontRepository::GetInstance().GetFont(game_constants::DEFAULT_FONT_MM_NAME)->get().mFontTextureResourceId, resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::QUAD_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::CUSTOM_COLOR_SHADER_FILE_NAME), glm::vec3(1.0f), false);
             eventOptionSo.mFontName = game_constants::DEFAULT_FONT_NAME;
             eventOptionSo.mSceneObjectType = SceneObjectType::GUIObject;
             eventOptionSo.mName = strutils::StringId(EVENT_OPTION_NAME_PREFIX + std::to_string(i));
@@ -688,7 +692,8 @@ void EventUpdater::CreateEventSceneObjectsForCurrentState()
             eventOptionSo.mPosition.y -= EVENT_OPTIONS_TEXT_Y_INCREMENT * i * optionScaleFactor;
             eventOptionSo.mPosition.x -= (math::Abs(rectBotLeft.x - rectTopRight.x)/2.0f);
 
-            eventOptionSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 0.0f - 0.5f * i;
+            eventOptionSo.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME] = EVENT_OPTION_COLOR;
+            eventOptionSo.mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME].a = 0.0f - 0.5f * i;
             
             mScene.AddSceneObject(std::move(eventOptionSo));
         }

@@ -297,7 +297,7 @@ void Game::Run()
             secsAccumulator = 0.0f;
         }
         
-        scene.UpdateScene(math::Min(20.0f, dtMillis));
+        scene.UpdateScene(math::Max(10.0f, math::Min(20.0f, dtMillis)));
         scene.RenderScene();
 
         if (lastAppForegroundBackgroundEvent)
