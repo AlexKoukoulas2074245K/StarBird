@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		92043B0E2A0947A4007CC7DE /* AVFAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92043B022A0947A4007CC7DE /* AVFAudio.framework */; };
+		92043B112A0B8EE9007CC7DE /* AVAudioPlayerManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92043B0F2A0B8EE9007CC7DE /* AVAudioPlayerManager.mm */; };
 		9206BAA929AF8BF20013BE69 /* LightRepository.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9206BAA729AF8BF20013BE69 /* LightRepository.cpp */; };
 		9208BE6129B3FD41007C5335 /* BossIntroGameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9208BE5429B3FD41007C5335 /* BossIntroGameState.cpp */; };
 		9210BFC229E82A2B00D117A6 /* ChestRewardUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9210BFB529E82A2B00D117A6 /* ChestRewardUpdater.cpp */; };
@@ -242,6 +244,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		92043B022A0947A4007CC7DE /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
+		92043B0F2A0B8EE9007CC7DE /* AVAudioPlayerManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AVAudioPlayerManager.mm; sourceTree = "<group>"; };
+		92043B102A0B8EE9007CC7DE /* AVAudioPlayerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVAudioPlayerManager.h; sourceTree = "<group>"; };
 		9206BAA729AF8BF20013BE69 /* LightRepository.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LightRepository.cpp; sourceTree = "<group>"; };
 		9206BAA829AF8BF20013BE69 /* LightRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LightRepository.h; sourceTree = "<group>"; };
 		9208BE5429B3FD41007C5335 /* BossIntroGameState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BossIntroGameState.cpp; sourceTree = "<group>"; };
@@ -886,6 +891,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				925FD880298AD7D50058E747 /* AudioToolbox.framework in Frameworks */,
+				92043B0E2A0947A4007CC7DE /* AVFAudio.framework in Frameworks */,
 				9254CA512969B35800EFE0CC /* SDL2.framework in Frameworks */,
 				92E96A6B29803597004A3120 /* OpenGLES.framework in Frameworks */,
 			);
@@ -1296,6 +1302,7 @@
 		92C851B42969A95A0021923F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				92043B022A0947A4007CC7DE /* AVFAudio.framework */,
 				9285241629A9095A007EA0D9 /* GameController.framework */,
 				925FD87F298AD7D50058E747 /* AudioToolbox.framework */,
 				92E96A5F29803597004A3120 /* OpenGLES.framework */,
@@ -1334,6 +1341,8 @@
 		92DAA4CF29829B380062A438 /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				92043B0F2A0B8EE9007CC7DE /* AVAudioPlayerManager.mm */,
+				92043B102A0B8EE9007CC7DE /* AVAudioPlayerManager.h */,
 				92DAA4D029829B380062A438 /* FileUtils.h */,
 				92DAA4D329829B380062A438 /* StringUtils.h */,
 				924DA00D29E963D800CFAF47 /* StringUtils.cpp */,
@@ -2052,6 +2061,7 @@
 				92DAA4C129829A4C0062A438 /* TextureResource.cpp in Sources */,
 				9254CBFF2969B79A00EFE0CC /* b2Settings.cpp in Sources */,
 				9254CBE32969B79A00EFE0CC /* b2Fixture.cpp in Sources */,
+				92043B112A0B8EE9007CC7DE /* AVAudioPlayerManager.mm in Sources */,
 				924DA01929E963D900CFAF47 /* StringUtils.cpp in Sources */,
 				9254CBFB2969B79A00EFE0CC /* b2ContactManager.cpp in Sources */,
 				9254CBF82969B79A00EFE0CC /* b2PulleyJoint.cpp in Sources */,

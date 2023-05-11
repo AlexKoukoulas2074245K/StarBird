@@ -12,11 +12,16 @@
 #include "GameConstants.h"
 #include "GameSingletons.h"
 #include "PhysicsConstants.h"
+#include "../utils/ObjectiveCUtils.h"
 
 ///------------------------------------------------------------------------------------------------
 
 namespace blueprint_flows
 {
+
+///------------------------------------------------------------------------------------------------
+
+static const std::string BULLET_SFX_NAME = "sfx_bullet";
 
 ///------------------------------------------------------------------------------------------------
 
@@ -29,6 +34,7 @@ static void CreateBulletAtPosition(const strutils::StringId& bulletType, const g
         auto bulletPos = position;
         bulletPos.z = game_constants::BULLET_Z;
         scene.AddSceneObject(scene_object_utils::CreateSceneObjectWithBody(bulletDef, position, box2dWorld, strutils::StringId()));
+        objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + BULLET_SFX_NAME, false);
     }
 }
 

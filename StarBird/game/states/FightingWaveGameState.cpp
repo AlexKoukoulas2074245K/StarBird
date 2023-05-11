@@ -20,12 +20,15 @@
 #include "../../resloading/MeshResource.h"
 #include "../../resloading/TextureResource.h"
 #include "../../utils/Logging.h"
+#include "../../utils/ObjectiveCUtils.h"
 
 #include <Box2D/Box2D.h>
 
 ///------------------------------------------------------------------------------------------------
 
 const strutils::StringId FightingWaveGameState::STATE_NAME("FightingWaveGameState");
+
+static const std::string PLAYER_BOSS_EXPLOSION_SFX_NAME = "sfx_boss_explosion";
 
 static const float EXPLOSION_SPEED = 0.001f;
 static const float EXPLOSION_FADE_OUT_ALPHA_SPEED = 0.00025f;
@@ -173,6 +176,7 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
                 playerSo.mInvulnerable = true;
             }
             
+            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + PLAYER_BOSS_EXPLOSION_SFX_NAME, false);
             mBossDeathAnimationActive = true;
         }
     }
@@ -205,6 +209,7 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
             playerSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
         }
         
+        objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + PLAYER_BOSS_EXPLOSION_SFX_NAME, false);
         mPlayerDeathAnimationActive = true;
         mScene->SetProgressResetFlag();
     }

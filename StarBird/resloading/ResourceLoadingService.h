@@ -48,7 +48,7 @@ public:
     static const std::string RES_SCRIPTS_ROOT;   
     static const std::string RES_MESHES_ROOT;
     static const std::string RES_MUSIC_ROOT;
-    static const std::string RES_SFX_ROOT;
+    static const std::string RES_SOUNDS_ROOT;
     static const std::string RES_SHADERS_ROOT;
     static const std::string RES_TEXTURES_ROOT;     
     static const std::string RES_ATLASES_ROOT;

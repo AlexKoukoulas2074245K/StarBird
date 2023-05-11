@@ -19,6 +19,7 @@
 
 #include "../resloading/ResourceLoadingService.h"
 
+#include "../utils/FileUtils.h"
 #include "../utils/Logging.h"
 #include "../utils/MathUtils.h"
 #include "../utils/ObjectiveCUtils.h"
@@ -119,6 +120,11 @@ bool Game::InitSystems()
     }
     GameSingletons::SetInputContextJoystick(accelerometer);
     
+    // Init
+    resources::ResourceLoadingService::GetInstance();
+    
+    objectiveC_utils::InitAudio();
+    
     return true;
 }
 
@@ -127,6 +133,15 @@ bool Game::InitSystems()
 void Game::Run()
 {
     InitPersistentData();
+    
+    auto fileNames = fileutils::GetAllFilenamesInDirectory(resources::ResourceLoadingService::RES_SOUNDS_ROOT);
+    for (const auto& fileName: fileNames)
+    {
+        if (strutils::StringStartsWith(fileName, "sfx_"))
+        {
+            objectiveC_utils::PreloadSfx(resources::ResourceLoadingService::RES_SOUNDS_ROOT + fileutils::GetFileNameWithoutExtension(fileName));
+        }
+    }
     
     Scene scene;
     scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAIN_MENU, "test_level_roaming", false));
@@ -258,9 +273,15 @@ void Game::Run()
                 
                 case SDL_APP_WILLENTERBACKGROUND:
                 case SDL_APP_DIDENTERBACKGROUND:
+                {
+                    objectiveC_utils::PauseAudio();
+                    lastAppForegroundBackgroundEvent = e.type;
+                } break;
+                    
                 case SDL_APP_WILLENTERFOREGROUND:
                 case SDL_APP_DIDENTERFOREGROUND:
                 {
+                    objectiveC_utils::ResumeAudio();
                     lastAppForegroundBackgroundEvent = e.type;
                 } break;
             }
