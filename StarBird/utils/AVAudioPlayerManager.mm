@@ -76,6 +76,7 @@
                 
                 _musicPlayer.numberOfLoops = -1;
                 [_musicPlayer play];
+                _musicPlayer.volume = 0.07f;
             }
         }
         else
@@ -83,8 +84,11 @@
             AVAudioPlayer* targetSfxPlayer = [_sfxPlayers objectForKey:sandboxFilePath];
             if (targetSfxPlayer)
             {
-                targetSfxPlayer.currentTime = 0;
-                [targetSfxPlayer play];
+                dispatch_queue_t backgroundQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+                dispatch_async(backgroundQueue, ^{
+                    targetSfxPlayer.currentTime = 0;
+                    [targetSfxPlayer play];
+                });
             }
             else
             {

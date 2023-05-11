@@ -20,6 +20,7 @@
 #include "ResearchUpdater.h"
 #include "SceneObjectUtils.h"
 #include "StatsUpgradeUpdater.h"
+#include "Sounds.h"
 #include "ObjectTypeDefinitionRepository.h"
 #include "states/DebugConsoleGameState.h"
 #include "datarepos/WaveBlocksRepository.h"
@@ -29,6 +30,7 @@
 #include "../resloading/MeshResource.h"
 #include "../resloading/TextureResource.h"
 #include "../utils/Logging.h"
+#include "../utils/ObjectiveCUtils.h"
 
 #include <algorithm>
 #include <Box2D/Box2D.h>
@@ -617,6 +619,8 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
             {
                 mSceneUpdater->VOpenSettingsMenu();
             }
+            
+            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
         }
     }
     

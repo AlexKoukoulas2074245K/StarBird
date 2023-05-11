@@ -16,6 +16,7 @@
 #include "PhysicsCollisionListener.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
+#include "Sounds.h"
 
 #include "dataloaders/UpgradesLoader.h"
 
@@ -42,7 +43,6 @@
 ///------------------------------------------------------------------------------------------------
 
 static const std::string DROPPED_CRYSTAL_NAME_PREFIX = "DROPPED_CRYSTAL_";
-static const std::string ENEMY_EXPLOSION_SFX_NAME = "sfx_enemy_explosion";
 
 static const glm::vec4 ENEMY_TEXT_DAMAGE_COLOR = glm::vec4(1.0f, 1.0f, 1.0f, 0.8f);
 static const glm::vec4 PLAYER_TEXT_DAMAGE_COLOR = glm::vec4(1.0f, 0.3f, 0.3f, 0.8f);
@@ -163,7 +163,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 
                 DropCrystals(deathPosition, enemySO.mAnimation->VGetDurationMillis(), crystalYield);
                 
-                objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + ENEMY_EXPLOSION_SFX_NAME, false);
+                objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::ENEMY_EXPLOSION_SFX_PATH, false);
                 
                 mFlows.emplace_back([=]()
                 {
@@ -229,6 +229,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                     GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - incomingDamage);
                     OnPlayerDamaged();
                     CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), incomingDamage);
+                    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::PLAYER_DAMAGED_SFX_PATH, false);
                 }
                 
                 // Kamikaze everything that isn't a boss part
@@ -299,6 +300,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                     GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - incomingDamage);
                     OnPlayerDamaged();
                     CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), incomingDamage);
+                    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::PLAYER_DAMAGED_SFX_PATH, false);
                 }
                 
                 mFlows.emplace_back([]()

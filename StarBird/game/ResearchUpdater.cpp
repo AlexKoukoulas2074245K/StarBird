@@ -12,12 +12,14 @@
 #include "ResearchUpdater.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
+#include "Sounds.h"
 #include "states/DebugConsoleGameState.h"
 #include "states/SettingsMenuGameState.h"
 #include "datarepos/FontRepository.h"
 #include "datarepos/ObjectTypeDefinitionRepository.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../utils/Logging.h"
+#include "../utils/ObjectiveCUtils.h"
 
 #include <vector>
 #include <unordered_map>
@@ -124,6 +126,7 @@ PostStateUpdateDirective ResearchUpdater::VUpdate(std::vector<SceneObject>& scen
                 {
                     OnConfirmationButtonPressed();
                     mOptionSelectionState = OptionSelectionState::EXPEND_CRYSTALS;
+                    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
                 }
                 
                 auto navigationArrowSoOpt = mScene.GetSceneObject(game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME);
@@ -131,6 +134,7 @@ PostStateUpdateDirective ResearchUpdater::VUpdate(std::vector<SceneObject>& scen
                 {
                     mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::LAB, "", true));
                     mOptionSelectionState = OptionSelectionState::TRANSITIONING_TO_NEXT_SCREEN;
+                    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
                 }
             }
         

@@ -11,10 +11,12 @@
 #include "../Scene.h"
 #include "../SceneObject.h"
 #include "../SceneObjectUtils.h"
+#include "../Sounds.h"
 #include "../datarepos/FontRepository.h"
 #include "../dataloaders/GUISceneLoader.h"
 #include "../../resloading/ResourceLoadingService.h"
 #include "../../utils/Logging.h"
+#include "../../utils/ObjectiveCUtils.h"
 
 ///------------------------------------------------------------------------------------------------
 
@@ -95,6 +97,7 @@ PostStateUpdateDirective SettingsMenuGameState::VUpdate(const float dtMillis)
         auto backButtonSoOpt = mScene->GetSceneObject(BACK_BUTTON_SO_NAME);
         if (backButtonSoOpt && scene_object_utils::IsPointInsideSceneObject(backButtonSoOpt->get(), touchPos))
         {
+            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
             mScene->ResumeOverlayController();
             GameSingletons::ConsumeInput();
             Complete();
@@ -104,12 +107,14 @@ PostStateUpdateDirective SettingsMenuGameState::VUpdate(const float dtMillis)
         if (accelInputMethodSoOpt && scene_object_utils::IsPointInsideSceneObject(accelInputMethodSoOpt->get(), touchPos))
         {
             GameSingletons::SetAccelerometerControl(true);
+            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
         }
         
         auto joystickInputMethodSoOpt = mScene->GetSceneObject(JOYSTICK_INPUT_METHOD_SO_NAME);
         if (joystickInputMethodSoOpt && scene_object_utils::IsPointInsideSceneObject(joystickInputMethodSoOpt->get(), touchPos))
         {
             GameSingletons::SetAccelerometerControl(false);
+            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
         }
     }
     

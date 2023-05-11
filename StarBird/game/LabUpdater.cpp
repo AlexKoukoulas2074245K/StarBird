@@ -10,8 +10,10 @@
 #include "GameConstants.h"
 #include "GameSingletons.h"
 #include "LabUpdater.h"
+#include "ObjectiveCUtils.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
+#include "Sounds.h"
 #include "TextPromptController.h"
 #include "datarepos/FontRepository.h"
 #include "datarepos/ObjectTypeDefinitionRepository.h"
@@ -118,6 +120,7 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
                 {
                     OnConfirmationButtonPressed();
                     mOptionSelectionState = OptionSelectionState::OPTION_SELECTED;
+                    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
                 }
             }
         

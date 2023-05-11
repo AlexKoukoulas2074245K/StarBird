@@ -12,11 +12,13 @@
 #include "FontRepository.h"
 #include "SceneObjectUtils.h"
 #include "StatsUpgradeUpdater.h"
+#include "Sounds.h"
 #include "datarepos/ObjectTypeDefinitionRepository.h"
 #include "states/DebugConsoleGameState.h"
 #include "states/SettingsMenuGameState.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../utils/Logging.h"
+#include "../utils/ObjectiveCUtils.h"
 
 #include <SDL.h>
 
@@ -298,6 +300,8 @@ PostStateUpdateDirective StatsUpgradeUpdater::VUpdate(std::vector<SceneObject>& 
                 }
                 
                 mSelectionState = SelectionState::EXPENDING_CRYSTALS;
+                
+                objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
             }
         } break;
             

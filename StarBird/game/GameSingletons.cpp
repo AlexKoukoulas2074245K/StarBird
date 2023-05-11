@@ -37,7 +37,7 @@ float GameSingletons::mPlayerBulletSpeedStat = 0.0f;
 float GameSingletons::mPlayerMovementStat = 0.0f;
 bool GameSingletons::mGodMode = false;
 bool GameSingletons::mErasedLabsOnCurrentMap = false;
-bool GameSingletons::mAccelerometerControl = true;
+bool GameSingletons::mAccelerometerControl = false;
 
 ///------------------------------------------------------------------------------------------------
 

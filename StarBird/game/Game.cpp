@@ -143,6 +143,9 @@ void Game::Run()
         }
     }
     
+    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + "music", true);
+    
+    
     Scene scene;
     scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAIN_MENU, "test_level_roaming", false));
     

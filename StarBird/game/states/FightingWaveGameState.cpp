@@ -15,6 +15,7 @@
 #include "../PhysicsConstants.h"
 #include "../Scene.h"
 #include "../SceneObjectUtils.h"
+#include "../Sounds.h"
 #include "../datarepos/ObjectTypeDefinitionRepository.h"
 #include "../../resloading/ResourceLoadingService.h"
 #include "../../resloading/MeshResource.h"
@@ -27,8 +28,6 @@
 ///------------------------------------------------------------------------------------------------
 
 const strutils::StringId FightingWaveGameState::STATE_NAME("FightingWaveGameState");
-
-static const std::string PLAYER_BOSS_EXPLOSION_SFX_NAME = "sfx_boss_explosion";
 
 static const float EXPLOSION_SPEED = 0.001f;
 static const float EXPLOSION_FADE_OUT_ALPHA_SPEED = 0.00025f;
@@ -176,7 +175,7 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
                 playerSo.mInvulnerable = true;
             }
             
-            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + PLAYER_BOSS_EXPLOSION_SFX_NAME, false);
+            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::PLAYER_BOSS_EXPLOSION_SFX_PATH, false);
             mBossDeathAnimationActive = true;
         }
     }
@@ -209,7 +208,7 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
             playerSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
         }
         
-        objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + PLAYER_BOSS_EXPLOSION_SFX_NAME, false);
+        objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::PLAYER_BOSS_EXPLOSION_SFX_PATH, false);
         mPlayerDeathAnimationActive = true;
         mScene->SetProgressResetFlag();
     }

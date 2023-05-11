@@ -10,8 +10,10 @@
 #include "GameSingletons.h"
 #include "EventUpdater.h"
 #include "LevelGeneration.h"
+#include "ObjectiveCUtils.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
+#include "Sounds.h"
 #include "TextPromptController.h"
 #include "states/DebugConsoleGameState.h"
 #include "states/SettingsMenuGameState.h"
@@ -197,6 +199,8 @@ PostStateUpdateDirective EventUpdater::VUpdate(std::vector<SceneObject>& sceneOb
                     {
                         CreateEventSceneObjectsForCurrentState();
                     }
+                    
+                    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
                 }
             }
         }
@@ -440,6 +444,7 @@ void EventUpdater::RegisterEvents()
                     {
                         GameSingletons::SetPlayerMovementSpeedStat(GameSingletons::GetPlayerMovementSpeedStat() + eventSpeedGain);
                         GameSingletons::SetPlayerCurrentHealth(math::Max(0.0f, GameSingletons::GetPlayerCurrentHealth() - healthLost));
+                        objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::PLAYER_DAMAGED_SFX_PATH, false);
                         objectiveC_utils::Vibrate();
                         
                         if (GameSingletons::GetPlayerCurrentHealth() <= 0.0f)

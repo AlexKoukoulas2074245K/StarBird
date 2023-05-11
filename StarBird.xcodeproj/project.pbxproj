@@ -253,6 +253,7 @@
 		9208BE6029B3FD41007C5335 /* BossIntroGameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BossIntroGameState.h; sourceTree = "<group>"; };
 		9210BFB529E82A2B00D117A6 /* ChestRewardUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChestRewardUpdater.cpp; sourceTree = "<group>"; };
 		9210BFC129E82A2B00D117A6 /* ChestRewardUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChestRewardUpdater.h; sourceTree = "<group>"; };
+		921BCEBD2A0D0C7000A30F30 /* Sounds.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sounds.h; sourceTree = "<group>"; };
 		922540F329E85A11001122E3 /* CarouselController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CarouselController.cpp; sourceTree = "<group>"; };
 		922540FF29E85A11001122E3 /* CarouselController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CarouselController.h; sourceTree = "<group>"; };
 		9228C15A299FCE4F00410E49 /* GUISceneDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GUISceneDefinition.h; sourceTree = "<group>"; };
@@ -1205,6 +1206,7 @@
 				9228C16A299FDA5900410E49 /* SceneObjectUtils.h */,
 				92A8516E2985704800C99B61 /* SceneRenderer.cpp */,
 				92A8517A2985704800C99B61 /* SceneRenderer.h */,
+				921BCEBD2A0D0C7000A30F30 /* Sounds.h */,
 				9259F35929DB19C600850744 /* StatsUpgradeUpdater.cpp */,
 				9259F35A29DB19C700850744 /* StatsUpgradeUpdater.h */,
 				92F5BE5829DD7A4200E2EB14 /* StatUpgradeAreaController.cpp */,

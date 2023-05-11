@@ -11,6 +11,7 @@
 #include "MainMenuUpdater.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
+#include "Sounds.h"
 #include "dataloaders/GUISceneLoader.h"
 #include "datarepos/FontRepository.h"
 #include "states/DebugConsoleGameState.h"
@@ -18,6 +19,7 @@
 #include "../resloading/ResourceLoadingService.h"
 #include "../resloading/MeshResource.h"
 #include "../utils/Logging.h"
+#include "../utils/ObjectiveCUtils.h"
 
 ///------------------------------------------------------------------------------------------------
 
@@ -71,12 +73,14 @@ PostStateUpdateDirective MainMenuUpdater::VUpdate(std::vector<SceneObject>& scen
         {
             mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
             mTransitioning = true;
+            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
         }
         
         auto settingsSoOpt = mScene.GetSceneObject(SETTINGS_TEXT_SCENE_OBJECT_NAME);
         if (settingsSoOpt && scene_object_utils::IsPointInsideSceneObject(*settingsSoOpt, touchPos))
         {
             mStateMachine.PushState(SettingsMenuGameState::STATE_NAME);
+            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
         }
     }
     
