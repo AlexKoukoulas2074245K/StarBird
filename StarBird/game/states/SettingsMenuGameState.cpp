@@ -95,9 +95,9 @@ PostStateUpdateDirective SettingsMenuGameState::VUpdate(const float dtMillis)
         auto touchPos = math::ComputeTouchCoordsInWorldSpace(GameSingletons::GetWindowDimensions(), GameSingletons::GetInputContext().mTouchPos, guiCamera.GetViewMatrix(), guiCamera.GetProjMatrix());
         
         auto backButtonSoOpt = mScene->GetSceneObject(BACK_BUTTON_SO_NAME);
-        if (backButtonSoOpt && scene_object_utils::IsPointInsideSceneObject(backButtonSoOpt->get(), touchPos))
+        if (backButtonSoOpt && backButtonSoOpt->get().mShaderFloatVec4UniformValues[game_constants::CUSTOM_COLOR_UNIFORM_NAME].a >= 1.0f && scene_object_utils::IsPointInsideSceneObject(backButtonSoOpt->get(), touchPos))
         {
-            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
+            objectiveC_utils::PlaySound(sounds::WHOOSH_SFX);
             mScene->ResumeOverlayController();
             GameSingletons::ConsumeInput();
             Complete();
@@ -107,14 +107,14 @@ PostStateUpdateDirective SettingsMenuGameState::VUpdate(const float dtMillis)
         if (accelInputMethodSoOpt && scene_object_utils::IsPointInsideSceneObject(accelInputMethodSoOpt->get(), touchPos))
         {
             GameSingletons::SetAccelerometerControl(true);
-            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
+            objectiveC_utils::PlaySound(sounds::WHOOSH_SFX);
         }
         
         auto joystickInputMethodSoOpt = mScene->GetSceneObject(JOYSTICK_INPUT_METHOD_SO_NAME);
         if (joystickInputMethodSoOpt && scene_object_utils::IsPointInsideSceneObject(joystickInputMethodSoOpt->get(), touchPos))
         {
             GameSingletons::SetAccelerometerControl(false);
-            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
+            objectiveC_utils::PlaySound(sounds::WHOOSH_SFX);
         }
     }
     

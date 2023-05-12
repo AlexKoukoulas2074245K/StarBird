@@ -83,6 +83,11 @@ void FightingWaveGameState::VInitialize()
         
         mScene->AddSceneObject(std::move(so));
     }
+    
+    if (!currentWave.mBossName.isEmpty())
+    {
+        objectiveC_utils::PlaySound(sounds::BOSS_INTRO_SFX);
+    }
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -175,7 +180,8 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
                 playerSo.mInvulnerable = true;
             }
             
-            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::PLAYER_BOSS_EXPLOSION_SFX_PATH, false);
+            objectiveC_utils::PauseMusicOnly();
+            objectiveC_utils::PlaySound(sounds::PLAYER_BOSS_EXPLOSION_SFX);
             mBossDeathAnimationActive = true;
         }
     }
@@ -208,7 +214,8 @@ PostStateUpdateDirective FightingWaveGameState::VUpdate(const float dtMillis)
             playerSo.mShaderFloatUniformValues[game_constants::CUSTOM_ALPHA_UNIFORM_NAME] = 1.0f;
         }
         
-        objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::PLAYER_BOSS_EXPLOSION_SFX_PATH, false);
+        objectiveC_utils::PauseMusicOnly();
+        objectiveC_utils::PlaySound(sounds::PLAYER_BOSS_EXPLOSION_SFX);
         mPlayerDeathAnimationActive = true;
         mScene->SetProgressResetFlag();
     }

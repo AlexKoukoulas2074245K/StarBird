@@ -15,11 +15,13 @@
 #include "ObjectTypeDefinitionRepository.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
+#include "Sounds.h"
 #include "datarepos/FontRepository.h"
 #include "states/DebugConsoleGameState.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../resloading/MeshResource.h"
 #include "../utils/Logging.h"
+#include "../utils/ObjectiveCUtils.h"
 
 ///------------------------------------------------------------------------------------------------
 
@@ -65,6 +67,7 @@ static const float CHEST_OPENING_ANIMATION_SPEED = 1.0f/800.0f;
 static const float CHEST_PULSE_SPEED = 0.005f;
 static const float CHEST_SHAKE_RAMP_SPEED = 0.0001f;
 static const float CHEST_SHAKE_MAX_MAG = 0.3f;
+static const float CHEST_REWARD_WHOOSH_DELAY = 300;
 
 static const float CONFIRMATION_BUTTON_ROTATION_SPEED = 0.0002f;
 static const float CONFIRMATION_BUTTON_PULSING_SPEED = 0.02f;
@@ -229,6 +232,8 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
                 
                 if (perc >= 1.0f && !mScreenOverlayController)
                 {
+                    objectiveC_utils::PauseMusicOnly();
+                    objectiveC_utils::PlaySound(sounds::CHEST_OPEN_SFX);
                     mScreenOverlayController = std::make_unique<FullScreenOverlayController>(mScene, game_constants::FULL_SCREEN_OVERLAY_MENU_DARKENING_SPEED, game_constants::FULL_SCREEN_OVERLAY_MENU_MAX_ALPHA, true, [&]()
                     {
                         CreateRewardObjects();
@@ -295,8 +300,10 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
                 auto confirmationButtonSoOpt = mScene.GetSceneObject(CONFIRMATION_BUTTON_NAME);
                 if (confirmationButtonSoOpt && scene_object_utils::IsPointInsideSceneObject(*confirmationButtonSoOpt, currentTouchPos))
                 {
+                    
                     OnConfirmationButtonPressed();
                     mRewardFlowState = RewardFlowState::REWARD_SELECTED_ANIMATION_HIGH;
+                    objectiveC_utils::PlaySound(sounds::BUTTON_PRESS_SFX);
                 }
             }
             
@@ -366,6 +373,16 @@ PostStateUpdateDirective ChestRewardUpdater::VUpdate(std::vector<SceneObject>& s
     {
         mScreenOverlayController->Update(dtMillis);
     }
+    
+    for (size_t i = 0; i < mFlows.size(); ++i)
+    {
+        mFlows[i].Update(dtMillis);
+    }
+    
+    mFlows.erase(std::remove_if(mFlows.begin(), mFlows.end(), [](const RepeatableFlow& flow)
+    {
+        return !flow.IsRunning();
+    }), mFlows.end());
     
     // Animate all SOs
     for (auto& sceneObject: sceneObjects)
@@ -539,6 +556,8 @@ void ChestRewardUpdater::OnConfirmationButtonPressed()
     
     selectedRewardSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(selectedRewardSo.mAnimation->VGetCurrentTextureResourceId(), selectedRewardSo.mAnimation->VGetCurrentMeshResourceId(), selectedRewardSo.mAnimation->VGetCurrentShaderResourceId(), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, SELECTED_REWARD_ROTATION_SPEED, false));
     
+    mFlows.push_back(RepeatableFlow([](){ objectiveC_utils::PlaySound(sounds::WHOOSH_SFX); }, CHEST_REWARD_WHOOSH_DELAY, RepeatableFlow::RepeatPolicy::REPEAT));
+    
     glm::vec3 startPos = selectedRewardSo.mPosition;
     glm::vec3 endPos = startPos + SELECTED_REWARD_VERTICAL_OFFSET;
     math::BezierCurve curve({startPos, endPos});
@@ -552,6 +571,8 @@ void ChestRewardUpdater::OnConfirmationButtonPressed()
         rewardSo.mAnimation = std::make_unique<ShineAnimation>(&rewardSo, rewardSo.mAnimation->VGetCurrentTextureResourceId(), resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::UPGRADE_SHINE_EFFECT_TEXTURE_FILE_NAME), rewardSo.mAnimation->VGetCurrentMeshResourceId(), resources::ResourceLoadingService::GetInstance().LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::SHINE_SHADER_FILE_NAME), glm::vec3(1.0f), SELECTED_REWARD_SHINE_SPEED, false);
         rewardSo.mAnimation->SetCompletionCallback([&]()
         {
+            mFlows.clear();
+            objectiveC_utils::PlaySound(sounds::SUCCESS_CHIME_SFX);
             mRewardFlowState = RewardFlowState::CREATE_REWARD_SELECTED_USAGE_ANIMATION;
         });
     });

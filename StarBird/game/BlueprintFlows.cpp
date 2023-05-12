@@ -31,7 +31,7 @@ static void CreateBulletAtPosition(const strutils::StringId& bulletType, const g
         auto bulletPos = position;
         bulletPos.z = game_constants::BULLET_Z;
         scene.AddSceneObject(scene_object_utils::CreateSceneObjectWithBody(bulletDef, position, box2dWorld, strutils::StringId()));
-        objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::BULLET_SFX_PATH, false);
+        objectiveC_utils::PlaySound(sounds::BULLET_SFX);
     }
 }
 

@@ -19,10 +19,13 @@ namespace objectiveC_utils
     void UnzipAssets(const char* zippedFolderPath, const char* resFolderPath);
     void Vibrate();
     void PreloadSfx(const std::string& sfxResPath);
-    void PlaySound(const std::string& soundResPath, const bool isMusic);
-    void InitAudio();
+    void PlaySound(const std::string& soundResPath, const bool loopedSfx = false);
+    void InitAudio(const std::string& rootSoundResPath);
     void ResumeAudio();
+    void PauseMusicOnly();
+    void PauseSfxOnly();
     void PauseAudio();
+    void UpdateAudio(const float dtMillis);
     std::string GetLocalFileSaveLocation();
     std::string BuildLocalFileSaveLocation(const std::string& fileName);
 }

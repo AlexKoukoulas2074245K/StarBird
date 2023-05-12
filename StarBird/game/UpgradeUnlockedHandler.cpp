@@ -10,10 +10,12 @@
 #include "UpgradeUnlockedHandler.h"
 #include "GameConstants.h"
 #include "GameSingletons.h"
+#include "ObjectiveCUtils.h"
 #include "PhysicsCollisionListener.h"
 #include "PhysicsConstants.h"
 #include "Scene.h"
 #include "SceneObjectUtils.h"
+#include "Sounds.h"
 #include "datarepos/ObjectTypeDefinitionRepository.h"
 #include "../resloading/ResourceLoadingService.h"
 #include "../utils/Logging.h"
@@ -282,6 +284,8 @@ void UpgradeUnlockedHandler::OnCrystalGiftUpgradeGained(const int crystalCount)
                     crystalHolderSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(crystalHolderSo.mAnimation->VGetCurrentTextureResourceId(), crystalHolderSo.mAnimation->VGetCurrentMeshResourceId(), crystalHolderSo.mAnimation->VGetCurrentShaderResourceId(), game_constants::GUI_CRYSTAL_SCALE, PulsingAnimation::PulsingMode::OUTER_PULSE_ONCE, 0.0f, COLLECTED_CRYSTAL_PULSING_SPEED, COLLECTED_CRYSTAL_PULSING_FACTOR, false));
                 }
                 
+                objectiveC_utils::PlaySound(sounds::CRYSTALS_SFX);
+                
                 mCreatedSceneObjectNames.erase(std::find(mCreatedSceneObjectNames.begin(), mCreatedSceneObjectNames.end(), droppedCrystalName));
                 mScene.RemoveAllSceneObjectsWithName(droppedCrystalName);
                 GameSingletons::SetCrystalCount(GameSingletons::GetCrystalCount() + 1);
@@ -313,6 +317,8 @@ void UpgradeUnlockedHandler::OnHealthPotionUpgradeGained()
     mScene.AddSceneObject(std::move(healthUpAnimationSo));
     
     GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerMaxHealth());
+    
+    objectiveC_utils::PlaySound(sounds::HEALTH_SFX);
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -666,7 +672,9 @@ UpgradeUnlockedHandler::UpgradeAnimationState UpgradeUnlockedHandler::UpdatePlay
             
             playerShieldSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(playerShieldSo.mAnimation->VGetCurrentTextureResourceId(), playerShieldSo.mAnimation->VGetCurrentMeshResourceId(), playerShieldSo.mAnimation->VGetCurrentShaderResourceId(), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, PLAYER_SHIELD_ROTATION_SPEED, false));
             
-            playerShieldSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(playerShieldSo.mAnimation->VGetCurrentTextureResourceId(), playerShieldSo.mAnimation->VGetCurrentMeshResourceId(), playerShieldSo.mAnimation->VGetCurrentShaderResourceId(), glm::vec3(1.0f), PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, PLAYER_PULSE_SHIELD_ANIM_SPEED, PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR, false));
+            playerShieldSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(playerShieldSo.mAnimation->VGetCurrentTextureResourceId(), playerShieldSo.mAnimation->VGetCurrentMeshResourceId(), playerShieldSo.mAnimation->VGetCurrentShaderResourceId(), glm::vec3(1.0f), PulsingAnimation::PulsingMode::PULSE_CONTINUALLY, 0.0f, PLAYER_PULSE_SHIELD_ANIM_SPEED,   PLAYER_PULSE_SHIELD_ENLARGEMENT_FACTOR, false));
+            
+            objectiveC_utils::PlaySound(sounds::BARRIER_SFX, true);
             
             mScene.AddSceneObject(std::move(playerShieldSo));
             

@@ -31,6 +31,7 @@ public:
     float GetCurrentCost() const;
     const glm::vec3& GetTargetCrystalPosition() const;
     
+    void HideMissingCrystals();
     void Update(const float dtMillis, const float currentTotalCost);
     
 private:
@@ -52,6 +53,7 @@ private:
     strutils::StringId mMinusButtonName;
     strutils::StringId mStatValueTextName;
     strutils::StringId mUpgradeCostTextName;
+    bool mMissingCrystalsSceneObjectsDisplayDisabled;
 };
 
 ///------------------------------------------------------------------------------------------------

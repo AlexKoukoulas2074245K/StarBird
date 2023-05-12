@@ -120,10 +120,11 @@ bool Game::InitSystems()
     }
     GameSingletons::SetInputContextJoystick(accelerometer);
     
-    // Init
+    // Init resource service
     resources::ResourceLoadingService::GetInstance();
     
-    objectiveC_utils::InitAudio();
+    // and audio
+    objectiveC_utils::InitAudio(resources::ResourceLoadingService::RES_SOUNDS_ROOT);
     
     return true;
 }
@@ -143,11 +144,8 @@ void Game::Run()
         }
     }
     
-    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + "music", true);
-    
-    
     Scene scene;
-    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAIN_MENU, "test_level_roaming", false));
+    scene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::CHEST_REWARD, "test_level_with_boss", false));
     
     SDL_Event e;
     
@@ -321,9 +319,14 @@ void Game::Run()
             secsAccumulator = 0.0f;
         }
         
-        scene.UpdateScene(math::Max(10.0f, math::Min(20.0f, dtMillis)));
+        // Cap inter-frame dt to [10.0f-20.0f]
+        float propagatedDtMillis = math::Max(10.0f, math::Min(20.0f, dtMillis));
+        
+        objectiveC_utils::UpdateAudio(propagatedDtMillis);
+        
+        scene.UpdateScene(propagatedDtMillis);
         scene.RenderScene();
-
+    
         if (lastAppForegroundBackgroundEvent)
         {
             scene.OnAppStateChange(lastAppForegroundBackgroundEvent);

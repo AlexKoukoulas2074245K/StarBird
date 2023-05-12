@@ -126,7 +126,7 @@ PostStateUpdateDirective ResearchUpdater::VUpdate(std::vector<SceneObject>& scen
                 {
                     OnConfirmationButtonPressed();
                     mOptionSelectionState = OptionSelectionState::EXPEND_CRYSTALS;
-                    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
+                    objectiveC_utils::PlaySound(sounds::BUTTON_PRESS_SFX);
                 }
                 
                 auto navigationArrowSoOpt = mScene.GetSceneObject(game_constants::NAVIGATION_ARROW_SCENE_OBJECT_NAME);
@@ -134,7 +134,7 @@ PostStateUpdateDirective ResearchUpdater::VUpdate(std::vector<SceneObject>& scen
                 {
                     mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::LAB, "", true));
                     mOptionSelectionState = OptionSelectionState::TRANSITIONING_TO_NEXT_SCREEN;
-                    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
+                    objectiveC_utils::PlaySound(sounds::BUTTON_PRESS_SFX);
                 }
             }
         
@@ -209,6 +209,8 @@ PostStateUpdateDirective ResearchUpdater::VUpdate(std::vector<SceneObject>& scen
                             mOptionSelectionState = OptionSelectionState::TRANSITIONING_TO_NEXT_SCREEN;
                         }, 1000.0f, RepeatableFlow::RepeatPolicy::ONCE));
                     });
+                    
+                    objectiveC_utils::PlaySound(sounds::SUCCESS_CHIME_SFX);
                 }
                 
                 mOptionSelectionState = OptionSelectionState::UNLOCK_TEXTURE_TRANSITION;
@@ -704,6 +706,7 @@ void ResearchUpdater::CreateCrystalsTowardTargetPosition(const long crystalCount
             mCrystalSceneObjectNames.push_back(droppedCrystalName);
             
             crystalSo.mAnimation = std::make_unique<BezierCurvePathAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), math::BezierCurve({firstControlPoint, secondControlPoint, thirdControlPoint}), (DROPPED_CRYSTAL_SPEED + speedNoise) * speedMultiplier, false);
+            crystalSo.mAnimation->SetCompletionCallback([](){objectiveC_utils::PlaySound(sounds::CRYSTALS_SFX);});
             
             crystalSo.mExtraCompoundingAnimations.push_back(std::make_unique<RotationAnimation>(resService.LoadResource(resources::ResourceLoadingService::RES_TEXTURES_ROOT + game_constants::CRYSTALS_TEXTURE_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_MESHES_ROOT + game_constants::SMALL_CRYSTAL_MESH_FILE_NAME), resService.LoadResource(resources::ResourceLoadingService::RES_SHADERS_ROOT + game_constants::BASIC_SHADER_FILE_NAME), glm::vec3(1.0f), RotationAnimation::RotationMode::ROTATE_CONTINUALLY, RotationAnimation::RotationAxis::Y, 0.0f, game_constants::GUI_CRYSTAL_ROTATION_SPEED, false));
             

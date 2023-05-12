@@ -73,14 +73,14 @@ PostStateUpdateDirective MainMenuUpdater::VUpdate(std::vector<SceneObject>& scen
         {
             mScene.ChangeScene(Scene::TransitionParameters(Scene::SceneType::MAP, "", true));
             mTransitioning = true;
-            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
+            objectiveC_utils::PlaySound(sounds::WHOOSH_SFX);
         }
         
         auto settingsSoOpt = mScene.GetSceneObject(SETTINGS_TEXT_SCENE_OBJECT_NAME);
         if (settingsSoOpt && scene_object_utils::IsPointInsideSceneObject(*settingsSoOpt, touchPos))
         {
             mStateMachine.PushState(SettingsMenuGameState::STATE_NAME);
-            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
+            objectiveC_utils::PlaySound(sounds::WHOOSH_SFX);
         }
     }
     

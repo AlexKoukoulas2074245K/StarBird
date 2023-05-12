@@ -424,6 +424,23 @@ void Scene::ChangeScene(const TransitionParameters& transitionParameters)
         }
         
         SetHUDVisibility(mTransitionParameters->mSceneType != SceneType::MAIN_MENU);
+        
+        // Reset all sfx here
+        objectiveC_utils::PauseSfxOnly();
+        
+        // Pick appropriate scene theme
+        if (mTransitionParameters->mSceneType == SceneType::LEVEL)
+        {
+            objectiveC_utils::PlaySound(sounds::BATTLE_THEME);
+        }
+        else if (mTransitionParameters->mSceneType == SceneType::CHEST_REWARD)
+        {
+            objectiveC_utils::PlaySound(sounds::CHEST_REWARD_THEME);
+        }
+        else
+        {
+            objectiveC_utils::PlaySound(sounds::MENU_THEME);
+        }
     };
     
     if (mTransitionParameters->mUseOverlay)
@@ -620,7 +637,7 @@ void Scene::UpdateCrossSceneInterfaceObjects(const float dtMillis)
                 mSceneUpdater->VOpenSettingsMenu();
             }
             
-            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
+            objectiveC_utils::PlaySound(sounds::WHOOSH_SFX);
         }
     }
     

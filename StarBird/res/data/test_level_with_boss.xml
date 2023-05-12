@@ -9,7 +9,7 @@
         <Enemy position=" 5.0f, 20.0f" type="enemies/medium_enemy_chasing"/>
     </Wave>
 
-    <Wave bossName="Ka'thun" bossHealth="5000.0f">
+    <Wave bossName="Ka'thun" bossHealth="50.0f">
         <Enemy position="0.0f, 20.0f" type="enemies/boss_1/body"/>
         <Enemy position="0.0f, 20.0f" type="enemies/boss_1/top_left_flap"/>
         <Enemy position="0.0f, 20.0f" type="enemies/boss_1/middle_left_flap"/>

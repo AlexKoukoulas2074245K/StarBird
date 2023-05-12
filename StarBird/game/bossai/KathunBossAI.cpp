@@ -8,6 +8,7 @@
 #include "KathunBossAI.h"
 #include "../LevelUpdater.h"
 #include "../Scene.h"
+#include "../Sounds.h"
 #include "../GameConstants.h"
 #include "../GameSingletons.h"
 #include "../datarepos/ObjectTypeDefinitionRepository.h"
@@ -15,6 +16,7 @@
 #include "../states/StateMachine.h"
 #include "../states/FightingWaveGameState.h"
 #include "../../utils/Logging.h"
+#include "../../utils/ObjectiveCUtils.h"
 
 #include <vector>
 
@@ -337,6 +339,8 @@ void KathunBossAI::OnStateChange(const bool shakeCamera)
                 }
             }
         }, game_constants::BOSS_INTRO_DURATION_MILLIS/2, RepeatableFlow::RepeatPolicy::ONCE));
+        
+        objectiveC_utils::PlaySound(sounds::BOSS_SCREAM_SFX);
     }
 }
 

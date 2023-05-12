@@ -21,6 +21,7 @@
 ///------------------------------------------------------------------------------------------------
 
 static AVAudioPlayerManager* manager;
+static std::string ROOT_SOUND_RES_PATH;
 
 ///------------------------------------------------------------------------------------------------
 
@@ -61,7 +62,7 @@ void objectiveC_utils::PreloadSfx(const std::string& sfxResPath)
 
 ///------------------------------------------------------------------------------------------------
 
-void objectiveC_utils::PlaySound(const std::string& soundResPath, const bool isMusic)
+void objectiveC_utils::PlaySound(const std::string& soundResPath, const bool loopedSfx /* = false */)
 {
     if (strutils::StringEndsWith(soundResPath, ".mp3") || strutils::StringEndsWith(soundResPath, ".wav"))
     {
@@ -69,18 +70,19 @@ void objectiveC_utils::PlaySound(const std::string& soundResPath, const bool isM
         return;
     }
     
-    NSString* objectiveCresPath = [NSString stringWithCString:soundResPath.data() encoding:[NSString defaultCStringEncoding]];
+    NSString* objectiveCresPath = [NSString stringWithCString:(ROOT_SOUND_RES_PATH + soundResPath).data() encoding:[NSString defaultCStringEncoding]];
     
     if (manager != nil)
     {
-        [manager playSoundWith:objectiveCresPath isMusic:isMusic];
+        [manager playSoundWith:objectiveCresPath isMusic:(!strutils::StringStartsWith(fileutils::GetFileName(soundResPath), "sfx_")) forceLoop:loopedSfx];
     }
 }
 
 ///------------------------------------------------------------------------------------------------
 
-void objectiveC_utils::InitAudio()
+void objectiveC_utils::InitAudio(const std::string& rootSoundResPath)
 {
+    ROOT_SOUND_RES_PATH = rootSoundResPath;
     manager = [[AVAudioPlayerManager alloc] init];
 }
 
@@ -96,11 +98,41 @@ void objectiveC_utils::ResumeAudio()
 
 ///------------------------------------------------------------------------------------------------
 
+void objectiveC_utils::PauseMusicOnly()
+{
+    if (manager != nil)
+    {
+        [manager pauseMusic];
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void objectiveC_utils::PauseSfxOnly()
+{
+    if (manager != nil)
+    {
+        [manager pauseSfx];
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
 void objectiveC_utils::PauseAudio()
 {
     if (manager != nil)
     {
         [manager pauseAudio];
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+void objectiveC_utils::UpdateAudio(const float dtMillis)
+{
+    if (manager != nil)
+    {
+        [manager updateAudioWith:dtMillis];
     }
 }
 

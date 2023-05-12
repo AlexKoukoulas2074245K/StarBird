@@ -17,6 +17,8 @@
 {
     self = [super init];
     _sfxPlayers = [[NSMutableDictionary alloc] init];
+    _currentPlayingMusicPath = nil;
+    _nextQueuedMusicPath = nil;
     _musicPlayer = nil;
     _firstAppStateCall = YES;
     return self;
@@ -50,33 +52,31 @@
 
 ///------------------------------------------------------------------------------------------------
 
-- (void) playSoundWith: (NSString*) soundResPath isMusic:(BOOL) isMusic
+- (void) playSoundWith: (NSString*) soundResPath isMusic:(BOOL) isMusic forceLoop:(BOOL) forceLoop
 {
     NSString* sandboxFilePath = [[NSBundle mainBundle] pathForResource:soundResPath ofType:@"mp3"];
 
     if (sandboxFilePath != nil)
     {
-        NSError *error;
-        
         if (isMusic)
         {
-            if (_musicPlayer == nil || [_musicPlayer isPlaying])
+            if (_musicPlayer == nil)
             {
-                if (_musicPlayer != nil)
-                {
-                    [_musicPlayer stop];
-                }
-                
-                _musicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:sandboxFilePath] error:&error];
-                
-                if (error)
-                {
-                    NSLog(@"%@",[error localizedDescription]);
-                }
-                
-                _musicPlayer.numberOfLoops = -1;
-                [_musicPlayer play];
-                _musicPlayer.volume = 0.07f;
+                dispatch_queue_t backgroundQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+                dispatch_async(backgroundQueue, ^{
+                    self->_musicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:sandboxFilePath] error:nil];
+                    self->_musicPlayer.numberOfLoops = -1;
+                    self->_musicPlayer.volume = 0.0f;
+                    self->_currentPlayingMusicPath = sandboxFilePath;
+                    self->_nextQueuedMusicPath = sandboxFilePath;
+                    
+                    [self->_musicPlayer prepareToPlay];
+                    [self->_musicPlayer play];
+                });
+            }
+            else if (![_currentPlayingMusicPath isEqualToString:sandboxFilePath])
+            {
+                _nextQueuedMusicPath = sandboxFilePath;
             }
         }
         else
@@ -86,7 +86,12 @@
             {
                 dispatch_queue_t backgroundQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
                 dispatch_async(backgroundQueue, ^{
+                    if (forceLoop)
+                    {
+                        targetSfxPlayer.numberOfLoops = 1;
+                    }
                     targetSfxPlayer.currentTime = 0;
+                    targetSfxPlayer.volume = 0.4f;
                     [targetSfxPlayer play];
                 });
             }
@@ -104,19 +109,31 @@
 
 ///------------------------------------------------------------------------------------------------
 
-- (void) pauseAudio
+- (void) pauseMusic
+{
+    if (_musicPlayer != nil)
+    {
+        [_musicPlayer pause];
+    }
+}
+
+///------------------------------------------------------------------------------------------------
+
+- (void) pauseSfx
 {
     for(id key in _sfxPlayers)
     {
         AVAudioPlayer* sfxPlayer = [_sfxPlayers objectForKey:key];
         [sfxPlayer pause];
     }
+}
 
-    
-    if (_musicPlayer != nil)
-    {
-        [_musicPlayer pause];
-    }
+///------------------------------------------------------------------------------------------------
+
+- (void) pauseAudio
+{
+    [self pauseSfx];
+    [self pauseMusic];
 }
 
 ///------------------------------------------------------------------------------------------------
@@ -129,12 +146,6 @@
     }
     else
     {
-        for(id key in _sfxPlayers)
-        {
-            AVAudioPlayer* sfxPlayer = [_sfxPlayers objectForKey:key];
-            [sfxPlayer play];
-        }
-        
         if (_musicPlayer != nil)
         {
             [_musicPlayer play];
@@ -142,6 +153,40 @@
     }
 }
 
+///------------------------------------------------------------------------------------------------
+
+- (void) updateAudioWith:(float) dtMillis
+{
+    float FADE_SPEED = 0.00125f;
+    
+    if (_musicPlayer != nil)
+    {
+        if (![_nextQueuedMusicPath isEqualToString:_currentPlayingMusicPath])
+        {
+            if (_musicPlayer.volume > 0.0f)
+            {
+                _musicPlayer.volume -= dtMillis * FADE_SPEED;
+            }
+            else
+            {
+                _musicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:_nextQueuedMusicPath] error:nil];
+                _musicPlayer.numberOfLoops = -1;
+                _musicPlayer.volume = 0.0f;
+                [_musicPlayer prepareToPlay];
+                [_musicPlayer play];
+                _currentPlayingMusicPath = _nextQueuedMusicPath;
+            }
+        }
+        else
+        {
+            if (_musicPlayer.volume < 1.0f)
+            {
+                _musicPlayer.volume += dtMillis * FADE_SPEED;
+            }
+        }
+    }
+    
+}
 
 ///------------------------------------------------------------------------------------------------
 

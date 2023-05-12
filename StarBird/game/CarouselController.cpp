@@ -8,8 +8,10 @@
 #include "CarouselController.h"
 #include "GameConstants.h"
 #include "GameSingletons.h"
+#include "ObjectiveCUtils.h"
 #include "SceneObject.h"
 #include "Scene.h"
+#include "Sounds.h"
 
 ///------------------------------------------------------------------------------------------------
 
@@ -92,6 +94,8 @@ void CarouselController::Update(const float dtMillis)
             
             mExhaustedMove = true;
         }
+        
+        objectiveC_utils::PlaySound(sounds::SWIPE_SFX);
     }
     else if (inputContext.mEventType == SDL_FINGERUP)
     {

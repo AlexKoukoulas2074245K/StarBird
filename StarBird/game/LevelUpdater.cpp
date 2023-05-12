@@ -163,7 +163,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                 
                 DropCrystals(deathPosition, enemySO.mAnimation->VGetDurationMillis(), crystalYield);
                 
-                objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::ENEMY_EXPLOSION_SFX_PATH, false);
+                objectiveC_utils::PlaySound(sounds::ENEMY_EXPLOSION_SFX);
                 
                 mFlows.emplace_back([=]()
                 {
@@ -229,7 +229,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                     GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - incomingDamage);
                     OnPlayerDamaged();
                     CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), incomingDamage);
-                    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::PLAYER_DAMAGED_SFX_PATH, false);
+                    objectiveC_utils::PlaySound(sounds::PLAYER_DAMAGED_SFX);
                 }
                 
                 // Kamikaze everything that isn't a boss part
@@ -300,7 +300,7 @@ LevelUpdater::LevelUpdater(Scene& scene, b2World& box2dWorld, LevelDefinition&& 
                     GameSingletons::SetPlayerCurrentHealth(GameSingletons::GetPlayerCurrentHealth() - incomingDamage);
                     OnPlayerDamaged();
                     CreateTextOnDamage(playerSO.mName, math::Box2dVec2ToGlmVec3(playerSO.mBody->GetWorldCenter()), incomingDamage);
-                    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::PLAYER_DAMAGED_SFX_PATH, false);
+                    objectiveC_utils::PlaySound(sounds::PLAYER_DAMAGED_SFX);
                 }
                 
                 mFlows.emplace_back([]()
@@ -620,6 +620,7 @@ void LevelUpdater::DropCrystals(const glm::vec3& deathPosition, const float enem
                         crystalHolderSo.mExtraCompoundingAnimations.push_back(std::make_unique<PulsingAnimation>(crystalHolderSo.mAnimation->VGetCurrentTextureResourceId(), crystalHolderSo.mAnimation->VGetCurrentMeshResourceId(), crystalHolderSo.mAnimation->VGetCurrentShaderResourceId(), game_constants::GUI_CRYSTAL_SCALE, PulsingAnimation::PulsingMode::OUTER_PULSE_ONCE, 0.0f, COLLECTED_CRYSTAL_PULSING_SPEED, COLLECTED_CRYSTAL_PULSING_FACTOR, false));
                     }
                     
+                    objectiveC_utils::PlaySound(sounds::CRYSTALS_SFX);
                     mScene.RemoveAllSceneObjectsWithName(droppedCrystalName);
                     GameSingletons::SetCrystalCount(GameSingletons::GetCrystalCount() + 1);
                 });

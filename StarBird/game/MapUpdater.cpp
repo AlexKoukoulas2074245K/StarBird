@@ -203,7 +203,7 @@ PostStateUpdateDirective MapUpdater::VUpdate(std::vector<SceneObject>& sceneObje
                         mScene.ChangeScene(Scene::TransitionParameters(nextSceneType, nextSceneType == Scene::SceneType::LEVEL ? (objectiveC_utils::BuildLocalFileSaveLocation(mSelectedMapCoord.ToString())) : "", true));
                     }
                     
-                    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::TRANSLOCATION_SFX_PATH, false);
+                    objectiveC_utils::PlaySound(sounds::BUTTON_PRESS_SFX);
                 }
                 else
                 {
@@ -417,7 +417,7 @@ bool MapUpdater::CheckForActiveLevelSelection(const glm::vec3& touchPos)
         if (scene_object_utils::IsPointInsideSceneObject(mScene.GetSceneObject(strutils::StringId(linkedMapCoord.ToString()))->get(), glm::vec2(touchPos.x, touchPos.y)))
         {
             mSelectedMapCoord = linkedMapCoord;
-            objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
+            objectiveC_utils::PlaySound(sounds::WHOOSH_SFX);
             return true;
         }
     }

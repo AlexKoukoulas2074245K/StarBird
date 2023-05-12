@@ -9,11 +9,13 @@
 #include "FightingWaveGameState.h"
 #include "SceneObjectUtils.h"
 #include "../Scene.h"
+#include "../Sounds.h"
 #include "../LevelUpdater.h"
 #include "../GameConstants.h"
 #include "../GameSingletons.h"
 #include "../datarepos/FontRepository.h"
 #include "../datarepos/ObjectTypeDefinitionRepository.h"
+#include "../../utils/ObjectiveCUtils.h"
 
 ///------------------------------------------------------------------------------------------------
 
@@ -26,6 +28,8 @@ static const glm::vec3 BOSS_INTRO_TEXT_SCALE = glm::vec3(0.02f, 0.02f, 1.0f);
 
 void BossIntroGameState::VInitialize()
 {
+    objectiveC_utils::PlaySound(sounds::BOSS_THEME);
+    
     mSubState = SubState::BOSS_NAME_DISPLAY;
     
     auto& resService = resources::ResourceLoadingService::GetInstance();

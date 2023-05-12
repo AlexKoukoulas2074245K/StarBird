@@ -120,7 +120,7 @@ PostStateUpdateDirective LabUpdater::VUpdate(std::vector<SceneObject>& sceneObje
                 {
                     OnConfirmationButtonPressed();
                     mOptionSelectionState = OptionSelectionState::OPTION_SELECTED;
-                    objectiveC_utils::PlaySound(resources::ResourceLoadingService::RES_SOUNDS_ROOT + sounds::WHOOSH_SFX_PATH, false);
+                    objectiveC_utils::PlaySound(sounds::BUTTON_PRESS_SFX);
                 }
             }
         

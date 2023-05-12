@@ -128,34 +128,9 @@ SDL_LoadLaunchImageNamed(NSString *name, int screenh)
 @interface SDLLaunchStoryboardViewController : UIViewController <UIDocumentPickerDelegate>
 @property (nonatomic, strong) UIViewController *storyboardViewController;
 - (instancetype)initWithStoryboardViewController:(UIViewController *)storyboardViewController;
-- (void)openPicker;
 @end
 
 @implementation SDLLaunchStoryboardViewController
-
-- (void)openPicker {
-    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data"]
-                                                                                                                inMode:UIDocumentPickerModeImport];
-    documentPicker.delegate = self;
-    documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self presentViewController:documentPicker animated:YES completion:nil];
-}
-
-- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
-    if (controller.documentPickerMode == UIDocumentPickerModeImport) {
-        NSString *alertMessage = [NSString stringWithFormat:@"Successfully imported %@", [url lastPathComponent]];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            UIAlertController *alertController = [UIAlertController
-                                                  alertControllerWithTitle:@"Import"
-                                                  message:alertMessage
-                                                  preferredStyle:UIAlertControllerStyleAlert];
-            [alertController addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:nil]];
-            [self presentViewController:alertController animated:YES completion:nil];
-        });
-    }
-}
-
-
 - (instancetype)initWithStoryboardViewController:(UIViewController *)storyboardViewController {
     self = [super init];
     self.storyboardViewController = storyboardViewController;
@@ -491,7 +466,6 @@ SDL_LoadLaunchImageNamed(NSString *name, int screenh)
 
     SDL_SetMainReady();
     
-    //[(SDLLaunchStoryboardViewController*)launchWindow.rootViewController openPicker];
     [self performSelector:@selector(postFinishLaunch) withObject:nil afterDelay:0.0];
 
     return YES;

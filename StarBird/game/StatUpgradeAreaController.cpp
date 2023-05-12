@@ -52,6 +52,7 @@ StatUpgradeAreaController::StatUpgradeAreaController(Scene& scene, std::unique_p
     , mFloatDisplay(floatDisplay)
     , mStatValue(initialStatValue)
     , mCurrentCost(0)
+    , mMissingCrystalsSceneObjectsDisplayDisabled(false)
 {
     auto& resService = resources::ResourceLoadingService::GetInstance();
     {
@@ -222,6 +223,22 @@ const glm::vec3& StatUpgradeAreaController::GetTargetCrystalPosition() const
 
 ///------------------------------------------------------------------------------------------------
 
+void StatUpgradeAreaController::HideMissingCrystals()
+{
+    auto missingCrystalsSoOpt = mScene.GetSceneObject(mMissingCrystalsName);
+    auto missingCrystalsIconSoOpt = mScene.GetSceneObject(mMissingCrystalsIconName);
+    
+    if (missingCrystalsSoOpt && missingCrystalsIconSoOpt)
+    {
+        missingCrystalsSoOpt->get().mInvisible = true;
+        missingCrystalsIconSoOpt->get().mInvisible = true;
+    }
+    
+    mMissingCrystalsSceneObjectsDisplayDisabled = true;
+}
+
+///------------------------------------------------------------------------------------------------
+
 void StatUpgradeAreaController::Update(const float dtMillis, const float currentTotalCost)
 {
     auto& inputContext = GameSingletons::GetInputContext();
@@ -243,9 +260,12 @@ void StatUpgradeAreaController::Update(const float dtMillis, const float current
         
         plusButtonSo.mInvisible = currentTotalCost + (CalculateStatCost(mStatValue + mStatIncrement)) > GameSingletons::GetCrystalCount();
         
-        missingCrystalsTextSo.mInvisible = !plusButtonSo.mInvisible;
-        missingCrystalsIconSo.mInvisible = !plusButtonSo.mInvisible;
-        missingCrystalsTextSo.mText = "+" + std::to_string(-static_cast<int>(GameSingletons::GetCrystalCount() - currentTotalCost - (CalculateStatCost(mStatValue + mStatIncrement))));
+        if (!mMissingCrystalsSceneObjectsDisplayDisabled)
+        {
+            missingCrystalsTextSo.mInvisible = !plusButtonSo.mInvisible;
+            missingCrystalsIconSo.mInvisible = !plusButtonSo.mInvisible;
+            missingCrystalsTextSo.mText = "+" + std::to_string(-static_cast<int>(GameSingletons::GetCrystalCount() - currentTotalCost - (CalculateStatCost(mStatValue + mStatIncrement))));
+        }
         
         if (!plusButtonSo.mInvisible && inputContext.mEventType == SDL_FINGERDOWN && mLastInputContextEventType != SDL_FINGERDOWN && scene_object_utils::IsPointInsideSceneObject(plusButtonSo, originalFingerDownTouchPos))
         {

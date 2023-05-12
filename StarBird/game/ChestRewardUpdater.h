@@ -16,11 +16,13 @@
 #include "definitions/UpgradeDefinition.h"
 
 #include <memory>
+#include <vector>
 
 ///------------------------------------------------------------------------------------------------
 
 class Scene;
 class FullScreenOverlayController;
+class RepeatableFlow;
 class CarouselController;
 class b2World;
 
@@ -72,6 +74,8 @@ private:
     
     std::unique_ptr<FullScreenOverlayController> mScreenOverlayController;
     std::unique_ptr<CarouselController> mCarouselController;
+    
+    std::vector<RepeatableFlow> mFlows;
 };
 
 ///------------------------------------------------------------------------------------------------
